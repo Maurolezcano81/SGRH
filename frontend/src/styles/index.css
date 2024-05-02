@@ -1,0 +1,65 @@
+@import url('./satoshi/satoshi.css');
+
+:root{
+  --white-text-0: #f8f8ff;
+  --white-1: #ECECEC;
+  --white-2: #fafafa;
+  --white-3: #DFDFFF;
+  --white-4: #E9F0F5;
+
+  --white-2-20: rgba(250,250,250, .2);
+
+  --blue-0: #0C8CE9;
+  --blue-1: #1F2E39;
+  --blue-3: #01101B;
+
+  --green-1: #30EC26;
+  --yellow-1: #EDED26;
+  --red-1: #ED2626;
+
+  /* Shadows */
+  --shadow-a-30: 0, 0, 1.2rem, .6rem rgba(0,0,0,.3);
+  /* Shadows */
+
+
+  /* Login Sizes */
+  --size-title-login: clamp(4rem, 2vw, 4.8rem);
+  --size-label-login: clamp(1.4rem, 2vw, 2rem);
+  --size-check-login: clamp(1.2rem, 2vw, 1.6rem);
+  --size-error-login: clamp(1rem, 2vw, 1.4rem);
+  --size-button-login: clamp(1.2rem, 2vw, 1.8rem);
+  --size-forgot-login: clamp(1rem, 2vw, 1.4rem);
+  /* Login Sizes */
+
+
+  /* Navbar Sizes */
+  --size-enterprise-navbar: clamp(1.4rem, 2vw, 2.2rem);
+  --size-name-navbar: clamp(1.6rem, 2vw, 2.4rem);
+  --size-ocuppation-navbar: clamp(1.2rem, 2vw, 2rem);
+  --size-button-navbar: clamp(1.4rem, 2vw, 2.2rem);
+  --size-a-navbar: clamp(1.6rem, 2vw, 2.4rem);
+  /* Navbar Sizes */
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body{
+  font-family: 'Satoshi-regular';
+  font-size: 1.6rem;
+}
+
+button{
+  outline: none;
+  border: none;
+}
+
+
+/* START LOGIN */
+
+/* END LOGIN */

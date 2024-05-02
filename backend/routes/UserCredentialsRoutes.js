@@ -3,7 +3,12 @@ import UserCredentialsControllers from '../controllers/UserCredentialsController
 
 const router = express.Router();
 
-router.post('/login', UserCredentialsControllers.getUser);
+router.post('/signIn', UserCredentialsControllers.getUser);
+
+// router.post('/signUp');
+// router.post('/signOut');
+
+
 
 const UserCredentialsRoutes = {
     router
