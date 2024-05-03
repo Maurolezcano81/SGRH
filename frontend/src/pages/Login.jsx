@@ -5,9 +5,11 @@ import {
     useState
 } from 'react';
 import {
-    Link
+    Link,
+    useNavigate
 } from 'react-router-dom';
 
+import useAuth from '../hooks/useAuth';
 const Login = () => {
 
     const urlApi = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/signIn`;
@@ -17,6 +19,9 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [pwd, setPwd] = useState('');
     const [isCheck, setIsCheck] = useState(null);
+
+    const Navigate = useNavigate();
+    const { storageAuthData } = useAuth();
 
     const changeUsername = (e) => {
         setUsername(e.target.value);
@@ -45,7 +50,7 @@ const Login = () => {
                 })
 
             const fetchData = await response.json();
-
+            
             const error = document.getElementById('errorMessage');
             if (response.status != 200) {
                 error.classList.replace('success', 'error');
@@ -57,11 +62,25 @@ const Login = () => {
             error.classList.replace('error','success');
             error.style.display = 'block';
             setError(fetchData.message);
+            storageAuthData(fetchData.userData);
+
+            setTimeout( () =>{
+                switch(fetchData.userData.name_profile){
+                    case "Administrador":
+                        Navigate('/admin/inicio')
+                    break;
+                    case "Personal":
+                        Navigate('/personal/inicio')
+                    break;
+                }
+                Navigate('/admin/inicio')    
+            }, 1000)
 
         } catch (e) {
             console.error(e.name);
         }
     }
+    
 
     return (
         <div className="login__container">
@@ -74,7 +93,7 @@ const Login = () => {
                         <div className="login__form-img">
                             <img src={Enterprise} alt="" />
                         </div>
-                        <form onSubmit={handleSubmit} className="login__form">
+                        <form action='/' onSubmit={handleSubmit} className="login__form">
                             <div className="login__input-container">
                                 <label>Nombre de usuario o email</label>
                                 <div className="login-input">
@@ -107,7 +126,7 @@ const Login = () => {
                             </div>
 
                             <div className="login__button">
-                                <button type='submit'>INICIAR</button>
+                                <button onTouchEnd={handleSubmit} type='submit'>INICIAR</button>
                             </div>
 
                             <div className='login__forgot'>
