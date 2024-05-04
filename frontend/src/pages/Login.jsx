@@ -2,7 +2,8 @@ import User from '../assets/Icons/Login/User.png';
 import Invisible from '../assets/Icons/Login/Invisible.png';
 import Enterprise from '../assets/Enterprise.png'
 import {
-    useState
+    useState,
+    useEffect
 } from 'react';
 import {
     Link,
@@ -18,10 +19,32 @@ const Login = () => {
 
     const [username, setUsername] = useState('');
     const [pwd, setPwd] = useState('');
-    const [isCheck, setIsCheck] = useState(null);
+    const [keepSession, setKeepSession] = useState(false);
 
     const Navigate = useNavigate();
     const { storageAuthData } = useAuth();
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            try {
+                const userData = JSON.parse(storedToken);
+                switch (userData.name_profile) {
+                    case "Administrador":
+                        Navigate('/admin/inicio');
+                        break;
+                    case "Personal":
+                        Navigate('/personal/inicio');
+                        break;
+                    default:
+                        Navigate('/admin/inicio');
+                }
+            } catch (error) {
+                console.error('Error al iniciar sesión automáticamente:', error);
+                Navigate('/login');
+            }
+        }
+    }, [Navigate]);
 
     const changeUsername = (e) => {
         setUsername(e.target.value);
@@ -32,25 +55,26 @@ const Login = () => {
     }
 
     const changeKeepSesion = (e) => {
+        setKeepSession(e.target.checked);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-                const response = await fetch(urlApi, {
-                    method: 'POST',
-                    headers:{
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        pwd: pwd
-                    })
+            const response = await fetch(urlApi, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    pwd: pwd
                 })
+            })
 
             const fetchData = await response.json();
-            
+
             const error = document.getElementById('errorMessage');
             if (response.status != 200) {
                 error.classList.replace('success', 'error');
@@ -59,28 +83,30 @@ const Login = () => {
                 return;
             }
 
-            error.classList.replace('error','success');
+            error.classList.replace('error', 'success');
             error.style.display = 'block';
             setError(fetchData.message);
             storageAuthData(fetchData.userData);
-
-            setTimeout( () =>{
-                switch(fetchData.userData.name_profile){
+            if (keepSession) {
+                localStorage.setItem('token', JSON.stringify(fetchData.userData));
+            }
+            setTimeout(() => {
+                switch (fetchData.userData.name_profile) {
                     case "Administrador":
                         Navigate('/admin/inicio')
-                    break;
+                        break;
                     case "Personal":
                         Navigate('/personal/inicio')
-                    break;
+                        break;
                 }
-                Navigate('/admin/inicio')    
+                Navigate('/admin/inicio')
             }, 1000)
 
         } catch (e) {
             console.error(e.name);
         }
     }
-    
+
 
     return (
         <div className="login__container">

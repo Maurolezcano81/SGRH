@@ -4,7 +4,6 @@ const AdminDashboard = () =>{
 
     return (
         <>
-        asd
         <Navbar/>
         </>
     )

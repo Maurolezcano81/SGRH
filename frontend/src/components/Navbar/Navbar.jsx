@@ -3,7 +3,8 @@ import {
 } from 'react';
 
 import {
-    Link
+    Link,
+    useNavigate
 } from 'react-router-dom'
 
 import useAuth from '../../hooks/useAuth';
@@ -12,27 +13,52 @@ import useAuth from '../../hooks/useAuth';
 import Profile from './Profile';
 import HeaderButtons from './HeaderButtons';
 import NavbarContent from './NavbarContent';
+import Hamburguer from '../../assets/Icons/Navbar/hamburguer.png';
+
 
 const Navbar = () => {
-    const { authData } = useAuth();
+    const { authData, deleteAuthData } = useAuth();
+    const Navigate = useNavigate();
+    
+    const [isNavbarOpen, setIsNavbarOpen] = useState(true);
+
+    const toggleNavbar = () => {
+        setIsNavbarOpen(!isNavbarOpen);
+    };
+
+    const handleLogout = () =>{
+        deleteAuthData();
+        localStorage.removeItem('token');
+        Navigate('/login')
+    }
+
     return (
-        <div className="navbar__container">
-            <div className="navbar__header">
-                <div className="navbar__header-close">
-                    <button>X</button>
+        <div>
+            <div className={`navbar__container-open ${isNavbarOpen ? 'hidden' : ''}`}>
+                <div>
+                    <button onClick={toggleNavbar} className="navbar__collapsed-button">
+                        <img src={Hamburguer} alt="" />
+                    </button>
                 </div>
-                <Profile
-                    avatar={authData.avatar_user}
-                    name={`${authData.name_entity} ${authData.lastname_entity}`}
-                    occupation={authData.name_occupation}
-                />
-                <HeaderButtons
-                    username={authData.username_user}
-                />
             </div>
-            <NavbarContent/>
-            <div className="navbar__footer">
-                <button className='button__navbar'>Cerrar Sesión</button>
+            <div className={`navbar__container ${!isNavbarOpen ? 'hidden' : ''}`}>
+                <div className="navbar__header">
+                    <div className="navbar__header-close">
+                        <button onClick={toggleNavbar}>X</button>
+                    </div>
+                    <Profile
+                        avatar={authData?.avatar_user}
+                        name={`${authData?.name_entity} ${authData?.lastname_entity}`}
+                        occupation={authData?.name_occupation}
+                    />
+                    <HeaderButtons
+                        username={authData?.username_user}
+                    />
+                </div>
+                <NavbarContent />
+                <div className="navbar__footer">
+                    <button onClick={handleLogout} className='button__navbar'>Cerrar Sesión</button>
+                </div>
             </div>
         </div>
     )

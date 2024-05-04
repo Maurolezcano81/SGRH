@@ -4,10 +4,29 @@ import {
     createContext
 } from 'react';
 
+import {
+    useNavigate
+} from 'react-router-dom'
+
+import ErrorMessage from '../components/ErrorMessage';
+
 const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
 
     const [authData, setAuthData] = useState({});
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    const Navigate = useNavigate();
+
+    useEffect(() => {
+        const storedAuthData = localStorage.getItem('token');
+        if (storedAuthData) {
+            setAuthData(JSON.parse(storedAuthData));
+        } else {
+            Navigate('/login');
+        }
+    }, []);
+
 
     const storageAuthData = (authData) => {
         setAuthData(authData);
@@ -18,12 +37,12 @@ const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider 
-        value={{
-            authData,
-            storageAuthData,
-            deleteAuthData
-        }}
+        <AuthContext.Provider
+            value={{
+                authData,
+                storageAuthData,
+                deleteAuthData
+            }}
         >
             {children}
         </AuthContext.Provider>
