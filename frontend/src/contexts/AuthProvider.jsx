@@ -14,7 +14,6 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
 
     const [authData, setAuthData] = useState({});
-    const [errorMessage, setErrorMessage] = useState(null);
 
     const Navigate = useNavigate();
 
@@ -22,11 +21,8 @@ const AuthProvider = ({ children }) => {
         const storedAuthData = localStorage.getItem('token');
         if (storedAuthData) {
             setAuthData(JSON.parse(storedAuthData));
-        } else {
-            Navigate('/login');
         }
     }, []);
-
 
     const storageAuthData = (authData) => {
         setAuthData(authData);

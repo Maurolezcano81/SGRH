@@ -31,7 +31,7 @@
   /* Backgrounds */
 
   /* ERROR MESSAGES*/
-  --sise-error-content: clamp(1.2rem, 2vw, 2.2rem);
+  --size-error-content: clamp(1.2rem, 2vw, 2.2rem);
 
   /* ERROR MESSAGES*/
 
@@ -101,6 +101,44 @@ img {
   color: var(--blue-3);
   border: .1rem solid var(--green-1);
   background-color: var(--green-0);
+}
+
+.error_bg{
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--white-2);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.error__container{
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-a-30);
+  border: .1rem solid var(--red-1);
+  background-color: var(--red-0);
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  border-radius: 1rem;
+  padding: 2rem 1rem;
+}
+
+.error-header{
+  width: 30%;
+}
+
+.error-footer{
+  color: var(--red-1);
+  font-size: var(--size-error-content);
+  text-align: center;
+  padding: 2rem 1rem;
 }
 
 /* START LOGIN */
