@@ -1,4 +1,5 @@
 import jsonwebtoken, { decode } from 'jsonwebtoken';
+import bcryptjs from 'bcryptjs';
 
 export const decodeToken = (req, res, next) =>{
     const { token } = req.body;
@@ -26,3 +27,22 @@ export const verifyToken = (req, res, next) =>{
 
     next();
 };
+
+
+export const encryptPwd = (pwd) =>{
+    try {
+        const hashedPwd = bcryptjs.hash(pwd, 10);
+        return hashedPwd;        
+    } catch (error) {
+        console.error("Error al hashear pwd" + error.name);
+    }
+    
+}
+
+export const comparePwd = (pwd, pwdHashed) =>{
+    try {
+        console.log('asd');
+    } catch (error) {
+        console.error()
+    }
+}

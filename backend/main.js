@@ -6,14 +6,16 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
 
 // Rutas
 import UserCredentialsRoutes from './routes/UserCredentialsRoutes.js';
+import PersonalRoutes from './routes/PersonalRoutes.js';
 
 app.use('/api', UserCredentialsRoutes.router);
-
+app.use('/api', PersonalRoutes.router);
 // Server
 app.listen( process.env.SV_PORT || 3000, () =>{
     console.log(`Server corriendo en el puerto: ${process.env.SV_PORT}`);
