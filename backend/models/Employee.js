@@ -17,7 +17,7 @@ class Employee {
                 return null;
             }
 
-            const lastInsertId = rows.lastInsertId;
+            const lastInsertId = rows.insertId;
             return lastInsertId;
         } catch (error) {
             console.error("Error en insert empleado: "+error);

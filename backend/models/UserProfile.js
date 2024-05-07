@@ -7,7 +7,6 @@ class UserProfile {
     };
 
     async assignProfileToUser(idUser, idProfile) {
-
         try {
             const query = "INSERT INTO user_profile(user_fk, profile_fk,status_up, created_at, updated_at) VALUES(?,?,1,now(),now())"
 
