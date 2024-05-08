@@ -6,10 +6,10 @@ class UserProfile {
         this.connection = mysql.createConnection(database);
     };
 
-    async assignProfileToUser(idUser, idProfile) {
+    async assignProfileToUser(userProfile_data) {
         try {
             const query = "INSERT INTO user_profile(user_fk, profile_fk,status_up, created_at, updated_at) VALUES(?,?,1,now(),now())"
-
+            const {idUser, idProfile } = userProfile_data
             const [rows, fields] = await this.connection.promise().query(query, [idUser, idProfile])
 
             if(rows.length === 0){

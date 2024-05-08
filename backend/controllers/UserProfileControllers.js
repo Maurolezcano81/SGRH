@@ -5,12 +5,11 @@ const userProfileInstance = new UserProfile();
 
 export const assignProfileToUser = async (user_profile) => {
     const { idUser, idProfile } = user_profile;
-
     try {
         if (isInputEmpty(idUser) || isInputWithWhiteSpaces(idUser) || isNotNumber(idUser) || isInputEmpty(idProfile) || isInputWithWhiteSpaces(idProfile) || isNotNumber(idProfile)) {
             throw new Error("Ha ocurrido un error al asignar los permisos");
         }
-        const queryResponse = await userProfileInstance.assignProfileToUser(idUser, idProfile);
+        const queryResponse = await userProfileInstance.assignProfileToUser(user_profile);
         if (!queryResponse) {
             throw new Error("Ha ocurrido un error al asignar los permisos");
         }
