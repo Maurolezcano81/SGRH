@@ -1,13 +1,10 @@
 import UserCredentials from '../models/UserCredentials.js';
 import {isInputEmpty, isInputWithWhiteSpaces} from '../middlewares/Validations.js';
 import jsonwebtoken from 'jsonwebtoken';
+import { createToken } from '../middlewares/Authorization.js';
 
 const UserCredentialsInstance = new UserCredentials();
 
-const createToken = (data) =>{
-    const token = jsonwebtoken.sign(data, process.env.JSON_SECRET)
-    return token;
-}
 
 const getUser = async (req,res) =>{
     try{
@@ -35,10 +32,14 @@ const getUser = async (req,res) =>{
             }) 
         }
 
+        const dataToToken = {
+            userId: userQueryResult.id_user,
+            name_profile: userQueryResult.name_profile
+        }
         
         const userData = {
             ...userQueryResult,
-            token: createToken(userQueryResult.id_user)
+            token: createToken(dataToToken)
         }
         delete userData.id_user;
 
