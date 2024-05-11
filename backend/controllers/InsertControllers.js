@@ -1,4 +1,4 @@
-import { createEntity } from './EntityControllers.js';
+/*import { createEntity } from './EntityControllers.js';
 import { createUser } from './UserControllers.js';
 import { assignProfileToUser } from './UserProfileControllers.js';
 import { createEmployee } from './EmployeeControllers.js';
@@ -49,3 +49,4 @@ export const createPersonalAllData = async (req, res) => {
         })
     }
 }
+*/

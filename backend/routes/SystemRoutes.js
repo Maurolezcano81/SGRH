@@ -1,4 +1,5 @@
 import { createSex, getSex, getSexs, updateSex, toggleStatusSex, deleteSex } from "../controllers/SexControllers.js";
+import { createNacionality, getNacionality, getNacionalities, updateNacionality, toggleStatusNacionality, deleteNacionality} from "../controllers/NacionalityControllers.js"
 
 import express from 'express';
 const router = express.Router();
@@ -11,6 +12,13 @@ router.patch('/sex/:id', updateSex);
 router.patch('/sex/status/:id', toggleStatusSex);
 router.delete('/sex/:id', deleteSex);
 
+// NACIONALITY ROUTES
+router.post('/nacionality', createNacionality);
+router.get('/nacionality/:id', getNacionality);
+router.get('/nacionality', getNacionalities);
+router.patch('/nacionality/:id', updateNacionality);
+router.patch('/nacionality/status/:id', toggleStatusNacionality);
+router.delete('/nacionality/:id', deleteNacionality);
 
 const SystemRoutes = {
     router

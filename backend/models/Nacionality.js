@@ -1,5 +1,5 @@
 import mysql from 'mysql2';
-import { database } from '../config/database';
+import { database } from '../config/database.js';
 
 class Nacionality {
   constructor() {
@@ -23,9 +23,9 @@ class Nacionality {
   async getNacionality(value) {
     try {
       const query =
-        'Select id_nacionality, name_nacionality,abbreviation_nacionality, status_nacionality from nacionality where id_nacionality = ? or name_nacionality = ? or abbreviation_nacionality = ?';
+        'Select id_nacionality, name_nacionality,abbreviation_nacionality, status_nacionality from nacionality where id_nacionality = ? or name_nacionality = ? or abbreviation_nacionality = ?;';
 
-      const [results] = await this.connection.promise().query(query, [value]);
+      const [results] = await this.connection.promise().query(query, [value, value, value]);
 
       return results[0];
     } catch (error) {
@@ -34,30 +34,26 @@ class Nacionality {
     }
   }
 
-  async createNacionality(nacionality_data) {
+  async createNacionality(name, abbreviation) {
     try {
-      const { name, abbreviation } = nacionality_data;
-
       const query =
         'INSERT INTO nacionality(name_nacionality, abbreviation_nacionality, status_nacionality, created_at, updated_at) VALUES(?,?,1,now(),now())';
 
       const [results] = await this.connection.promise().query(query, [name, abbreviation]);
 
-      return results[0];
+      return results;
     } catch (error) {
       console.error('Error en Modelo de Nacionalidad: ' + error);
       throw new Error('Ha ocurrido un error al crear la nacionalidad');
     }
   }
 
-  async updateNacionality(nacionality_data) {
+  async updateNacionality(id, name, abbreviation) {
     try {
-      const { name, abbreviation } = nacionality_data;
-
       const query =
-        'UPDATE nacionality SET name_nacionality = ?, SET abbreviation_nacionality = ?, SET updated_at = now()';
+        'UPDATE nacionality SET name_nacionality = ?, SET abbreviation_nacionality = ?, SET updated_at = now() where id_nacionality = ?';
 
-      const [results] = await this.connection.promise().query(query, [name, abbreviation]);
+      const [results] = await this.connection.promise().query(query, [name, abbreviation, id]);
 
       return results;
     } catch (error) {
@@ -66,30 +62,29 @@ class Nacionality {
     }
   }
 
-  async toggleStatusNacionality(value) {
+  async toggleStatusNacionality(id, value) {
     try {
-      const query = "UPDATE nacionality SET status_nacionality = ?, SET updated_at = now()";
-  
-      const [results] = await this.connection.promise().query(query, [value]);
+      const query = 'UPDATE nacionality SET status_nacionality = ?, SET updated_at = now() where id_nacionality = ?';
+
+      const [results] = await this.connection.promise().query(query, [value, id]);
       return results;
-    } catch(error) {
-      console.error(`Error en modelo de Nacionalidad:`+error);
+    } catch (error) {
+      console.error(`Error en modelo de Nacionalidad:` + error);
       throw new Error(`Error al Cambiar el estado de la nacionalidad`);
     }
   }
 
   async deleteNacionality(id) {
     try {
-      const query = "DELETE nacionality where id_nacionality = ?";
-  
+      const query = 'DELETE from nacionality where id_nacionality = ?';
+
       const [results] = await this.connection.promise().query(query, [id]);
       return results;
-    } catch(error) {
-      console.error(`Error en modelo de Nacionalidad: `+error);
+    } catch (error) {
+      console.error(`Error en modelo de Nacionalidad: ` + error);
       throw new Error(`Error al Eliminar la nacionalidad`);
     }
   }
-
 }
 
 export default Nacionality;
