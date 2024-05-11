@@ -1,3 +1,4 @@
+/*
 import express from 'express';
 import { createPersonalAllData } from '../controllers/InsertControllers.js';
 
@@ -14,3 +15,5 @@ const PersonalRoutes = {
 }
 
 export default PersonalRoutes;
+
+*/

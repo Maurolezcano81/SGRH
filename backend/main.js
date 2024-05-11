@@ -12,11 +12,12 @@ dotenv.config();
 
 // Rutas
 import UserCredentialsRoutes from './routes/UserCredentialsRoutes.js';
-import PersonalRoutes from './routes/PersonalRoutes.js';
 import SystemRoutes from './routes/SystemRoutes.js';
 
 app.use('/api', UserCredentialsRoutes.router);
-app.use('/api', PersonalRoutes.router);
+
+/* app.use('/api', PersonalRoutes.router); */
+
 app.use('/api', SystemRoutes.router)
 
 // Server
