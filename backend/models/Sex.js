@@ -8,7 +8,7 @@ class Sex {
 
     async createSex(name) {
         try {
-            const query = "INSERT INTO sex(name_sex, status_sex,created_at,updated_at) VALUES(?, 1, now(),now())";
+            const query = "INSERT INTO sex(id_sex,name_sex, status_sex,created_at,updated_at) VALUES(?, 1, now(),now())";
 
             const [results] = await this.connection.promise().query(query, [name]);
 
@@ -19,11 +19,11 @@ class Sex {
         }
     }
 
-    async getSex(name) {
+    async getSex(value) {
         try {
-            const query = "SELECT id_sex, name_sex from sex where name_sex = ?";
+            const query = "SELECT id_sex, name_sex from sex where id_sex = ? or name_sex = ?";
 
-            const [results] = await this.connection.promise().query(query, [name]);
+            const [results] = await this.connection.promise().query(query, [value, value]);
 
             return results[0];
         } catch (error) {

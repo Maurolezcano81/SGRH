@@ -47,14 +47,24 @@ export const createNacionality = async (req, res) => {
   const { name, abbreviation } = req.body;
   try {
     if (isInputEmpty(name) || isInputEmpty(abbreviation)) {
-      throw new Error('Debes completar todos los campos de nacionalidad.');
+      throw new Error('Debe completar todos los campos');
     }
 
-    const checkExist = await instanceNacionality.getNacionality(name);
-
-    if (checkExist) {
-      throw new Error('Esta nacionalidad ya existe');
+    if (isNotAToZ(name) || isNotAToZ(abbreviation)) {
+      throw new Error('No estan permitidos los caracteres especiales');
     }
+
+    const checkExistsName = await instanceNacionality.getCountry(name);
+    const checkExistsAbbrev = await instanceNacionality.getCountry(abbreviation);
+
+    if (checkExistsName && checkExistsName.length > 0) {
+      throw new Error('Ya existe un pais con este nombre, ingrese otro');
+    }
+
+    if (checkExistsAbbrev && checkExistsAbbrev.length > 0) {
+      throw new Error('Ya existe esta abreviacion relacionada a un pais, ingrese otra');
+    }
+
 
     const queryResponse = await instanceNacionality.createNacionality(name, abbreviation);
 

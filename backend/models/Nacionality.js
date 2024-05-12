@@ -48,12 +48,13 @@ class Nacionality {
     }
   }
 
-  async updateNacionality(id, name, abbreviation) {
+  async updateNacionality(nacionality_data) {
+    const {id, name, status, abbreviation} = nacionality_data
     try {
       const query =
-        'UPDATE nacionality SET name_nacionality = ?, SET abbreviation_nacionality = ?, SET updated_at = now() where id_nacionality = ?';
+        'UPDATE nacionality SET name_nacionality = ?, SET abbreviation_nacionality = ?,SET status_nacionality = ?,SET updated_at = now() where id_nacionality = ?';
 
-      const [results] = await this.connection.promise().query(query, [name, abbreviation, id]);
+      const [results] = await this.connection.promise().query(query, [name, abbreviation, status, id]);
 
       return results;
     } catch (error) {
