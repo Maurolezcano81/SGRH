@@ -52,7 +52,7 @@ class Nacionality {
     const {id, name, status, abbreviation} = nacionality_data
     try {
       const query =
-        'UPDATE nacionality SET name_nacionality = ?, SET abbreviation_nacionality = ?,SET status_nacionality = ?,SET updated_at = now() where id_nacionality = ?';
+        'UPDATE nacionality SET name_nacionality = ?, abbreviation_nacionality = ? status_nacionality = ? updated_at = now() where id_nacionality = ?';
 
       const [results] = await this.connection.promise().query(query, [name, abbreviation, status, id]);
 
@@ -65,7 +65,7 @@ class Nacionality {
 
   async toggleStatusNacionality(id, value) {
     try {
-      const query = 'UPDATE nacionality SET status_nacionality = ?, SET updated_at = now() where id_nacionality = ?';
+      const query = 'UPDATE nacionality SET status_nacionality = ?, updated_at = now() where id_nacionality = ?';
 
       const [results] = await this.connection.promise().query(query, [value, id]);
       return results;

@@ -1,7 +1,28 @@
-import { createSex, getSex, getSexs, updateSex, toggleStatusSex, deleteSex } from "../controllers/SexControllers.js";
-import { createNacionality, getNacionality, getNacionalities, updateNacionality, toggleStatusNacionality, deleteNacionality } from "../controllers/NacionalityControllers.js"
-import { createCountry, getCountry, getCountries, updateCountry, toggleStatusCountry, deleteCountry } from '../controllers/CountryControllers.js';
-
+import { createSex, getSex, getSexs, updateSex, toggleStatusSex, deleteSex } from '../controllers/SexControllers.js';
+import {
+  createNacionality,
+  getNacionality,
+  getNacionalities,
+  updateNacionality,
+  toggleStatusNacionality,
+  deleteNacionality,
+} from '../controllers/NacionalityControllers.js';
+import {
+  createCountry,
+  getCountry,
+  getCountries,
+  updateCountry,
+  toggleStatusCountry,
+  deleteCountry,
+} from '../controllers/CountryControllers.js';
+import {
+  createStatusRequest,
+  getStatusRequest,
+  getStatusesRequest,
+  updateStatusRequest,
+  toggleStatusRequest,
+  deleteStatusRequest,
+} from '../controllers/StatusRequestControllers.js';
 import express from 'express';
 const router = express.Router();
 
@@ -29,8 +50,16 @@ router.patch('/country/:id', updateCountry);
 router.patch('/country/status/:id', toggleStatusCountry);
 router.delete('/country/:id', deleteCountry);
 
+// STATUS REQUEST
+router.post('/status_request', createStatusRequest);
+router.get('/status_request/:id', getStatusRequest);
+router.get('/status_request', getStatusesRequest);
+router.patch('/status_request/:id', updateStatusRequest);
+router.patch('/status_request/status/:id', toggleStatusRequest);
+router.delete('/status/:id', deleteStatusRequest);
+
 const SystemRoutes = {
-    router
-}
+  router,
+};
 
 export default SystemRoutes;
