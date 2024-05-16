@@ -23,6 +23,16 @@ import {
   toggleStatusRequest,
   deleteStatusRequest,
 } from '../controllers/StatusRequestControllers.js';
+
+import {
+  createContact,
+  getContact,
+  getContacts,
+  updateContact,
+  toggleStatusContact,
+  deleteContact,
+} from '../controllers/ContactControllers.js';
+
 import express from 'express';
 const router = express.Router();
 
@@ -57,6 +67,15 @@ router.get('/status_request', getStatusesRequest);
 router.patch('/status_request/:id', updateStatusRequest);
 router.patch('/status_request/status/:id', toggleStatusRequest);
 router.delete('/status/:id', deleteStatusRequest);
+
+// CONTACT 
+router.post('/contact', createContact);
+router.get('/contacts', getContacts);
+router.get('/contact', getContact);
+router.patch('/contact', updateContact);
+router.patch('/contact/status', toggleStatusContact);
+router.delete('/contact', deleteContact);
+
 
 const SystemRoutes = {
   router,
