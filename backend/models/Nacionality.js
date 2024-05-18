@@ -27,7 +27,7 @@ class Nacionality {
 
       const [results] = await this.connection.promise().query(query, [value, value, value]);
 
-      return results[0];
+      return results;
     } catch (error) {
       console.error('Error en Modelo de Nacionalidad: ' + error);
       throw new Error('Ha ocurrido un error al obtener la nacionalidad');
@@ -49,12 +49,14 @@ class Nacionality {
   }
 
   async updateNacionality(nacionality_data) {
-    const {id, name, status, abbreviation} = nacionality_data
+    const { id_nacionality, name_nacionality, abbreviation_nacionality, status_nacionality } = nacionality_data;
     try {
       const query =
-        'UPDATE nacionality SET name_nacionality = ?, abbreviation_nacionality = ? status_nacionality = ? updated_at = now() where id_nacionality = ?';
+        'UPDATE nacionality SET name_nacionality = ?, abbreviation_nacionality = ?, status_nacionality = ?, updated_at = now() where id_nacionality = ?';
 
-      const [results] = await this.connection.promise().query(query, [name, abbreviation, status, id]);
+      const [results] = await this.connection
+        .promise()
+        .query(query, [name_nacionality, abbreviation_nacionality, status_nacionality, id_nacionality]);
 
       return results;
     } catch (error) {

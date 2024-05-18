@@ -24,7 +24,7 @@ class Country {
         'SELECT id_country,name_country, abbreviation_country, status_country from country where id_country = ? or name_country = ? or abbreviation_country = ? ';
 
       const [results] = await this.connection.promise().query(query, [value, value, value]);
-      return results[0];
+      return results;
     } catch (error) {
       console.error(`Error en modelo de Pais: ` + error);
       throw new Error(`Error al obtener el país`);
@@ -36,11 +36,11 @@ class Country {
       const query =
         'INSERT INTO country(name_country, abbreviation_country, status_country, created_at, updated_at) VALUES(?, ?, 1, now(), now())';
 
-        const [results] = await this.connection.promise().query(query, [name,abbreviation]);
+      const [results] = await this.connection.promise().query(query, [name, abbreviation]);
 
-      console.log(results)
+      console.log(results);
 
-      return results.insertId;
+      return results;
     } catch (error) {
       console.error(`Error en modelo de Pais: ` + error);
       throw new Error(`Error al crear el país`);
@@ -49,11 +49,13 @@ class Country {
 
   async updateCountry(country_data) {
     try {
-      const { id, name, abbreviation, status } = country_data;
+      const { id_country, name_country, abbreviation_country, status_country } = country_data;
       const query =
         'UPDATE country SET name_country = ?, abbreviation_country = ?, status_country = ?, updated_at = now() where id_country = ?';
 
-      const [results] = await this.connection.promise().query(query, [name, abbreviation, status, id]);
+      const [results] = await this.connection
+        .promise()
+        .query(query, [name_country, abbreviation_country, status_country, id_country]);
       return results;
     } catch (error) {
       console.error(`Error en modelo de Pais: ` + error);

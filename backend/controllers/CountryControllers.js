@@ -8,19 +8,17 @@ export const getCountries = async (req, res) => {
     const queryResponse = await instanceCountry.getCountries();
 
     if (queryResponse.length < 1) {
-      throw new Error('No hay paises registrados');
+      return res.status(200).json({
+        message: 'No hay paises disponibles',
+      });
     }
-
-    if (!queryResponse) {
-        throw new Error('Ocurrio un error al obtener el listado de paises');
-      }
 
     return res.status(200).json({
       message: 'Listado de paises',
       queryResponse,
     });
   } catch (error) {
-    console.error('Ha ocurrido un error en controlador de ' + error);
+    console.error('Ha ocurrido un error en controlador de Country' + error);
     res.status(403).json({
       message: error.message,
     });
@@ -28,23 +26,24 @@ export const getCountries = async (req, res) => {
 };
 
 export const getCountry = async (req, res) => {
-  const { id } = req.params;
+  const { value_country } = req.body;
   try {
-    if (isInputEmpty(id)) {
-      throw new Error('Los datos que esta usando para la busqueda son invalidos');
+    if (isInputEmpty(value_country)) {
+      throw new Error('Los datos que estas utilizando para la busqueda de pais son invalidos');
     }
 
-    const queryResponse = await instanceCountry.getCountry(id);
+    const queryResponse = await instanceCountry.getCountry(value_country);
 
     if (queryResponse.length < 1) {
-      throw new Error('El pais que esta buscando no existe');
+      throw new Error('El pais no existe');
     }
+
     return res.status(200).json({
       message: 'Pais obtenido correctamente',
       queryResponse,
     });
   } catch (error) {
-    console.error('Ha ocurrido un error en controlador de Pais' + error);
+    console.error('Ha ocurrido un error en controlador de Country' + error);
     res.status(403).json({
       message: error.message,
     });
@@ -52,18 +51,18 @@ export const getCountry = async (req, res) => {
 };
 
 export const createCountry = async (req, res) => {
-  const { name, abbreviation } = req.body;
+  const { name_country, abbreviation_country } = req.body;
   try {
-    if (isInputEmpty(name) || isInputEmpty(abbreviation)) {
+    if (isInputEmpty(name_country) || isInputEmpty(abbreviation_country)) {
       throw new Error('Debe completar todos los campos');
     }
 
-    if (isNotAToZ(name) || isNotAToZ(abbreviation)) {
+    if (isNotAToZ(name_country) || isNotAToZ(abbreviation_country)) {
       throw new Error('No estan permitidos los caracteres especiales');
     }
 
-    const checkExistsName = await instanceCountry.getCountry(name);
-    const checkExistsAbbrev = await instanceCountry.getCountry(abbreviation);
+    const checkExistsName = await instanceCountry.getCountry(name_country);
+    const checkExistsAbbrev = await instanceCountry.getCountry(abbreviation_country);
 
     if (checkExistsName && checkExistsName.length > 0) {
       throw new Error('Ya existe un pais con este nombre, ingrese otro');
@@ -73,10 +72,12 @@ export const createCountry = async (req, res) => {
       throw new Error('Ya existe esta abreviacion relacionada a un pais, ingrese otra');
     }
 
-    const queryResponse = await instanceCountry.createCountry(name, abbreviation);
+    const queryResponse = await instanceCountry.createCountry(name_country, abbreviation_country);
+
     if (!queryResponse) {
       throw new Error('Error al crear el país');
     }
+
     return res.status(200).json({
       message: 'Pais creado correctamente',
       queryResponse,
@@ -91,35 +92,30 @@ export const createCountry = async (req, res) => {
 
 export const updateCountry = async (req, res) => {
   const { country_data } = req.body;
-  const { id } = req.params;
 
-  const country_data_completed = {
-    id: id,
-    ...country_data,
-  };
   try {
-    if (isInputEmpty(id)) {
+    if (isInputEmpty(country_data.id_country)) {
       throw new Error('Los datos que esta usando para la busqueda son invalidos');
     }
 
     if (
-      isInputEmpty(country_data_completed.name) ||
-      isInputEmpty(country_data_completed.abbreviation) ||
-      isInputEmpty(country_data_completed.status)
+      isInputEmpty(country_data.name_country) ||
+      isInputEmpty(country_data.abbreviation_country) ||
+      isInputEmpty(country_data.status_country)
     ) {
       throw new Error('Debe completar todos los campos');
     }
 
-    const checkExists = await instanceCountry.getCountry(id);
+    const checkExists = await instanceCountry.getCountry(country_data.id_country);
 
-    if (!checkExists) {
+    if (checkExists.length < 1) {
       throw new Error('No se puede actualizar el pais, debido a que no existe');
     }
 
-    const queryResponse = await instanceCountry.updateCountry(country_data_completed);
 
-    if (!queryResponse) {
-      throw new Error('Ocurrio un error al actualizar el país');
+    const queryResponse = await instanceCountry.updateCountry(country_data);
+    if (queryResponse.affectedRows < 1) {
+      throw new Error('Error al actualizar el pais');
     }
     return res.status(200).json({
       message: 'Pais actualizado correctamente',
@@ -134,20 +130,24 @@ export const updateCountry = async (req, res) => {
 };
 
 export const toggleStatusCountry = async (req, res) => {
-  const { status } = req.body;
-  const { id } = req.params;
+  const { status_country, id_country } = req.body;
   try {
-    const checkExists = await instanceCountry.getCountry(id);
+    if (isNotNumber(status_country)) {
+      throw new Error('Ha ocurrido un error al actualizar el estado del pais, intente reiniciando sitio');
+    }
 
-    if (!checkExists) {
+    const checkExists = await instanceCountry.getCountry(id_country);
+
+    if (checkExists.length < 1) {
       throw new Error('No se puede actualizar el pais, debido a que no existe');
     }
 
-    const queryResponse = await instanceCountry.toggleStatusCountry(id, status);
+    const queryResponse = await instanceCountry.toggleStatusCountry(id_country, status_country);
 
-    if (!queryResponse) {
-      throw new Error('Error al cambiar de estado el pais');
+    if (queryResponse.affectedRows < 1) {
+      throw new Error('Error al actualizar el estado del pais');
     }
+
     return res.status(200).json({
       message: 'Pais actualizado correctamente',
       queryResponse,
@@ -161,19 +161,20 @@ export const toggleStatusCountry = async (req, res) => {
 };
 
 export const deleteCountry = async (req, res) => {
-  const { id } = req.params;
+  const { id_country } = req.body;
 
   try {
-    const checkExists = await instanceCountry.getCountry(id);
 
-    if (!checkExists) {
-      throw new Error('No se puede eliminar el pais, debido a que no existe');
+    if (isNotNumber(id_country)) {
+      throw new Error('Ha ocurrido un error al eliminar el pais, intente reiniciando el sitio');
     }
-    const queryResponse = await instanceCountry.deleteCountry(id);
+    
+    const queryResponse = await instanceCountry.deleteCountry(id_country);
 
-    if (!queryResponse) {
-      throw new Error('No se pudo eliminar el pais');
+    if (queryResponse.affectedRows < 1) {
+      throw new Error('Error al eliminar el pais');
     }
+    
     return res.status(200).json({
       message: 'Pais eliminado correctamente',
       queryResponse,

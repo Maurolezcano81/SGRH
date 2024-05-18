@@ -25,7 +25,7 @@ class Sex {
 
             const [results] = await this.connection.promise().query(query, [value, value]);
 
-            return results[0];
+            return results;
         } catch (error) {
             console.error("Error en Sexo: " + error);
             throw new Error("Error al consultar sexo");

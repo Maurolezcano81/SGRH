@@ -38,27 +38,27 @@ const router = express.Router();
 
 // SEX ROUTES
 router.post('/sex', createSex);
-router.get('/sex/:id', getSex);
-router.get('/sex', getSexs);
-router.patch('/sex/:id', updateSex);
-router.patch('/sex/status/:id', toggleStatusSex);
-router.delete('/sex/:id', deleteSex);
+router.get('/sex', getSex);
+router.get('/sexs', getSexs);
+router.patch('/sex', updateSex);
+router.patch('/sex/status', toggleStatusSex);
+router.delete('/sex', deleteSex);
 
 // NACIONALITY ROUTES
 router.post('/nacionality', createNacionality);
-router.get('/nacionality/:id', getNacionality);
-router.get('/nacionality', getNacionalities);
-router.patch('/nacionality/:id', updateNacionality);
-router.patch('/nacionality/status/:id', toggleStatusNacionality);
-router.delete('/nacionality/:id', deleteNacionality);
+router.get('/nacionality', getNacionality);
+router.get('/nacionalities', getNacionalities);
+router.patch('/nacionality', updateNacionality);
+router.patch('/nacionality/status', toggleStatusNacionality);
+router.delete('/nacionality', deleteNacionality);
 
 // COUNTRY
 router.post('/country', createCountry);
-router.get('/country/:id', getCountry);
-router.get('/country', getCountries);
-router.patch('/country/:id', updateCountry);
-router.patch('/country/status/:id', toggleStatusCountry);
-router.delete('/country/:id', deleteCountry);
+router.get('/country', getCountry);
+router.get('/countries', getCountries);
+router.patch('/country', updateCountry);
+router.patch('/country/status', toggleStatusCountry);
+router.delete('/country', deleteCountry);
 
 // STATUS REQUEST
 router.post('/status_request', createStatusRequest);
