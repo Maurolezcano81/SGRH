@@ -1,5 +1,5 @@
-import Country from '../models/Country.js';
-import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber, isNotAToZ, isNotDate } from '../middlewares/Validations.js';
+import Country from '../../models/Country.js';
+import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber, isNotAToZ, isNotDate } from '../../middlewares/Validations.js';
 
 const instanceCountry = new Country();
 

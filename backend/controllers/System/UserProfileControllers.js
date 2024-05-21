@@ -1,5 +1,5 @@
-import UserProfile from "../models/UserProfile.js";
-import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber } from '../middlewares/Validations.js';
+import UserProfile from "../../models/UserProfile.js";
+import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber } from '../../middlewares/Validations.js';
 
 const userProfileInstance = new UserProfile();
 

@@ -1,5 +1,5 @@
-import Nacionality from '../models/Nacionality.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../middlewares/Validations.js';
+import Nacionality from '../../models/Nacionality.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
 
 const instanceNacionality = new Nacionality();
 
@@ -112,6 +112,10 @@ export const updateNacionality = async (req, res) => {
     }
 
     const queryResponse = await instanceNacionality.updateNacionality(nacionality_data);
+
+    if(queryResponse.affectedRows < 1){
+      throw new Error("Error al actualizar la nacionalidad")
+  }
 
     return res.status(200).json({
       message: 'Nacionalidad actualizada correctamente',

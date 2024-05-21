@@ -1,4 +1,11 @@
-import { createSex, getSex, getSexs, updateSex, toggleStatusSex, deleteSex } from '../controllers/SexControllers.js';
+import {
+  createSex,
+  getSex,
+  getSexs,
+  updateSex,
+  toggleStatusSex,
+  deleteSex,
+} from '../controllers/System/SexControllers.js';
 import {
   createNacionality,
   getNacionality,
@@ -6,7 +13,7 @@ import {
   updateNacionality,
   toggleStatusNacionality,
   deleteNacionality,
-} from '../controllers/NacionalityControllers.js';
+} from '../controllers/System/NacionalityControllers.js';
 import {
   createCountry,
   getCountry,
@@ -14,7 +21,7 @@ import {
   updateCountry,
   toggleStatusCountry,
   deleteCountry,
-} from '../controllers/CountryControllers.js';
+} from '../controllers/System/CountryControllers.js';
 import {
   createStatusRequest,
   getStatusRequest,
@@ -22,7 +29,7 @@ import {
   updateStatusRequest,
   toggleStatusRequest,
   deleteStatusRequest,
-} from '../controllers/StatusRequestControllers.js';
+} from '../controllers/System/StatusRequestControllers.js';
 
 import {
   createContact,
@@ -31,7 +38,34 @@ import {
   updateContact,
   toggleStatusContact,
   deleteContact,
-} from '../controllers/ContactControllers.js';
+} from '../controllers/System/ContactControllers.js';
+
+import {
+  createOccupation,
+  getOccupation,
+  getOccupations,
+  updateOccupation,
+  toggleStatusOccupation,
+  deleteOccupation,
+} from '../controllers/System/OccupationController.js';
+
+import {
+  createTot,
+  getTot,
+  getTots,
+  updateTot,
+  toggleStatusTot,
+  deleteTot,
+} from '../controllers/System/Type_of_terminationControllers.js';
+
+import {
+  createModule,
+  getModule,
+  getModules,
+  updateModule,
+  toggleStatusModule,
+  deleteModule,
+} from '../controllers/System/ModuleControllers.js';
 
 import express from 'express';
 const router = express.Router();
@@ -62,13 +96,13 @@ router.delete('/country', deleteCountry);
 
 // STATUS REQUEST
 router.post('/status_request', createStatusRequest);
-router.get('/status_request/:id', getStatusRequest);
-router.get('/status_request', getStatusesRequest);
-router.patch('/status_request/:id', updateStatusRequest);
-router.patch('/status_request/status/:id', toggleStatusRequest);
-router.delete('/status/:id', deleteStatusRequest);
+router.get('/status_request', getStatusRequest);
+router.get('/statuses_request', getStatusesRequest);
+router.patch('/status_request', updateStatusRequest);
+router.patch('/status_request/status', toggleStatusRequest);
+router.delete('/status', deleteStatusRequest);
 
-// CONTACT 
+// CONTACT
 router.post('/contact', createContact);
 router.get('/contacts', getContacts);
 router.get('/contact', getContact);
@@ -76,6 +110,29 @@ router.patch('/contact', updateContact);
 router.patch('/contact/status', toggleStatusContact);
 router.delete('/contact', deleteContact);
 
+//OCCUPATION
+router.post('/occupation', createOccupation);
+router.get('/occupations', getOccupations);
+router.get('/occupation', getOccupation);
+router.patch('/occupation', updateOccupation);
+router.patch('/occupation/status', toggleStatusOccupation);
+router.delete('/occupation', deleteOccupation);
+
+// TYPE_OF_TERMINATION
+router.post('/type_of_termination', createTot);
+router.get('/types_of_termination', getTots);
+router.get('/type_of_termination', getTot);
+router.patch('/type_of_termination', updateTot);
+router.patch('/type_of_termination/status', toggleStatusTot);
+router.delete('/type_of_termination', deleteTot);
+
+// MODULES
+router.post('/module', createModule);
+router.get('/modules', getModules);
+router.get('/module', getModule);
+router.patch('/module', updateModule);
+router.patch('/module/status', toggleStatusModule);
+router.delete('/module', deleteModule);
 
 const SystemRoutes = {
   router,

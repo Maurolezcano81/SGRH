@@ -1,5 +1,5 @@
-import StatusRequest from '../models/Status_Request.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../middlewares/Validations.js';
+import StatusRequest from '../../models/Status_Request.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
 
 const instanceStatusRequest = new StatusRequest();
 
@@ -7,9 +7,9 @@ export const getStatusesRequest = async (req, res) => {
   try {
     const queryResponse = await instanceStatusRequest.getStatusesRequest();
 
-    if (queryResponse.length === 0) {
+    if (queryResponse.length < 1) {
       return res.status(200).json({
-        message: 'No existen tipos de estados',
+        message: 'No hay tipos de estados disponibles',
       });
     }
 
@@ -18,7 +18,7 @@ export const getStatusesRequest = async (req, res) => {
       queryResponse,
     });
   } catch (error) {
-    console.error('Error en el controlador: ' + error.message);
+    console.error('Error en el controlador: Status Request' + error.message);
     res.status(403).json({
       message: error.message,
     });
@@ -26,11 +26,11 @@ export const getStatusesRequest = async (req, res) => {
 };
 
 export const getStatusRequest = async (req, res) => {
-  const { id } = req.params;
+  const { value_sr } = req.body;
   try {
-    const queryResponse = await instanceStatusRequest.getStatusRequest(id);
+    const queryResponse = await instanceStatusRequest.getStatusRequest(value_sr);
     if (queryResponse.length < 1) {
-      throw new Error('Error al obtener el estado');
+      throw new Error('Este tipo de estado no existe');
     }
     return res.status(200).json({
       message: 'Tipo de estado obtenido correctamente',
@@ -57,8 +57,8 @@ export const createStatusRequest = async (req, res) => {
 
     const checkExists = await instanceStatusRequest.getStatusRequest(name_sr);
 
-    if(checkExists.length >= 1){
-      throw new Error("Tipo de estado de respuesta ya existente")
+    if (checkExists.length > 0) {
+      throw new Error('Tipo de estado de respuesta ya existente');
     }
 
     const queryResponse = await instanceStatusRequest.createStatusRequest(name_sr);
@@ -78,15 +78,8 @@ export const createStatusRequest = async (req, res) => {
 };
 
 export const updateStatusRequest = async (req, res) => {
-  const { name_sr, status_sr } = req.body;
-  const { id_sr } = req.params;
+  const { id_sr, name_sr, status_sr } = req.body;
   try {
-    const checkExists = instanceStatusRequest.getStatusRequest(id_sr);
-
-    if (!checkExists) {
-      throw new Error('Este tipo de estado no existe');
-    }
-
     if (isInputEmpty(name_sr || status_sr)) {
       throw new Error('Debes completar todos los campos');
     }
@@ -99,10 +92,18 @@ export const updateStatusRequest = async (req, res) => {
       throw new Error('El nombre de tipo de estado no debe contener caracteres especiales');
     }
 
-    const queryResponse = await instanceStatusRequest.updateStatusRequest(name_sr, status_sr, id_sr);
-    if (!queryResponse) {
-      throw new Error('Error al actualizar datos de tipo de estado');
+    const checkExists = await instanceStatusRequest.getStatusRequest(id_sr);
+
+    if (checkExists.length < 1) {
+      throw new Error('Este tipo de estado no existe');
     }
+
+    const queryResponse = await instanceStatusRequest.updateStatusRequest(name_sr, status_sr, id_sr);
+
+    if (queryResponse.affectedRows < 1) {
+      throw new Error('Error al actualizar el tipo de estado de solicitud');
+    }
+
     return res.status(200).json({
       message: 'El tipo de estado ha sido actualizado correctamente',
       queryResponse,
@@ -116,16 +117,24 @@ export const updateStatusRequest = async (req, res) => {
 };
 
 export const toggleStatusRequest = async (req, res) => {
-  const { value_sr } = req.body;
-  const { id_sr } = req.params;
+  const { id_sr, value_sr } = req.body;
   try {
-    if (isNotNumber(value_sr) || isNotNumber(id_sr)) {
+    if (isNotNumber(value_sr)) {
       throw new Error('Ha ocurrido un error al actualizar el estado, intente reiniciando sitio');
     }
+
+    const checkExist = await instanceStatusRequest.getStatusRequest(id_sr);
+
+    if (checkExist.length < 1) {
+      throw new Error('No se puede actualizar el tipo de estado, debido a que no existe');
+    }
+
     const queryResponse = await instanceStatusRequest.toggleStatusRequest(value_sr, id_sr);
-    if (!queryResponse) {
+
+    if (queryResponse.affectedRows < 1) {
       throw new Error('Error al actualizar el estado del tipo de estado de solicitud');
     }
+
     return res.status(200).json({
       message: 'El estado ha sido actualizado correctamente',
       queryResponse,
@@ -139,7 +148,7 @@ export const toggleStatusRequest = async (req, res) => {
 };
 
 export const deleteStatusRequest = async (req, res) => {
-  const { id_sr } = req.params;
+  const { id_sr } = req.body;
   try {
     if (isNotNumber(id_sr)) {
       throw new Error('Ha ocurrido un error al eliminar el estado, intente reiniciando el sitio');
@@ -147,7 +156,7 @@ export const deleteStatusRequest = async (req, res) => {
 
     const queryResponse = await instanceStatusRequest.deleteStatusRequest(id_sr);
 
-    if (!queryResponse) {
+    if (queryResponse.affectedRows < 1) {
       throw new Error('Error al eliminar el tipo de estado de solicitud');
     }
     return res.status(200).json({
@@ -161,4 +170,3 @@ export const deleteStatusRequest = async (req, res) => {
     });
   }
 };
-

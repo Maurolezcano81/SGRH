@@ -1,5 +1,5 @@
-import Contact from '../models/Contact.js';
-import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber, isNotAToZ, isNotDate } from '../middlewares/Validations.js';
+import Contact from '../../models/Contact.js';
+import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber, isNotAToZ, isNotDate } from '../../middlewares/Validations.js';
 
 const instanceContact = new Contact();
 export const getContacts = async (req, res) => {
