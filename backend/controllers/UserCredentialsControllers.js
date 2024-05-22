@@ -43,6 +43,7 @@ const getUser = async (req,res) =>{
         }
         delete userData.id_user;
 
+
         return res.status(200).json({
             message:"Autenticación exitosa",
             userData

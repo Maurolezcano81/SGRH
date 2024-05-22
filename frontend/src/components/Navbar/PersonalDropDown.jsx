@@ -24,8 +24,8 @@ const PersonalDropDown = (props) => {
                 <p className={props.isDropdown ? 'navbar__dropdown-active' : ''}>Personal</p>
             </div>
             {props.isDropdown ? <div className="navbar__content-dropdown">
-                <Link to="#">Ver Personal</Link>
-                <Link to="#">Alta Personal</Link>
+                <Link to="/admin/personal">Ver Personal</Link>
+                <Link to="/admin/ajustes">Alta Personal</Link>
             </div> : null}
         </div>
 

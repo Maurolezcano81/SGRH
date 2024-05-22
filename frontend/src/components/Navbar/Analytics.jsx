@@ -23,7 +23,7 @@ const Analytics = (props) => {
           <img src={analytics} alt="" />
         </div>
         <Link
-          to="#"
+          to="/admin/contacto"
           className={props.isDropdown ? "navbar__dropdown-active" : ""}
         >
           Estadisticas

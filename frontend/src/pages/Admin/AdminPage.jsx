@@ -1,10 +1,10 @@
-import Navbar from "../components/Navbar/Navbar"
+import Navbar from "../../components/Navbar/Navbar"
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import ErrorMessage from "../components/ErrorMessage"
-import useAuth from "../hooks/useAuth"
+import { Outlet, useNavigate } from 'react-router-dom'
+import ErrorMessage from "../../components/ErrorMessage"
+import useAuth from "../../hooks/useAuth"
 
-const AdminDashboard = () => {
+const AdminLayout = () => {
     const Navigate = useNavigate();
     const { authData } = useAuth();
     const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -23,8 +23,11 @@ const AdminDashboard = () => {
         <>
             <Navbar/>
             {showErrorMessage && <ErrorMessage errorMessage="Primero debes iniciar sesión" />}
+            <main>
+                <Outlet/>
+            </main>
         </>
     )
 }
 
-export default AdminDashboard
+export default AdminLayout
