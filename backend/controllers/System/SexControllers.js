@@ -31,6 +31,7 @@ export const getSex = async (req, res) => {
     if (isInputEmpty(value_sex)) {
       throw new Error('Los datos que estas utilizando para la busqueda de tipo de sexo son invalidos');
     }
+    
     const queryResponse = await instanceSex.getSex(value_sex);
 
     if (queryResponse.length < 1) {
@@ -61,7 +62,7 @@ export const createSex = async (req, res) => {
 
     const checkExists = await instanceSex.getSex(name_sex);
 
-    if (checkExists) {
+    if (checkExists && checkExists.length > 0) {
       throw new Error('Tipo de sexo ya existente');
     }
 

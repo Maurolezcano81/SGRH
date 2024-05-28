@@ -8,11 +8,11 @@ class Sex {
 
     async createSex(name) {
         try {
-            const query = "INSERT INTO sex(id_sex,name_sex, status_sex,created_at,updated_at) VALUES(?, 1, now(),now())";
+            const query = "INSERT INTO sex(name_sex, status_sex,created_at,updated_at) VALUES(?, 1, now(),now())";
 
             const [results] = await this.connection.promise().query(query, [name]);
 
-            return results[0];
+            return results;
         } catch (error) {
             console.error("Error en Sexo: " + error);
             throw new Error("Error al crear el sexo, intentelo nuevamente");
