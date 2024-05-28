@@ -8,9 +8,9 @@ const ModalAdd = ({
   placeholders,
   fetchData,
   method,
-  urlCreate,
-  onSubmitCreate,
+  createOne,
   handleModalAdd,
+  handleDependencyAdd
 }) => {
   // Estado para almacenar los valores de los inputs de manera dinámica
   const [inputValues, setInputValues] = useState({});
@@ -35,7 +35,7 @@ const ModalAdd = ({
     }, {});
 
     try {
-      const response = await fetch(urlCreate, {
+      const response = await fetch(createOne, {
         method: method,
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ const ModalAdd = ({
       if (response.status === 403) {
         setErrorMessage(dataFormatted.message);
       } else {
-        onSubmitCreate(newData);
+        handleDependencyAdd();
         handleModalAdd();
       }
     } catch (error) {
@@ -82,7 +82,6 @@ const ModalAdd = ({
 
         <div className="preferences__modal__actions">
           <ButtonRed title="Cancelar" onClick={handleModalAdd} />
-
           <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} />
         </div>
       </div>

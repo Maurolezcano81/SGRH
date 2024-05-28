@@ -4,13 +4,14 @@ import PreferencesTableHeader from '../../../components/Table/TablePreferences/P
 import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
 import ModalAdd from '../ModalAdd';
+import ModalUpdate from '../ModalUpdate';
 
 const Occupation = () => {
   const [occupations, setOccupations] = useState([]);
   const [occupationsFormatted, setOccupationsFormatted] = useState([]);
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
   const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-
+  const [selectedOccupationId, setSelectedOccupationId] = useState(null);
 
   const [isNewField, setIsNewField] = useState(false);
   const [isStatusChanged, setIsStatusChanged] = useState(false);
@@ -18,17 +19,16 @@ const Occupation = () => {
 
   const { authData } = useAuth();
 
-  const getOccupationsUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupations`;
-
-  const getOccupationUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
-
-  const postCreateOccupationUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation/status` 
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupations`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/create/occupation`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation/status`;
 
   useEffect(() => {
     const fetchOccupations = async () => {
       try {
-        const fetchResponse = await fetch(getOccupationsUrl, {
+        const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -40,7 +40,6 @@ const Occupation = () => {
         }
 
         const data = await fetchResponse.json();
-
         setOccupations(data.queryResponse);
         formatOccupations(data.queryResponse); // Formatea las ocupaciones después de obtener los datos
       } catch (error) {
@@ -49,7 +48,7 @@ const Occupation = () => {
     };
 
     fetchOccupations();
-  }, [authData.token, isNewField, isStatusChanged]);
+  }, [authData.token, isNewField, isStatusChanged, isUpdatedField]);
 
   const formatOccupations = (occupations) => {
     const formatted = occupations.map((occupation) => ({
@@ -59,49 +58,6 @@ const Occupation = () => {
     setOccupationsFormatted(formatted);
   };
 
-  const onSubmitCreate = (newItem) => {
-    setOccupations([...occupations, newItem]);
-    formatOccupations([...occupations, newItem]);
-    handleDependencyAdd();
-  };
-
-  const handleEdit = (item) => {
-    console.log('Editar:', item);
-  };
-
-  const handleDelete = async (item) => {
-    try {
-      const fetchResponse =  await fetch(toggleStatus, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${authData.token}`
-        },
-        body: JSON.stringify({
-          id_occupation: item.id_occupation,
-          status_occupation: item.status_occupation === 1 ? 0 : 1
-        })
-      })     
-
-      handleDependencyStatus();
-    } catch (error) {
-      console.log("error al eliminar")
-    }
-    
-  };
-
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
-
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
-
-  const handleDependencyStatus = () =>{
-    setIsStatusChanged(!isStatusChanged)
-  }
-
   const currencyFormatter = (value) => {
     const formatter = new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -109,6 +65,33 @@ const Occupation = () => {
       minimumFractionDigits: 2,
     });
     return formatter.format(value);
+  };
+
+  const handleModalAdd = () => {
+    setToggleModalAdd(!toggleModalAdd);
+  };
+
+  const handleModalUpdate = (occupation) => {
+    setSelectedOccupationId(occupation.id_occupation);
+    setToggleModalUpdate(!toggleModalUpdate);
+  };
+
+  const onSubmitUpdate = () => {
+    setIsUpdatedField(!isUpdatedField); // Actualiza la dependencia
+    setToggleModalUpdate(!toggleModalUpdate);
+  };
+
+  const handleDelete = async (item) => {
+    console.log('borrar' + item);
+  };
+
+  const onStatusToggle = async (occupation) => {
+    selectedOccupationId(occupation.id_occupation);
+    setIsStatusChanged(!isStatusChanged);
+  };
+
+  const handleDependencyAdd = () => {
+    setIsNewField(!isNewField);
   };
 
   return (
@@ -121,9 +104,26 @@ const Occupation = () => {
           placeholders={['Ingrese nombre', 'Ingrese el salario']}
           method={'POST'}
           fetchData={['name_occupation', 'salary_occupation']}
-          urlCreate={postCreateOccupationUrl}
-          onSubmitCreate={onSubmitCreate}
+          createOne={createOne}
+          handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
+        />
+      )}
+
+      {toggleModalUpdate && (
+        <ModalUpdate
+          title_modal={'Editar Ocupacion'}
+          labels={['Nombre', 'Salario', 'Estado']}
+          placeholders={['Ingrese nombre', 'Ingrese el salario', 'Ingrese el estado']}
+          methodGetOne={'POST'}
+          methodUpdateOne={'PATCH'}
+          fetchData={['name_occupation', 'salary_occupation', 'status_occupation']}
+          getOneUrl={getSingleUrl}
+          idFetchData="value_occupation"
+          idToUpdate={selectedOccupationId}
+          updateOneUrl={updateOneUrl}
+          onSubmitUpdate={onSubmitUpdate}
+          handleModalUpdate={handleModalUpdate}
         />
       )}
 
@@ -136,9 +136,13 @@ const Occupation = () => {
         <tbody className="table__preference__body">
           <PreferencesBodyRow
             items={occupationsFormatted}
-            keys={['name_occupation', 'salary_occupation', 'status_occupation']}
-            handleEdit={handleEdit}
+            keys={['name_occupation', 'salary_occupation']}
+            status_name={['id_occupation', 'status_occupation']}
+            handleEdit={handleModalUpdate}
             handleDelete={handleDelete}
+            fetchUrl={toggleStatus}
+            onStatusToggle={onStatusToggle}
+            selectedOccupationId={selectedOccupationId}
           />
         </tbody>
       </table>

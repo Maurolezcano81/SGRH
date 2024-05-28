@@ -87,9 +87,10 @@ export const createOccupation = async (req, res) => {
 };
 
 export const updateOccupation = async (req, res) => {
-  const { occupation_data } = req.body;
+  const updatedData = req.body;
+  console.log(updatedData);
   try {
-    const { id_occupation, name_occupation, salary_occupation, status_occupation } = occupation_data;
+    const { id_occupation, name_occupation, salary_occupation, status_occupation } = updatedData;
 
     if (
       isInputEmpty(id_occupation) ||
@@ -118,7 +119,7 @@ export const updateOccupation = async (req, res) => {
       throw new Error('No se puede actualizar el puesto de trabajo debido a que no existe');
     }
 
-    const queryResponse = await instanceOccupation.updateOccupation(occupation_data);
+    const queryResponse = await instanceOccupation.updateOccupation(updatedData);
 
     if (queryResponse.affectedRows < 1) {
       throw new Error('Error al actualizar el puesto de trabajo');

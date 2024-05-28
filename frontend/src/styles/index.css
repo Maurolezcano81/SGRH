@@ -599,7 +599,9 @@ input {
   vertical-align: middle;
   padding: 1rem 0.5rem;
   font-size: var(--size-preferences-row);
-  width: 10%;
+  max-width: 10%;
+  word-wrap: break-all;
+  overflow: auto;
 }
 
 .preference__body-column {
@@ -714,6 +716,31 @@ input {
   width: 100%;
 }
 
+.toggle-container {
+  width: 60px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 15px;
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle-circle {
+  width: 30px;
+  height: 30px;
+  background-color: #666;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.active {
+  transform: translateX(30px);
+  background-color: blue;
+}
+
 /* START MODAL PREFERENCE LAYOUT */
 
 /* END MODAL PREFERENCE LAYOUT */
@@ -725,6 +752,11 @@ input {
 @media (width >=1024px) {
   .navbar__container {
     width: 15%;
+  }
+
+  .navbar__collapsed-button {
+    background: none;
+    width: 5%;
   }
 
   .navbar__container-open {
@@ -740,6 +772,35 @@ input {
 
   .error__container{
     width: 30%;
+  }
+
+  .preferences__modal__container {
+    width: 50%;
+  }
+
+  table{
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .preference__edit {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .preference__edit img {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .preference__delete {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .preference__delete img {
+    width: 3rem;
+    height: 3rem;
   }
 }
 
