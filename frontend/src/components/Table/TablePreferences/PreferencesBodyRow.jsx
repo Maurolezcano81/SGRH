@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Edit from '../../../assets/Icons/Preferences/Edit.png';
 import Trash from '../../../assets/Icons/Preferences/Trash.png';
 
@@ -16,10 +15,10 @@ const PreferencesBodyRow = ({ items, keys, handleEdit, handleDelete }) => {
           <td className="preference__body-column">
             <div className="buttons__table-preference">
               <button className="preference__edit" onClick={() => handleEdit(item)}>
-                <img src={Edit} />
+                <img src={Edit} alt="Edit" />
               </button>
               <button className="preference__delete" onClick={() => handleDelete(item)}>
-                <img src={Trash} />
+                <img src={Trash} alt="Delete" />
               </button>
             </div>
           </td>

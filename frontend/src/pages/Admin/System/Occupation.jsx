@@ -3,17 +3,27 @@ import useAuth from '../../../hooks/useAuth';
 import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
 import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAddTwoInputs from '../ModalAddTwoInputs';
+import ModalAdd from '../ModalAdd';
 
 const Occupation = () => {
   const [occupations, setOccupations] = useState([]);
   const [occupationsFormatted, setOccupationsFormatted] = useState([]);
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
+  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
+
+
+  const [isNewField, setIsNewField] = useState(false);
+  const [isStatusChanged, setIsStatusChanged] = useState(false);
+  const [isUpdatedField, setIsUpdatedField] = useState(false);
 
   const { authData } = useAuth();
 
   const getOccupationsUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupations`;
+
+  const getOccupationUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
+
   const postCreateOccupationUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation/status` 
 
   useEffect(() => {
     const fetchOccupations = async () => {
@@ -39,10 +49,10 @@ const Occupation = () => {
     };
 
     fetchOccupations();
-  }, [authData.token]);
+  }, [authData.token, isNewField, isStatusChanged]);
 
   const formatOccupations = (occupations) => {
-    const formatted = occupations.map(occupation => ({
+    const formatted = occupations.map((occupation) => ({
       ...occupation,
       salary_occupation: currencyFormatter(occupation.salary_occupation),
     }));
@@ -52,19 +62,45 @@ const Occupation = () => {
   const onSubmitCreate = (newItem) => {
     setOccupations([...occupations, newItem]);
     formatOccupations([...occupations, newItem]);
+    handleDependencyAdd();
   };
 
   const handleEdit = (item) => {
     console.log('Editar:', item);
   };
 
-  const handleDelete = (item) => {
-    console.log('Eliminar:', item);
+  const handleDelete = async (item) => {
+    try {
+      const fetchResponse =  await fetch(toggleStatus, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authData.token}`
+        },
+        body: JSON.stringify({
+          id_occupation: item.id_occupation,
+          status_occupation: item.status_occupation === 1 ? 0 : 1
+        })
+      })     
+
+      handleDependencyStatus();
+    } catch (error) {
+      console.log("error al eliminar")
+    }
+    
   };
 
   const handleModalAdd = () => {
     setToggleModalAdd(!toggleModalAdd);
   };
+
+  const handleDependencyAdd = () => {
+    setIsNewField(!isNewField);
+  };
+
+  const handleDependencyStatus = () =>{
+    setIsStatusChanged(!isStatusChanged)
+  }
 
   const currencyFormatter = (value) => {
     const formatter = new Intl.NumberFormat('es-AR', {
@@ -79,7 +115,8 @@ const Occupation = () => {
     <div className="preference__container">
       <PreferenceTitle title="Ocupación" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
-        <ModalAddTwoInputs
+        <ModalAdd
+          title_modal={'Nueva Ocupacion'}
           labels={['Nombre', 'Salario']}
           placeholders={['Ingrese nombre', 'Ingrese el salario']}
           method={'POST'}
@@ -92,7 +129,9 @@ const Occupation = () => {
 
       <table className="table__preference">
         <thead className="table__preference__head">
+          <tr>
             <PreferencesTableHeader keys={['Nombre', 'Salario', 'Estado', 'Acciones']} />
+          </tr>
         </thead>
         <tbody className="table__preference__body">
           <PreferencesBodyRow
