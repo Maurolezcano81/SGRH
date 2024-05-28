@@ -139,7 +139,7 @@ img {
 }
 
 .error__container {
-  width: 20%;
+  width: 80%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -655,6 +655,10 @@ img {
 
   .navbar__container-open div {
     width: 20%;
+  }
+
+  .error__container{
+    width: 30%;
   }
 }
 
