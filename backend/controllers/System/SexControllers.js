@@ -177,7 +177,7 @@ export const deleteSex = async (req, res) => {
   } catch (error) {
     console.error('Error en controlador de sexo: ' + error);
     return res.status(403).json({
-      message: Error,
+      message: error.message,
     });
   }
 };

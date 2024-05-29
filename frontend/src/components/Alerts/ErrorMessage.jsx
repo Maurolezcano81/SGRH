@@ -1,17 +1,15 @@
-import ErrorTriangle from "../assets/Icons/errorTriangle.png";
+import ErrorTriangle from "../../assets/Icons/errorTriangle.png";
 const ErrorMessage = (props) => {
 
     return (
-        <div className="error_bg">
-            <div className="error__container">
-                <div className="error-header">
+            <div className="alert__container">
+                <div className="alert__header">
                     <img src={ErrorTriangle} alt="" />
                 </div>
-                <div className="error-footer">
+                <div className="alert__footer">
                     <p>{props.errorMessage}</p>
                 </div>
             </div>
-        </div>
 
     )
 }

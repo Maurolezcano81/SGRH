@@ -11,6 +11,7 @@ import Personal from './pages/Admin/System/Occupation';
 
 import Sex from './pages/Admin/System/Sex';
 import Occupation from './pages/Admin/System/Occupation';
+import Country from './pages/Admin/System/Country';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="ocupacion" element={<Occupation />} />
               <Route path="sexo" element={<Sex />} />
               <Route path="contacto" element={<Contact />} />
+              <Route path="pais" element={<Country />} />
             </Route>
           </Route>
         </Routes>

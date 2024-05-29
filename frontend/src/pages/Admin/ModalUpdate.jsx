@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ButtonBlue from '../../components/ButtonBlue';
 import ButtonRed from '../../components/ButtonRed';
 import useAuth from '../../hooks/useAuth';
+import AlertSuccesfully from '../../components/Alerts/AlertSuccesfully';
 
 const ModalUpdate = ({
   title_modal,
@@ -44,7 +45,7 @@ const ModalUpdate = ({
 
         const data = await fetchResponse.json();
 
-        setInputValues(data.queryResponse[0]); // Establece los valores iniciales basados en los datos obtenidos del backend
+        setInputValues(data.queryResponse[0]);
       } catch (error) {
         console.error('Error al obtener las ocupaciones', error);
       }
@@ -66,7 +67,7 @@ const ModalUpdate = ({
       });
       const dataFormatted = await response.json();
 
-      console.log(dataFormatted)
+      console.log(dataFormatted);
 
       if (response.status === 403) {
         setErrorMessage(dataFormatted.message);

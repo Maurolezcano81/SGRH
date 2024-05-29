@@ -8,7 +8,7 @@ class Contact {
 
   async getContacts() {
     try {
-      const query = 'SELECT id_contact, name_contact FROM contact';
+      const query = 'SELECT id_contact, name_contact, status_contact FROM contact';
       const [results] = await this.connection.promise().query(query, []);
       return results;
     } catch (error) {
@@ -19,7 +19,7 @@ class Contact {
 
   async getContact(value) {
     try {
-      const query = 'SELECT id_contact, name_contact FROM contact where id_contact = ? or name_contact = ?';
+      const query = 'SELECT id_contact, name_contact, status_contact FROM contact where id_contact = ? or name_contact = ?';
 
       const [results] = await this.connection.promise().query(query, [value, value]);
       return results;

@@ -9,11 +9,16 @@ const PreferencesBodyRow = ({
   keys,
   fetchUrl,
   handleEdit,
-  handleDelete,
+  handleModalDelete,
   handleStatusToggle,
   status_name,
-  idToToggle,
+  handleDependencyToggle,
+  handleDelete
 }) => {
+  const handleDeleteClick = (item) => {
+    handleDelete(item);
+    handleModalDelete();
+  };
   return (
     <>
       {items.map((item, index) => (
@@ -30,7 +35,9 @@ const PreferencesBodyRow = ({
               status_value={item[status_name[1]] === 1}
               fetchUrl={fetchUrl}
               status_name={status_name}
-              idToToggle={idToToggle}
+              idToToggle={item[status_name[0]]}  // Asegúrate de pasar el ID correcto aquí
+              item={item}
+              handleDependencyToggle={handleDependencyToggle}
             />
           </td>
           <td className="preference__body-column">
@@ -38,7 +45,7 @@ const PreferencesBodyRow = ({
               <button className="preference__edit" onClick={() => handleEdit(item)}>
                 <img src={Edit} alt="Edit" />
               </button>
-              <button className="preference__delete" onClick={() => handleDelete(item)}>
+              <button className="preference__delete" onClick={() => handleDeleteClick(item)}>
                 <img src={Trash} alt="Delete" />
               </button>
             </div>

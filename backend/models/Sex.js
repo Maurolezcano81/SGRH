@@ -79,7 +79,7 @@ class Sex {
             return results;
         } catch(error){
             console.error("Error en sexo: "+ error)
-            throw new Error("Error al actualizar estado de sexo");
+            throw new Error("Error al eliminar el tipo de sexo, debido a que esta relacionado con datos importantes");
         }
     }
 }

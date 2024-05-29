@@ -80,7 +80,7 @@ class Occupation {
       return results;
     } catch (error) {
       console.error(`Error en modelo de : ` + error);
-      throw new Error(`Error al `);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 }

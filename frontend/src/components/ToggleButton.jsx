@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
+import AlertSuccesfully from './Alerts/AlertSuccesfully';
+import ErrorMessage from './Alerts/ErrorMessage';
 
-const ToggleButton = ({ fetchUrl, status_value, status_name, idToToggle }) => {
+const ToggleButton = ({ fetchUrl, status_value, handleDependencyToggle, status_name, idToToggle, item }) => {
   const { authData } = useAuth();
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = async (item) => {
-    console.log(idToToggle);
-
+  const handleSubmit = async () => {
     const updatedStatus = item[status_name[1]] === 1 ? 0 : 1;
     const body = {
       [status_name[0]]: idToToggle,
@@ -23,17 +26,32 @@ const ToggleButton = ({ fetchUrl, status_value, status_name, idToToggle }) => {
       });
 
       const data = await fetchResponse.json();
+
       if (!fetchResponse.ok) {
-        throw new Error(data.message || 'Error al actualizar el estado');
+        setErrorMessage(data.message);
+        return;
       }
+
+      handleDependencyToggle();
+
+      setSuccessMessage(data.message);
+
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 800);
     } catch (error) {
       console.log('Error al actualizar el estado', error);
+      setErrorMessage('Error al actualizar el estado');
     }
   };
 
   return (
-    <div className="toggle-container" onClick={handleSubmit}>
-      <div className={`toggle-circle ${status_value ? 'active' : ''}`}></div>
+    <div>
+      {successMessage && <AlertSuccesfully message={successMessage} />}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
+      <div className="toggle-container" onClick={handleSubmit}>
+        <div className={`toggle-circle ${status_value ? 'active' : ''}`}></div>
+      </div>
     </div>
   );
 };

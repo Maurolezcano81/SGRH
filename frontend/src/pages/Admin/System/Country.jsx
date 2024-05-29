@@ -7,10 +7,10 @@ import ModalAdd from '../ModalAdd';
 import ModalUpdate from '../ModalUpdate';
 import ModalDelete from '../ModalDelete';
 
-const Occupation = () => {
+const Country = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [occupations, setOccupations] = useState([]);
-  const [occupationsFormatted, setOccupationsFormatted] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [countriesFormatted, setCountriesFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
@@ -35,16 +35,16 @@ const Occupation = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupations`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/create/occupation`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/occupation`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/countries`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/country`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/country`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/create/country`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/country/status`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/country`;
 
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchOccupations = async () => {
+    const fetchCountries = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -60,11 +60,11 @@ const Occupation = () => {
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setOccupations([]);
-          setOccupationsFormatted([]);
+          setCountries([]);
+          setCountriesFormatted([]);
         } else {
-          setOccupations(data.queryResponse);
-          formatOccupations(data.queryResponse);
+          setCountries(data.queryResponse);
+          formatCountries(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
@@ -72,24 +72,14 @@ const Occupation = () => {
       }
     };
 
-    fetchOccupations();
+    fetchCountries();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatOccupations = (occupations) => {
-    const formatted = occupations.map((occupation) => ({
-      ...occupation,
-      salary_occupation: currencyFormatter(occupation.salary_occupation),
+  const formatCountries = (countries) => {
+    const formatted = countries.map((country) => ({
+      ...country
     }));
-    setOccupationsFormatted(formatted);
-  };
-
-  const currencyFormatter = (value) => {
-    const formatter = new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 2,
-    });
-    return formatter.format(value);
+    setCountriesFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -99,7 +89,7 @@ const Occupation = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_occupation);
+    setIdToGet(item.id_country);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -110,11 +100,11 @@ const Occupation = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_occupation);
+    setIdToDelete(item.id_country);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_occupation);
+    setIdToToggle(item.id_country);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -140,14 +130,14 @@ const Occupation = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Ocupación" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Pais" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nueva Ocupacion'}
-          labels={['Nombre', 'Salario']}
-          placeholders={['Ingrese nombre', 'Ingrese el salario']}
+          title_modal={'Nuevo Pais'}
+          labels={['Nombre', 'Abreviacion']}
+          placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
           method={'POST'}
-          fetchData={['name_occupation', 'salary_occupation']}
+          fetchData={['name_country', 'abbreviation_country']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -157,13 +147,13 @@ const Occupation = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Ocupacion'}
-          labels={['Nombre', 'Salario', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el salario', 'Ingrese el estado']}
+          labels={['Nombre', 'Abreviacion', 'Estado']}
+          placeholders={['Ingrese nombre', 'Ingrese la abreviacion', 'Ingrese el estado']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_occupation', 'salary_occupation', 'status_occupation']}
+          fetchData={['name_country', 'abbreviation_country', 'status_country']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_occupation"
+          idFetchData="value_country"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
@@ -175,7 +165,7 @@ const Occupation = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_occupation'}
+          field_name={'id_country'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -184,15 +174,15 @@ const Occupation = () => {
       <table className="table__preference">
         <thead className="table__preference__head">
           <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Salario', 'Estado', 'Acciones']} />
+            <PreferencesTableHeader keys={['Nombre', 'Abreviacion', 'Estado', 'Acciones']} />
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {occupationsFormatted.length > 0 ? (
+          {countriesFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={occupationsFormatted}
-              keys={['name_occupation', 'salary_occupation']}
-              status_name={['id_occupation', 'status_occupation']}
+              items={countriesFormatted}
+              keys={['name_country', 'abbreviation_country']}
+              status_name={['id_country', 'status_country']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -212,4 +202,4 @@ const Occupation = () => {
   );
 };
 
-export default Occupation;
+export default Country;

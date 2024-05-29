@@ -1,7 +1,7 @@
 import Navbar from "../../components/Navbar/Navbar"
 import { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import ErrorMessage from "../../components/ErrorMessage"
+import ErrorMessage from "../../components/Alerts/ErrorMessage"
 import useAuth from "../../hooks/useAuth"
 
 const AdminLayout = () => {

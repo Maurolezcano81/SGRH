@@ -143,43 +143,37 @@ input {
   background-color: var(--green-0);
 }
 
-.error_bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: var(--white-2);
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.error__container {
-  width: 80%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: var(--shadow-a-30);
-  border: 0.1rem solid var(--red-1);
-  background-color: var(--red-0);
+.alert__container{
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 3rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  z-index: 90;
+  background-color: var(--white-1);
+  padding: 4rem 1rem;
   border-radius: 1rem;
-  padding: 2rem 1rem;
+  box-shadow: var(--shadow-a-25-b-02);
 }
 
-.error-header {
+.alert__header{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.alert__header img{
   width: 30%;
 }
 
-.error-footer {
-  color: var(--red-1);
-  font-size: var(--size-error-content);
-  text-align: center;
-  padding: 2rem 1rem;
+.alert__footer{
+  width: 100%;
 }
+
 
 /* START LOGIN */
 .login__container {
@@ -359,6 +353,7 @@ input {
   left: 0;
   min-height: auto;
   height: 100%;
+  z-index: 100;
 }
 
 .navbar__container a {
@@ -591,7 +586,6 @@ input {
 }
 
 .table__preference__head tr th {
-  width: 10%;
 }
 
 .table__preference__body tr td {
@@ -599,7 +593,6 @@ input {
   vertical-align: middle;
   padding: 1rem 0.5rem;
   font-size: var(--size-preferences-row);
-  max-width: 10%;
   word-wrap: break-all;
   overflow: auto;
 }
@@ -612,7 +605,7 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 3rem;
+  gap: 1rem;
 }
 
 .preference__edit {
@@ -666,6 +659,7 @@ input {
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 1rem;
+  z-index: 80;
 }
 
 .preferences__modal__content h2 {
@@ -706,6 +700,7 @@ input {
 }
 
 .preferences__modal__error {
+  text-align: center;
 }
 
 .preferences__modal__actions {
@@ -717,8 +712,8 @@ input {
 }
 
 .toggle-container {
-  width: 60px;
-  height: 30px;
+  width: 5rem;
+  height: 2rem;
   background-color: #ccc;
   border-radius: 15px;
   position: relative;
@@ -726,8 +721,8 @@ input {
 }
 
 .toggle-circle {
-  width: 30px;
-  height: 30px;
+  width: 2rem;
+  height: 2rem;
   background-color: #666;
   border-radius: 50%;
   position: absolute;
@@ -737,9 +732,28 @@ input {
 }
 
 .active {
-  transform: translateX(30px);
-  background-color: blue;
+  transform: translateX(3rem);
+  background-color: var(--blue-0);
 }
+
+
+.alert__footer.modal__delete{
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  text-align: center;
+}
+
+.alert__header.modal__delete{
+  font-size: var(--size-preferences-title);
+  text-align: center;
+}
+
+.modal__delete__message{
+  text-align: center;
+}
+
+
 
 /* START MODAL PREFERENCE LAYOUT */
 
@@ -748,6 +762,18 @@ input {
 /* END OCCUPATION LAYOUT */
 
 /* END PREFERENCES LAYOUT */
+
+
+@media (width >= 468px){
+  .table__preference__head tr th {
+    padding: 1rem 2rem;
+  }
+
+  table{
+    width: 100%;
+    margin: 0 auto;
+  }
+}
 
 @media (width >=1024px) {
   .navbar__container {
