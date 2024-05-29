@@ -64,7 +64,6 @@ const ModalUpdate = ({
         },
         body: JSON.stringify(inputValues),
       });
-      console.log(response);
       const dataFormatted = await response.json();
 
       console.log(dataFormatted)

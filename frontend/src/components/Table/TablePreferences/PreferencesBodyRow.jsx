@@ -10,9 +10,9 @@ const PreferencesBodyRow = ({
   fetchUrl,
   handleEdit,
   handleDelete,
+  handleStatusToggle,
   status_name,
-  onStatusToggle,
-  selectedOccupationId,
+  idToToggle,
 }) => {
   return (
     <>
@@ -26,11 +26,11 @@ const PreferencesBodyRow = ({
           <td>
             <ToggleButton
               className="preference__state"
+              onClick={() => handleStatusToggle(item)}
               status_value={item[status_name[1]] === 1}
               fetchUrl={fetchUrl}
-              onStatusToggle={() => onStatusToggle(item)}
               status_name={status_name}
-              selectedOccupationId={selectedOccupationId}
+              idToToggle={idToToggle}
             />
           </td>
           <td className="preference__body-column">
