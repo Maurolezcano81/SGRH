@@ -13,14 +13,14 @@ dotenv.config();
 // Rutas
 import UserCredentialsRoutes from './routes/UserCredentialsRoutes.js';
 import SystemRoutes from './routes/SystemRoutes.js';
-
+import { decodeToken, verifyToken } from './middlewares/Authorization.js';
 app.use('/api', UserCredentialsRoutes.router);
 
 /* app.use('/api', PersonalRoutes.router); */
 
-app.use('/api', SystemRoutes.router)
+app.use('/api', verifyToken, decodeToken, SystemRoutes.router);
 
 // Server
-app.listen( process.env.SV_PORT || 3000, () =>{
-    console.log(`Server corriendo en el puerto: ${process.env.SV_PORT}`);
+app.listen(process.env.SV_PORT || 3000, () => {
+  console.log(`Server corriendo en el puerto: ${process.env.SV_PORT}`);
 });

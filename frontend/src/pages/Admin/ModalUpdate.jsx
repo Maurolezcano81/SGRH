@@ -22,7 +22,6 @@ const ModalUpdate = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const { authData } = useAuth();
-  const { token } = authData;
 
   useEffect(() => {
     const fetchOccupation = async () => {
@@ -34,7 +33,7 @@ const ModalUpdate = ({
           method: methodGetOne,
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${authData.token}`
           },
           body: JSON.stringify(requestBody), // Convertir el objeto a JSON
         });
@@ -52,7 +51,7 @@ const ModalUpdate = ({
     };
 
     fetchOccupation();
-  }, [token, getOneUrl, idToUpdate]);
+  }, [authData.token, getOneUrl, idToUpdate]);
 
   // Método para manejar el envío del formulario
   const handleFormSubmit = async (e) => {
@@ -62,6 +61,7 @@ const ModalUpdate = ({
         method: methodUpdateOne,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.token}`
         },
         body: JSON.stringify(inputValues),
       });

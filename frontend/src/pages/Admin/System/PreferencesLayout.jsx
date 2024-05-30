@@ -13,13 +13,19 @@ const Preferences = () => {
 
         <LinkPreference path="sexo" name="Sexo" />
         
-        <LinkPreference path="Pais" name="Pais" />
+        <LinkPreference path="pais" name="Pais" />
 
         <LinkPreference path="contacto" name="Contacto" />
 
-        <LinkPreference path="contacto" name="Contacto" />
+        <LinkPreference path="nacionalidad" name="Nacionalidad" />
 
-        <LinkPreference path="contacto" name="Contacto" />
+        <LinkPreference path="estado_solicitud" name="Estado de solicitud" />
+
+        <LinkPreference path="tipo_renuncia" name="Tipo de renuncia" />
+
+        <LinkPreference path="modulo" name="Modulos" />
+
+
       </div>
 
       <main className="preferences__main">

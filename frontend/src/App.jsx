@@ -12,23 +12,28 @@ import Personal from './pages/Admin/System/Occupation';
 import Sex from './pages/Admin/System/Sex';
 import Occupation from './pages/Admin/System/Occupation';
 import Country from './pages/Admin/System/Country';
+import Nacionality from './pages/Admin/System/Nacionality';
+import { NavbarProvider } from './contexts/NavbarProvider';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
+        <NavbarProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
 
-          <Route path="/admin/*" element={<AdminLayout />}>
-            <Route path="ajustes/*" element={<Preferences />}>
-              <Route path="ocupacion" element={<Occupation />} />
-              <Route path="sexo" element={<Sex />} />
-              <Route path="contacto" element={<Contact />} />
-              <Route path="pais" element={<Country />} />
+            <Route path="/admin/*" element={<AdminLayout />}>
+              <Route path="ajustes/*" element={<Preferences />}>
+                <Route path="ocupacion" element={<Occupation />} />
+                <Route path="sexo" element={<Sex />} />
+                <Route path="contacto" element={<Contact />} />
+                <Route path="pais" element={<Country />} />
+                <Route path="nacionalidad" element={<Nacionality />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </NavbarProvider>
       </AuthProvider>
     </BrowserRouter>
   );

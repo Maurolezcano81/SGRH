@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ButtonBlue from '../../components/ButtonBlue';
 import ButtonRed from '../../components/ButtonRed';
+import authData from '../../hooks/useAuth'
+import useAuth from '../../hooks/useAuth';
 
 const ModalAdd = ({
   title_modal,
@@ -25,6 +27,8 @@ const ModalAdd = ({
     });
   };
 
+  const {authData} = useAuth()
+
   // Método para manejar el envío del formulario
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +43,7 @@ const ModalAdd = ({
         method: method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.token}`
         },
         body: JSON.stringify(newData),
       });

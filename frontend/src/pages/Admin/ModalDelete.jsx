@@ -40,7 +40,7 @@ const ModalDelete = ({handleModalDelete, deleteOne, field_name, idToDelete,  onS
     return (
             <div className="alert__container">
                 <div className="alert__header modal__delete">
-                    <p>¿Quieres eliminar este registro? Al aceptar no se puede volver atras</p>
+                    <p>¿Quieres eliminar este registro? Al aceptar no se puede recuperar la informacion</p>
                 </div>
                 <div className="modal__delete__message">{message}</div>
                 <div className="alert__footer modal__delete">

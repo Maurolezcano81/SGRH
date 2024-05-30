@@ -61,7 +61,7 @@
   --size-preferences-title: clamp(2.5rem, 2vw, 2.9rem);
   --size-preferences-link: clamp(1.6rem, 2vw, 2rem);
   --size-preferences-button: clamp(1.6rem, 2vw, 2.2rem);
-  --size-preferences-row: clamp(1.4rem, 2vw, 2.2rem);
+  --size-preferences-row: clamp(1.4rem, 2vw, 1.8rem);
 
   /* Navbar Sizes */
 }
@@ -328,10 +328,20 @@ input {
 /* START NAVBAR */
 
 .navbar__container-open {
-  width: 100vw;
   background-color: var(--white-2);
-  padding: 1rem;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
+.title__navbar{
+  text-align: center;
+  width: fit-content;
+  font-size: var(--size-preferences-title);
+  text-transform: capitalize
+}
+
 
 .navbar__collapsed-button {
   background: none;
@@ -354,6 +364,8 @@ input {
   min-height: auto;
   height: 100%;
   z-index: 100;
+  overflow: scroll;
+  scrollbar-width: none;
 }
 
 .navbar__container a {
@@ -539,7 +551,7 @@ input {
 .preferences__links {
   color: var(--blue-3);
   font-size: var(--size-preferences-link);
-  font-weight: 600;
+  font-weight: 500;
   padding: 0.5rem;
   border-radius: 1rem;
 }
@@ -773,31 +785,34 @@ input {
     width: 100%;
     margin: 0 auto;
   }
-}
 
-@media (width >=1024px) {
   .navbar__container {
-    width: 15%;
+    width: 30%;
   }
 
   .navbar__collapsed-button {
     background: none;
-    width: 5%;
+    width: 30%;
+  }
+}
+
+@media (width >=1024px) {
+  .navbar__container {
+    width: auto;
   }
 
-  .navbar__container-open {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-  }
-
-  .navbar__container-open div {
+  .navbar__collapsed-button {
+    background: none;
     width: 40%;
   }
 
-  .error__container{
-    width: 30%;
+
+  .button__navbar{
+    min-width: 60%;
+  }
+
+  .alert__container{
+    width: 40%;
   }
 
   .preferences__modal__container {
@@ -810,23 +825,23 @@ input {
   }
 
   .preference__edit {
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
   }
   
   .preference__edit img {
-    width: 3rem;
-    height: 3rem;
+    width: 2rem;
+    height: 2rem;
   }
   
   .preference__delete {
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
   }
   
   .preference__delete img {
-    width: 3rem;
-    height: 3rem;
+    width: 2rem;
+    height: 2rem;
   }
 }
 
