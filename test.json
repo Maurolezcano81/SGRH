@@ -1,0 +1,58 @@
+{
+    "entity_data":{
+        "name_entity": "Karen",
+        "lastname_entity": "Arguello Troche",
+        "date_birth_entity": "2004/03/07",
+        "sex_fk": 1,
+        "nacionality_fk": 1
+    },
+    "employee_data":{
+        "file_employee": "A102",
+        "date_entry_employee": "2024/05/31"
+    },
+    "user_data":{
+        "username_user": "ktroche123",
+        "pwd_user": "ktroche123"
+    },
+    "value_profile": 1
+}
+
+{
+    "entity_data":{
+        "name_entity": "Nicolas",
+        "lastname_entity": "Ayala",
+        "date_birth_entity": "2000/02/10",
+        "sex_fk": 1,
+        "nacionality_fk": 1
+    },
+    "employee_data":{
+        "file_employee": "A103",
+        "date_entry_employee": "2024/05/31"
+    },
+    "user_data":{
+        "username_user": "nayala",
+        "pwd_user": "nayala"
+    },
+    "value_profile": 2
+}
+
+{
+    "entity_data":{
+        "name_entity": "Mauro",
+        "lastname_entity": "Lezcano",
+        "date_birth_entity": "1999/09/20",
+        "sex_fk": 1,
+        "nacionality_fk": 1
+    },
+    "employee_data":{
+        "file_employee": "A101",
+        "date_entry_employee": "2024/01/31"
+    },
+    "user_data":{
+        "username_user": "maurolezcano81",
+        "pwd_user": "mauroAdmin"
+    },
+    "value_profile": 2,
+    "department_entity": 1,
+    "occupation_entity": 1
+}

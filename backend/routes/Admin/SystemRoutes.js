@@ -5,7 +5,7 @@ import {
   updateSex,
   toggleStatusSex,
   deleteSex,
-} from '../controllers/Admin/System/SexControllers.js';
+} from '../../controllers/Admin/System/SexControllers.js';
 import {
   createNacionality,
   getNacionality,
@@ -13,7 +13,7 @@ import {
   updateNacionality,
   toggleStatusNacionality,
   deleteNacionality,
-} from '../controllers/Admin/System/NacionalityControllers.js';
+} from '../../controllers/Admin/System/NacionalityControllers.js';
 import {
   createCountry,
   getCountry,
@@ -21,7 +21,7 @@ import {
   updateCountry,
   toggleStatusCountry,
   deleteCountry,
-} from '../controllers/Admin/System/CountryControllers.js';
+} from '../../controllers/Admin/System/CountryControllers.js';
 import {
   createStatusRequest,
   getStatusRequest,
@@ -29,7 +29,7 @@ import {
   updateStatusRequest,
   toggleStatusRequest,
   deleteStatusRequest,
-} from '../controllers/Admin/System/StatusRequestControllers.js';
+} from '../../controllers/Admin/System/StatusRequestControllers.js';
 
 import {
   createContact,
@@ -38,7 +38,7 @@ import {
   updateContact,
   toggleStatusContact,
   deleteContact,
-} from '../controllers/Admin/System/ContactControllers.js';
+} from '../../controllers/Admin/System/ContactControllers.js';
 
 import {
   createOccupation,
@@ -47,7 +47,7 @@ import {
   updateOccupation,
   toggleStatusOccupation,
   deleteOccupation,
-} from '../controllers/Admin/System/OccupationController.js';
+} from '../../controllers/Admin/System/OccupationController.js';
 
 import {
   createTot,
@@ -56,7 +56,7 @@ import {
   updateTot,
   toggleStatusTot,
   deleteTot,
-} from '../controllers/Admin/System/Type_of_terminationControllers.js';
+} from '../../controllers/Admin/System/Type_of_terminationControllers.js';
 
 import {
   createModule,
@@ -65,7 +65,7 @@ import {
   updateModule,
   toggleStatusModule,
   deleteModule,
-} from '../controllers/Admin/System/ModuleControllers.js';
+} from '../../controllers/Admin/System/ModuleControllers.js';
 
 import express from 'express';
 const router = express.Router();

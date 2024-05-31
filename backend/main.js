@@ -12,20 +12,15 @@ dotenv.config();
 
 // Rutas
 import UserCredentialsRoutes from './routes/UserCredentialsRoutes.js';
-import SystemRoutes from './routes/SystemRoutes.js';
+import SystemRoutes from './routes/Admin/SystemRoutes.js';
+
 import { decodeToken, verifyToken } from './middlewares/Authorization.js';
+import UserRoutes from './routes/Admin/UserRoutes.js';
 app.use('/api', UserCredentialsRoutes.router);
 
 /* app.use('/api', PersonalRoutes.router); */
 
-app.use('/api', verifyToken, decodeToken, SystemRoutes.router);
-
-
-import { uploadFiles, handleFileUpload, printFileUrl } from './middlewares/Uploads.js';
-const avatarUpload = uploadFiles("avatar_user", "uploads/avatars")
-const pdfUpload = uploadFiles("document_user", "uploads/pdfs")
-app.post('/avatar', avatarUpload, handleFileUpload, printFileUrl);
-app.post('/pdf', pdfUpload, handleFileUpload, printFileUrl);
+app.use('/api', verifyToken, decodeToken, SystemRoutes.router, UserRoutes.router);
 
 // Server
 app.listen(process.env.SV_PORT || 3000, () => {

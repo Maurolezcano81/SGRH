@@ -1,7 +1,7 @@
 import UserCredentials from '../models/Auth/UserCredentials.js';
 import {isInputEmpty, isInputWithWhiteSpaces} from '../middlewares/Validations.js';
 import jsonwebtoken from 'jsonwebtoken';
-import { createToken } from '../middlewares/Authorization.js';
+import { comparePwd, createToken } from '../middlewares/Authorization.js';
 
 const UserCredentialsInstance = new UserCredentials();
 
