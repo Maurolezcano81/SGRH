@@ -6,6 +6,8 @@ import PreferenceTitle from './PreferenceTitle';
 import ModalAdd from '../ModalAdd';
 import ModalUpdate from '../ModalUpdate';
 import ModalDelete from '../ModalDelete';
+import useNav from '../../../hooks/useNav';
+import { useLocation } from 'react-router-dom';
 
 const Sex = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
@@ -14,6 +16,17 @@ const Sex = () => {
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
+
+  const {storageNavbarTitle}  = useNav();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    storageNavbarTitle(lastPart);
+  }, [location.pathname, storageNavbarTitle]);
+
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);

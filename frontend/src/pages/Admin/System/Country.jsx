@@ -6,6 +6,8 @@ import PreferenceTitle from './PreferenceTitle';
 import ModalAdd from '../ModalAdd';
 import ModalUpdate from '../ModalUpdate';
 import ModalDelete from '../ModalDelete';
+import useNav from '../../../hooks/useNav';
+import { useLocation } from 'react-router-dom';
 
 const Country = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
@@ -14,6 +16,16 @@ const Country = () => {
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
+
+  const { storageNavbarTitle } = useNav();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    storageNavbarTitle(lastPart);
+  }, [location.pathname, storageNavbarTitle]);
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
@@ -77,7 +89,7 @@ const Country = () => {
 
   const formatCountries = (countries) => {
     const formatted = countries.map((country) => ({
-      ...country
+      ...country,
     }));
     setCountriesFormatted(formatted);
   };
@@ -193,7 +205,7 @@ const Country = () => {
             />
           ) : (
             <tr>
-              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
+              <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
             </tr>
           )}
         </tbody>

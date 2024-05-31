@@ -20,6 +20,13 @@ app.use('/api', UserCredentialsRoutes.router);
 
 app.use('/api', verifyToken, decodeToken, SystemRoutes.router);
 
+
+import { uploadFiles, handleFileUpload, printFileUrl } from './middlewares/Uploads.js';
+const avatarUpload = uploadFiles("avatar_user", "uploads/avatars")
+const pdfUpload = uploadFiles("document_user", "uploads/pdfs")
+app.post('/avatar', avatarUpload, handleFileUpload, printFileUrl);
+app.post('/pdf', pdfUpload, handleFileUpload, printFileUrl);
+
 // Server
 app.listen(process.env.SV_PORT || 3000, () => {
   console.log(`Server corriendo en el puerto: ${process.env.SV_PORT}`);

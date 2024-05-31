@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
+import useNav from '../../../hooks/useNav';
+import {
+  useLocation
+} from 'react-router-dom'
+
 import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
 import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
 import ModalAdd from '../ModalAdd';
 import ModalUpdate from '../ModalUpdate';
 import ModalDelete from '../ModalDelete';
-import { useLocation } from 'react-router-dom';
-import useNav from '../../../hooks/useNav';
 
-const Nacionality = () => {
+const StatusRequest = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [nacionalities, setNacionalities] = useState([]);
-  const [nacionalitiesFormatted, setNacionalitiesFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
-
+  const [statuses, setStatuses] = useState([]);
+  const [statusesFormatted, setStatusesFormatted] = useState([]);
+  const [noDataMessage, setNoDataMessage] = useState(""); // Estado para almacenar el mensaje de "no hay datos"
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
+  const {storageNavbarTitle}  = useNav();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    storageNavbarTitle(lastPart);
+  }, [location.pathname, storageNavbarTitle]);
+
+  
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
   const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
@@ -37,27 +50,16 @@ const Nacionality = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/nacionalities`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/nacionality`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/nacionality`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/create/nacionality`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/nacionality/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/nacionality`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/statuses_request`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/status_request`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/status_request`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/create/status_request`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/status_request/status`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/status_request`;
 
-  const {storageNavbarTitle}  = useNav();
-
-  const location = useLocation();
-
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
-
-  
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchNacionalities = async () => {
+    const fetchStatuses = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -67,32 +69,32 @@ const Nacionality = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener las nacionalidades');
+          throw new Error('Ha ocurrido un error al obtener los estados de solicitud');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setNacionalities([]);
-          setNacionalitiesFormatted([]);
-        } else {
-          setNacionalities(data.queryResponse);
-          formatCountries(data.queryResponse);
-          setNoDataMessage('');
-        }
+            setNoDataMessage(data.message);
+            setStatuses([]);
+            setStatusesFormatted([]);
+          } else {
+            setStatuses(data.queryResponse);
+            formatStatuses(data.queryResponse);
+            setNoDataMessage("");
+          }
       } catch (error) {
-        console.error('Error al obtener las nacionalidades', error);
+        console.error('Error al obtener los estados de solicitud', error);
       }
     };
 
-    fetchNacionalities();
+    fetchStatuses();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatCountries = (nacionalities) => {
-    const formatted = nacionalities.map((nacionality) => ({
-      ...nacionality
+  const formatStatuses = (statuses) => {
+    const formatted = statuses.map((status) => ({
+      ...status
     }));
-    setNacionalitiesFormatted(formatted);
+    setStatusesFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -102,7 +104,7 @@ const Nacionality = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_nacionality);
+    setIdToGet(item.id_sr);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -113,11 +115,11 @@ const Nacionality = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_nacionality);
+    setIdToDelete(item.id_sr);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_nacionality);
+    setIdToToggle(item.id_sr);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -143,14 +145,14 @@ const Nacionality = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Nacionalidad" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Estado" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nueva Nacionalidad'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
+          title_modal={'Nuevo Tipo de Estado de Solicitud'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_nacionality', 'abbreviation_nacionality']}
+          fetchData={['name_sr']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -159,14 +161,14 @@ const Nacionality = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Ocupacion'}
-          labels={['Nombre', 'Abreviacion', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese la abreviacion', 'Ingrese el estado']}
+          title_modal={'Editar Estado de Solicitud'}
+          labels={['Nombre', 'Estado']}
+          placeholders={['Ingrese nombre', 'Ingrese el estado']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_nacionality', 'abbreviation_nacionality', 'status_nacionality']}
+          fetchData={['name_sr', 'status_sr']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_nacionality"
+          idFetchData="value_sr"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
@@ -178,7 +180,7 @@ const Nacionality = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_nacionality'}
+          field_name={'id_sr'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -187,26 +189,26 @@ const Nacionality = () => {
       <table className="table__preference">
         <thead className="table__preference__head">
           <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Abreviacion', 'Estado', 'Acciones']} />
+            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {nacionalitiesFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={nacionalitiesFormatted}
-              keys={['name_nacionality', 'abbreviation_nacionality']}
-              status_name={['id_nacionality', 'status_nacionality']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
+        {statusesFormatted.length > 0 ? (
+                    <PreferencesBodyRow
+                    items={statusesFormatted}
+                    keys={['name_sr']}
+                    status_name={['id_sr', 'status_sr']}
+                    fetchUrl={toggleStatus}
+                    idToToggle={idToToggle}
+                    handleStatusToggle={handleStatusToggle}
+                    handleDependencyToggle={handleDependencyToggle}
+                    handleEdit={handleModalUpdate}
+                    handleModalDelete={handleModalDelete}
+                    handleDelete={handleDelete}
+                  />
           ) : (
             <tr>
-              <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
+              <td colSpan="3">{noDataMessage || "No hay datos ingresados"}</td>
             </tr>
           )}
         </tbody>
@@ -215,4 +217,4 @@ const Nacionality = () => {
   );
 };
 
-export default Nacionality;
+export default StatusRequest;

@@ -87,6 +87,10 @@ body {
   background-color: var(--white-2);
 }
 
+table{
+  width: 100%;
+}
+
 button {
   outline: none;
   border: none;
@@ -345,7 +349,7 @@ input {
 
 .navbar__collapsed-button {
   background: none;
-  width: 10%;
+  width: 35%;
 }
 
 .navbar__container {
@@ -424,7 +428,7 @@ input {
 
 .navbar__profile-img {
   background-color: var(--white-text-0);
-  width: 60%;
+  width: 40%;
   border-radius: 100%;
   padding: 0.1rem;
 }
@@ -609,8 +613,15 @@ input {
   overflow: auto;
 }
 
+.table__preference__body tr td div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .preference__body-column {
-  width: 100%;
+  max-width:10rem;
+  scrollbar-width: 1rem;
 }
 
 .buttons__table-preference {

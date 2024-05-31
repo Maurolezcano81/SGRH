@@ -6,8 +6,6 @@ import LinkPreference from './LinkPreference';
 const Preferences = () => {
   return (
     <div className="preferences__container">
-      <h4 className="title__module">Ajustes del sistema</h4>
-
       <div className="preferences__container__links">
         <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
 
@@ -19,12 +17,11 @@ const Preferences = () => {
 
         <LinkPreference path="nacionalidad" name="Nacionalidad" />
 
-        <LinkPreference path="estado_solicitud" name="Estado de solicitud" />
+        <LinkPreference path="estado_de_solicitud" name="Estado de solicitud" />
 
-        <LinkPreference path="tipo_renuncia" name="Tipo de renuncia" />
+        <LinkPreference path="tipo_de_renuncia" name="Tipo de renuncia" />
 
         <LinkPreference path="modulo" name="Modulos" />
-
 
       </div>
 
