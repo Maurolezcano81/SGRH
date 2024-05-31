@@ -1,5 +1,5 @@
-import Occupation from '../../models/Occupation.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
+import Occupation from '../../../models/Admin/System/Occupation.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
 
 const instanceOccupation = new Occupation();
 

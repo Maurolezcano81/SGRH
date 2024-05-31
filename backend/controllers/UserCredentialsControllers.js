@@ -1,4 +1,4 @@
-import UserCredentials from '../models/UserCredentials.js';
+import UserCredentials from '../models/Auth/UserCredentials.js';
 import {isInputEmpty, isInputWithWhiteSpaces} from '../middlewares/Validations.js';
 import jsonwebtoken from 'jsonwebtoken';
 import { createToken } from '../middlewares/Authorization.js';

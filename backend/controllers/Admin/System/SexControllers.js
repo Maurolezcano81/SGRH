@@ -1,5 +1,5 @@
-import Sex from '../../models/Sex.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
+import Sex from '../../../models/Admin/System/Sex.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
 
 const instanceSex = new Sex();
 

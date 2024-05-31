@@ -1,5 +1,5 @@
-import Type_of_termination from '../../models/Type_of_termination.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
+import Type_of_termination from '../../../models/Admin/System/Type_of_termination.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
 
 const instanceTot = new Type_of_termination();
 

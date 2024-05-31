@@ -1,5 +1,5 @@
-import Module from '../../models/Module.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
+import Module from '../../../models/Admin/System/Module.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
 
 const instanceModule = new Module();
 export const getModules = async (req, res) => {

@@ -1,5 +1,5 @@
-import Nacionality from '../../models/Nacionality.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
+import Nacionality from '../../../models/Admin/System/Nacionality.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
 
 const instanceNacionality = new Nacionality();
 

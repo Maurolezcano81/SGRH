@@ -1,5 +1,5 @@
 import mysql from 'mysql2';
-import { database } from "../config/database.js";
+import { database } from "../../config/database.js";
 
 class UserProfile {
     constructor() {

@@ -1,5 +1,5 @@
-import StatusRequest from '../../models/Status_Request.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
+import StatusRequest from '../../../models/Admin/System/Status_Request.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
 
 const instanceStatusRequest = new StatusRequest();
 
