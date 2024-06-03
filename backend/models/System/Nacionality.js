@@ -84,7 +84,7 @@ class Nacionality {
       return results;
     } catch (error) {
       console.error(`Error en modelo de Nacionalidad: ` + error);
-      throw new Error(`Error al Eliminar la nacionalidad`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 }

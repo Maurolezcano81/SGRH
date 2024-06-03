@@ -74,7 +74,7 @@ class Contact {
       return results;
     } catch (error) {
       console.error(`Error en modelo de Contacto: ` + error);
-      throw new Error(`Error al eliminar tipo de contacto`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 }

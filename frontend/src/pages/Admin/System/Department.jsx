@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
-import useNav from '../../../hooks/useNav';
-import { useLocation } from 'react-router-dom';
-
 import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
 import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
 import ModalAdd from '../ModalAdd';
 import ModalUpdate from '../ModalUpdate';
 import ModalDelete from '../ModalDelete';
+import useNav from '../../../hooks/useNav';
+import { useLocation } from 'react-router-dom';
 
-const TypeTermination = () => {
+const Department = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [typesTermination, setTypesTermination] = useState([]);
-  const [typesTerminationFormatted, setTypesTerminationFormatted] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [departmentsFormatted, setDepartmentsFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
+
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
-  const { storageNavbarTitle } = useNav();
+  const {storageNavbarTitle}  = useNav();
 
   const location = useLocation();
 
@@ -26,6 +26,7 @@ const TypeTermination = () => {
     const lastPart = pathParts[pathParts.length - 1];
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
+
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
@@ -47,16 +48,16 @@ const TypeTermination = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/types_of_termination`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/create/type_of_termination`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/departments`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/create/department`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department/status`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department`;
 
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchTypeTermination = async () => {
+    const fetchDepartments = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -66,32 +67,32 @@ const TypeTermination = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los estados de solicitud');
+          throw new Error('Ha ocurrido un error al obtener los tipos de departamentos');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setTypesTermination([]);
-          setTypesTerminationFormatted([]);
+          setDepartments([]);
+          setDepartmentsFormatted([]);
         } else {
-          setTypesTermination(data.queryResponse);
-          formatStatuses(data.queryResponse);
+          setDepartments(data.queryResponse);
+          formatDepartments(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener los estados de solicitud', error);
+        console.error('Error al obtener los tipos de departamentos', error);
       }
     };
 
-    fetchTypeTermination();
+    fetchDepartments();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatStatuses = (typesTermination) => {
-    const formatted = typesTermination.map((typeTermination) => ({
-      ...typeTermination,
+  const formatDepartments = (departments) => {
+    const formatted = departments.map((department) => ({
+      ...department,
     }));
-    setTypesTerminationFormatted(formatted);
+    setDepartmentsFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -101,7 +102,7 @@ const TypeTermination = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_tot);
+    setIdToGet(item.id_department);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -112,11 +113,11 @@ const TypeTermination = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_tot);
+    setIdToDelete(item.id_department);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_tot);
+    setIdToToggle(item.id_department);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -142,14 +143,14 @@ const TypeTermination = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Estado" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Departamento" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de salida'}
+          title_modal={'Nuevo Tipo de Departamento'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['description_tot']}
+          fetchData={['name_department']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -158,14 +159,14 @@ const TypeTermination = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar tipo de salida'}
+          title_modal={'Editar Departamento'}
           labels={['Nombre', 'Estado']}
           placeholders={['Ingrese nombre', 'Ingrese el estado']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['description_tot', 'status_tot']}
+          fetchData={['name_department', 'status_department']}
           getOneUrl={getSingleUrl}
-          idFetchData="id_tot"
+          idFetchData="value_department"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
@@ -177,7 +178,7 @@ const TypeTermination = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_tot'}
+          field_name={'id_department'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -190,11 +191,11 @@ const TypeTermination = () => {
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {typesTerminationFormatted.length > 0 ? (
+          {departmentsFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={typesTerminationFormatted}
-              keys={['description_tot']}
-              status_name={['id_tot', 'status_tot']}
+              items={departmentsFormatted}
+              keys={['name_department']}
+              status_name={['id_department', 'status_department']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -214,4 +215,4 @@ const TypeTermination = () => {
   );
 };
 
-export default TypeTermination;
+export default Department;

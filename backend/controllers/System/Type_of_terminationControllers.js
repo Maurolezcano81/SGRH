@@ -25,15 +25,15 @@ export const getTots = async (req, res) => {
 };
 
 export const getTot = async (req, res) => {
-  const { value_tot } = req.body;
+  const { id_tot } = req.body;
   try {
-    if (isInputEmpty(value_tot)) {
+    if (isInputEmpty(id_tot)) {
       throw new Error(
         'Los datos que estas utilizando para la busqueda de tipo de baja es incorrecta, intentelo nuevamente despues de reiniciar la pagina'
       );
     }
 
-    const queryResponse = await instanceTot.getTot(value_tot);
+    const queryResponse = await instanceTot.getTot(id_tot);
 
     if (!queryResponse || queryResponse.length < 1) {
       throw new Error('Este tipo de baja no existe');
@@ -51,23 +51,23 @@ export const getTot = async (req, res) => {
 };
 
 export const createTot = async (req, res) => {
-  const { name_tot } = req.body;
+  const { description_tot } = req.body;
   try {
-    if (isInputEmpty(name_tot)) {
+    if (isInputEmpty(description_tot)) {
       throw new Error('Debe completar todos los campos de tipo de baja');
     }
 
-    if (isNotAToZ(name_tot)) {
+    if (isNotAToZ(description_tot)) {
       throw new Error('El nombre de tipo de baja no debe contener caracteres especiales');
     }
 
-    const checkExist = await instanceTot.getTot(name_tot);
+    const checkExist = await instanceTot.getTot(description_tot);
 
     if (checkExist && checkExist.length > 0) {
       throw new Error('Ya existe un tipo de baja con este nombre, ingrese otra');
     }
 
-    const queryResponse = await instanceTot.createTot(name_tot);
+    const queryResponse = await instanceTot.createTot(description_tot);
 
     if (!queryResponse) {
       throw new Error('Error al crear el tipo de baja');
@@ -85,13 +85,13 @@ export const createTot = async (req, res) => {
 };
 
 export const updateTot = async (req, res) => {
-  const { id_tot, name_tot, status_tot } = req.body;
+  const { id_tot, description_tot, status_tot } = req.body;
   try {
-    if (isInputEmpty(id_tot) || isInputEmpty(name_tot) || isInputEmpty(status_tot)) {
+    if (isInputEmpty(id_tot) || isInputEmpty(description_tot) || isInputEmpty(status_tot)) {
       throw new Error('Debes completar todos los campos del tipo de baja');
     }
 
-    if (isNotAToZ(name_tot)) {
+    if (isNotAToZ(description_tot)) {
       throw new Error('El nombre del tipo de baja no puede contener caracteres especiales');
     }
 
@@ -104,7 +104,7 @@ export const updateTot = async (req, res) => {
     if (checkExist && checkExist.length < 1) {
       throw new Error('No se puede actualizar el tipo de baja debido a que no existe');
     }
-    const queryResponse = await instanceTot.updateTot(name_tot, status_tot, id_tot);
+    const queryResponse = await instanceTot.updateTot(description_tot, status_tot, id_tot);
 
     if (queryResponse.affectedRows < 1) {
       throw new Error('Error al actualizar el tipo de baja');

@@ -17,6 +17,9 @@ import { NavbarProvider } from './contexts/NavbarProvider';
 import StatusRequest from './pages/Admin/System/StatusRequest';
 import Module from './pages/Admin/System/Module';
 import TypeTermination from './pages/Admin/System/TypeOfTermination';
+import Department from './pages/Admin/System/Department';
+import Document from './pages/Admin/System/Document';
+
 
 function App() {
   return (
@@ -36,6 +39,8 @@ function App() {
                 <Route path="estado_de_solicitud" element={<StatusRequest />} />
                 <Route path="modulo" element={<Module />} />
                 <Route path="tipo_de_renuncia" element={<TypeTermination />} />
+                <Route path="documento" element={<Document />} />
+                <Route path="departamento" element={<Department />} />
               </Route>
             </Route>
           </Routes>

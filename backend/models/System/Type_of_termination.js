@@ -75,7 +75,7 @@ class Type_of_termination {
       return results;
     } catch (error) {
       console.error(`Error en modelo de Type of Termination: ` + error);
-      throw new Error(`Error al eliminar tipo de baja`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 }

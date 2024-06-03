@@ -26,9 +26,9 @@ export const getDepartments = async (req, res) => {
 };
 
 export const getDepartment = async (req, res) => {
-  const { value_department } = req.body;
+  const { id_department } = req.body;
   try {
-    if (isInputEmpty(value_department)) {
+    if (isInputEmpty(id_department)) {
       throw new Error('Los datos que estas utilizando para la busqueda de tipo de departamento son invalidos');
     }
 
@@ -158,13 +158,13 @@ export const toggleStatusDepartment = async (req, res) => {
 };
 
 export const deleteDepartment = async (req, res) => {
-  const { value_department } = req.body;
+  const { id_department } = req.body;
   try {
-    if (isNotNumber(value_department)) {
+    if (isNotNumber(id_department)) {
       throw new Error('Ha ocurrido un error al eliminar el tipo de departamento, intente reiniciando el sitio');
     }
 
-    const queryResponse = await instanceDepartment.deleteDepartment(value_department);
+    const queryResponse = await instanceDepartment.deleteDepartment(id_department);
 
     if (queryResponse.affectedRows < 1) {
       throw new Error('Error al eliminar el tipo de departamento');

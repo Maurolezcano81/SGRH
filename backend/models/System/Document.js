@@ -76,7 +76,7 @@ class Document {
       return results;
     } catch (error) {
       console.error(`Error en modelo de documento: ` + error);
-      throw new Error(`Error al eliminar el tipo de documento`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 }

@@ -10,7 +10,7 @@ const Preferences = () => {
         <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
 
         <LinkPreference path="sexo" name="Sexo" />
-        
+
         <LinkPreference path="pais" name="Pais" />
 
         <LinkPreference path="contacto" name="Contacto" />
@@ -22,7 +22,10 @@ const Preferences = () => {
         <LinkPreference path="tipo_de_renuncia" name="Tipo de renuncia" />
 
         <LinkPreference path="modulo" name="Modulos" />
+        
+        <LinkPreference path="documento" name="Documentos" />
 
+        <LinkPreference path="departamento" name="Departamentos" />
       </div>
 
       <main className="preferences__main">

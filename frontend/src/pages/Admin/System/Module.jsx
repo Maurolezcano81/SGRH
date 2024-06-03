@@ -149,8 +149,8 @@ const Module = () => {
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Modulo'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
+          labels={['Nombre', "Direccion del modulo"]}
+          placeholders={['Ingrese nombre', "Ingrese direccion"]}
           method={'POST'}
           fetchData={['name_module', "url_module"]}
           createOne={createOne}

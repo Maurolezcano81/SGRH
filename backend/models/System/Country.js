@@ -82,7 +82,7 @@ class Country {
       return results;
     } catch (error) {
       console.error(`Error en modelo de Pais: ` + error);
-      throw new Error(`Error al eliminar el país`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 }
