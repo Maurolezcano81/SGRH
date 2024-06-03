@@ -18,6 +18,19 @@ class Module {
     }
   }
 
+  async getModulesByProfile(id_profile) {
+    try {
+      const query =
+        'SELECT id_module, name_module, url_module FROM Module m join profile_module pm on pm.module_fk = m.id_module join profile p on pm.profile_fk = id_profile where id_profile = ?';
+
+      const [results] = await this.connection.promise().query(query, [id_profile]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Modules: ` + error);
+      throw new Error(`Error al obtener el listado de modulos`);
+    }
+  }
+
   async getModule(value_module) {
     try {
       const query =
@@ -81,6 +94,31 @@ class Module {
     } catch (error) {
       console.error(`Error en modelo de Module: ` + error);
       throw new Error(`Error al eliminar el modulo`);
+    }
+  }
+
+  async bindModuleToProfile(id_module, id_profile) {
+    try {
+      const query =
+        'INSERT INTO profile_module(profile_fk, module_fk, status_pm, created_at, updated_at) VALUES(?,?,1,now(),now())';
+
+      const [results] = await this.connection.promise().query(query, [id_profile, id_module]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Module:` + error);
+      throw new Error(`Error al añadir el modulo al perfil`);
+    }
+  }
+
+  async unBindModuleToProfile(id_profile_module) {
+    try {
+      const query = 'DELETE from profile_module where id_pm = ?';
+
+      const [results] = await this.connection.promise().query(query, [id_profile_module]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Modules: ` + error);
+      throw new Error(`Error al eliminar el modulo del perfil`);
     }
   }
 }

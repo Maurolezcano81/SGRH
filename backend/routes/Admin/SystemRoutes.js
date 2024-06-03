@@ -62,10 +62,40 @@ import {
   createModule,
   getModule,
   getModules,
+  getModulesByProfile,
   updateModule,
   toggleStatusModule,
   deleteModule,
+  bindModuleToProfile,
+  unBindModuleToProfile,
 } from '../../controllers/System/ModuleControllers.js';
+
+import {
+  createDocument,
+  getDocument,
+  getDocuments,
+  updateDocument,
+  toggleStatusDocument,
+  deleteDocument,
+} from '../../controllers/System/DocumentControllers.js';
+
+import {
+  createProfile,
+  getProfile,
+  getProfiles,
+  updateProfile,
+  toggleStatusProfile,
+  deleteProfile,
+} from '../../controllers/System/Profile.js';
+
+import {
+  createDepartment,
+  getDepartment,
+  getDepartments,
+  updateDepartment,
+  toggleStatusDepartment,
+  deleteDepartment,
+} from '../../controllers/System/Department.js';
 
 import express from 'express';
 const router = express.Router();
@@ -129,10 +159,37 @@ router.delete('/type_of_termination', deleteTot);
 // MODULES
 router.post('/create/module', createModule);
 router.get('/modules', getModules);
+router.post('/modules/profile', getModulesByProfile);
+router.post('/module/profile', bindModuleToProfile);
+router.delete('/module/profile', unBindModuleToProfile);
 router.post('/module', getModule);
 router.patch('/module', updateModule);
 router.patch('/module/status', toggleStatusModule);
 router.delete('/module', deleteModule);
+
+// DOCUMENTS
+router.post('/create/document', createDocument);
+router.get('/documents', getDocuments);
+router.post('/document', getDocument);
+router.patch('/document', updateDocument);
+router.patch('/document/status', toggleStatusDocument);
+router.delete('/document', deleteDocument);
+
+// PROFILE
+router.post('/create/profile', createProfile);
+router.get('/profiles', getProfiles);
+router.post('/profile', getProfile);
+router.patch('/profile', updateProfile);
+router.patch('/profile/status', toggleStatusProfile);
+router.delete('/profile', deleteProfile);
+
+// DEPARTMENT
+router.post('/create/department', createDepartment);
+router.get('/departments', getDepartments);
+router.post('/department', getDepartment);
+router.patch('/department', updateDepartment);
+router.patch('/department/status', toggleStatusDepartment);
+router.delete('/department', deleteDepartment);
 
 const SystemRoutes = {
   router,

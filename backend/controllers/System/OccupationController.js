@@ -1,4 +1,4 @@
-import Occupation from '../../models/System/Occupation.js';
+import Occupation from '../../models/Department/Occupation.js';
 import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
 
 const instanceOccupation = new Occupation();
