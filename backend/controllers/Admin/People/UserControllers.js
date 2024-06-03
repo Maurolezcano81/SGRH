@@ -5,6 +5,7 @@ import Profile from '../../../models/Auth/Profile.js';
 import Contact from '../../../models/Admin/System/Contact.js';
 import EntityContact from '../../../models/Admin/Address/EntityContact.js';
 import City from '../../../models/Admin/Address/City.js';
+import Address from '../../../models/Admin/Address/Address.js';
 
 import {
   isInputEmpty,
@@ -17,6 +18,7 @@ import {
 import { encryptPwd } from '../../../middlewares/Authorization.js';
 import Department from '../../../models/Admin/Department/Department.js';
 import Occupation from '../../../models/Admin/Department/Occupation.js';
+import EntityDepartmentOccupation from '../../../models/Admin/Department/EntityDepartmentOccupattion.js';
 
 const instanceEmployee = new Employee();
 const instanceEntity = new Entity();
@@ -27,6 +29,8 @@ const instanceEntityContact = new EntityContact();
 const instanceCity = new City();
 const instanceDepartment = new Department();
 const instanceOccupation = new Occupation();
+const instanceEntityDepartmentOccupation = new EntityDepartmentOccupation();
+const instanceAddress = new Address();
 
 export const createUser = async (req, res) => {
   try {
@@ -56,13 +60,13 @@ export const createUser = async (req, res) => {
 
     const { file_employee, date_entry_employee } = employee_dataInJson;
 
-    const { username_user, pwd_user } = user_dataInJson;
-
     const { value_ec, contact_fk } = entity_contact_dataInJson;
 
     const { description_address, city_fk } = address_dataInJson;
 
     const { department_fk, occupation_fk } = entity_department_occupationInJson;
+
+    const { username_user, pwd_user } = user_dataInJson;
 
     // DESESTRUCTURACIONES
 
@@ -150,6 +154,11 @@ export const createUser = async (req, res) => {
       throw new Error("El puesto de trabajo no existe, ingrese uno valido")
     }
 
+    const checkExistProfile = await instanceProfile.getProfile(value_profile)
+
+    if(checkExistProfile.length < 1){
+      throw new Error("El tipo de permiso no existe, ingrese uno valido")
+    }
 
     // INSERTS EN LA BD
 
@@ -180,8 +189,10 @@ export const createUser = async (req, res) => {
     const entity_contact_data_completed = {
       value_ec: value_ec,
       entity_fk: idEntity,
-      contact_fk: contact_fk,
+      contact_fk: contact_fk
     };
+
+    console.log(entity_contact_data_completed)
 
     const insertEntityContact = await instanceEntityContact.createEntityContact(entity_contact_data_completed);
 
@@ -197,10 +208,25 @@ export const createUser = async (req, res) => {
       entity_fk: idEntity,
     };
 
-    const insertAddress = await instanceEntityContact(address_data_completed);
+    const insertAddress = await instanceAddress.createAddress(address_data_completed);
 
     if (!insertAddress) {
       throw new Error('Error al crear el usuario, comprueba los datos del domicilio');
+    }
+
+    // ENTITY DEPARTMENT OCCUPATION
+
+    const entityDepartmentOccupation_data_completed = {
+      entity_fk: idEntity,
+      department_fk: department_fk,
+      occupation_fk: occupation_fk
+    }
+
+    const insertEntityDepartmentOccupation = await instanceEntityDepartmentOccupation.createEntityDepartmentOccupation(entityDepartmentOccupation_data_completed);
+
+
+    if(!insertEntityDepartmentOccupation){
+      throw new Error("Error al crear el usuario, comprueba los datos del departamento, y el puesto de trabajo")
     }
 
     // USUARIO

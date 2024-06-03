@@ -8,7 +8,7 @@ class Profile {
 
   async getProfile(value_profile) {
     try {
-      const query = 'Select * from profile where id_profile = ? pr name_profile = ?';
+      const query = 'Select * from profile where id_profile = ? or name_profile = ?';
 
       const [results] = await this.connection.promise().query(query, [value_profile, value_profile]);
       return results;

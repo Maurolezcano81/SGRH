@@ -1,4 +1,4 @@
-import { database } from "../../../config/database";
+import { database } from "../../../config/database.js";
 import mysql from "mysql2";
 
 class Department{
@@ -20,7 +20,7 @@ class Department{
     
     async getDepartmentById(id_department) {
       try {
-        const query = "SELELECT * FROM department where id_department = ?";
+        const query = "SELECT * FROM department where id_department = ?";
     
         const [results] = await this.connection.promise().query(query, [id_department]);
         return results;

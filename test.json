@@ -7,52 +7,24 @@
         "nacionality_fk": 1
     },
     "employee_data":{
-        "file_employee": "A102",
+        "file_employee": "A104",
         "date_entry_employee": "2024/05/31"
     },
     "user_data":{
-        "username_user": "ktroche123",
-        "pwd_user": "ktroche123"
+        "username_user": "ktroche1234",
+        "pwd_user": "ktroche1234"
+    },
+    "entity_contact_data": {
+        "value_ec": "arguellotrochekaren@gmail.com",
+        "contact_fk": 1
+    },
+    "address_data":{
+        "description_address": "Barrio Republica Argentina mz 58 cs 11",
+        "city_fk": 1
+    },
+    "entity_department_occupation_data":{
+        "department_fk": 1,
+        "occupation_fk": 1
     },
     "value_profile": 1
-}
-
-{
-    "entity_data":{
-        "name_entity": "Nicolas",
-        "lastname_entity": "Ayala",
-        "date_birth_entity": "2000/02/10",
-        "sex_fk": 1,
-        "nacionality_fk": 1
-    },
-    "employee_data":{
-        "file_employee": "A103",
-        "date_entry_employee": "2024/05/31"
-    },
-    "user_data":{
-        "username_user": "nayala",
-        "pwd_user": "nayala"
-    },
-    "value_profile": 2
-}
-
-{
-    "entity_data":{
-        "name_entity": "Mauro",
-        "lastname_entity": "Lezcano",
-        "date_birth_entity": "1999/09/20",
-        "sex_fk": 1,
-        "nacionality_fk": 1
-    },
-    "employee_data":{
-        "file_employee": "A101",
-        "date_entry_employee": "2024/01/31"
-    },
-    "user_data":{
-        "username_user": "maurolezcano81",
-        "pwd_user": "mauroAdmin"
-    },
-    "value_profile": 2,
-    "department_entity": 1,
-    "occupation_entity": 1
 }

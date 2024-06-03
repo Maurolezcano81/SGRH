@@ -1,4 +1,4 @@
-import { database } from "../../../config/database";
+import { database } from "../../../config/database.js";
 import mysql from "mysql2";
 
 class EntityDepartmentOccupation{
@@ -8,8 +8,8 @@ class EntityDepartmentOccupation{
 
     async createEntityDepartmentOccupation(entity_department_occupation_data) {
       try {
-        const {entity_fk, department_fk, occupation_fk} = {}
-        const query = "INSERT INTO entity_department_occupation(entity_fk, department_fk, occupation_fk, status_edc, created_at, updated_at) VALUES(?, ?, ?, 1, now(), now())";
+        const {entity_fk, department_fk, occupation_fk} = entity_department_occupation_data
+        const query = "INSERT INTO entity_department_occupation(entity_fk, department_fk, occupation_fk, status_edo, created_at, updated_at) VALUES(?, ?, ?, 1, now(), now())";
     
         const [results] = await this.connection.promise().query(query, [entity_fk, department_fk, occupation_fk]);
         return results;

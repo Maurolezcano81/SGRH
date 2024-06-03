@@ -1,4 +1,4 @@
-import { database } from "../../../config/database";
+import { database } from "../../../config/database.js";
 import mysql from "mysql2";
 
 class Occupation{
