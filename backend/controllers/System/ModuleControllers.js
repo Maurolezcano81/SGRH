@@ -113,9 +113,8 @@ export const createModule = async (req, res) => {
 };
 
 export const updateModule = async (req, res) => {
-  const { module_data } = req.body;
+  const { id_module, name_module, url_module, status_module } = req.body;
   try {
-    const { id_module, name_module, status_module } = module_data;
 
     if (isInputEmpty(id_module) || isInputEmpty(name_module) || isInputEmpty(status_module)) {
       throw new Error('Debes completar todos los campos de modulo');
@@ -135,7 +134,7 @@ export const updateModule = async (req, res) => {
       throw new Error('No se puede actualizar el modulo debido a que no existe');
     }
 
-    const queryResponse = await instanceModule.updateModule(module_data);
+    const queryResponse = await instanceModule.updateModule(id_module, name_module, url_module, status_module);
 
     if (queryResponse.affectedRows < 1) {
       throw new Error('Error al actualizar el modulo');

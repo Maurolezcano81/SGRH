@@ -24,7 +24,7 @@ function App() {
       <AuthProvider>
         <NavbarProvider>
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
 
             <Route path="/admin/*" element={<AdminLayout />}>
               <Route path="ajustes/*" element={<Preferences />}>

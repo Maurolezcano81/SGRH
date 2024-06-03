@@ -91,29 +91,29 @@ export const createCountry = async (req, res) => {
 };
 
 export const updateCountry = async (req, res) => {
-  const { country_data } = req.body;
+  const { id_country, name_country, abbreviation_country, status_country } = req.body;
 
   try {
-    if (isInputEmpty(country_data.id_country)) {
+    if (isInputEmpty(id_country)) {
       throw new Error('Los datos que esta usando para la busqueda son invalidos');
     }
 
     if (
-      isInputEmpty(country_data.name_country) ||
-      isInputEmpty(country_data.abbreviation_country) ||
-      isInputEmpty(country_data.status_country)
+      isInputEmpty(name_country) ||
+      isInputEmpty(abbreviation_country) ||
+      isInputEmpty(status_country)
     ) {
       throw new Error('Debe completar todos los campos');
     }
 
-    const checkExists = await instanceCountry.getCountry(country_data.id_country);
+    const checkExists = await instanceCountry.getCountry(id_country);
 
     if (checkExists.length < 1) {
       throw new Error('No se puede actualizar el pais, debido a que no existe');
     }
 
 
-    const queryResponse = await instanceCountry.updateCountry(country_data);
+    const queryResponse = await instanceCountry.updateCountry(id_country, name_country, abbreviation_country, status_country);
     if (queryResponse.affectedRows < 1) {
       throw new Error('Error al actualizar el pais');
     }

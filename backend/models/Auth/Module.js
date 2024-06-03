@@ -57,9 +57,8 @@ class Module {
     }
   }
 
-  async updateModule(module_data) {
+  async updateModule(id_module, name_module, url_module, status_module) {
     try {
-      const { id_module, name_module, url_module, status_module } = module_data;
       const query =
         'UPDATE module SET name_module = ?, url_module = ?, status_module = ?, updated_at = now() where id_module = ?';
 

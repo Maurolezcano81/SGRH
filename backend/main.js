@@ -20,7 +20,7 @@ app.use('/api', UserCredentialsRoutes.router);
 
 /* app.use('/api', PersonalRoutes.router); */
 
-app.use('/api', verifyToken, decodeToken, SystemRoutes.router, UserRoutes.router);
+app.use('/api/admin', SystemRoutes.router, UserRoutes.router);
 
 // Server
 app.listen(process.env.SV_PORT || 3000, () => {

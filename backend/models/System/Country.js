@@ -47,9 +47,8 @@ class Country {
     }
   }
 
-  async updateCountry(country_data) {
+  async updateCountry(id_country, name_country, abbreviation_country, status_country) {
     try {
-      const { id_country, name_country, abbreviation_country, status_country } = country_data;
       const query =
         'UPDATE country SET name_country = ?, abbreviation_country = ?, status_country = ?, updated_at = now() where id_country = ?';
 

@@ -48,8 +48,7 @@ class Nacionality {
     }
   }
 
-  async updateNacionality(nacionality_data) {
-    const { id_nacionality, name_nacionality, abbreviation_nacionality, status_nacionality } = nacionality_data;
+  async updateNacionality(id_nacionality, name_nacionality, abbreviation_nacionality, status_nacionality) {
     try {
       const query =
         'UPDATE nacionality SET name_nacionality = ?, abbreviation_nacionality = ?, status_nacionality = ?, updated_at = now() where id_nacionality = ?';

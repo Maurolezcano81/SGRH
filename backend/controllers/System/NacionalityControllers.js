@@ -90,32 +90,32 @@ export const createNacionality = async (req, res) => {
 };
 
 export const updateNacionality = async (req, res) => {
-  const { nacionality_data } = req.body;
+  const { id_nacionality, name_nacionality, abbreviation_nacionality, status_nacionality } = req.body;
   try {
-
-    if (
-      isInputEmpty(nacionality_data.id_nacionality) ||
-      isInputEmpty(nacionality_data.name_nacionality) ||
-      isInputEmpty(nacionality_data.abbreviation_nacionality)
-    ) {
+    if (isInputEmpty(id_nacionality) || isInputEmpty(name_nacionality) || isInputEmpty(abbreviation_nacionality)) {
       throw new Error('Debe completar todos los campos');
     }
 
-    if (isNotAToZ(nacionality_data.name_nacionality) || isNotAToZ(nacionality_data.abbreviation_nacionality)) {
+    if (isNotAToZ(name_nacionality) || isNotAToZ(abbreviation_nacionality)) {
       throw new Error('No debe ingresar caracteres especiales');
     }
 
-    const checkExists = await instanceNacionality.getNacionality(nacionality_data.id_nacionality);
+    const checkExists = await instanceNacionality.getNacionality(id_nacionality);
 
     if (checkExists.length < 1) {
       throw new Error('No se puede actualizar la nacionalidad, debido a que no existe');
     }
 
-    const queryResponse = await instanceNacionality.updateNacionality(nacionality_data);
+    const queryResponse = await instanceNacionality.updateNacionality(
+      id_nacionality,
+      name_nacionality,
+      abbreviation_nacionality,
+      status_nacionality
+    );
 
-    if(queryResponse.affectedRows < 1){
-      throw new Error("Error al actualizar la nacionalidad")
-  }
+    if (queryResponse.affectedRows < 1) {
+      throw new Error('Error al actualizar la nacionalidad');
+    }
 
     return res.status(200).json({
       message: 'Nacionalidad actualizada correctamente',

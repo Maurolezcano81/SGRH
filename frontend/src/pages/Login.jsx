@@ -13,7 +13,7 @@ import {
 import useAuth from '../hooks/useAuth';
 const Login = () => {
 
-    const urlApi = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/signIn`;
+    const urlApi = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/login`;
 
     const [error, setError] = useState('');
 
@@ -41,7 +41,7 @@ const Login = () => {
                 }
             } catch (error) {
                 console.error('Error al iniciar sesión automáticamente:', error);
-                Navigate('/login');
+                Navigate('/');
             }
         }
     }, [Navigate]);

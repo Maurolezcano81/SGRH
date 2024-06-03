@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import useNav from '../../../hooks/useNav';
-import {
-  useLocation
-} from 'react-router-dom'
+import { useLocation } from 'react-router-dom';
 
 import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
 import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
@@ -16,10 +14,10 @@ const TypeTermination = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
   const [typesTermination, setTypesTermination] = useState([]);
   const [typesTerminationFormatted, setTypesTerminationFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(""); // Estado para almacenar el mensaje de "no hay datos"
+  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
-  const {storageNavbarTitle}  = useNav();
+  const { storageNavbarTitle } = useNav();
 
   const location = useLocation();
 
@@ -29,7 +27,6 @@ const TypeTermination = () => {
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
 
-  
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
   const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
@@ -50,12 +47,12 @@ const TypeTermination = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/types_of_termination`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/type_of_termination`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/type_of_termination`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/create/type_of_termination`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/type_of_termination/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/type_of_termination`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/types_of_termination`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/create/type_of_termination`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination/status`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/type_of_termination`;
 
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
@@ -74,14 +71,14 @@ const TypeTermination = () => {
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
-            setNoDataMessage(data.message);
-            setTypesTermination([]);
-            setTypesTerminationFormatted([]);
-          } else {
-            setTypesTermination(data.queryResponse);
-            formatStatuses(data.queryResponse);
-            setNoDataMessage("");
-          }
+          setNoDataMessage(data.message);
+          setTypesTermination([]);
+          setTypesTerminationFormatted([]);
+        } else {
+          setTypesTermination(data.queryResponse);
+          formatStatuses(data.queryResponse);
+          setNoDataMessage('');
+        }
       } catch (error) {
         console.error('Error al obtener los estados de solicitud', error);
       }
@@ -92,7 +89,7 @@ const TypeTermination = () => {
 
   const formatStatuses = (typesTermination) => {
     const formatted = typesTermination.map((typeTermination) => ({
-      ...typeTermination
+      ...typeTermination,
     }));
     setTypesTerminationFormatted(formatted);
   };
@@ -148,7 +145,7 @@ const TypeTermination = () => {
       <PreferenceTitle title="Estado" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de Estado de Solicitud'}
+          title_modal={'Nuevo Tipo de salida'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
@@ -161,7 +158,7 @@ const TypeTermination = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Estado de Solicitud'}
+          title_modal={'Editar tipo de salida'}
           labels={['Nombre', 'Estado']}
           placeholders={['Ingrese nombre', 'Ingrese el estado']}
           methodGetOne={'POST'}
@@ -193,22 +190,22 @@ const TypeTermination = () => {
           </tr>
         </thead>
         <tbody className="table__preference__body">
-        {typesTerminationFormatted.length > 0 ? (
-                    <PreferencesBodyRow
-                    items={typesTerminationFormatted}
-                    keys={['name_tof']}
-                    status_name={['id_tof', 'status_tof']}
-                    fetchUrl={toggleStatus}
-                    idToToggle={idToToggle}
-                    handleStatusToggle={handleStatusToggle}
-                    handleDependencyToggle={handleDependencyToggle}
-                    handleEdit={handleModalUpdate}
-                    handleModalDelete={handleModalDelete}
-                    handleDelete={handleDelete}
-                  />
+          {typesTerminationFormatted.length > 0 ? (
+            <PreferencesBodyRow
+              items={typesTerminationFormatted}
+              keys={['name_tof']}
+              status_name={['id_tof', 'status_tof']}
+              fetchUrl={toggleStatus}
+              idToToggle={idToToggle}
+              handleStatusToggle={handleStatusToggle}
+              handleDependencyToggle={handleDependencyToggle}
+              handleEdit={handleModalUpdate}
+              handleModalDelete={handleModalDelete}
+              handleDelete={handleDelete}
+            />
           ) : (
             <tr>
-              <td colSpan="3">{noDataMessage || "No hay datos ingresados"}</td>
+              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
             </tr>
           )}
         </tbody>
