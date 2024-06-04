@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import PersonalDropDown from "./PersonalDropDown";
-import Analytics from "./Analytics";
+import PersonalDropDown from './PersonalDropDown';
+import Analytics from './Analytics';
 
 const AdminOptions = () => {
   const [isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen] = useState(false);
@@ -24,6 +24,7 @@ const AdminOptions = () => {
         setIsDropdown={setIsPersonalDropdownOpen}
         closeDropdowns={closeDropdowns}
       />
+
     </>
   );
 };

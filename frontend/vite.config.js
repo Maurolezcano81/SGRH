@@ -7,8 +7,5 @@ export default defineConfig({
   plugins: [react()],
   define:{
     'process.env': JSON.stringify(dotenv.config().parsed)
-  },
-  server:{
-    host:true
   }
 })

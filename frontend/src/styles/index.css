@@ -64,6 +64,9 @@
   --size-preferences-row: clamp(1.4rem, 2vw, 1.8rem);
 
   /* Navbar Sizes */
+
+  --size-usercreate-title: clamp(2rem, 2vw, 2.5rem);
+  --size-usercreate-input: clamp(1.2rem, 2vw, 1.8rem);
 }
 
 html {
@@ -87,7 +90,7 @@ body {
   background-color: var(--white-2);
 }
 
-table{
+table {
   width: 100%;
 }
 
@@ -147,7 +150,7 @@ input {
   background-color: var(--green-0);
 }
 
-.alert__container{
+.alert__container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -164,20 +167,19 @@ input {
   box-shadow: var(--shadow-a-25-b-02);
 }
 
-.alert__header{
+.alert__header {
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.alert__header img{
+.alert__header img {
   width: 30%;
 }
 
-.alert__footer{
+.alert__footer {
   width: 100%;
 }
-
 
 /* START LOGIN */
 .login__container {
@@ -339,13 +341,12 @@ input {
   justify-content: space-between;
 }
 
-.title__navbar{
+.title__navbar {
   text-align: center;
   width: fit-content;
   font-size: var(--size-preferences-title);
-  text-transform: capitalize
+  text-transform: capitalize;
 }
-
 
 .navbar__collapsed-button {
   background: none;
@@ -613,14 +614,14 @@ input {
   overflow: auto;
 }
 
-.table__preference__body tr td div{
+.table__preference__body tr td div {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .preference__body-column {
-  max-width:10rem;
+  max-width: 10rem;
   scrollbar-width: 1rem;
 }
 
@@ -759,24 +760,21 @@ input {
   background-color: var(--blue-0);
 }
 
-
-.alert__footer.modal__delete{
+.alert__footer.modal__delete {
   display: flex;
   justify-content: flex-end;
   gap: 2rem;
   text-align: center;
 }
 
-.alert__header.modal__delete{
+.alert__header.modal__delete {
   font-size: var(--size-preferences-title);
   text-align: center;
 }
 
-.modal__delete__message{
+.modal__delete__message {
   text-align: center;
 }
-
-
 
 /* START MODAL PREFERENCE LAYOUT */
 
@@ -786,13 +784,76 @@ input {
 
 /* END PREFERENCES LAYOUT */
 
+/* START CREATE USER FORM */
 
-@media (width >= 468px){
+main {
+  padding: 2rem;
+}
+
+.container__section {
+  padding: 1rem;
+  box-shadow: var(--shadow-a-25-b-02);
+  border-radius: 1rem;
+}
+
+.container__title-form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container__title-form h2 {
+  font-size: var(--size-usercreate-title);
+  font-weight: 600;
+  width: fit-content;
+}
+
+.container__title-form h2::after {
+  content: '';
+  display: block;
+  width: 50%;
+  position: relative;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 0.2rem;
+  background-color: var(--blue-0);
+}
+
+.input__form__div {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input__form__div__label{
+  padding: .5rem;
+  text-align: left;
+  font-weight: 600;
+  background: none;
+  border: none;
+  max-width: 40%;
+}
+
+.input__form__div__input{
+  padding: 1rem;
+  max-width: 50%;
+  background-color: var(--white-3);
+  border-radius: 0 1rem 1rem 0;
+  border: none;
+}
+
+
+/* START CREATE USER FORM */
+
+@media (width >= 468px) {
   .table__preference__head tr th {
     padding: 1rem 2rem;
   }
 
-  table{
+  table {
     width: 100%;
     margin: 0 auto;
   }
@@ -817,12 +878,11 @@ input {
     width: 40%;
   }
 
-
-  .button__navbar{
+  .button__navbar {
     min-width: 60%;
   }
 
-  .alert__container{
+  .alert__container {
     width: 40%;
   }
 
@@ -830,7 +890,7 @@ input {
     width: 50%;
   }
 
-  table{
+  table {
     width: 80%;
     margin: 0 auto;
   }
@@ -839,17 +899,17 @@ input {
     width: 3rem;
     height: 3rem;
   }
-  
+
   .preference__edit img {
     width: 2rem;
     height: 2rem;
   }
-  
+
   .preference__delete {
     width: 3rem;
     height: 3rem;
   }
-  
+
   .preference__delete img {
     width: 2rem;
     height: 2rem;

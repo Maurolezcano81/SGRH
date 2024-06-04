@@ -25,7 +25,8 @@ const PersonalDropDown = (props) => {
             </div>
             {props.isDropdown ? <div className="navbar__content-dropdown">
                 <Link to="/admin/personal">Ver Personal</Link>
-                <Link to="/admin/ajustes">Alta Personal</Link>
+                <Link to="/admin/ajustes">Ajustes Personal</Link>
+                <Link to="/admin/usuario/crear">Alta Personal</Link>
             </div> : null}
         </div>
 

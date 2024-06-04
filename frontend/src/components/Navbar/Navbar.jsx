@@ -25,7 +25,7 @@ const Navbar = () => {
   const handleLogout = () => {
     deleteAuthData();
     localStorage.removeItem('token');
-    Navigate('/login');
+    Navigate('/');
   };
 
   return (
@@ -54,7 +54,11 @@ const Navbar = () => {
           />
           <HeaderButtons username={authData?.username_user} />
         </div>
+
+
         <NavbarContent />
+
+        
         <div className="navbar__footer">
           <button onClick={handleLogout} className="button__navbar">
             Cerrar Sesión

@@ -19,6 +19,7 @@ import Module from './pages/Admin/System/Module';
 import TypeTermination from './pages/Admin/System/TypeOfTermination';
 import Department from './pages/Admin/System/Department';
 import Document from './pages/Admin/System/Document';
+import CreateUser from './pages/Admin/User/CreateUser';
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
                 <Route path="documento" element={<Document />} />
                 <Route path="departamento" element={<Department />} />
               </Route>
+              <Route path="usuario/crear" element={<CreateUser />} />
             </Route>
           </Routes>
         </NavbarProvider>
