@@ -27,7 +27,12 @@ function configureStorage(destinationPath) {
 // Función para configurar Multer
 function configureMulter(destinationPath) {
   const storage = configureStorage(destinationPath);
-  return multer({ storage: storage });
+  return multer({ 
+    storage: storage,
+    limits: {
+      fileSize: 1024 * 1024 * 10, // 10 MB (ejemplo de límite de tamaño)
+    }
+  });
 }
 
 // Middleware para subir archivos

@@ -37,7 +37,6 @@ class Sex {
             const query = "SELECT id_sex, name_sex, status_sex FROM sex";
 
             const [results] = await this.connection.promise().query(query);
-            console.log(results);
             return results
         } catch (error) {
             console.error("Error en sexo: " + error)

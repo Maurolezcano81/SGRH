@@ -6,6 +6,11 @@ import Contact from '../../models/System/Contact.js';
 import EntityContact from '../../models/Address/EntityContact.js';
 import City from '../../models/Address/City.js';
 import Address from '../../models/Address/Address.js';
+import Document from '../../models/System/Document.js';
+import Department from '../../models/Department/Department.js';
+import Occupation from '../../models/Department/Occupation.js';
+import EntityDepartmentOccupation from '../../models/Department/EntityDepartmentOccupattion.js';
+import EntityDocument from '../../models/People/EntityDocument.js';
 
 import {
   isInputEmpty,
@@ -16,9 +21,6 @@ import {
 } from '../../middlewares/Validations.js';
 
 import { encryptPwd } from '../../middlewares/Authorization.js';
-import Department from '../../models/Department/Department.js';
-import Occupation from '../../models/Department/Occupation.js';
-import EntityDepartmentOccupation from '../../models/Department/EntityDepartmentOccupattion.js';
 
 const instanceEmployee = new Employee();
 const instanceEntity = new Entity();
@@ -31,6 +33,8 @@ const instanceDepartment = new Department();
 const instanceOccupation = new Occupation();
 const instanceEntityDepartmentOccupation = new EntityDepartmentOccupation();
 const instanceAddress = new Address();
+const instanceDocument = new Document();
+const instanceEntityDocument = new EntityDocument();
 
 export const createUser = async (req, res) => {
   try {
@@ -38,6 +42,7 @@ export const createUser = async (req, res) => {
 
     const {
       entity_data,
+      entity_document_data,
       employee_data,
       user_data,
       entity_contact_data,
@@ -49,14 +54,17 @@ export const createUser = async (req, res) => {
     const avatar_url = req.fileUrl;
 
     // PARSED DATA IN JSON
-    const entity_dataInJson = JSON.parse(entity_data);
-    const employee_dataInJson = JSON.parse(employee_data);
-    const user_dataInJson = JSON.parse(user_data);
-    const entity_contact_dataInJson = JSON.parse(entity_contact_data);
-    const address_dataInJson = JSON.parse(address_data);
-    const entity_department_occupationInJson = JSON.parse(entity_department_occupation_data);
+    const entity_dataInJson = await JSON.parse(entity_data);
+    const entity_document_dataInJson = await JSON.parse(entity_document_data);
+    const employee_dataInJson = await JSON.parse(employee_data);
+    const user_dataInJson = await JSON.parse(user_data);
+    const entity_contact_dataInJson = await JSON.parse(entity_contact_data);
+    const address_dataInJson = await JSON.parse(address_data);
+    const entity_department_occupationInJson = await JSON.parse(entity_department_occupation_data);
 
     const { name_entity, lastname_entity, date_birth_entity, sex_fk, nacionality_fk } = entity_dataInJson;
+
+    const { document_fk, value_ed } = entity_document_dataInJson;
 
     const { file_employee, date_entry_employee } = employee_dataInJson;
 
@@ -68,22 +76,45 @@ export const createUser = async (req, res) => {
 
     const { username_user, pwd_user } = user_dataInJson;
 
+    const formatDate = (date) => {
+      return date.split('-').join('/');
+    };
+
+    const date_birth_entity_formatted = formatDate(date_birth_entity);
+    const date_entry_employee_formatted = formatDate(date_entry_employee);
+
     // DESESTRUCTURACIONES
 
     // VALIDACIONES ENTIDAD
 
+    console.log(entity_dataInJson);
+    console.log(entity_document_dataInJson);
+    console.log(employee_dataInJson)
+    console.log(entity_contact_dataInJson)
+    console.log(address_dataInJson)
+    console.log(entity_department_occupationInJson)
+    console.log(user_dataInJson)
+    console.log(avatar_url)
+    console.log(value_profile)
+
+
     if (
       isInputEmpty(name_entity) ||
       isInputEmpty(lastname_entity) ||
-      isInputEmpty(date_birth_entity) ||
+      isInputEmpty(date_birth_entity_formatted) ||
       isInputEmpty(sex_fk) ||
       isInputEmpty(nacionality_fk)
     ) {
       throw new Error('Debes completar todos los datos de la persona');
     }
 
-    if (isNotDate(date_birth_entity)) {
+    if (isNotDate(date_birth_entity_formatted)) {
       throw new Error('La fecha de nacimiento debe ser una fecha valida');
+    }
+
+    // VALIDACIONES ENTITY DOCUMENT
+    if (isInputEmpty(document_fk) || isInputEmpty(value_ed)) {
+      throw new Error('Debes completar todos los datos de la persona');
     }
 
     // VALIDACIONES EMPLEADO
@@ -91,7 +122,7 @@ export const createUser = async (req, res) => {
       throw new Error('Debes completar todos los datos del empleado');
     }
 
-    if (isNotDate(date_entry_employee)) {
+    if (isNotDate(date_entry_employee_formatted)) {
       throw new Error('La fecha de ingreso del empleado debe ser valida');
     }
 
@@ -112,8 +143,8 @@ export const createUser = async (req, res) => {
     }
 
     // VALIDACIONES ENTITY_DEPARTMENT_OCCUPATION
-    if(isInputEmpty(department_fk) || isInputEmpty(occupation_fk)){
-      throw new Error("Debes completar todos los campos del puesto de trabajo");
+    if (isInputEmpty(department_fk) || isInputEmpty(occupation_fk)) {
+      throw new Error('Debes completar todos los campos del puesto de trabajo');
     }
 
     // COMPROBACIONES SI EXISTEN EN BD
@@ -122,6 +153,12 @@ export const createUser = async (req, res) => {
 
     if (checkExistFileEmployee.length > 0) {
       throw new Error('El numero de legajo ya existe');
+    }
+
+    const checkExistDocument = await instanceDocument.getDocument(document_fk);
+
+    if (checkExistDocument.length < 1) {
+      throw new Error('El tipo de documento no existe');
     }
 
     const checkExistUser = await instanceUser.getUserByUsername(username_user);
@@ -142,28 +179,37 @@ export const createUser = async (req, res) => {
       throw new Error('Esta ciudad no existe, ingrese una valida');
     }
 
-    const checkExistDepartment = await instanceDepartment.getDepartmentById(department_fk);
+    const checkExistDepartment = await instanceDepartment.getDepartment(department_fk);
 
-    if(checkExistDepartment.length < 1){
-      throw new Error("Este departamento no existe, ingrese uno valido")
+    if (checkExistDepartment.length < 1) {
+      throw new Error('Este departamento no existe, ingrese uno valido');
     }
 
-    const checkExistOccupation = await instanceOccupation.getOccupationById(occupation_fk);
+    const checkExistOccupation = await instanceOccupation.getOccupation(occupation_fk);
 
-    if(checkExistOccupation.length < 1){
-      throw new Error("El puesto de trabajo no existe, ingrese uno valido")
+    if (checkExistOccupation.length < 1) {
+      throw new Error('El puesto de trabajo no existe, ingrese uno valido');
     }
 
-    const checkExistProfile = await instanceProfile.getProfile(value_profile)
+    const checkExistProfile = await instanceProfile.getProfile(value_profile);
 
-    if(checkExistProfile.length < 1){
-      throw new Error("El tipo de permiso no existe, ingrese uno valido")
+    if (checkExistProfile.length < 1) {
+      throw new Error('El tipo de permiso no existe, ingrese uno valido');
     }
 
     // INSERTS EN LA BD
 
     // PERSONA
-    const insertEntity = await instanceEntity.createEntity(entity_dataInJson);
+
+    const entity_data_completed = {
+      name_entity: name_entity,
+      lastname_entity: lastname_entity,
+      date_birth_entity: date_birth_entity_formatted,
+      sex_fk: sex_fk,
+      nacionality_fk: nacionality_fk,
+    };
+
+    const insertEntity = await instanceEntity.createEntity(entity_data_completed);
 
     if (!insertEntity) {
       throw new Error('Error al crear usuario, comprueba los datos de la persona');
@@ -171,10 +217,24 @@ export const createUser = async (req, res) => {
 
     const idEntity = insertEntity.insertId;
 
+    // PERSONA DOCUMENTO
+
+    const entity_document_data_completed = {
+      entity_fk: idEntity,
+      document_fk: document_fk,
+      value_ed: value_ed,
+    };
+
+    const insertDocumentEntity = await instanceEntityDocument.assignDocumentToEntity(entity_document_data_completed);
+
+    if (!insertDocumentEntity) {
+      throw new Error('Error al crear usuario, comprueba los datos de la persona');
+    }
+
     // EMPLEADO
     const employee_data_completed = {
       file_employee: file_employee,
-      date_entry_employee: date_entry_employee,
+      date_entry_employee: date_entry_employee_formatted,
       entity_fk: idEntity,
     };
 
@@ -189,10 +249,10 @@ export const createUser = async (req, res) => {
     const entity_contact_data_completed = {
       value_ec: value_ec,
       entity_fk: idEntity,
-      contact_fk: contact_fk
+      contact_fk: contact_fk,
     };
 
-    console.log(entity_contact_data_completed)
+    console.log(entity_contact_data_completed);
 
     const insertEntityContact = await instanceEntityContact.createEntityContact(entity_contact_data_completed);
 
@@ -219,14 +279,15 @@ export const createUser = async (req, res) => {
     const entityDepartmentOccupation_data_completed = {
       entity_fk: idEntity,
       department_fk: department_fk,
-      occupation_fk: occupation_fk
-    }
+      occupation_fk: occupation_fk,
+    };
 
-    const insertEntityDepartmentOccupation = await instanceEntityDepartmentOccupation.createEntityDepartmentOccupation(entityDepartmentOccupation_data_completed);
+    const insertEntityDepartmentOccupation = await instanceEntityDepartmentOccupation.createEntityDepartmentOccupation(
+      entityDepartmentOccupation_data_completed
+    );
 
-
-    if(!insertEntityDepartmentOccupation){
-      throw new Error("Error al crear el usuario, comprueba los datos del departamento, y el puesto de trabajo")
+    if (!insertEntityDepartmentOccupation) {
+      throw new Error('Error al crear el usuario, comprueba los datos del departamento, y el puesto de trabajo');
     }
 
     // USUARIO

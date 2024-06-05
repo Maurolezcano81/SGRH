@@ -73,8 +73,8 @@ const AddressdataSection = ({ setAddressData }) => {
     }
   };
 
-  const handleChangeCities = (e) =>{
-    changeCities(e.target.value)
+  const handleChangeCities = (e) => {
+    changeCities(e.target.value);
   };
 
   const changeCities = async (state_fk) => {
@@ -111,7 +111,6 @@ const AddressdataSection = ({ setAddressData }) => {
       [name]: value,
     }));
   };
-
 
   return (
     <div className="container__section">
@@ -174,7 +173,14 @@ const AddressdataSection = ({ setAddressData }) => {
           Direccion
         </label>
 
-        <input onChange={onChangeCityAddress}  className="input__form__div__input" type="text" name="description_address" id="description_address" />
+        <input
+          placeholder="Dirección"
+          onChange={onChangeCityAddress}
+          className="input__form__div__input"
+          type="text"
+          name="description_address"
+          id="description_address"
+        />
       </div>
     </div>
   );

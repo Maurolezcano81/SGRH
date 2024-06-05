@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useAuth from '../../../hooks/useAuth';
 
-const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
+const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocumentEntityData }) => {
   const [listTypeDocument, setListTypeDocument] = useState([]);
   const [listSex, setListSex] = useState([]);
   const [listNacionality, setListNacionality] = useState([]);
@@ -31,7 +31,12 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
           )
         );
 
-        if (documentsResponse.status === 403 || sexsResponse.status === 403 || nacionalitiesResponse.status === 403 || contactsResponse.status === 403) {
+        if (
+          documentsResponse.status === 403 ||
+          sexsResponse.status === 403 ||
+          nacionalitiesResponse.status === 403 ||
+          contactsResponse.status === 403
+        ) {
           alert('Error al obtener los datos');
           return;
         }
@@ -70,13 +75,21 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
     }));
   };
 
-  const handleChangeContactEntityData = (e) =>{
-    const {name, value} = e.target;
-    setContactEntityData((prevState) =>({
+  const handleChangeContactEntityData = (e) => {
+    const { name, value } = e.target;
+    setContactEntityData((prevState) => ({
       ...prevState,
       [name]: value,
-    }))
-  }
+    }));
+  };
+
+  const handleChangeDocumentEntityData = (e) => {
+    const { name, value } = e.target;
+    setDocumentEntityData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   return (
     <div className="container__section">
@@ -92,7 +105,7 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
           className="input__form__div__input"
           type="text"
           name="name_entity"
-          id='name_entity'
+          id="name_entity"
           placeholder="Nombre"
           onChange={handleChangeEntityData}
         />
@@ -106,14 +119,14 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
           className="input__form__div__input"
           type="text"
           name="lastname_entity"
-          id='lastname_entity'
+          id="lastname_entity"
           placeholder="Apellido"
           onChange={handleChangeEntityData}
         />
       </div>
 
       <div className="input__form__div">
-        <select className="input__form__div__label" name="document_fk" onChange={handleChangeEntityData}>
+        <select className="input__form__div__label" name="document_fk" onChange={handleChangeDocumentEntityData}>
           <option value="">Tipo de documento</option>
           {listTypeDocument.map((document) => (
             <option key={document.id_document} value={document.id_document}>
@@ -121,14 +134,25 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
             </option>
           ))}
         </select>
-        <input placeholder='Documento' className="input__form__div__input" type="text" name="document_fk" onChange={handleChangeEntityData} />
+        <input
+          placeholder="Documento"
+          className="input__form__div__input"
+          type="text"
+          name="value_ed"
+          onChange={handleChangeDocumentEntityData}
+        />
       </div>
 
       <div className="input__form__div">
         <label className="input__form__div__label" htmlFor="nacionality_fk">
           Nacionalidad:
         </label>
-        <select className="input__form__div__input" name="nacionality_fk" id='nacionality_fk' onChange={handleChangeEntityData}>
+        <select
+          className="input__form__div__input"
+          name="nacionality_fk"
+          id="nacionality_fk"
+          onChange={handleChangeEntityData}
+        >
           <option value="">Seleccione su nacionalidad</option>
           {listNacionality.map((nacionality) => (
             <option key={nacionality.id_nacionality} value={nacionality.id_nacionality}>
@@ -142,7 +166,7 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
         <label className="input__form__div__label" htmlFor="sex_fk">
           Sexo:
         </label>
-        <select className="input__form__div__input" name="sex_fk" id='sex_fk' onChange={handleChangeEntityData}>
+        <select className="input__form__div__input" name="sex_fk" id="sex_fk" onChange={handleChangeEntityData}>
           <option value="">Seleccione el sexo</option>
           {listSex.map((sex) => (
             <option key={sex.id_sex} value={sex.id_sex}>
@@ -160,7 +184,7 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
           className="input__form__div__input"
           type="date"
           name="date_birth_entity"
-          id='date_birth_entity'
+          id="date_birth_entity"
           placeholder="Ingrese la fecha de nacimiento"
           onChange={handleChangeEntityData}
         />
@@ -175,7 +199,13 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData }) => {
             </option>
           ))}
         </select>
-        <input placeholder='Introduzca el numero' className="input__form__div__input" type="text" name="value_ec" onChange={handleChangeContactEntityData} />
+        <input
+          placeholder="Introduzca el numero"
+          className="input__form__div__input"
+          type="text"
+          name="value_ec"
+          onChange={handleChangeContactEntityData}
+        />
       </div>
     </div>
   );
