@@ -318,17 +318,6 @@ input {
   color: var(--blue-3);
 }
 
-@media (width >=1024px) {
-  .login__form__container {
-    width: 40%;
-  }
-
-  .login__content {
-    align-items: center;
-    gap: 4rem;
-  }
-}
-
 /* END LOGIN */
 
 /* START NAVBAR */
@@ -794,6 +783,7 @@ main {
   padding: 1rem;
   box-shadow: var(--shadow-a-25-b-02);
   border-radius: 1rem;
+  margin-bottom: 2rem;
 }
 
 .container__title-form {
@@ -840,6 +830,7 @@ main {
 .input__form__div__input{
   padding: 1rem;
   max-width: 50%;
+  min-width: 50%;
   background-color: var(--white-3);
   border-radius: 0 1rem 1rem 0;
   border: none;
@@ -871,6 +862,15 @@ main {
 @media (width >=1024px) {
   .navbar__container {
     width: auto;
+  }
+
+  .login__form__container {
+    width: 40%;
+  }
+
+  .login__content {
+    align-items: center;
+    gap: 4rem;
   }
 
   .navbar__collapsed-button {
@@ -913,6 +913,18 @@ main {
   .preference__delete img {
     width: 2rem;
     height: 2rem;
+  }
+
+  .form__container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 50%;
+  }
+
+  .container__section{
+    width: 100%;
   }
 }
 
