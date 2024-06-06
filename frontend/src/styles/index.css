@@ -31,6 +31,7 @@
 
   /* Backgrounds */
   --bg-white-2-30: rgba(250, 250, 250, 0.3);
+  --bg-black-2-30: rgba(0,0,0,.3);
   /* Backgrounds */
 
   /* ERROR MESSAGES*/
@@ -179,6 +180,8 @@ input {
 
 .alert__footer {
   width: 100%;
+  text-align: center;
+  font-size: var(--size-error-content);
 }
 
 /* START LOGIN */
@@ -916,6 +919,34 @@ main {
   display: flex;
   justify-content: end;
   width: 100%;
+}
+
+.error__validation__form{
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--red-0);
+  text-align: center;
+  margin: .5rem 0;
+}
+
+.error__validation__form-p{
+  font-size: var(--size-error-content);
+  width: 100%;
+}
+
+.alert__container{
+  z-index: 10;
+}
+
+.alert__background__black{
+  content: "";
+  min-width: 100vw;
+  min-height: 100vh;
+  position:fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--bg-black-2-30);
+  z-index: 1;
 }
 /* START CREATE USER FORM */
 

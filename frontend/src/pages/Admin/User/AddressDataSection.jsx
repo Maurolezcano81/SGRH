@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import useAuth from '../../../hooks/useAuth';
 
-const AddressdataSection = ({ setAddressData }) => {
+const AddressdataSection = ({ setAddressData, error }) => {
   const [listCountries, setListCountries] = useState([]);
   const [listStates, setListStates] = useState([]);
   const [listCities, setListCities] = useState([]);
@@ -182,6 +182,11 @@ const AddressdataSection = ({ setAddressData }) => {
           id="description_address"
         />
       </div>
+      {error && (
+        <div className="error__validation__form">
+          <p className="error_validation__form-p">{error}</p>
+        </div>
+      )}
     </div>
   );
 };

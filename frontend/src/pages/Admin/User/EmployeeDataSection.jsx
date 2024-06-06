@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 
-const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData }) => {
+const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, error }) => {
   const [listOccupations, setListOccupations] = useState([]);
   const [listDepartments, setListDepartments] = useState([]);
 
@@ -143,6 +143,11 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData }) =
           ))}
         </select>
       </div>
+      {error && (
+        <div className="error__validation__form">
+          <p className="error_validation__form-p">{error}</p>
+        </div>
+      )}
     </div>
   );
 };

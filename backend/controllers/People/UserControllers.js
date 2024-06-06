@@ -89,14 +89,13 @@ export const createUser = async (req, res) => {
 
     console.log(entity_dataInJson);
     console.log(entity_document_dataInJson);
-    console.log(employee_dataInJson)
-    console.log(entity_contact_dataInJson)
-    console.log(address_dataInJson)
-    console.log(entity_department_occupationInJson)
-    console.log(user_dataInJson)
-    console.log(avatar_url)
-    console.log(value_profile)
-
+    console.log(employee_dataInJson);
+    console.log(entity_contact_dataInJson);
+    console.log(address_dataInJson);
+    console.log(entity_department_occupationInJson);
+    console.log(user_dataInJson);
+    console.log(avatar_url);
+    console.log(value_profile);
 
     if (
       isInputEmpty(name_entity) ||
@@ -105,46 +104,48 @@ export const createUser = async (req, res) => {
       isInputEmpty(sex_fk) ||
       isInputEmpty(nacionality_fk)
     ) {
-      throw new Error('Debes completar todos los datos de la persona');
+      return res.status(422).json({ message: 'Debes completar todos los datos de la persona', group: 'entity' });
     }
 
     if (isNotDate(date_birth_entity_formatted)) {
-      throw new Error('La fecha de nacimiento debe ser una fecha valida');
+      return res.status(422).json({ message: 'La fecha de nacimiento debe ser una fecha valida', group: 'entity' });
     }
 
     // VALIDACIONES ENTITY DOCUMENT
     if (isInputEmpty(document_fk) || isInputEmpty(value_ed)) {
-      throw new Error('Debes completar todos los datos de la persona');
+      return res.status(422).json({ message: 'Debes completar todos los datos de la persona', group: 'entity' });
     }
 
     // VALIDACIONES EMPLEADO
     if (isInputEmpty(file_employee) || isInputEmpty(date_entry_employee)) {
-      throw new Error('Debes completar todos los datos del empleado');
+      return res.status(422).json({ message: 'Debes completar todos los datos del empleado', group: 'employee' });
     }
 
     if (isNotDate(date_entry_employee_formatted)) {
-      throw new Error('La fecha de ingreso del empleado debe ser valida');
+      return res.status(422).json({ message: 'La fecha de ingreso del empleado debe ser valida', group: 'employee' });
     }
 
     // VALIDACIONES USUARIO
 
     if (isInputEmpty(username_user) || isInputEmpty(pwd_user) || !avatar_url) {
-      throw new Error('Debes completar todos los campos de usuario');
+      return res.status(422).json({ message: 'Debes completar todos los campos de usuario', group: 'user' });
     }
 
     // VALIDACIONES CONTACTO
     if (isInputEmpty(value_ec) || isInputEmpty(contact_fk)) {
-      throw new Error('Debes completar todos los campos de contacto');
+      return res.status(422).json({ message: 'Debes completar todos los campos de contacto', group: 'entity' });
     }
 
     // VALIDACIONES DIRECCION
     if (isInputEmpty(description_address) || isInputEmpty(city_fk)) {
-      throw new Error('Debes completar todos los campos de direccion');
+      return res.status(422).json({ message: 'Debes completar todos los campos de direccion', group: 'entity' });
     }
 
     // VALIDACIONES ENTITY_DEPARTMENT_OCCUPATION
     if (isInputEmpty(department_fk) || isInputEmpty(occupation_fk)) {
-      throw new Error('Debes completar todos los campos del puesto de trabajo');
+      return res
+        .status(422)
+        .json({ message: 'Debes completar todos los campos del puesto de trabajo', group: 'employee' });
     }
 
     // COMPROBACIONES SI EXISTEN EN BD
@@ -152,49 +153,49 @@ export const createUser = async (req, res) => {
     const checkExistFileEmployee = await instanceEmployee.getEmployee(file_employee);
 
     if (checkExistFileEmployee.length > 0) {
-      throw new Error('El numero de legajo ya existe');
+      return res.status(422).json({ message: 'El numero de legajo ya existe', group: 'employee' });
     }
 
     const checkExistDocument = await instanceDocument.getDocument(document_fk);
 
     if (checkExistDocument.length < 1) {
-      throw new Error('El tipo de documento no existe');
+      return res.status(422).json({ message: 'El tipo de documento no existe', group: 'entity' });
     }
 
     const checkExistUser = await instanceUser.getUserByUsername(username_user);
 
     if (checkExistUser.length > 0) {
-      throw new Error('Este nombre de usuario ya esta siendo utilizado');
+      return res.status(422).json({ message: 'Este nombre de usuario ya esta siendo utilizado', group: 'user' });
     }
 
     const checkExistContact = await instanceContact.getContact(contact_fk);
 
     if (checkExistContact.length < 1) {
-      throw new Error('Este tipo de contacto no existe');
+      return res.status(422).json({ message: 'Este tipo de contacto no existe', group: 'entity' });
     }
 
     const checkExistCity = await instanceCity.getCityById(city_fk);
 
     if (checkExistCity.length < 1) {
-      throw new Error('Esta ciudad no existe, ingrese una valida');
+      return res.status(422).json({ message: 'Esta ciudad no existe, ingrese una valida', group: 'address' });
     }
 
     const checkExistDepartment = await instanceDepartment.getDepartment(department_fk);
 
     if (checkExistDepartment.length < 1) {
-      throw new Error('Este departamento no existe, ingrese uno valido');
+      return res.status(422).json({ message: 'Este departamento no existe, ingrese uno valido', group: 'address' });
     }
 
     const checkExistOccupation = await instanceOccupation.getOccupation(occupation_fk);
 
     if (checkExistOccupation.length < 1) {
-      throw new Error('El puesto de trabajo no existe, ingrese uno valido');
+      return res.status(422).json({ message: 'El puesto de trabajo no existe, ingrese uno valido', group: 'employee' });
     }
 
     const checkExistProfile = await instanceProfile.getProfile(value_profile);
 
     if (checkExistProfile.length < 1) {
-      throw new Error('El tipo de permiso no existe, ingrese uno valido');
+      return res.status(422).json({ message: 'El tipo de permiso no existe, ingrese uno valido', group: 'permission' });
     }
 
     // INSERTS EN LA BD
@@ -212,7 +213,9 @@ export const createUser = async (req, res) => {
     const insertEntity = await instanceEntity.createEntity(entity_data_completed);
 
     if (!insertEntity) {
-      throw new Error('Error al crear usuario, comprueba los datos de la persona');
+      return res
+        .status(422)
+        .json({ message: 'Error al crear usuario, comprueba los datos de la persona', group: 'alert' });
     }
 
     const idEntity = insertEntity.insertId;
@@ -228,7 +231,9 @@ export const createUser = async (req, res) => {
     const insertDocumentEntity = await instanceEntityDocument.assignDocumentToEntity(entity_document_data_completed);
 
     if (!insertDocumentEntity) {
-      throw new Error('Error al crear usuario, comprueba los datos de la persona');
+      return res
+        .status(422)
+        .json({ message: 'Error al crear usuario, comprueba los datos de la persona', group: 'alert' });
     }
 
     // EMPLEADO
@@ -241,7 +246,9 @@ export const createUser = async (req, res) => {
     const insertEmployee = await instanceEmployee.createEmployee(employee_data_completed);
 
     if (!insertEmployee) {
-      throw new Error('Error al crear usuario, comprueba los datos de empleado');
+      return res
+        .status(422)
+        .json({ message: 'Error al crear usuario, comprueba los datos de empleado', group: 'alert' });
     }
 
     // CONTACTO
@@ -257,7 +264,9 @@ export const createUser = async (req, res) => {
     const insertEntityContact = await instanceEntityContact.createEntityContact(entity_contact_data_completed);
 
     if (!insertEntityContact) {
-      throw new Error('Error al crear el usuario, comprueba los datos de contacto');
+      return res
+        .status(422)
+        .json({ message: 'Error al crear el usuario, comprueba los datos de contacto', group: 'alert' });
     }
 
     // ADDRESS
@@ -271,7 +280,9 @@ export const createUser = async (req, res) => {
     const insertAddress = await instanceAddress.createAddress(address_data_completed);
 
     if (!insertAddress) {
-      throw new Error('Error al crear el usuario, comprueba los datos del domicilio');
+      return res
+        .status(422)
+        .json({ message: 'Error al crear el usuario, comprueba los datos del domicilio', group: 'alert' });
     }
 
     // ENTITY DEPARTMENT OCCUPATION
@@ -287,7 +298,10 @@ export const createUser = async (req, res) => {
     );
 
     if (!insertEntityDepartmentOccupation) {
-      throw new Error('Error al crear el usuario, comprueba los datos del departamento, y el puesto de trabajo');
+      return res.status(422).json({
+        message: 'Error al crear el usuario, comprueba los datos del departamento, y el puesto de trabajo',
+        group: 'alert',
+      });
     }
 
     // USUARIO
@@ -304,7 +318,9 @@ export const createUser = async (req, res) => {
     const insertUser = await instanceUser.createUser(user_data_completed);
 
     if (!insertUser) {
-      throw new Error('Error al crear usuario, comprueba los datos de usuario');
+      return res
+        .status(422)
+        .json({ message: 'Error al crear usuario, comprueba los datos de usuario', group: 'alert' });
     }
 
     res.status(200).json({
@@ -313,8 +329,9 @@ export const createUser = async (req, res) => {
     });
   } catch (error) {
     console.error('Error en UserController :' + error);
-    res.status(403).json({
+    res.status(500).json({
       message: error.message,
+      group: 'alert',
     });
   }
 };

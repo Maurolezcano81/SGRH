@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const UserDataSection = ({ setUserData, setAvatarUser }) => {
+const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile }) => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [fileUrl, setFileUrl] = useState('');
 
@@ -90,6 +90,11 @@ const UserDataSection = ({ setUserData, setAvatarUser }) => {
           )}
         </div>
       </div>
+      {errorUser || errorFile  && (
+        <div className="error__validation__form">
+          <p className="error_validation__form-p">{errorUser || errorFile}</p>
+        </div>
+      )}
     </div>
   );
 };

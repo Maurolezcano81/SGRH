@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useAuth from '../../../hooks/useAuth';
 
-const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocumentEntityData }) => {
+const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocumentEntityData, error }) => {
   const [listTypeDocument, setListTypeDocument] = useState([]);
   const [listSex, setListSex] = useState([]);
   const [listNacionality, setListNacionality] = useState([]);
@@ -207,6 +207,11 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocume
           onChange={handleChangeContactEntityData}
         />
       </div>
+      {error && (
+        <div className="error__validation__form">
+          <p className="error_validation__form-p">{error}</p>
+        </div>
+      )}
     </div>
   );
 };

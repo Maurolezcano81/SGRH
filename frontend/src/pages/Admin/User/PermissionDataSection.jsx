@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import useAuth from '../../../hooks/useAuth';
 
-const PermissionDataSection = ({ setProfileData }) => {
+const PermissionDataSection = ({ setProfileData, error }) => {
   const getProfiles = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/profiles`;
 
   const [listProfiles, setListProfiles] = useState([]);
@@ -17,12 +17,6 @@ const PermissionDataSection = ({ setProfileData }) => {
           Authorization: `Bearer ${authData.token}`,
         },
       });
-
-      if (fetchResponse.status === 403) {
-        // ERROR
-        setListProfiles([]);
-        return;
-      }
 
       const profilesData = await fetchResponse.json();
 
@@ -44,7 +38,7 @@ const PermissionDataSection = ({ setProfileData }) => {
         <h2>Permisos</h2>
       </div>
       <div className="input__form__div">
-        <label className="input__form__div__label" htmlFor="value_profile" >
+        <label className="input__form__div__label" htmlFor="value_profile">
           Permiso
         </label>
         <select
@@ -53,7 +47,9 @@ const PermissionDataSection = ({ setProfileData }) => {
           name="value_profile"
           id="value_profile"
         >
-            <option value="" key="">Seleccione un permiso</option>
+          <option value="" key="">
+            Seleccione un permiso
+          </option>
           {listProfiles.map((profile) => (
             <option key={profile.id_profile} value={profile.id_profile}>
               {profile.name_profile}
@@ -61,6 +57,11 @@ const PermissionDataSection = ({ setProfileData }) => {
           ))}
         </select>
       </div>
+      {error && (
+        <div className="error__validation__form">
+          <p className="error_validation__form-p">{error}</p>
+        </div>
+      )}
     </div>
   );
 };

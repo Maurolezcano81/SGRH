@@ -7,6 +7,7 @@ import PermissionDataSection from './PermissionDataSection';
 import UserDataSection from './UserDataSection';
 import ButtonBlue from '../../../components/ButtonBlue';
 import ButtonRed from '../../../components/ButtonRed';
+import AlertSuccesfullyBackground from '../../../components/Alerts/AlertSuccesfullyBackground';
 
 import useAuth from '../../../hooks/useAuth';
 
@@ -14,6 +15,9 @@ const CreateUser = () => {
   const createUserUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/user/create`;
   const { authData } = useAuth();
   const navigate = useNavigate();
+
+  const [isSuccessfully, setIsSuccessfully] = useState(false);
+  const [successfullyMessage, setSuccessfullyMessage] = useState('');
 
   const [entityData, setEntityData] = useState({
     name_entity: '',
@@ -57,15 +61,7 @@ const CreateUser = () => {
 
   const [avatar_user, setAvatarUser] = useState(null);
 
-  console.log(entityData);
-  console.log(employeeData);
-  console.log(occupationDepartmentData);
-  console.log(contactEntityData);
-  console.log(documentEntityData);
-  console.log(addressData);
-  console.log(profileData);
-  console.log(userData);
-  console.log(avatar_user);
+  const [errorsMessage, setErrorsMessage] = useState({});
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -89,16 +85,22 @@ const CreateUser = () => {
         body: data,
       });
 
-      console.log(fetchResponse);
+      const dataFetch = await fetchResponse.json();
 
-      if (fetchResponse.status === 403) {
-        // mensaje
+      if (fetchResponse.status != 200) {
+        setIsSuccessfully(false);
+        setErrorsMessage(() => ({
+          [dataFetch.group]: dataFetch.message,
+        }));
         return;
       }
 
-      const dataFetch = await fetchResponse.json();
+      setIsSuccessfully(true);
+      setSuccessfullyMessage(dataFetch.message);
 
-      console.log(dataFetch);
+      setTimeout(() => {
+        navigate('/usuario/lista');
+      }, 3000);
     } catch (error) {
       console.error(error);
     }
@@ -110,22 +112,31 @@ const CreateUser = () => {
           setEntityData={setEntityData}
           setContactEntityData={setContactEntityData}
           setDocumentEntityData={setDocumentEntityData}
+          error={errorsMessage?.entity}
         />
 
-        <UserDataSection setUserData={setUserData} setAvatarUser={setAvatarUser} />
+        <UserDataSection
+          setUserData={setUserData}
+          setAvatarUser={setAvatarUser}
+          errorUser={errorsMessage?.user}
+          errorFile={errorsMessage?.file}
+        />
+
         <EmployeeDataSection
           setEmployeeData={setEmployeeData}
           setOccupationDepartmentData={setOccupationDepartmentData}
+          error={errorsMessage?.employee}
         />
 
-        <AddressdataSection setAddressData={setAddressData} />
+        <AddressdataSection setAddressData={setAddressData} error={errorsMessage?.address} />
 
-        <PermissionDataSection setProfileData={setProfileData} />
+        <PermissionDataSection setProfileData={setProfileData} error={errorsMessage?.permission} />
 
         <div className="form__button__container">
           <ButtonBlue title={'Crear Usuario'} onClick={onSubmitForm} />
         </div>
       </form>
+      {isSuccessfully && <AlertSuccesfullyBackground message={successfullyMessage} />}
     </div>
   );
 };

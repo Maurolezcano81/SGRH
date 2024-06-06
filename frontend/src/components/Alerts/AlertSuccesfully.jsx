@@ -1,4 +1,4 @@
-import CheckMark from "../../assets/Icons/CheckMark.png";
+import CheckMark from "../../assets/Icons/CheckMark1.svg";
 const AlertSuccesfully = (props) => {
 
     return (
