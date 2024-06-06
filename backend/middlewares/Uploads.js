@@ -35,22 +35,8 @@ function configureMulter(destinationPath) {
   });
 }
 
-// Middleware para subir archivos
-function uploadFiles(fieldname, destinationPath) {
-  const upload = configureMulter(destinationPath);
-  return async (req, res, next) => {
-    try {
-      upload.single(fieldname)(req, res, next);
-    } catch (error) {
-      res.status(422).json({
-        message: 'Error al subir el archivo, intentelo de nuevo',
-      });
-    }
-  };
-}
 
-// Middleware para manejar la respuesta con la URL del archivo subido
-function handleFileUpload(req, res, next) {
+function handleAvatarUpload(req, res, next) {
   const file = req.file;
   try {
     if (!req.file) {
@@ -60,7 +46,7 @@ function handleFileUpload(req, res, next) {
       });
     }
 
-    const fileUrl = `/uploads/${file.filename}`;
+    const fileUrl = `/uploads/avatars/${file.filename}`;
     req.fileUrl = fileUrl;
     next();
   } catch (error) {
@@ -78,4 +64,4 @@ function printFileUrl(req, res) {
   res.status(200).json({ fileUrl });
 }
 
-export { uploadFiles, handleFileUpload, printFileUrl };
+export { handleAvatarUpload, printFileUrl };
