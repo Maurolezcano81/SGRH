@@ -120,6 +120,19 @@ class Module {
       throw new Error(`Error al eliminar el modulo del perfil`);
     }
   }
+
+  async canViewModule(id_user, urlToCheck) {
+    try {
+      const query =
+        'select * from profile_module pm join module m on pm.module_fk = m.id_module  join profile p on pm.profile_fk = p.id_profile  join user u on p.id_profile = u.profile_fk where u.id_user = ? and m.url_module = ?';
+
+      const [results] = await this.connection.promise().query(query, [id_user, urlToCheck]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Modules: ` + error);
+      throw new Error(`Error al comprobar el modulo del perfil`);
+    }
+  }
 }
 
 export default Module;

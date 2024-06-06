@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
+import useAuth from '../../../hooks/useAuth';
 
 const PersonalDetailsSection = ({
   setEntityData,
   setContactEntityData,
   setDocumentEntityData,
   error,
-  token,
   setCriticalErrorToggle,
   setCriticalErrorMessagge,
 }) => {
@@ -22,45 +22,48 @@ const PersonalDetailsSection = ({
     `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/contacts`,
   ];
 
+  const { authData } = useAuth();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responses = await Promise.all(
-          API_URLS.map((url) =>
-            fetch(url, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            })
-          )
-        );
+        if (authData.token) {
+          const responses = await Promise.all(
+            API_URLS.map((url) =>
+              fetch(url, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${authData.token}`,
+                },
+              })
+            )
+          );
 
-        const datas = await Promise.all(responses.map((response) => response.json()));
+          const datas = await Promise.all(responses.map((response) => response.json()));
 
+          const [documentsData, sexsData, nacionalitiesData, contactsData] = datas;
 
-        const [documentsData, sexsData, nacionalitiesData, contactsData] = datas;
+          const activeSexs = sexsData.queryResponse.filter((sex) => sex.status_sex === 1);
+          const activeTypeDocuments = documentsData.queryResponse.filter((document) => document.status_document === 1);
+          const activeNacionalities = nacionalitiesData.queryResponse.filter(
+            (nacionality) => nacionality.status_nacionality === 1
+          );
+          const activeContacts = contactsData.queryResponse.filter((contact) => contact.status_contact === 1);
 
-        const activeSexs = sexsData.queryResponse.filter((sex) => sex.status_sex === 1);
-        const activeTypeDocuments = documentsData.queryResponse.filter((document) => document.status_document === 1);
-        const activeNacionalities = nacionalitiesData.queryResponse.filter(
-          (nacionality) => nacionality.status_nacionality === 1
-        );
-        const activeContacts = contactsData.queryResponse.filter((contact) => contact.status_contact === 1);
-
-        setListTypeDocument(activeTypeDocuments || []);
-        setListSex(activeSexs || []);
-        setListNacionality(activeNacionalities || []);
-        setListContact(activeContacts || []);
+          setListTypeDocument(activeTypeDocuments || []);
+          setListSex(activeSexs || []);
+          setListNacionality(activeNacionalities || []);
+          setListContact(activeContacts || []);
+        }
       } catch (error) {
-          setCriticalErrorToggle(true);
-          setCriticalErrorMessagge("Error al obtener la informacion para completar los datos de la persona");
+        setCriticalErrorToggle(true);
+        setCriticalErrorMessagge('Error al obtener la informacion para completar los datos de la persona');
       }
     };
 
     fetchData();
-  }, [token]);
+  }, [authData.token]);
 
   const handleChangeEntityData = (e) => {
     const { name, value } = e.target;

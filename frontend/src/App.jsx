@@ -21,7 +21,6 @@ import Department from './pages/Admin/System/Department';
 import Document from './pages/Admin/System/Document';
 import CreateUser from './pages/Admin/User/CreateUserLayout';
 
-
 function App() {
   return (
     <BrowserRouter>
@@ -43,7 +42,7 @@ function App() {
                 <Route path="documento" element={<Document />} />
                 <Route path="departamento" element={<Department />} />
               </Route>
-              <Route path="usuario/crear" element={<CreateUser />} />
+              <Route path="usuarios/crear" element={<CreateUser />} />
             </Route>
           </Routes>
         </NavbarProvider>

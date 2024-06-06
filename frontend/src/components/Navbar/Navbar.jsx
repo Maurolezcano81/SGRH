@@ -16,7 +16,7 @@ const Navbar = () => {
 
   const { navbarTitle } = useNav();
 
-  const [isNavbarOpen, setIsNavbarOpen] = useState(true);
+  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
   const toggleNavbar = () => {
     setIsNavbarOpen(!isNavbarOpen);

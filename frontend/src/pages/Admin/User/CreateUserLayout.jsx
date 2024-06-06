@@ -80,36 +80,38 @@ const CreateUser = () => {
     data.append('value_profile', profileData);
 
     try {
-      const fetchResponse = await fetch(createUserUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${authData.token}`,
-        },
-        body: data,
-      });
+      if (authData.token) {
+        const fetchResponse = await fetch(createUserUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${authData.token}`,
+          },
+          body: data,
+        });
 
-      const dataFetch = await fetchResponse.json();
+        const dataFetch = await fetchResponse.json();
 
-      if (fetchResponse.status === 422) {
-        setIsSuccessfully(false);
-        setErrorsMessage(() => ({
-          [dataFetch.group]: dataFetch.message,
-        }));
-        return;
+        if (fetchResponse.status === 422) {
+          setIsSuccessfully(false);
+          setErrorsMessage(() => ({
+            [dataFetch.group]: dataFetch.message,
+          }));
+          return;
+        }
+
+        if (fetchResponse.status === 500) {
+          setCriticalErrorToggle(true);
+          setCriticalErrorMessagge(dataFetch.message);
+          return;
+        }
+
+        setIsSuccessfully(true);
+        setSuccessfullyMessage(dataFetch.message);
+
+        setTimeout(() => {
+          navigate('/usuario/lista');
+        }, 3000);
       }
-
-      if (fetchResponse.status === 500) {
-        setCriticalErrorToggle(true);
-        setCriticalErrorMessagge(dataFetch.message);
-        return;
-      }
-
-      setIsSuccessfully(true);
-      setSuccessfullyMessage(dataFetch.message);
-
-      setTimeout(() => {
-        navigate('/usuario/lista');
-      }, 3000);
     } catch (error) {
       console.error(error);
     }
@@ -167,7 +169,7 @@ const CreateUser = () => {
         </div>
       </form>
       {isSuccessfully && <AlertSuccesfullyBackground message={successfullyMessage} />}
-      {criticalErrorToggle && <AlertError error={criticalErrorMessage} />}
+      {criticalErrorToggle && <AlertError errorMessage={criticalErrorMessage} />}
     </div>
   );
 };

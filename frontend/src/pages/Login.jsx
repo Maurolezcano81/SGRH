@@ -15,7 +15,6 @@ const Login = () => {
 
   const [username, setUsername] = useState('');
   const [pwd, setPwd] = useState('');
-  const [keepSession, setKeepSession] = useState(false);
 
   const Navigate = useNavigate();
   const { storageAuthData } = useAuth();
@@ -50,10 +49,6 @@ const Login = () => {
     setPwd(e.target.value);
   };
 
-  const changeKeepSesion = (e) => {
-    setKeepSession(e.target.checked);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -65,13 +60,13 @@ const Login = () => {
         },
         body: JSON.stringify({
           username: username,
-          pwd: pwd,
+          pwd_user: pwd,
         }),
       });
 
       const fetchData = await response.json();
 
-      if (response.status === 403) {
+      if (response.status != 200) {
         setError(fetchData.message);
         return;
       }
@@ -79,9 +74,8 @@ const Login = () => {
       setError(null);
       setSuccessfullyMessage(fetchData.message);
       storageAuthData(fetchData.userData);
-      if (keepSession) {
-        localStorage.setItem('token', JSON.stringify(fetchData.userData));
-      }
+      localStorage.setItem('token', JSON.stringify(fetchData.userData));
+
       setTimeout(() => {
         switch (fetchData.userData.name_profile) {
           case 'Administrador':
@@ -123,11 +117,6 @@ const Login = () => {
                   <input type="password" onChange={changePwd} />
                   <img src={Invisible} alt="Icono de Usuario" />
                 </div>
-              </div>
-
-              <div className="login__input-checkbox">
-                <input type="checkbox" onChange={changeKeepSesion} />
-                <p>Mantener sesión iniciada</p>
               </div>
 
               {error && <ErrorMessage error={error} />}

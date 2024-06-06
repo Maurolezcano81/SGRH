@@ -978,6 +978,27 @@ main {
   background-color: var(--bg-white-2-50);
   z-index: 10;
 }
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Centra verticalmente en la pantalla */
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #7983ff; /* Color del spinner */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite; /* Animación */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* START CREATE USER FORM */
 
@@ -1004,7 +1025,7 @@ main {
 
 @media (width >=1024px) {
   .navbar__container {
-    width: auto;
+    width: 20%;
   }
 
   .login__form__container {

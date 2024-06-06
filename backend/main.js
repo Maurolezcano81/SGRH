@@ -16,20 +16,27 @@ const staticImagesPath = path.join('uploads/avatars');
 // Servir archivos estáticos desde la carpeta de imágenes
 app.use('/uploads/avatars', express.static(staticImagesPath));
 
-
 // Rutas
 import UserCredentialsRoutes from './routes/UserCredentialsRoutes.js';
 import SystemRoutes from './routes/Admin/SystemRoutes.js';
 
-import { decodeToken, verifyToken } from './middlewares/Authorization.js';
+import { decodeTokenForAdministrator, verifyToken } from './middlewares/Authorization.js';
 import UserRoutes from './routes/Admin/UserRoutes.js';
 import StateRoutes from './routes/Admin/Address/AddressRoutes.js';
+import checkPermissionRoutes from './routes/CheckPermissionRoutes.js';
 
 app.use('/api', UserCredentialsRoutes.router);
 
-/* app.use('/api', PersonalRoutes.router); */
+app.use(
+  '/api/admin',
+  verifyToken,
+  decodeTokenForAdministrator,
+  SystemRoutes.router,
+  UserRoutes.router,
+  StateRoutes.router
+);
 
-app.use('/api/admin', verifyToken, decodeToken, SystemRoutes.router, UserRoutes.router, StateRoutes.router);
+app.use('/api', checkPermissionRoutes.router);
 
 // Server
 app.listen(process.env.SV_PORT || 3000, () => {
