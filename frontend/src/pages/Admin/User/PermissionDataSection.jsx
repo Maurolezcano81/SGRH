@@ -1,31 +1,46 @@
 import { useState, useEffect } from 'react';
-
 import useAuth from '../../../hooks/useAuth';
+import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 
-const PermissionDataSection = ({ setProfileData, error }) => {
+const PermissionDataSection = ({ setProfileData, error, setCriticalErrorToggle, setCriticalErrorMessagge }) => {
   const getProfiles = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/profiles`;
 
+  const { authData } = useAuth();
   const [listProfiles, setListProfiles] = useState([]);
 
-  const { authData } = useAuth();
   useEffect(() => {
-    const fetchProfilesRequest = async () => {
-      const fetchResponse = await fetch(getProfiles, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authData.token}`,
-        },
-      });
+    if (authData.token) {
+      const fetchProfilesRequest = async () => {
+        try {
+          const fetchResponse = await fetch(getProfiles, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authData.token}`,
+            },
+          });
+          const profilesData = await fetchResponse.json();
 
-      const profilesData = await fetchResponse.json();
+          if (fetchResponse.status === 500) {
+            setCriticalErrorToggle(true);
+            setCriticalErrorMessagge(profilesData.message);
+            return;
+          }
 
-      const activeProfiles = profilesData.queryResponse.filter((profile) => profile.status_profile === 1);
+          if (!fetchResponse.ok) {
+            throw new Error('Error en la solicitud de perfiles');
+          }
 
-      setListProfiles(activeProfiles);
-    };
+          const activeProfiles = profilesData.queryResponse.filter((profile) => profile.status_profile === 1);
 
-    fetchProfilesRequest();
+          setListProfiles(activeProfiles);
+        } catch (error) {
+          console.error('Error en la solicitud de perfiles:', error);
+        }
+      };
+
+      fetchProfilesRequest();
+    }
   }, [authData.token]);
 
   const onChangePermission = (e) => {
@@ -57,11 +72,7 @@ const PermissionDataSection = ({ setProfileData, error }) => {
           ))}
         </select>
       </div>
-      {error && (
-        <div className="error__validation__form">
-          <p className="error_validation__form-p">{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

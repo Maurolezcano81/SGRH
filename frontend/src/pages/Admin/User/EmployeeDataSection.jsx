@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
+import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 
-const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, error }) => {
+const EmployeeDataSection = ({
+  setEmployeeData,
+  setOccupationDepartmentData,
+  error,
+  setCriticalErrorToggle,
+  setCriticalErrorMessagge,
+}) => {
   const [listOccupations, setListOccupations] = useState([]);
   const [listDepartments, setListDepartments] = useState([]);
 
@@ -14,40 +21,45 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, err
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [occupationsResponse, departmentsResponse] = await Promise.all(
-          apiUrls.map((url) =>
-            fetch(url, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authData.token}`,
-              },
-            })
-          )
-        );
-        if (occupationsResponse.status === 403 || departmentsResponse.status === 403) {
-          alert('Error al obtener los datos');
-          return;
+      if (authData.token) {
+        try {
+          const [occupationsResponse, departmentsResponse] = await Promise.all(
+            apiUrls.map((url) =>
+              fetch(url, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${authData.token}`,
+                },
+              })
+            )
+          );
+
+          const [occupationsData, departmentsData] = await Promise.all([
+            occupationsResponse.json(),
+            departmentsResponse.json(),
+          ]);
+
+          if (occupationsResponse.status === 500 || departmentsResponse.status === 500) {
+            setCriticalErrorToggle(true);
+            setCriticalErrorMessagge(occupationsData.message || departmentsData.message);
+            return;
+          }
+
+          const activeOccupations = occupationsData.queryResponse.filter(
+            (occupation) => occupation.status_occupation === 1
+          );
+
+          const activeDepartments = departmentsData.queryResponse.filter(
+            (department) => department.status_department === 1
+          );
+
+          setListOccupations(activeOccupations || []);
+          setListDepartments(activeDepartments || []);
+        } catch (error) {
+          console.error(error.message);
+          // Manejar el error aquí, como mostrar un mensaje al usuario
         }
-
-        const [occupationsData, departmentsData] = await Promise.all([
-          occupationsResponse.json(),
-          departmentsResponse.json(),
-        ]);
-
-        const activeOccupations = occupationsData.queryResponse.filter(
-          (occupation) => occupation.status_occupation === 1
-        );
-
-        const activeDepartments = departmentsData.queryResponse.filter(
-          (department) => department.status_department === 1
-        );
-
-        setListOccupations(activeOccupations || []);
-        setListDepartments(activeDepartments || []);
-      } catch (error) {
-        console.log(error.message);
       }
     };
     fetchData();
@@ -79,13 +91,13 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, err
         <label htmlFor="file_employee" className="input__form__div__label">
           Legajo
         </label>
-        <input 
-          onChange={handleChangeEmployee} 
-          name="file_employee" 
+        <input
+          onChange={handleChangeEmployee}
+          name="file_employee"
           type="text"
-          id='file_employee'
-          className="input__form__div__input" 
-          placeholder='Número de legajo'
+          id="file_employee"
+          className="input__form__div__input"
+          placeholder="Número de legajo"
         />
       </div>
 
@@ -97,7 +109,7 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, err
           onChange={handleChangeEmployee}
           name="date_entry_employee"
           type="date"
-          id='date_entry_employee'
+          id="date_entry_employee"
           className="input__form__div__input"
         />
       </div>
@@ -106,11 +118,11 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, err
         <label htmlFor="occupation_fk" className="input__form__div__label">
           Ocupación
         </label>
-        <select 
-          onChange={handleChangeOccupationDepartment} 
-          name="occupation_fk" 
+        <select
+          onChange={handleChangeOccupationDepartment}
+          name="occupation_fk"
           className="input__form__div__input"
-          id='occupation_fk'
+          id="occupation_fk"
         >
           <option key={''} value={''}>
             Ocupación
@@ -131,7 +143,7 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, err
           onChange={handleChangeOccupationDepartment}
           name="department_fk"
           className="input__form__div__input"
-          id='department_fk'
+          id="department_fk"
         >
           <option key={''} value={''}>
             Departamento
@@ -143,11 +155,7 @@ const EmployeeDataSection = ({ setEmployeeData, setOccupationDepartmentData, err
           ))}
         </select>
       </div>
-      {error && (
-        <div className="error__validation__form">
-          <p className="error_validation__form-p">{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

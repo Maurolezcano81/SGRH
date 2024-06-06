@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-
 import useAuth from '../../../hooks/useAuth';
+import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 
-const AddressdataSection = ({ setAddressData, error }) => {
+const AddressdataSection = ({ setAddressData, error, setCriticalErrorToggle, setCriticalErrorMessagge }) => {
   const [listCountries, setListCountries] = useState([]);
   const [listStates, setListStates] = useState([]);
   const [listCities, setListCities] = useState([]);
@@ -15,27 +15,31 @@ const AddressdataSection = ({ setAddressData, error }) => {
 
   useEffect(() => {
     const fetchCountriesRequest = async () => {
-      try {
-        const fetchResponse = await fetch(getCountries, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
+      if (authData.token) {
+        try {
+          const fetchResponse = await fetch(getCountries, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authData.token}`,
+            },
+          });
 
-        if (fetchResponse.status === 403) {
-          // ERROR
-          return;
+          if (!fetchResponse.ok) {
+            setCriticalErrorToggle(true);
+            setCriticalErrorMessagge(dataFetch.message);
+            return;
+          }
+
+          const countriesList = await fetchResponse.json();
+
+          const activeCountries = countriesList.queryResponse.filter((country) => country.status_country === 1);
+
+          setListCountries(activeCountries || []);
+        } catch (error) {
+          console.error(error.message);
+          // Manejar el error aquí, como mostrar un mensaje al usuario
         }
-
-        const countriesList = await fetchResponse.json();
-
-        const activeCountries = countriesList.queryResponse.filter((country) => country.status_country === 1);
-
-        setListCountries(activeCountries || []);
-      } catch (error) {
-        console.error(error.message);
       }
     };
 
@@ -43,6 +47,7 @@ const AddressdataSection = ({ setAddressData, error }) => {
   }, [authData.token]);
 
   const handleCountryChange = (e) => {
+    setListCities([]);
     changeStates(e.target.value);
   };
 
@@ -52,28 +57,36 @@ const AddressdataSection = ({ setAddressData, error }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearear ${authData.token}`,
+          Authorization: `Bearer ${authData.token}`,
         },
         body: JSON.stringify({
           country_fk: country_fk,
         }),
       });
 
+      const fetchData = await fetchResponse.json();
+
+      if(fetchResponse.status === 500){
+        setCriticalErrorToggle(true);
+        setCriticalErrorMessagge(fetchData.message);
+        return;
+      }
+
       if (fetchResponse.status === 403) {
         setListStates([]);
       }
 
-      const fetchData = await fetchResponse.json();
-      console.log(fetchData);
+
       const activeStates = fetchData.queryResponse.filter((state) => state.status_state === 1);
 
       setListStates(activeStates || []);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const handleChangeCities = (e) => {
+    setListCities([]);
     changeCities(e.target.value);
   };
 
@@ -83,24 +96,29 @@ const AddressdataSection = ({ setAddressData, error }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearear ${authData.token}`,
+          Authorization: `Bearer ${authData.token}`,
         },
         body: JSON.stringify({
           state_fk: state_fk,
         }),
       });
 
+      if(fetchResponse.status === 500){
+        setCriticalErrorToggle(true);
+        setCriticalErrorMessagge(dataFetch.message);
+        return;
+      }
+
       if (fetchResponse.status === 403) {
         setListCities([]);
       }
 
       const fetchData = await fetchResponse.json();
-      console.log(fetchData);
       const activeCities = fetchData.queryResponse.filter((city) => city.status_city === 1);
 
       setListCities(activeCities || []);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -119,7 +137,7 @@ const AddressdataSection = ({ setAddressData, error }) => {
       </div>
       <div className="input__form__div">
         <label className="input__form__div__label" htmlFor="id_country">
-          Pais
+          País
         </label>
 
         <select onChange={handleCountryChange} className="input__form__div__input" name="id_country" id="id_country">
@@ -170,7 +188,7 @@ const AddressdataSection = ({ setAddressData, error }) => {
 
       <div className="input__form__div">
         <label className="input__form__div__label" htmlFor="description_address">
-          Direccion
+          Dirección
         </label>
 
         <input
@@ -182,11 +200,7 @@ const AddressdataSection = ({ setAddressData, error }) => {
           id="description_address"
         />
       </div>
-      {error && (
-        <div className="error__validation__form">
-          <p className="error_validation__form-p">{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

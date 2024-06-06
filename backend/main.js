@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
 // Definir la ruta de la carpeta donde están las imágenes
-const staticImagesPath = path.join('uploads');
+const staticImagesPath = path.join('uploads/avatars');
 
 // Servir archivos estáticos desde la carpeta de imágenes
 app.use('/uploads/avatars', express.static(staticImagesPath));

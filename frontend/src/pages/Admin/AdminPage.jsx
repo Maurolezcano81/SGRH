@@ -1,8 +1,8 @@
 import Navbar from "../../components/Navbar/Navbar"
 import { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import ErrorMessage from "../../components/Alerts/ErrorMessage"
 import useAuth from "../../hooks/useAuth"
+import AlertErrorNoAuth from "../../components/Alerts/AlertErrorNoAuth"
 
 const AdminLayout = () => {
     const Navigate = useNavigate();
@@ -14,7 +14,7 @@ const AdminLayout = () => {
         if (!storedToken && Object.keys(authData).length === 0) {
             setShowErrorMessage(true);
             setTimeout(() => {
-                Navigate('/login');
+                Navigate('/');
             }, 3000);
         }
     }, [authData, Navigate]);
@@ -22,7 +22,7 @@ const AdminLayout = () => {
     return (
         <>
             <Navbar/>
-            {showErrorMessage && <ErrorMessage errorMessage="Primero debes iniciar sesión" />}
+            {showErrorMessage && <AlertErrorNoAuth errorMessage="Primero debes iniciar sesión" />}
             <main>
                 <Outlet/>
             </main>

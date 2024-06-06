@@ -8,7 +8,7 @@ import {
     useNavigate
 } from 'react-router-dom'
 
-import ErrorMessage from '../components/Alerts/ErrorMessage';
+import ALertError from '../components/Alerts/AlertError';
 
 const AuthContext = createContext();
 const AuthProvider = ({ children }) => {

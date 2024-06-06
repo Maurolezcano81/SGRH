@@ -1,10 +1,11 @@
 import express from 'express';
 import { createUser } from '../../controllers/People/UserControllers.js';
-import { handleAvatarUpload, printFileUrl } from '../../middlewares/Uploads.js';
+import { uploadFiles, handleFileUpload, printFileUrl } from '../../middlewares/Uploads.js';
 
 const router = express.Router();
+const avatarUpload = uploadFiles('avatar_url', 'uploads/avatars');
 
-router.post('/user/create', handleAvatarUpload, createUser);
+router.post('/user/create', avatarUpload, handleFileUpload("/uploads/avatars"), createUser);
 
 const UserRoutes = {
   router,

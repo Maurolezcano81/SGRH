@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
-import useAuth from '../../../hooks/useAuth';
+import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 
-const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocumentEntityData, error }) => {
+const PersonalDetailsSection = ({
+  setEntityData,
+  setContactEntityData,
+  setDocumentEntityData,
+  error,
+  token,
+  setCriticalErrorToggle,
+  setCriticalErrorMessagge,
+}) => {
   const [listTypeDocument, setListTypeDocument] = useState([]);
   const [listSex, setListSex] = useState([]);
   const [listNacionality, setListNacionality] = useState([]);
   const [listContact, setListContact] = useState([]);
-
-  const { authData } = useAuth();
 
   const API_URLS = [
     `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/documents`,
@@ -19,34 +25,22 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocume
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [documentsResponse, sexsResponse, nacionalitiesResponse, contactsResponse] = await Promise.all(
+        const responses = await Promise.all(
           API_URLS.map((url) =>
             fetch(url, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${authData.token}`,
+                Authorization: `Bearer ${token}`,
               },
             })
           )
         );
 
-        if (
-          documentsResponse.status === 403 ||
-          sexsResponse.status === 403 ||
-          nacionalitiesResponse.status === 403 ||
-          contactsResponse.status === 403
-        ) {
-          alert('Error al obtener los datos');
-          return;
-        }
+        const datas = await Promise.all(responses.map((response) => response.json()));
 
-        const [documentsData, sexsData, nacionalitiesData, contactsData] = await Promise.all([
-          documentsResponse.json(),
-          sexsResponse.json(),
-          nacionalitiesResponse.json(),
-          contactsResponse.json(),
-        ]);
+
+        const [documentsData, sexsData, nacionalitiesData, contactsData] = datas;
 
         const activeSexs = sexsData.queryResponse.filter((sex) => sex.status_sex === 1);
         const activeTypeDocuments = documentsData.queryResponse.filter((document) => document.status_document === 1);
@@ -60,12 +54,13 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocume
         setListNacionality(activeNacionalities || []);
         setListContact(activeContacts || []);
       } catch (error) {
-        console.error('Error fetching data:', error);
+          setCriticalErrorToggle(true);
+          setCriticalErrorMessagge("Error al obtener la informacion para completar los datos de la persona");
       }
     };
 
     fetchData();
-  }, [authData.token]);
+  }, [token]);
 
   const handleChangeEntityData = (e) => {
     const { name, value } = e.target;
@@ -207,11 +202,7 @@ const PersonalDetailsSection = ({ setEntityData, setContactEntityData, setDocume
           onChange={handleChangeContactEntityData}
         />
       </div>
-      {error && (
-        <div className="error__validation__form">
-          <p className="error_validation__form-p">{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import CheckMark from '../../assets/Icons/CheckMark1.svg';
+import CheckMark from '../../assets/Icons/checkMark.svg';
 const AlertSuccesfullyBackground = (props) => {
   return (
     <div className="alert__background__black">

@@ -8,13 +8,14 @@ import UserDataSection from './UserDataSection';
 import ButtonBlue from '../../../components/ButtonBlue';
 import ButtonRed from '../../../components/ButtonRed';
 import AlertSuccesfullyBackground from '../../../components/Alerts/AlertSuccesfullyBackground';
-
 import useAuth from '../../../hooks/useAuth';
+import AlertError from '../../../components/Alerts/AlertError';
 
 const CreateUser = () => {
   const createUserUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/user/create`;
-  const { authData } = useAuth();
   const navigate = useNavigate();
+
+  const { authData } = useAuth();
 
   const [isSuccessfully, setIsSuccessfully] = useState(false);
   const [successfullyMessage, setSuccessfullyMessage] = useState('');
@@ -62,6 +63,8 @@ const CreateUser = () => {
   const [avatar_user, setAvatarUser] = useState(null);
 
   const [errorsMessage, setErrorsMessage] = useState({});
+  const [criticalErrorToggle, setCriticalErrorToggle] = useState(false);
+  const [criticalErrorMessage, setCriticalErrorMessagge] = useState(null);
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -87,11 +90,17 @@ const CreateUser = () => {
 
       const dataFetch = await fetchResponse.json();
 
-      if (fetchResponse.status != 200) {
+      if (fetchResponse.status === 422) {
         setIsSuccessfully(false);
         setErrorsMessage(() => ({
           [dataFetch.group]: dataFetch.message,
         }));
+        return;
+      }
+
+      if (fetchResponse.status === 500) {
+        setCriticalErrorToggle(true);
+        setCriticalErrorMessagge(dataFetch.message);
         return;
       }
 
@@ -113,6 +122,9 @@ const CreateUser = () => {
           setContactEntityData={setContactEntityData}
           setDocumentEntityData={setDocumentEntityData}
           error={errorsMessage?.entity}
+          token={authData.token}
+          setCriticalErrorMessagge={setCriticalErrorMessagge}
+          setCriticalErrorToggle={setCriticalErrorToggle}
         />
 
         <UserDataSection
@@ -120,23 +132,42 @@ const CreateUser = () => {
           setAvatarUser={setAvatarUser}
           errorUser={errorsMessage?.user}
           errorFile={errorsMessage?.file}
+          token={authData.token}
+          setCriticalErrorMessagge={setCriticalErrorMessagge}
+          setCriticalErrorToggle={setCriticalErrorToggle}
         />
 
         <EmployeeDataSection
           setEmployeeData={setEmployeeData}
           setOccupationDepartmentData={setOccupationDepartmentData}
           error={errorsMessage?.employee}
+          token={authData.token}
+          setCriticalErrorMessagge={setCriticalErrorMessagge}
+          setCriticalErrorToggle={setCriticalErrorToggle}
         />
 
-        <AddressdataSection setAddressData={setAddressData} error={errorsMessage?.address} />
+        <AddressdataSection
+          setAddressData={setAddressData}
+          error={errorsMessage?.address}
+          token={authData.token}
+          setCriticalErrorMessagge={setCriticalErrorMessagge}
+          setCriticalErrorToggle={setCriticalErrorToggle}
+        />
 
-        <PermissionDataSection setProfileData={setProfileData} error={errorsMessage?.permission} />
+        <PermissionDataSection
+          setProfileData={setProfileData}
+          error={errorsMessage?.permission}
+          token={authData.token}
+          setCriticalErrorMessagge={setCriticalErrorMessagge}
+          setCriticalErrorToggle={setCriticalErrorToggle}
+        />
 
         <div className="form__button__container">
           <ButtonBlue title={'Crear Usuario'} onClick={onSubmitForm} />
         </div>
       </form>
       {isSuccessfully && <AlertSuccesfullyBackground message={successfullyMessage} />}
+      {criticalErrorToggle && <AlertError error={criticalErrorMessage} />}
     </div>
   );
 };

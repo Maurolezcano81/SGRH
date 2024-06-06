@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 
-const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile }) => {
+const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile, token }) => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [fileUrl, setFileUrl] = useState('');
 
@@ -29,7 +30,7 @@ const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile }) =
   const onClickCloseAvatar = () => {
     setIsFileUploaded(false);
     setFileUrl('');
-    return;
+    setAvatarUser(null);
   };
 
   return (
@@ -44,7 +45,7 @@ const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile }) =
         </label>
         <input
           onChange={onChangeUserData}
-          placeholder='Usuario'
+          placeholder="Usuario"
           className="input__form__div__input"
           name="username_user"
           id="username_user"
@@ -58,7 +59,7 @@ const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile }) =
         </label>
         <input
           onChange={onChangeUserData}
-          placeholder='Contraseña'
+          placeholder="Contraseña"
           className="input__form__div__input"
           name="pwd_user"
           id="pwd_user"
@@ -90,9 +91,14 @@ const UserDataSection = ({ setUserData, setAvatarUser, errorUser, errorFile }) =
           )}
         </div>
       </div>
-      {errorUser || errorFile  && (
+      {errorFile && (
         <div className="error__validation__form">
-          <p className="error_validation__form-p">{errorUser || errorFile}</p>
+          <ErrorMessage error={errorFile} />
+        </div>
+      )}
+      {errorUser && (
+        <div className="error__validation__form">
+          <ErrorMessage error={errorUser} />
         </div>
       )}
     </div>

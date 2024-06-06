@@ -1,17 +1,9 @@
-import ErrorTriangle from "../../assets/Icons/errorTriangle.png";
-const ErrorMessage = (props) => {
-
-    return (
-            <div className="alert__container">
-                <div className="alert__header">
-                    <img src={ErrorTriangle} alt="" />
-                </div>
-                <div className="alert__footer">
-                    <p>{props.errorMessage}</p>
-                </div>
-            </div>
-
-    )
-}
+const ErrorMessage = ({error}) => {
+  return (
+    <div className="error__validation__form">
+      <p className="error_validation__form-p">{error}</p>
+    </div>
+  );
+};
 
 export default ErrorMessage;
