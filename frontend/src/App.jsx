@@ -20,6 +20,8 @@ import TypeTermination from './pages/Admin/System/TypeOfTermination';
 import Department from './pages/Admin/System/Department';
 import Document from './pages/Admin/System/Document';
 import CreateUser from './pages/Admin/User/CreateUserLayout';
+import Subject from './pages/Admin/System/Subject';
+import Attachment from './pages/Admin/System/Attachment';
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
                 <Route path="tipo_de_renuncia" element={<TypeTermination />} />
                 <Route path="documento" element={<Document />} />
                 <Route path="departamento" element={<Department />} />
+                <Route path="tipo_asunto_mensaje" element={<Subject />} />
+                <Route path="tipo_anexo" element={<Attachment />} />
               </Route>
               <Route path="usuarios/crear" element={<CreateUser />} />
             </Route>

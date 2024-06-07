@@ -26,6 +26,11 @@ const Preferences = () => {
         <LinkPreference path="documento" name="Documentos" />
 
         <LinkPreference path="departamento" name="Departamentos" />
+
+        <LinkPreference path="tipo_anexo" name="Tipos de Anexo" />
+
+        <LinkPreference path="tipo_asunto_mensaje" name="Tipos de asunto de mensaje" />
+
       </div>
 
       <main className="preferences__main">
