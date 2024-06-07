@@ -97,6 +97,24 @@ import {
   deleteDepartment,
 } from '../../controllers/System/Department.js';
 
+import {
+  createSubject,
+  getSubject,
+  getSubjects,
+  updateSubject,
+  toggleStatusSubject,
+  deleteSubject,
+} from '../../controllers/System/SubjectTypeControllers.js';
+
+import {
+  createAttachment,
+  getAttachment,
+  getAttachments,
+  updatedAttachment,
+  toggleStatusAttachment,
+  deleteAttachment,
+} from '../../controllers/System/AttachmentType.js';
+
 import express from 'express';
 const router = express.Router();
 
@@ -190,6 +208,23 @@ router.post('/department', getDepartment);
 router.patch('/department', updateDepartment);
 router.patch('/department/status', toggleStatusDepartment);
 router.delete('/department', deleteDepartment);
+
+// ATTACHMENT TYPES
+router.post('/create/attachment', createAttachment);
+router.get('/attachments', getAttachments);
+router.post('/attachment', getAttachment);
+router.patch('/attachment', updatedAttachment);
+router.patch('/attachment/status', toggleStatusAttachment);
+router.delete('/attachment', deleteAttachment);
+
+// TYPE SUBJECT MESSAGES
+router.post('/create/subject', createSubject);
+router.get('/subjects', getSubjects);
+router.post('/subject', getSubject);
+router.patch('/subject', updateSubject);
+router.patch('/subject/status', toggleStatusAttachment);
+router.delete('/subject', deleteAttachment);
+
 
 const SystemRoutes = {
   router,

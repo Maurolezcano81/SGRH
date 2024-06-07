@@ -30,7 +30,6 @@ class UserCredentials {
         throw new Error('No se pudo obtener la información necesaria desde el servidor, intente nuevamente');
       }
 
-      console.log(resultsDataUser);
       return resultsDataUser[0];
     } catch (error) {
       console.error('Error en modelo de User:', error);
