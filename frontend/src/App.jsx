@@ -38,7 +38,7 @@ function App() {
                 <Route path="nacionalidad" element={<Nacionality />} />
                 <Route path="estado_de_solicitud" element={<StatusRequest />} />
                 <Route path="modulo" element={<Module />} />
-                <Route path="tipo_de_renuncia" element={<TypeTermination />} />
+                <Route path="tipo_renuncia" element={<TypeTermination />} />
                 <Route path="documento" element={<Document />} />
                 <Route path="departamento" element={<Department />} />
               </Route>
