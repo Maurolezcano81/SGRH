@@ -1,24 +1,43 @@
-import {
-    Link
-} from 'react-router-dom';
-
-import {
-    useState
-} from 'react';
-
+import { useState, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
-import AdminOptions from './AdminOptions';
+import DropDownButton from './DropDownButton';
 
 const NavbarContent = () => {
-    const { authData } = useAuth();
+  const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/menu/parents`;
 
-    return (
-        <div className="navbar__content">
-            
-            {authData?.name_profile && authData?.name_profile === "Administrador" ? <AdminOptions /> : null}
+  const { authData } = useAuth();
+  const [parentList, setParentList] = useState([]);
 
-        </div>
-    )
-}
+  useEffect(() => {
+    const parentsFetch = async () => {
+      const fetchResponse = await fetch(getParents, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authData.token}`,
+        },
+      });
+
+      const parentData = await fetchResponse.json();
+      setParentList(parentData.queryResponse);
+    };
+
+    parentsFetch();
+  }, [authData.token]);
+
+  return (
+    <div className="navbar__content">
+      {parentList &&
+        parentList.map((parent) => (
+          <DropDownButton
+            key={parent.id_pm}
+            id_pm={parent.id_pm}
+            name_pm={parent.name_pm}
+            authData={authData}
+          />
+        ))}
+    </div>
+  );
+};
 
 export default NavbarContent;

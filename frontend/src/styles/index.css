@@ -55,8 +55,8 @@
   --size-navbar-name: clamp(1.6rem, 2vw, 2.4rem);
   --size-navbar-occupation: clamp(1.2rem, 2vw, 2rem);
   --size-navbar-button: clamp(1.4rem, 2vw, 1.8rem);
-  --size-navbar-dropdown: clamp(2rem, 2vw, 2.6rem);
-  --size-navbar-dropdown-item: clamp(1.4rem, 2vw, 1.4rem);
+  --size-navbar-dropdown: clamp(1.6rem, 2vw, 2rem);
+  --size-navbar-dropdown-item: clamp(1.4rem, 2vw, 1.8rem);
 
   /* Navbar Sizes */
 
@@ -472,6 +472,7 @@ input {
   gap: 1rem;
   justify-content: start;
   align-items: center;
+  font-size: var(--size-navbar-dropdown);
 }
 
 .navbar__content-redirect-img {
@@ -488,6 +489,7 @@ input {
   background-color: var(--white-2-20);
   padding: 1rem;
   border-radius: 1rem;
+  min-width: 100%;
 }
 
 .navbar__content-dropdown a {

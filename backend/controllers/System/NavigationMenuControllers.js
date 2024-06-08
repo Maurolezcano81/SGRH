@@ -1,7 +1,9 @@
 import NavigationMenu from '../../models/System/NavigationMenu.js';
+import Profile from '../../models/Auth/Profile.js';
 import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../middlewares/Validations.js';
 
 const instanceNavigationMenu = new NavigationMenu();
+const instanceProfile = new Profile();
 
 export const getNavigationMenus = async (req, res) => {
   try {
@@ -31,7 +33,7 @@ export const getNavigationMenu = async (req, res) => {
     if (isInputEmpty(value_nm)) {
       throw new Error('Los datos que estas utilizando para la busqueda de tipo de menu de navegacion son invalidos');
     }
-    
+
     const queryResponse = await instanceNavigationMenu.getNavigationMenu(value_nm);
 
     if (queryResponse.length < 1) {
@@ -176,6 +178,57 @@ export const deleteNavigationMenu = async (req, res) => {
     });
   } catch (error) {
     console.error('Error en controlador de menu de navegacion: ' + error);
+    return res.status(403).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getMenuParentsByIdProfile = async (req, res) => {
+  const { profile_fk } = req;
+
+  
+  console.log(profile_fk);
+  try {
+    const queryResponse = await instanceProfile.getMenuParentsByIdProfile(profile_fk);
+
+    if (queryResponse.length < 1) {
+      return res.status(200).json({
+        message: 'No hay tipos de menu de navegacion disponibles',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Tipos de menu de navegacion obtenidos correctamente',
+      queryResponse,
+    });
+  } catch (error) {
+    console.error('Error en controlador de tipo de menu de navegacion: ' + error);
+    return res.status(403).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getMenuChildrensByIdProfileAndIdParent = async (req, res) => {
+  const { profile_fk } = req
+  const { id_pm } = req.body;
+
+  try {
+    const queryResponse = await instanceProfile.getMenuChildrensByIdProfileAndIdParent(profile_fk, id_pm);
+
+    if (queryResponse.length < 1) {
+      return res.status(200).json({
+        message: 'No hay tipos de menu de navegacion disponibles',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Tipos de menu de navegacion obtenidos correctamente',
+      queryResponse,
+    });
+  } catch (error) {
+    console.error('Error en controlador de tipo de menu de navegacion: ' + error);
     return res.status(403).json({
       message: error.message,
     });
