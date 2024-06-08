@@ -1,9 +1,10 @@
-import Navbar from '../../components/Navbar/Navbar';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
-import AlertErrorNoAuth from '../../components/Alerts/AlertErrorNoAuth';
 import Spinner from '../../components/Spinner';
+import AlertErrorNoAuth from '../../components/Alerts/AlertErrorNoAuth';
+
+const Navbar = lazy(() => import('../../components/Navbar/Navbar'));
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const AdminLayout = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isTokenChecked, setIsTokenChecked] = useState(false);
 
   const urlCheckPermission = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/checkPermission`;
 
@@ -19,16 +21,25 @@ const AdminLayout = () => {
   const storedToken = JSON.parse(localStorage.getItem('token'));
 
   useEffect(() => {
+    const checkTokenAvailability = () => {
+      if (authData.token || storedToken) {
+        setIsTokenChecked(true);
+      } else {
+        setShowErrorMessage(true);
+        setErrorMessage('Primero debes iniciar sesión');
+        setIsLoading(false);
+      }
+    };
+
+    checkTokenAvailability();
+  }, [authData.token, storedToken]);
+
+  useEffect(() => {
     const fetchPermissions = async () => {
+      if (!isTokenChecked) return;
+
       try {
         const token = authData.token || storedToken;
-        if (!token) {
-          setShowErrorMessage(true);
-          setErrorMessage('Primero debes iniciar sesión');
-          setIsLoading(false);
-          return;
-        }
-
         const fetchResponse = await fetch(urlCheckPermission, {
           method: 'POST',
           headers: {
@@ -62,25 +73,21 @@ const AdminLayout = () => {
       }
     };
 
-    if (authData.token || storedToken) {
-      fetchPermissions();
-    } else {
-      setIsLoading(false);
-    }
-  }, [authData.token, navigate, pathActually.pathname, storedToken, urlCheckPermission]);
+    fetchPermissions();
+  }, [authData.token, navigate, pathActually.pathname, storedToken, urlCheckPermission, isTokenChecked]);
 
   if (isLoading) {
     return <Spinner />;
   }
 
   return (
-    <>
+    <Suspense fallback={<Spinner />}>
       <Navbar />
       {showErrorMessage && <AlertErrorNoAuth errorMessage={errorMessage} />}
       <main>
         <Outlet />
       </main>
-    </>
+    </Suspense>
   );
 };
 
