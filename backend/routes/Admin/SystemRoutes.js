@@ -115,6 +115,16 @@ import {
   deleteAttachment,
 } from '../../controllers/System/AttachmentType.js';
 
+import {
+  createNavigationMenu,
+  getNavigationMenu,
+  getNavigationMenus,
+  updatedNavigationMenu,
+  toggleStatusNavigationMenu,
+  deleteNavigationMenu,
+} from '../../controllers/System/NavigationMenuControllers.js';
+
+
 import express from 'express';
 const router = express.Router();
 
@@ -222,8 +232,16 @@ router.post('/create/subject', createSubject);
 router.get('/subjects', getSubjects);
 router.post('/subject', getSubject);
 router.patch('/subject', updateSubject);
-router.patch('/subject/status', toggleStatusAttachment);
-router.delete('/subject', deleteAttachment);
+router.patch('/subject/status', toggleStatusSubject);
+router.delete('/subject', deleteSubject);
+
+// NAVIGATION MENU
+router.post('/create/navigation_menu', createNavigationMenu);
+router.get('/navigation_menus', getNavigationMenus);
+router.post('/navigation_menu', getNavigationMenu);
+router.patch('/navigation_menu', updatedNavigationMenu);
+router.patch('/navigation_menu/status', toggleStatusNavigationMenu);
+router.delete('/navigation_menu', deleteNavigationMenu);
 
 
 const SystemRoutes = {
