@@ -89,42 +89,44 @@ const ModalUpdate = ({
   };
 
   return (
-    <div className="preferences__modal__container">
-      <div className="preferences__modal__content">
-        <h2>{title_modal}</h2>
-        <form className="preferences__modal__content-update" onSubmit={handleFormSubmit}>
-          {labels.map((label, index) => (
-            <div key={index} className="preferences__modal__field">
-              <label>{label}</label>
-              <input
-                type="text"
-                name={fetchData[index]}
-                placeholder={placeholders[index]}
-                value={inputValues[fetchData[index]]}
-                onChange={handleInputChange}
-              />
+    <div className="alert__background__black">
+      <div className="preferences__modal__container">
+        <div className="preferences__modal__content">
+          <h2>{title_modal}</h2>
+          <form className="preferences__modal__content-update" onSubmit={handleFormSubmit}>
+            {labels.map((label, index) => (
+              <div key={index} className="preferences__modal__field">
+                <label>{label}</label>
+                <input
+                  type="text"
+                  name={fetchData[index]}
+                  placeholder={placeholders[index]}
+                  value={inputValues[fetchData[index]]}
+                  onChange={handleInputChange}
+                />
+              </div>
+            ))}
+            <div className="preferences__modal__field">
+              <label htmlFor={fetchData_select}>Estado</label>
+              <select value={inputValues[fetchData_select]} name={fetchData_select} onChange={handleInputChange}>
+                <option disabled={true} value="">
+                  Seleccione un estado
+                </option>
+                <option value="1">Activo</option>
+                <option value="0">Inactivo</option>
+              </select>
             </div>
-          ))}
-          <div className="preferences__modal__field">
-            <label htmlFor={fetchData_select}>Estado</label>
-            <select value={inputValues[fetchData_select]} name={fetchData_select} onChange={handleInputChange}>
-              <option disabled={true} value="">
-                Seleccione un estado
-              </option>
-              <option value="1">Activo</option>
-              <option value="0">Inactivo</option>
-            </select>
-          </div>
-        </form>
-        {errorMessage && (
-          <div className="preferences__modal__error">
-            <p>{errorMessage}</p>
-          </div>
-        )}
+          </form>
+          {errorMessage && (
+            <div className="preferences__modal__error">
+              <p>{errorMessage}</p>
+            </div>
+          )}
 
-        <div className="preferences__modal__actions">
-          <ButtonRed title="Cancelar" onClick={handleModalUpdate} />
-          <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} type="submit" />
+          <div className="preferences__modal__actions">
+            <ButtonRed title="Cancelar" onClick={handleModalUpdate} />
+            <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} type="submit" />
+          </div>
         </div>
       </div>
     </div>
