@@ -25,7 +25,7 @@ const Subject = () => {
     const pathParts = location.pathname.split('/');
     const lastPart = pathParts[pathParts.length - 1];
     storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
+}, [location.pathname, storageNavbarTitle]);
 
 
   // MODALES

@@ -129,6 +129,8 @@ export const updateSubject = async (req, res) => {
 
 export const toggleStatusSubject = async (req, res) => {
   const { id_sm, status_sm } = req.body;
+  console.log(id_sm);
+  console.log(status_sm);
 
   try {
     if (isNotNumber(id_sm)) throw new Error('Los datos del tipo de sujeto de mensaje son invalidos');

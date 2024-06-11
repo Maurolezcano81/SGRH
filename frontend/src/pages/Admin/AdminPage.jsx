@@ -73,7 +73,9 @@ const AdminLayout = () => {
       }
     };
 
-    fetchPermissions();
+    if (isTokenChecked) {
+      fetchPermissions();
+    }
   }, [authData.token, navigate, pathActually.pathname, storedToken, urlCheckPermission, isTokenChecked]);
 
   if (isLoading) {
