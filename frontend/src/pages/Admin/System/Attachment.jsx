@@ -160,17 +160,18 @@ const Attachment = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Departamento'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_ta', 'status_ta']}
+          fetchData={['name_ta']}
           getOneUrl={getSingleUrl}
           idFetchData="value_attachment"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={"status_ta"}
         />
       )}
 

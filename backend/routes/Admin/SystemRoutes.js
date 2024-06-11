@@ -95,7 +95,7 @@ import {
   updateDepartment,
   toggleStatusDepartment,
   deleteDepartment,
-} from '../../controllers/System/Department.js';
+} from '../../controllers/System/DepartmentControllers.js';
 
 import {
   createSubject,

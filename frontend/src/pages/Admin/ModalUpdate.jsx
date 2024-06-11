@@ -17,6 +17,7 @@ const ModalUpdate = ({
   onSubmitUpdate,
   idToUpdate,
   idFetchData,
+  fetchData_select,
 }) => {
   const [inputValues, setInputValues] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,7 +34,7 @@ const ModalUpdate = ({
           method: methodGetOne,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authData.token}`
+            Authorization: `Bearer ${authData.token}`,
           },
           body: JSON.stringify(requestBody), // Convertir el objeto a JSON
         });
@@ -61,7 +62,7 @@ const ModalUpdate = ({
         method: methodUpdateOne,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authData.token}`
+          Authorization: `Bearer ${authData.token}`,
         },
         body: JSON.stringify(inputValues),
       });
@@ -91,7 +92,7 @@ const ModalUpdate = ({
     <div className="preferences__modal__container">
       <div className="preferences__modal__content">
         <h2>{title_modal}</h2>
-        <form onSubmit={handleFormSubmit}>
+        <form className="preferences__modal__content-update" onSubmit={handleFormSubmit}>
           {labels.map((label, index) => (
             <div key={index} className="preferences__modal__field">
               <label>{label}</label>
@@ -104,6 +105,16 @@ const ModalUpdate = ({
               />
             </div>
           ))}
+          <div className="preferences__modal__field">
+            <label htmlFor={fetchData_select}>Estado</label>
+            <select value={inputValues[fetchData_select]} name={fetchData_select} onChange={handleInputChange}>
+              <option disabled={true} value="">
+                Seleccione un estado
+              </option>
+              <option value="1">Activo</option>
+              <option value="0">Inactivo</option>
+            </select>
+          </div>
         </form>
         {errorMessage && (
           <div className="preferences__modal__error">

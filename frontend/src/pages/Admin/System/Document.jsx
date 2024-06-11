@@ -160,17 +160,18 @@ const Document = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Documento'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_document', 'status_document']}
+          fetchData={['name_document']}
           getOneUrl={getSingleUrl}
           idFetchData="value_document"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={"status_document"}
         />
       )}
 

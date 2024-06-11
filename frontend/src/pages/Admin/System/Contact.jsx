@@ -162,17 +162,18 @@ const Contact = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Contacto'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_contact', 'status_contact']}
+          fetchData={['name_contact']}
           getOneUrl={getSingleUrl}
           idFetchData="value_contact"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={"status_contact"}
         />
       )}
 

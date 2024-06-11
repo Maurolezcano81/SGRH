@@ -160,17 +160,18 @@ const Nacionality = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Nacionalidad'}
-          labels={['Nombre', 'Abreviacion', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese la abreviacion', 'Ingrese el estado']}
+          labels={['Nombre', 'Abreviacion']}
+          placeholders={['Ingrese nombre', 'Ingrese la abreviacion']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_nacionality', 'abbreviation_nacionality', 'status_nacionality']}
+          fetchData={['name_nacionality', 'abbreviation_nacionality']}
           getOneUrl={getSingleUrl}
           idFetchData="value_nacionality"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={"status_nacionality"}
         />
       )}
 

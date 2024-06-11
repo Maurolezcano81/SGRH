@@ -162,17 +162,18 @@ const StatusRequest = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Estado de Solicitud'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_sr', 'status_sr']}
+          fetchData={['name_sr']}
           getOneUrl={getSingleUrl}
           idFetchData="value_sr"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={ 'status_sr'}
         />
       )}
 

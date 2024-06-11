@@ -109,7 +109,7 @@ export const updatedAttachment = async (req, res) => {
       throw new Error('No se puede actualizar este tipo de anexo, debido a que no existe');
     }
 
-    const queryResponse = await instanceAttachment.updatedAttachment(id_ta, name_ta, status_ta);
+    const queryResponse = await instanceAttachment.updateAttachment(id_ta, name_ta, status_ta);
 
     if (queryResponse.affectedRows < 1) {
       throw new Error('Error al actualizar datos del anexo');

@@ -160,17 +160,18 @@ const Sex = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Sexo'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_sex', 'status_sex']}
+          fetchData={['name_sex']}
           getOneUrl={getSingleUrl}
           idFetchData="value_sex"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={'status_sex'}
         />
       )}
 

@@ -162,17 +162,18 @@ const Module = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Modulo'}
-          labels={['Nombre', "Direccion", 'Estado']}
-          placeholders={['Ingrese nombre', "Ingrese la url del modulo", 'Ingrese el estado']}
+          labels={['Nombre', "Direccion"]}
+          placeholders={['Ingrese nombre', "Ingrese la url del modulo"]}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_module', "url_module", 'status_module']}
+          fetchData={['name_module', "url_module"]}
           getOneUrl={getSingleUrl}
           idFetchData="value_module"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={"status_module"}
         />
       )}
 

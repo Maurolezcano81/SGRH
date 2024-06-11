@@ -160,17 +160,19 @@ const Subject = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Departamento'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_sm', 'status_sm']}
+          fetchData={['name_sm']}
           getOneUrl={getSingleUrl}
           idFetchData="value_subject"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          label_select={["Estado"]}
+          fetchData_select={"status_sm"}
         />
       )}
 

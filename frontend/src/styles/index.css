@@ -668,6 +668,11 @@ input {
   visibility: visible;
 }
 
+.preferences__modal__content-update{
+  display: flex;
+  flex-direction: column;
+}
+
 .preferences__modal__container {
   padding: 2rem;
   width: 90%;
@@ -712,11 +717,12 @@ input {
 .preferences__modal__field label {
   width: 40%;
 }
-.preferences__modal__field input {
+.preferences__modal__field input, .preferences__modal__field select {
   width: 60%;
   border-radius: 0 1rem 1rem 0;
   background-color: var(--white-3);
   padding: 0.5rem;
+  border: none;
 }
 
 .preferences__modal__error {

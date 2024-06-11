@@ -170,17 +170,18 @@ const Occupation = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar Ocupacion'}
-          labels={['Nombre', 'Salario', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el salario', 'Ingrese el estado']}
+          labels={['Nombre', 'Salario']}
+          placeholders={['Ingrese nombre', 'Ingrese el salario']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_occupation', 'salary_occupation', 'status_occupation']}
+          fetchData={['name_occupation', 'salary_occupation']}
           getOneUrl={getSingleUrl}
           idFetchData="value_occupation"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={"status_occupation"}
         />
       )}
 

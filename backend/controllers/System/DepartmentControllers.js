@@ -32,7 +32,7 @@ export const getDepartment = async (req, res) => {
       throw new Error('Los datos que estas utilizando para la busqueda de tipo de departamento son invalidos');
     }
 
-    const queryResponse = await instanceDepartment.getDepartment(value_department);
+    const queryResponse = await instanceDepartment.getDepartment(id_department);
 
     if (queryResponse.length < 1) {
       throw new Error('Error al obtener el departamento');

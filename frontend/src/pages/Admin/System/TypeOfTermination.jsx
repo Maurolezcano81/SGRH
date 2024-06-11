@@ -159,17 +159,18 @@ const TypeTermination = () => {
       {toggleModalUpdate && (
         <ModalUpdate
           title_modal={'Editar tipo de salida'}
-          labels={['Nombre', 'Estado']}
-          placeholders={['Ingrese nombre', 'Ingrese el estado']}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['description_tot', 'status_tot']}
+          fetchData={['description_tot']}
           getOneUrl={getSingleUrl}
           idFetchData="id_tot"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
+          fetchData_select={'status_tot'}
         />
       )}
 
