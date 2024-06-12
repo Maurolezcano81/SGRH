@@ -23,7 +23,7 @@ class User {
     try {
       const { username_user, pwd_user, avatar_user, entity_fk, profile_fk } = user_data;
       const query =
-        'INSERT INTO user(username_user, pwd_user, avatar_user, status_user, created_at, updated_at, entity_fk, profile_fk) VALUES(?,?,?,1,now(),now(),?,?)';
+        'INSERT INTO user(username_user, pwd_user, avatar_user,haspwdchanged_user, status_user, created_at, updated_at, entity_fk, profile_fk) VALUES(?,?,?,0, 1,now(),now(),?,?)';
 
       const [results] = await this.connection.promise().query(query, [username_user, pwd_user, avatar_user, entity_fk, profile_fk]);
 

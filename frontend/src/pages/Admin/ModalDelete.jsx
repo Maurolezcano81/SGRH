@@ -27,7 +27,7 @@ const ModalDelete = ({ handleModalDelete, deleteOne, field_name, idToDelete, onS
         return setMessage(dataFormatted.message);
       }
 
-      if (fetchResponse.status === 403) {
+      if (fetchResponse.status != 403) {
         return setMessage(dataFormatted.message);
       }
       onSubmitDelete();

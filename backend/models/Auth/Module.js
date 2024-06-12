@@ -92,7 +92,7 @@ class Module {
       return results;
     } catch (error) {
       console.error(`Error en modelo de Module: ` + error);
-      throw new Error(`Error al eliminar el modulo`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 

@@ -109,7 +109,7 @@ const CreateUser = () => {
         setSuccessfullyMessage(dataFetch.message);
 
         setTimeout(() => {
-          navigate('/usuario/lista');
+          navigate('/rrhh/personal/ver');
         }, 3000);
       }
     } catch (error) {
@@ -132,8 +132,10 @@ const CreateUser = () => {
         <UserDataSection
           setUserData={setUserData}
           setAvatarUser={setAvatarUser}
+          setProfileData={setProfileData} // Añadido para el componente PermissionDataSection
           errorUser={errorsMessage?.user}
           errorFile={errorsMessage?.file}
+          errorPermission={errorsMessage?.permission} // Añadido para el componente PermissionDataSection
           token={authData.token}
           setCriticalErrorMessagge={setCriticalErrorMessagge}
           setCriticalErrorToggle={setCriticalErrorToggle}
@@ -151,14 +153,6 @@ const CreateUser = () => {
         <AddressdataSection
           setAddressData={setAddressData}
           error={errorsMessage?.address}
-          token={authData.token}
-          setCriticalErrorMessagge={setCriticalErrorMessagge}
-          setCriticalErrorToggle={setCriticalErrorToggle}
-        />
-
-        <PermissionDataSection
-          setProfileData={setProfileData}
-          error={errorsMessage?.permission}
           token={authData.token}
           setCriticalErrorMessagge={setCriticalErrorMessagge}
           setCriticalErrorToggle={setCriticalErrorToggle}

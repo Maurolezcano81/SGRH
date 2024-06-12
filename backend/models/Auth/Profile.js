@@ -75,7 +75,7 @@ class Profile {
       return results;
     } catch (error) {
       console.error(`Error en modelo de Profile: ` + error);
-      throw new Error(`Error al eliminar el tipo de perfil`);
+      throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
     }
   }
 
