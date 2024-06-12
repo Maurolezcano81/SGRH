@@ -108,14 +108,12 @@ button:hover {
 
 .button__blue {
   padding: 0.5rem;
-  border-radius: 1rem;
   background-color: var(--blue-0);
   color: var(--white-1);
 }
 
 .button__red {
   padding: 0.5rem;
-  border-radius: 1rem;
   background-color: var(--red-1);
   color: var(--white-1);
 }
@@ -166,7 +164,6 @@ input {
   z-index: 90;
   background-color: var(--white-1);
   padding: 4rem 1rem;
-  border-radius: 1rem;
   box-shadow: var(--shadow-a-25-b-02);
 }
 
@@ -220,7 +217,6 @@ input {
   padding: 2rem;
   background-color: var(--bg-white-2-30);
   box-shadow: var(--shadow-a-30);
-  border-radius: 1rem;
 }
 
 .login__form-img {
@@ -252,7 +248,6 @@ input {
   align-items: center;
   border: 0.1rem solid var(--blue-3);
   padding: 0 1rem;
-  border-radius: 1rem;
   box-shadow: var(--shadow-b-25);
 }
 
@@ -285,7 +280,6 @@ input {
 }
 
 .login__error {
-  border-radius: 1rem;
   padding: 1rem;
   margin: 1rem 0 2rem 0;
   font-size: var(--size-login-error);
@@ -302,7 +296,6 @@ input {
   font-size: var(--size-login-button);
   padding: 0.5rem 4rem;
   background: none;
-  border-radius: 1rem;
   border: 0.2rem solid var(--blue-0);
   box-shadow: var(--shadow-b-25);
   color: var(--blue-0);
@@ -391,7 +384,6 @@ input {
   display: block;
   width: 100%;
   border-bottom: 0.1rem solid var(--white-text-0);
-  border-radius: 1rem;
 }
 
 .navbar__header-close button {
@@ -453,7 +445,6 @@ input {
   background-color: var(--white-text-0);
   color: var(--blue-3);
   padding: 0.5rem 2rem;
-  border-radius: 1rem;
   font-size: var(--size-navbar-button);
 }
 
@@ -488,7 +479,6 @@ input {
 .navbar__background-active {
   background-color: var(--white-2-20);
   padding: 1rem;
-  border-radius: 1rem;
   min-width: 100%;
 }
 
@@ -538,7 +528,6 @@ input {
 .preferences__container__links {
   padding: 2rem;
   box-shadow: var(--shadow-a-25-b-02);
-  border-radius: 0.5rem;
   margin: 2rem 0;
   display: flex;
   flex-direction: column;
@@ -554,12 +543,10 @@ input {
   font-size: var(--size-preferences-link);
   font-weight: 500;
   padding: 0.5rem;
-  border-radius: 1rem;
 }
 
 .preferences__main {
   box-shadow: var(--shadow-a-25-b-02);
-  border-radius: 0.5rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -692,7 +679,6 @@ input {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  border-radius: 1rem;
   z-index: 80;
 }
 
@@ -728,7 +714,6 @@ input {
 }
 .preferences__modal__field input, .preferences__modal__field select {
   width: 60%;
-  border-radius: 0 1rem 1rem 0;
   background-color: var(--white-3);
   padding: 0.5rem;
   border: none;
@@ -804,7 +789,6 @@ main {
 .container__section {
   padding: 1rem;
   box-shadow: var(--shadow-a-25-b-02);
-  border-radius: 1rem;
   margin-bottom: 2rem;
 }
 
@@ -854,7 +838,6 @@ main {
   max-width: 50%;
   min-width: 50%;
   background-color: var(--white-3);
-  border-radius: 0 1rem 1rem 0;
   border: none;
 }
 
@@ -946,7 +929,6 @@ main {
   background-color: var(--red-0);
   text-align: center;
   margin: .5rem 0;
-  border-radius: 1rem;
 }
 
 .error__validation__form-p{
@@ -960,7 +942,6 @@ main {
   background-color: var(--green-0);
   text-align: center;
   margin: .5rem 0;
-  border-radius: 1rem;
 }
 
 .successfully__validation__form-p{
@@ -1041,6 +1022,15 @@ main {
 
 
 @media (width >=1024px) {
+  .preferences__container{
+    display: flex;
+    justify-content: center;
+  }
+
+  .preferences__container-size{
+    width: 70%;
+  }
+
   .navbar__container {
     width: 20%;
   }

@@ -6,6 +6,7 @@ import LinkPreference from './LinkPreference';
 const Preferences = () => {
   return (
     <div className="preferences__container">
+      <div className='preferences__container-size'>
       <div className="preferences__container__links">
         <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
 
@@ -36,6 +37,7 @@ const Preferences = () => {
       <main className="preferences__main">
         <Outlet />
       </main>
+      </div>
     </div>
   );
 };
