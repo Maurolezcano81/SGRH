@@ -19,6 +19,8 @@ import Document from './pages/Admin/System/Document';
 import CreateUser from './pages/Admin/User/CreateUserLayout';
 import Subject from './pages/Admin/System/Subject';
 import Attachment from './pages/Admin/System/Attachment';
+import HomeAdmin from './pages/HomeAdmin';
+import HomeRRHH from './pages/HomeRRHH';
 
 function App() {
   return (
@@ -29,10 +31,10 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/" element={<AppLayout />}>
               {/* Ruta para Admin */}
-              <Route path="admin/inicio" element={<Preferences />} /> {/* Home del admin */}
-
+              <Route path="admin/inicio" element={<HomeAdmin />} /> {/* Home del admin */}
               {/* Ruta para RRHH */}
-              <Route path="rrhh/*" element={<Preferences />}>
+              <Route path="rrhh/*">
+                <Route path="inicio" element={<HomeRRHH />} />
                 <Route path="personal/crear" element={<CreateUser />} />
                 <Route path="ajustes/*" element={<Preferences />}>
                   <Route path="ocupacion" element={<Occupation />} />
