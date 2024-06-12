@@ -15,14 +15,14 @@ class UserCredentials {
       return resultsCheckUsername;
     } catch (error) {
       console.error('Error en modelo de User:', error);
-      throw new Error("Error del servidor")
+      throw new Error('Error del servidor');
     }
   }
 
   async getUserDataLogin(username) {
     try {
       const queryDataUser =
-        'SELECT id_user, username_user, avatar_user, status_user, name_entity, lastname_entity, name_profile, profile_fk, name_occupation FROM user u JOIN entity e on u.entity_fk = e.id_entity join profile p on u.profile_fk = p.id_profile join entity_department_occupation edo on e.id_entity = edo.entity_fk join occupation o on edo.occupation_fk = o.id_occupation WHERE username_user=?';
+        'SELECT id_user, username_user, avatar_user, status_user, name_entity, lastname_entity, name_profile, url_module AS "home_page", u.profile_fk, name_occupation FROM user u JOIN entity e ON u.entity_fk = e.id_entity JOIN profile p ON u.profile_fk = p.id_profile JOIN profile_module pm ON pm.profile_fk = p.id_profile JOIN module m ON pm.module_fk = m.id_module JOIN entity_department_occupation edo ON e.id_entity = edo.entity_fk JOIN occupation o ON edo.occupation_fk = o.id_occupation WHERE username_user=? AND url_module LIKE "%/inicio%"';
 
       const [resultsDataUser] = await this.connection.promise().query(queryDataUser, [username.toLowerCase()]);
 

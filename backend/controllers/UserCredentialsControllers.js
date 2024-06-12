@@ -1,8 +1,10 @@
 import UserCredentials from '../models/Auth/UserCredentials.js';
 import { isInputEmpty, isInputWithWhiteSpaces } from '../middlewares/Validations.js';
 import { createToken, comparePwd } from '../middlewares/Authorization.js';
+import Profile from '../models/Auth/Profile.js';
 
 const UserCredentialsInstance = new UserCredentials();
+const profileInstance = new Profile();
 
 const getUser = async (req, res) => {
   try {
@@ -33,6 +35,7 @@ const getUser = async (req, res) => {
 
     const isPwdCorrect = await comparePwd(pwd_user, userQueryResult[0].pwd_user);
 
+
     if (!isPwdCorrect) {
       console.log(userQueryResult);
       if (username === userQueryResult[0].username_user && pwd_user === userQueryResult[0].pwd_user) {
@@ -51,7 +54,7 @@ const getUser = async (req, res) => {
         delete userData.id_user;
 
         return res.status(200).json({
-          message: 'Autenticación exitosa como superusuario',
+          message: 'Autenticación exitosa',
           userData,
         });
       } else {

@@ -92,6 +92,19 @@ class Profile {
     }
   }
 
+  async getProfileHome(id_user) {
+    try {
+      const query =
+        'select * from profile_module pm join module m on pm.module_fk = m.id_module join profile p on pm.profile_fk = p.id_profile join user u on p.id_profile = u.profile_fk where u.id_user = ? and m.url_module = "/admin/inicio"';
+
+      const [results] = await this.connection.promise().query(query, [id_user]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Profile: ` + error);
+      throw new Error(`Error al obtener el menu`);
+    }
+  }
+
   async getMenuChildrensByIdProfileAndIdParent(id_profile, id_pm) {
     try {
       const query =
