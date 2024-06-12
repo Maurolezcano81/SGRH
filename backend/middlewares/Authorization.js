@@ -28,7 +28,7 @@ export const decodeTokenForAdministrator = (req, res, next) => {
 
     const { userId, profile_fk } = decoded;
 
-    if (profile_fk != 1) {
+    if (profile_fk != 1 && profile_fk != 2) {
       return res.status(403).json({
         message: 'No tienes los permisos para realizar esta acción',
       });

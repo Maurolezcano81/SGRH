@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ButtonBlue from '../../components/ButtonBlue';
 import ButtonRed from '../../components/ButtonRed';
-import authData from '../../hooks/useAuth'
+import authData from '../../hooks/useAuth';
 import useAuth from '../../hooks/useAuth';
 
 const ModalAdd = ({
@@ -12,7 +12,7 @@ const ModalAdd = ({
   method,
   createOne,
   handleModalAdd,
-  handleDependencyAdd
+  handleDependencyAdd,
 }) => {
   // Estado para almacenar los valores de los inputs de manera dinámica
   const [inputValues, setInputValues] = useState({});
@@ -27,7 +27,7 @@ const ModalAdd = ({
     });
   };
 
-  const {authData} = useAuth()
+  const { authData } = useAuth();
 
   // Método para manejar el envío del formulario
   const handleFormSubmit = async (e) => {
@@ -43,7 +43,7 @@ const ModalAdd = ({
         method: method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authData.token}`
+          Authorization: `Bearer ${authData.token}`,
         },
         body: JSON.stringify(newData),
       });
@@ -62,32 +62,34 @@ const ModalAdd = ({
   };
 
   return (
-    <div className="preferences__modal__container">
-      <div className="preferences__modal__content">
-        <h2>{title_modal}</h2>
-        <form>
-          {labels.map((label, index) => (
-            <div key={index} className="preferences__modal__field">
-              <label>{label}</label>
-              <input
-                type="text"
-                name={fetchData[index]}
-                placeholder={placeholders[index]}
-                value={inputValues[fetchData[index]] || ''}
-                onChange={(e) => handleInputChange(e, index)}
-              />
+    <div className="alert__background__black">
+      <div className="preferences__modal__container">
+        <div className="preferences__modal__content">
+          <h2>{title_modal}</h2>
+          <form>
+            {labels.map((label, index) => (
+              <div key={index} className="preferences__modal__field">
+                <label>{label}</label>
+                <input
+                  type="text"
+                  name={fetchData[index]}
+                  placeholder={placeholders[index]}
+                  value={inputValues[fetchData[index]] || ''}
+                  onChange={(e) => handleInputChange(e, index)}
+                />
+              </div>
+            ))}
+          </form>
+          {errorMessage && (
+            <div className="preferences__modal__error">
+              <p>{errorMessage}</p>
             </div>
-          ))}
-        </form>
-        {errorMessage && (
-          <div className="preferences__modal__error">
-            <p>{errorMessage}</p>
-          </div>
-        )}
+          )}
 
-        <div className="preferences__modal__actions">
-          <ButtonRed title="Cancelar" onClick={handleModalAdd} />
-          <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} />
+          <div className="preferences__modal__actions">
+            <ButtonRed title="Cancelar" onClick={handleModalAdd} />
+            <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} />
+          </div>
         </div>
       </div>
     </div>
