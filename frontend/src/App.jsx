@@ -42,7 +42,7 @@ function App() {
                   <Route path="contacto" element={<Contact />} />
                   <Route path="pais" element={<Country />} />
                   <Route path="nacionalidad" element={<Nacionality />} />
-                  <Route path="estado_de_solicitud" element={<StatusRequest />} />
+                  <Route path="tipo_estado_solicitud" element={<StatusRequest />} />
                   <Route path="modulo" element={<Module />} />
                   <Route path="tipo_renuncia" element={<TypeTermination />} />
                   <Route path="documento" element={<Document />} />
