@@ -82,7 +82,7 @@ class Profile {
   async getMenuParentsByIdProfile(id_profile) {
     try {
       const query =
-        'select pa_me.id_pm, name_pm from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? group by name_pm';
+        'select pa_me.id_pm, name_pm from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? group by name_pm order by pa_me.order_pm asc';
 
       const [results] = await this.connection.promise().query(query, [id_profile]);
       return results;
@@ -95,7 +95,7 @@ class Profile {
   async getMenuChildrensByIdProfileAndIdParent(id_profile, id_pm) {
     try {
       const query =
-        'select id_module, name_module, url_module  from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? and pa_me.id_pm = ?';
+        'select id_module, name_module, url_module  from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? and pa_me.id_pm = ? order by mp.order_mp asc';
 
       const [results] = await this.connection.promise().query(query, [id_profile, id_pm]);
       return results;
