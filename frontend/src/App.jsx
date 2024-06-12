@@ -21,6 +21,7 @@ import Subject from './pages/Admin/System/Subject';
 import Attachment from './pages/Admin/System/Attachment';
 import HomeAdmin from './pages/HomeAdmin';
 import HomeRRHH from './pages/HomeRRHH';
+import HomePersonal from './pages/HomePersonal';
 
 function App() {
   return (
@@ -51,6 +52,12 @@ function App() {
                   <Route path="tipo_anexo" element={<Attachment />} />
                 </Route>
               </Route>
+
+              <Route path="personal/*">
+              <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
+
+              </Route>
+
             </Route>
           </Routes>
         </NavbarProvider>
