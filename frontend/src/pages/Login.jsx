@@ -76,16 +76,9 @@ const Login = () => {
       storageAuthData(fetchData.userData);
       localStorage.setItem('token', JSON.stringify(fetchData.userData));
 
+      console.log(fetchData.userData)
       setTimeout(() => {
-        switch (fetchData.userData.name_profile) {
-          case 'Administrador':
-            Navigate('/admin/inicio');
-            break;
-          case 'Personal':
-            Navigate('/personal/inicio');
-            break;
-        }
-        Navigate('/admin/inicio');
+        Navigate(fetchData.userData.home_page);
       }, 1000);
     } catch (e) {
       console.error(e.name);

@@ -17,7 +17,7 @@ const Preferences = () => {
 
         <LinkPreference path="nacionalidad" name="Nacionalidad" />
 
-        <LinkPreference path="estado_de_solicitud" name="Estado de solicitud" />
+        <LinkPreference path="tipo_estado_solicitud" name="Estado de solicitud" />
 
         <LinkPreference path="tipo_renuncia" name="Tipo de renuncia" />
 

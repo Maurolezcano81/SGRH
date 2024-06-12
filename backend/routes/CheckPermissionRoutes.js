@@ -3,8 +3,14 @@ const router = express.Router();
 
 import checkPermissionsController from '../controllers/CheckPermissionsControllers.js';
 import { decodeToken, verifyToken } from '../middlewares/Authorization.js';
+import {
+  getMenuParentsByIdProfile,
+  getMenuChildrensByIdProfileAndIdParent,
+} from '../controllers/System/NavigationMenuControllers.js';
 
 router.post('/checkPermission', verifyToken, decodeToken, checkPermissionsController);
+router.post('/menu/parents', verifyToken, decodeToken, getMenuParentsByIdProfile);
+router.post('/menu/childrens', verifyToken, decodeToken, getMenuChildrensByIdProfileAndIdParent);
 
 const checkPermissionRoutes = {
   router,

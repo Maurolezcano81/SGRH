@@ -117,9 +117,6 @@ export const encryptPwd = async (pwd) => {
 export const comparePwd = async (plainTextPassword, hashedPassword) => {
   try {
     const result = await bcryptjs.compare(plainTextPassword, hashedPassword);
-    console.log(plainTextPassword);
-    console.log(hashedPassword);
-    console.log(result);
     return result;
   } catch (error) {
     console.error('Error comparando contraseñas:', error);

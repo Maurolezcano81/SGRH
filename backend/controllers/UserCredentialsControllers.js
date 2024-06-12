@@ -1,8 +1,10 @@
 import UserCredentials from '../models/Auth/UserCredentials.js';
 import { isInputEmpty, isInputWithWhiteSpaces } from '../middlewares/Validations.js';
 import { createToken, comparePwd } from '../middlewares/Authorization.js';
+import Profile from '../models/Auth/Profile.js';
 
 const UserCredentialsInstance = new UserCredentials();
+const profileInstance = new Profile();
 
 const getUser = async (req, res) => {
   try {
@@ -31,32 +33,35 @@ const getUser = async (req, res) => {
       });
     }
 
-    if (username === process.env.admin_user && pwd_user === userQueryResult[0].pwd_user) {
-      const userDataLogin = await UserCredentialsInstance.getUserDataLogin(username);
-
-      const dataToToken = {
-        userId: userDataLogin.id_user,
-        profile_fk: userDataLogin.profile_fk,
-      };
-
-      const userData = {
-        ...userDataLogin,
-        token: createToken(dataToToken),
-      };
-      delete userData.id_user;
-
-      return res.status(200).json({
-        message: 'Autenticación exitosa como superusuario',
-        userData,
-      });
-    }
-
     const isPwdCorrect = await comparePwd(pwd_user, userQueryResult[0].pwd_user);
 
+
     if (!isPwdCorrect) {
-      return res.status(401).json({
-        message: 'Usuario o contraseña incorrectos',
-      });
+      console.log(userQueryResult);
+      if (username === userQueryResult[0].username_user && pwd_user === userQueryResult[0].pwd_user) {
+
+        const userDataLogin = await UserCredentialsInstance.getUserDataLogin(username);
+
+        const dataToToken = {
+          userId: userDataLogin.id_user,
+          profile_fk: userDataLogin.profile_fk,
+        };
+
+        const userData = {
+          ...userDataLogin,
+          token: createToken(dataToToken),
+        };
+        delete userData.id_user;
+
+        return res.status(200).json({
+          message: 'Autenticación exitosa',
+          userData,
+        });
+      } else {
+        return res.status(401).json({
+          message: 'Usuario o contraseña incorrectos',
+        });
+      }
     }
 
     const userDataLogin = await UserCredentialsInstance.getUserDataLogin(username);
