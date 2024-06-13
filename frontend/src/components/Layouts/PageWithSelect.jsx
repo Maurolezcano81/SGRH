@@ -4,6 +4,7 @@ import ButtonBlue from '../ButtonBlue';
 import PreferencesTableHeader from '../Table/TablePreferences/PreferencesTableHeader';
 import DeleteButton from '../Buttons/DeleteButton';
 import ModalDelete from '../../pages/Admin/ModalDelete'; // Asegúrate de importar ModalDelete
+import ListForAdd from '../Modals/ListForAdd';
 
 const PageWithSelect = ({
   getOptions,
@@ -21,6 +22,7 @@ const PageWithSelect = ({
   const [modalDeleteIsOpen, setModalDeleteIsOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const { authData } = useAuth();
+  const [isOpenModalAdd, setIsOpenModalAdd] = useState(false);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -101,6 +103,11 @@ const PageWithSelect = ({
     setArrayWithTableContainerFormatted(updatedArray);
   };
 
+  
+const handleModalListForAdd = (e) => {
+  setIsOpenModalAdd(!isOpenModalAdd);
+};
+
   return (
     <div className="section__padding-10">
       <div className="section__container">
@@ -116,7 +123,7 @@ const PageWithSelect = ({
             </select>
           </div>
           <div className="section__header__container-button">
-            <ButtonBlue title={'Agregar Nuevo'} onClick={() => console.log('hola')} />
+            <ButtonBlue title={'Agregar Nuevo'} onClick={handleModalListForAdd} />
           </div>
         </div>
 
@@ -127,6 +134,12 @@ const PageWithSelect = ({
             idToDelete={idToDelete}
             deleteOne={deleteOne}
             onSubmitDelete={onSubmitDelete}
+          />
+        )}
+
+        {isOpenModalAdd && (
+          <ListForAdd 
+          handleModalListForAdd={handleModalListForAdd}
           />
         )}
         <table className="section__table">
