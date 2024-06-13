@@ -45,7 +45,7 @@ const ModalDelete = ({ handleModalDelete, deleteOne, field_name, idToDelete, onS
         <div className="modal__delete__message">{message}</div>
         <div className="alert__footer modal__delete">
           <ButtonRed onClick={handleSubmit} title={'Eliminar'} />
-          <ButtonBlue onClick={() => handleModalDelete()} title={'Cancelar'} />
+          <ButtonBlue onClick={() => handleModalDelete()} title={'Volver'} />
         </div>
       </div>
     </div>

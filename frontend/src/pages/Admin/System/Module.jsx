@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import useNav from '../../../hooks/useNav';
-import {
-  useLocation
-} from 'react-router-dom'
+import {  useLocation, useNavigate } from 'react-router-dom';
 
 import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
 import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
@@ -11,17 +9,19 @@ import PreferenceTitle from './PreferenceTitle';
 import ModalAdd from '../ModalAdd';
 import ModalUpdate from '../ModalUpdate';
 import ModalDelete from '../ModalDelete';
+import ButtonBlack from '../../../components/Buttons/ButtonBlack';
 
 const Module = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
   const [modules, setModules] = useState([]);
   const [modulesFormatted, setModulesFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(""); // Estado para almacenar el mensaje de "no hay datos"
+  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
-  const {storageNavbarTitle}  = useNav();
+  const { storageNavbarTitle } = useNav();
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const pathParts = location.pathname.split('/');
@@ -29,7 +29,6 @@ const Module = () => {
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
 
-  
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
   const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
@@ -74,14 +73,14 @@ const Module = () => {
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
-            setNoDataMessage(data.message);
-            setModules([]);
-            setModulesFormatted([]);
-          } else {
-            setModules(data.queryResponse);
-            formatModules(data.queryResponse);
-            setNoDataMessage("");
-          }
+          setNoDataMessage(data.message);
+          setModules([]);
+          setModulesFormatted([]);
+        } else {
+          setModules(data.queryResponse);
+          formatModules(data.queryResponse);
+          setNoDataMessage('');
+        }
       } catch (error) {
         console.error('Error al obtener los modulos', error);
       }
@@ -92,7 +91,7 @@ const Module = () => {
 
   const formatModules = (modules) => {
     const formatted = modules.map((module) => ({
-      ...module
+      ...module,
     }));
     setModulesFormatted(formatted);
   };
@@ -141,80 +140,90 @@ const Module = () => {
   const handleDependencyToggle = () => {
     setIsStatusChanged(!isStatusChanged);
   };
+
+  const onClickAssignModules = () =>{
+    navigate("/admin/perfiles")
+  }
   // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Modulo" handleModalAdd={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nuevo Tipo de Modulo'}
-          labels={['Nombre', "Direccion del modulo"]}
-          placeholders={['Ingrese nombre', "Ingrese direccion"]}
-          method={'POST'}
-          fetchData={['name_module', "url_module"]}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
+      <div className='button_container'>
+        <ButtonBlack title={'Asignar Modulos'} onClick={onClickAssignModules} />
+      </div>
 
-      {toggleModalUpdate && (
-        <ModalUpdate
-          title_modal={'Editar Modulo'}
-          labels={['Nombre', "Direccion"]}
-          placeholders={['Ingrese nombre', "Ingrese la url del modulo"]}
-          methodGetOne={'POST'}
-          methodUpdateOne={'PATCH'}
-          fetchData={['name_module', "url_module"]}
-          getOneUrl={getSingleUrl}
-          idFetchData="value_module"
-          idToUpdate={idToGet}
-          updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_module"}
-        />
-      )}
+      <div className="preference__container">
+        <PreferenceTitle title="Modulo" handleModalAdd={handleModalAdd} />
+        {toggleModalAdd && (
+          <ModalAdd
+            title_modal={'Nuevo Tipo de Modulo'}
+            labels={['Nombre', 'Direccion del modulo']}
+            placeholders={['Ingrese nombre', 'Ingrese direccion']}
+            method={'POST'}
+            fetchData={['name_module', 'url_module']}
+            createOne={createOne}
+            handleDependencyAdd={handleDependencyAdd}
+            handleModalAdd={handleModalAdd}
+          />
+        )}
 
-      {toggleModalDelete && (
-        <ModalDelete
-          handleModalDelete={handleModalDelete}
-          deleteOne={deleteOne}
-          field_name={'id_module'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
-        />
-      )}
+        {toggleModalUpdate && (
+          <ModalUpdate
+            title_modal={'Editar Modulo'}
+            labels={['Nombre', 'Direccion']}
+            placeholders={['Ingrese nombre', 'Ingrese la url del modulo']}
+            methodGetOne={'POST'}
+            methodUpdateOne={'PATCH'}
+            fetchData={['name_module', 'url_module']}
+            getOneUrl={getSingleUrl}
+            idFetchData="value_module"
+            idToUpdate={idToGet}
+            updateOneUrl={updateOneUrl}
+            onSubmitUpdate={onSubmitUpdate}
+            handleModalUpdate={handleModalUpdate}
+            fetchData_select={'status_module'}
+          />
+        )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', "Direccion", 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-        {modulesFormatted.length > 0 ? (
-                    <PreferencesBodyRow
-                    items={modulesFormatted}
-                    keys={['name_module', "url_module"]}
-                    status_name={['id_module', 'status_module']}
-                    fetchUrl={toggleStatus}
-                    idToToggle={idToToggle}
-                    handleStatusToggle={handleStatusToggle}
-                    handleDependencyToggle={handleDependencyToggle}
-                    handleEdit={handleModalUpdate}
-                    handleModalDelete={handleModalDelete}
-                    handleDelete={handleDelete}
-                  />
-          ) : (
+        {toggleModalDelete && (
+          <ModalDelete
+            handleModalDelete={handleModalDelete}
+            deleteOne={deleteOne}
+            field_name={'id_module'}
+            idToDelete={idToDelete}
+            onSubmitDelete={onSubmitDelete}
+          />
+        )}
+
+        <table className="table__preference">
+          <thead className="table__preference__head">
             <tr>
-              <td colSpan="4">{noDataMessage || "No hay datos ingresados"}</td>
+              <PreferencesTableHeader keys={['Nombre', 'Direccion', 'Estado', 'Acciones']} />
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="table__preference__body">
+            {modulesFormatted.length > 0 ? (
+              <PreferencesBodyRow
+                items={modulesFormatted}
+                keys={['name_module', 'url_module']}
+                status_name={['id_module', 'status_module']}
+                fetchUrl={toggleStatus}
+                idToToggle={idToToggle}
+                handleStatusToggle={handleStatusToggle}
+                handleDependencyToggle={handleDependencyToggle}
+                handleEdit={handleModalUpdate}
+                handleModalDelete={handleModalDelete}
+                handleDelete={handleDelete}
+              />
+            ) : (
+              <tr>
+                <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 

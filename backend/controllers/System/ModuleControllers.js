@@ -36,6 +36,7 @@ export const getModulesByProfile = async (req, res) => {
     if (queryResponse.length < 1) {
       return res.status(200).json({
         message: 'No hay modulos disponibles',
+        queryResponse,
       });
     }
     return res.status(200).json({
@@ -115,7 +116,6 @@ export const createModule = async (req, res) => {
 export const updateModule = async (req, res) => {
   const { id_module, name_module, url_module, status_module } = req.body;
   try {
-
     if (isInputEmpty(id_module) || isInputEmpty(name_module) || isInputEmpty(status_module)) {
       throw new Error('Debes completar todos los campos de modulo');
     }

@@ -21,7 +21,7 @@ class Module {
   async getModulesByProfile(id_profile) {
     try {
       const query =
-        'SELECT id_module, name_module, url_module FROM Module m join profile_module pm on pm.module_fk = m.id_module join profile p on pm.profile_fk = id_profile where id_profile = ?';
+        'SELECT id_module, id_pm, name_module, url_module FROM Module m join profile_module pm on pm.module_fk = m.id_module join profile p on pm.profile_fk = id_profile where id_profile = ?';
 
       const [results] = await this.connection.promise().query(query, [id_profile]);
       return results;

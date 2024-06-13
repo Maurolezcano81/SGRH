@@ -1,5 +1,11 @@
+
 const HomeAdmin = () => {
-  return <>HOLA ADMIN</>;
+  return (
+    <>
+      Hola Admin    
+
+    </>
+  )
 };
 
 export default HomeAdmin;
