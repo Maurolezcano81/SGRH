@@ -81,7 +81,6 @@ const AppLayout = () => {
 
   useEffect(() => {
     const checkHasPwdChanged = async () => {
-      if (!isTokenChecked) return;
 
       try {
         const token = authData.token || storedToken;
@@ -104,7 +103,7 @@ const AppLayout = () => {
     };
 
     checkHasPwdChanged();
-  }, [authData.token, isTokenChecked, storedToken, urlCheckHasToPwdChanged]);
+  }, [authData.token]);
 
   if (isLoading) {
     return <Spinner />;
@@ -118,9 +117,11 @@ const AppLayout = () => {
     <Suspense fallback={<Spinner />}>
       <Navbar />
       {showErrorMessage && <AlertErrorNoAuth errorMessage={errorMessage} />}
-      {/* {showPwdChangedModal && (
+      {showPwdChangedModal && (
         <InformattionMessage message="You need to change your password." closeModal={closeModalInformattionMessage} />
-      )} */}
+      )}
+        {/* FALTA AGREGAR BOTON PARA REDIRECCIONAR A PAGINA */}
+
       <main>
         <Outlet />
       </main>
