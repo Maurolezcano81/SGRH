@@ -967,6 +967,8 @@ input {
 .alert__container{
   z-index: 11;
   position: absolute;
+  max-height: 80vh;
+  overflow: scroll;
 }
 
 .alert__background__black{
@@ -980,9 +982,15 @@ input {
   z-index: 10;
 }
 
+.alert__container.modal__listforadd{
+  justify-content: start;
+  padding: .5rem;
+  gap: 1.5rem;
+}
+
 .modal__listforadd__item-container{
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
   padding: .5rem;
   border-bottom: .1rem solid var(--white-5);

@@ -322,3 +322,32 @@ export const createUser = async (req, res) => {
     res.status(500).json({ message: 'Error al crear usuario', group: 'alert' });
   }
 };
+
+export const hasToChangePwd = async (req, res) => {
+  try {
+    const { id_user } = req;
+
+    const results = await instanceUser.hasToChangePwd(id_user);
+
+    if (results.length < 1) {
+      return res.status(422).json({
+        message: "Ha ocurrido un error"
+      });
+    }
+
+    console.log(results[0]);
+
+    if (results[0].haspwdchanged_user != 0) {
+      return res.status(200).json({
+        haspwdchanged: false
+      });
+    }
+
+    return res.status(200).json({
+      haspwdchanged: true
+    });
+  } catch (error) {
+    console.error('Error al comprobar el cambio de contraseña del usuario:', error);
+    res.status(500).json({ message: 'Error al comprobar el cambio de contraseña del usuario', group: 'alert' });
+  }
+}
