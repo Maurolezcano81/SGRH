@@ -28,11 +28,12 @@ const Login = () => {
           case 'Administrador':
             Navigate('/admin/inicio');
             break;
-          case 'Personal':
-            Navigate('/personal/inicio');
+          case 'RRHH':
+            Navigate('/rrhh/inicio');
             break;
-          default:
-            Navigate('/admin/inicio');
+            case 'RRHH':
+              Navigate('/personal/inicio');
+              break;
         }
       } catch (error) {
         console.error('Error al iniciar sesión automáticamente:', error);

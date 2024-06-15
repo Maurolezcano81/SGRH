@@ -31,6 +31,10 @@ const AppLayout = () => {
         setShowErrorMessage(true);
         setErrorMessage('Primero debes iniciar sesión');
         setIsLoading(false);
+        setTimeout(() => {
+          navigate('/');
+          setShowErrorMessage(false);
+        }, 3000);
       }
     };
 
@@ -118,7 +122,7 @@ const AppLayout = () => {
       <Navbar />
       {showErrorMessage && <AlertErrorNoAuth errorMessage={errorMessage} />}
       {showPwdChangedModal && (
-        <InformattionMessage message="You need to change your password." closeModal={closeModalInformattionMessage} />
+        <InformattionMessage message="Debes cambiar tu contraseña para mas seguridad." closeModal={closeModalInformattionMessage} />
       )}
         {/* FALTA AGREGAR BOTON PARA REDIRECCIONAR A PAGINA */}
 

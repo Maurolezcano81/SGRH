@@ -210,6 +210,7 @@ input {
   padding: 0 3rem;
   display: flex;
   height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   flex-direction: column;
   justify-content: center;
@@ -751,7 +752,6 @@ input {
   width: 5rem;
   height: 2rem;
   background-color: #ccc;
-  border-radius: 15px;
   position: relative;
   cursor: pointer;
 }
@@ -760,7 +760,6 @@ input {
   width: 2rem;
   height: 2rem;
   background-color: #666;
-  border-radius: 50%;
   position: absolute;
   top: 0;
   left: 0;
@@ -969,6 +968,7 @@ input {
   position: absolute;
   max-height: 80vh;
   overflow: scroll;
+  scrollbar-width: none;
 }
 
 .alert__background__black{
@@ -990,7 +990,7 @@ input {
 
 .modal__listforadd__item-container{
   display: flex;
-  justify-content: start;
+  justify-content: space-between;
   align-items: center;
   padding: .5rem;
   border-bottom: .1rem solid var(--white-5);
@@ -1008,6 +1008,7 @@ input {
   background-color: var(--bg-white-2-50);
   z-index: 10;
 }
+
 .spinner-container {
   display: flex;
   justify-content: center;
@@ -1081,6 +1082,10 @@ input {
   align-items: center;
 }
 
+.container__page{
+  padding: 1rem 0;
+}
+
 
 @keyframes spin {
   to {
@@ -1117,6 +1122,16 @@ input {
     justify-content: center;
   }
 
+  .section__container{
+    width: 60%;
+  }
+
+  .section__padding-10{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
   .preferences__container-size{
     width: 70%;
   }
@@ -1131,7 +1146,7 @@ input {
 
   .login__content {
     align-items: center;
-    gap: 4rem;
+    width: 60%;
   }
 
   .navbar__collapsed-button {
