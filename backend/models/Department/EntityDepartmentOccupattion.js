@@ -18,6 +18,7 @@ class EntityDepartmentOccupation{
         throw new Error(`Error al `);
       }
     }
+
 }
 
 export default EntityDepartmentOccupation;

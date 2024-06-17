@@ -10,7 +10,6 @@ const AlertError = (props) => {
                     <p>{props.errorMessage}</p>
                 </div>
             </div>
-
     )
 }
 

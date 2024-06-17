@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import Spinner from '../components/Spinner';
 import AlertErrorNoAuth from '../components/Alerts/AlertErrorNoAuth';
-import InformattionMessage from '../components/Modals/InformattionMessage';
+import Warning from '../components/Alerts/Warning';
 
 const Navbar = lazy(() => import('../components/Navbar/Navbar'));
 
@@ -85,10 +85,8 @@ const AppLayout = () => {
 
   useEffect(() => {
     const checkHasPwdChanged = async () => {
-
       try {
         const token = authData.token || storedToken;
-        console.log(token);
         const fieldResponse = await fetch(urlCheckHasToPwdChanged, {
           method: 'POST',
           headers: {
@@ -122,9 +120,16 @@ const AppLayout = () => {
       <Navbar />
       {showErrorMessage && <AlertErrorNoAuth errorMessage={errorMessage} />}
       {showPwdChangedModal && (
-        <InformattionMessage message="Debes cambiar tu contraseña para mas seguridad." closeModal={closeModalInformattionMessage} />
+        <Warning
+          message="Antes de continuar sugerimos cambiar la contraseña
+para evitar ingresos indeseados."
+          redirectFunction={() => {
+            console.log('hola');
+          }}
+          skipFunction={closeModalInformattionMessage}
+        />
       )}
-        {/* FALTA AGREGAR BOTON PARA REDIRECCIONAR A PAGINA */}
+      {/* FALTA AGREGAR BOTON PARA REDIRECCIONAR A PAGINA */}
 
       <main>
         <Outlet />

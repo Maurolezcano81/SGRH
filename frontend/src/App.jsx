@@ -23,6 +23,7 @@ import HomeAdmin from './pages/HomeAdmin';
 import HomeRRHH from './pages/HomeRRHH';
 import HomePersonal from './pages/HomePersonal';
 import Profiles from './pages/Admin/System/Profiles';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -34,10 +35,10 @@ function App() {
             <Route path="/" element={<AppLayout />}>
               {/* Ruta para Admin */}
               <Route path="admin/*">
-              <Route path="inicio" element={<HomeAdmin />} />
-              <Route path="perfiles" element={<Profiles />} />
-              
-              </Route>{/* Home del admin */}
+                <Route path="inicio" element={<HomeAdmin />} />
+                <Route path="perfiles" element={<Profiles />} />
+              </Route>
+              {/* Home del admin */}
               {/* Ruta para RRHH */}
               <Route path="rrhh/*">
                 <Route path="inicio" element={<HomeRRHH />} />
@@ -59,9 +60,11 @@ function App() {
               </Route>
 
               <Route path="personal/*">
-              <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
-
+                <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
               </Route>
+
+                  
+              <Route path="profile/" element={<Profile />} />
 
             </Route>
           </Routes>

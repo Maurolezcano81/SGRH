@@ -20,7 +20,7 @@ app.use('/uploads/avatars', express.static(staticImagesPath));
 import UserCredentialsRoutes from './routes/UserCredentialsRoutes.js';
 import SystemRoutes from './routes/Admin/SystemRoutes.js';
 
-import { decodeTokenForAdministrator, verifyToken } from './middlewares/Authorization.js';
+import { decodeToken, decodeTokenForAdministrator, verifyToken } from './middlewares/Authorization.js';
 import UserRoutes from './routes/Admin/UserRoutes.js';
 import StateRoutes from './routes/Admin/Address/AddressRoutes.js';
 import checkPermissionRoutes from './routes/CheckPermissionRoutes.js';
@@ -36,7 +36,10 @@ app.use(
   StateRoutes.router
 );
 
+import { getDataUserForProfile } from './controllers/People/UserControllers.js';
+
 app.use('/api', checkPermissionRoutes.router);
+app.use('/api/profile', verifyToken, decodeToken, getDataUserForProfile);
 
 // Server
 app.listen(process.env.SV_PORT || 3000, () => {

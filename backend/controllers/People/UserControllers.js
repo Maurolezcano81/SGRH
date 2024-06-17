@@ -16,6 +16,7 @@ import EntityDocument from '../../models/People/EntityDocument.js';
 import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
 
 import { encryptPwd } from '../../middlewares/Authorization.js';
+import UserCredentials from '../../models/Auth/UserCredentials.js';
 
 const instanceEmployee = new Employee();
 const instanceEntity = new Entity();
@@ -331,7 +332,7 @@ export const hasToChangePwd = async (req, res) => {
 
     if (results.length < 1) {
       return res.status(422).json({
-        message: "Ha ocurrido un error"
+        message: 'Ha ocurrido un error',
       });
     }
 
@@ -339,15 +340,81 @@ export const hasToChangePwd = async (req, res) => {
 
     if (results[0].haspwdchanged_user != 0) {
       return res.status(200).json({
-        haspwdchanged: false
+        haspwdchanged: false,
       });
     }
 
     return res.status(200).json({
-      haspwdchanged: true
+      haspwdchanged: true,
     });
   } catch (error) {
     console.error('Error al comprobar el cambio de contraseña del usuario:', error);
     res.status(500).json({ message: 'Error al comprobar el cambio de contraseña del usuario', group: 'alert' });
   }
-}
+};
+
+export const getDataUserForProfile = async (req, res) => {
+  const { value_user } = req.body;
+  const { id_user, profile_fk } = req;
+  try {
+    if (isInputEmpty(value_user)) {
+      res.status(403).json({
+        message: 'No tiene permisos',
+      });
+    }
+
+    const getUser = await instanceUser.getUserByUsername(value_user);
+
+    if (getUser.length < 1) {
+      throw new Error('Error al obtener los datos del usuario');
+    }
+
+    const { username_user, avatar_user, status_user, haspwdchanged_user, created_at, entity_fk } =
+      getUser[0];
+
+    const getEntity = await instanceEntity.getEntityById(entity_fk);
+
+    if (getEntity.length < 1) {
+      throw new Error('Error al obtener los datos del usuario');
+    }
+
+    const getDepartment = await instanceEntity.getEntityDepartment(entity_fk);
+
+    const getOccupation = await instanceEntity.getEntityOccupation(entity_fk);
+
+    const department__data = {
+      ...getDepartment,
+    };
+
+    const occupation__data = {
+      ...getOccupation,
+    };
+
+    const user__data = {
+      ...getUser,
+    };
+
+    const entity__data = {
+      ...getEntity,
+    };
+
+    const isTheSameUser = id_user === getUser[0].id_user ? true : false;
+
+    const canEdit = profile_fk === 1 || profile_fk === 2 ? true : false;
+
+    const permissions__data = {
+      isTheSameUser: isTheSameUser,
+      canEdit: canEdit,
+    };
+    res.status(200).json({
+      message: 'Perfil obtenido con exito',
+      department__data,
+      occupation__data,
+      user__data,
+      entity__data,
+      permissions__data: permissions__data,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

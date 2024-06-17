@@ -8,7 +8,6 @@ class User {
 
   async getUserByUsername(username) {
     try {
-      const {} = {};
       const query = 'Select * from user where username_user = ?';
 
       const [results] = await this.connection.promise().query(query, [username]);
@@ -49,6 +48,7 @@ class User {
       throw new Error(`Error al crear datos de usuario`);
     }
   }
+
 }
 
 export default User;

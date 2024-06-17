@@ -23,7 +23,43 @@ class Entity {
     }
   }
 
+  async getEntityById(id_entity) {
+    try {
+      const query = 'SELECT * FROM entity where id_entity = ?';
 
+      const [results] = await this.connection.promise().query(query, [id_entity]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de : ` + error);
+      throw new Error(`Error al `);
+    }
+  }
+
+
+  async getEntityDepartment(id_entity) {
+    try {
+      const query = "SELECT id_edo, name_department FROM entity_department_occupation edo join department d on edo.department_fk = d.id_department where entity_fk = ?";
+  
+      const [results] = await this.connection.promise().query(query, [id_entity]);
+      return results;
+    } catch(error) {
+      console.error(`Error en modelo de : `+error);
+      throw new Error(`Error al `);
+    }
+  }
+
+  async getEntityOccupation(id_entity) {
+    try {
+      const query = "SELECT id_edo, name_occupation FROM entity_department_occupation edo join occupation o on edo.occupation_fk = id_occupation where entity_fk = ?";
+  
+      const [results] = await this.connection.promise().query(query, [id_entity]);
+      return results;
+    } catch(error) {
+      console.error(`Error en modelo de : `+error);
+      throw new Error(`Error al `);
+    }
+  }
+  
 }
 
 export default Entity;

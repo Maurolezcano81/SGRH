@@ -37,7 +37,6 @@ const getUser = async (req, res) => {
 
 
     if (!isPwdCorrect) {
-      console.log(userQueryResult);
       if (username === userQueryResult[0].username_user && pwd_user === userQueryResult[0].pwd_user) {
 
         const userDataLogin = await UserCredentialsInstance.getUserDataLogin(username);

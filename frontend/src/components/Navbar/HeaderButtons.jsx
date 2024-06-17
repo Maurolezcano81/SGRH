@@ -1,17 +1,25 @@
-import {
-    Link
-} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const HeaderButtons = (props) =>{
+import useAuth from '../../hooks/useAuth';
 
-    const username = props.username;
+const HeaderButtons = () => {
+  const { authData } = useAuth();
+  const navigate = useNavigate();
 
-    return (
+
+  const handleMyProfile = () =>{
+    navigate('profile', { state: { value_user: authData.username_user }})
+  }
+  return (
     <div className="navbar__header-redirects">
-        <button className='button__navbar' to="/profile/">Mi perfil</button>
-        <button className='button__navbar' to="#">Mensajes</button>
+      <button className="button__navbar" onClick={handleMyProfile}>
+        Mi perfil
+      </button>
+      <button className="button__navbar" to="#">
+        Mensajes
+      </button>
     </div>
-    )
-}
+  );
+};
 
 export default HeaderButtons;

@@ -1,6 +1,5 @@
 import mysql from 'mysql2';
 import { database } from '../../config/database.js';
-import { comparePwd } from '../../middlewares/Authorization.js';
 
 class UserCredentials {
   constructor() {
@@ -19,12 +18,12 @@ class UserCredentials {
     }
   }
 
-  async getUserDataLogin(username) {
+  async getUserDataLogin(value) {
     try {
       const queryDataUser =
-        'SELECT id_user, username_user, avatar_user, status_user, name_entity, lastname_entity, name_profile, url_module AS "home_page", u.profile_fk, name_occupation FROM user u JOIN entity e ON u.entity_fk = e.id_entity JOIN profile p ON u.profile_fk = p.id_profile JOIN profile_module pm ON pm.profile_fk = p.id_profile JOIN module m ON pm.module_fk = m.id_module JOIN entity_department_occupation edo ON e.id_entity = edo.entity_fk JOIN occupation o ON edo.occupation_fk = o.id_occupation WHERE username_user=? AND url_module LIKE "%/inicio%"';
+        'SELECT id_user, username_user, avatar_user, status_user, name_entity, lastname_entity, name_profile, url_module AS "home_page", u.profile_fk, name_occupation FROM user u JOIN entity e ON u.entity_fk = e.id_entity JOIN profile p ON u.profile_fk = p.id_profile JOIN profile_module pm ON pm.profile_fk = p.id_profile JOIN module m ON pm.module_fk = m.id_module JOIN entity_department_occupation edo ON e.id_entity = edo.entity_fk JOIN occupation o ON edo.occupation_fk = o.id_occupation WHERE username_user=? or id_user = ? AND url_module LIKE "%/inicio%"';
 
-      const [resultsDataUser] = await this.connection.promise().query(queryDataUser, [username.toLowerCase()]);
+      const [resultsDataUser] = await this.connection.promise().query(queryDataUser, [value, value]);
 
       if (resultsDataUser.length < 1) {
         throw new Error('No se pudo obtener la información necesaria desde el servidor, intente nuevamente');

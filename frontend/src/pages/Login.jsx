@@ -77,7 +77,6 @@ const Login = () => {
       storageAuthData(fetchData.userData);
       localStorage.setItem('token', JSON.stringify(fetchData.userData));
 
-      console.log(fetchData.userData)
       setTimeout(() => {
         Navigate(fetchData.userData.home_page);
       }, 1000);
