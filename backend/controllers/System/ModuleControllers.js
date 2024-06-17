@@ -51,6 +51,31 @@ export const getModulesByProfile = async (req, res) => {
   }
 };
 
+export const getModulesOutProfile = async (req, res) => {
+  const { id_profile } = req.body;
+
+  try {
+    const queryResponse = await instanceModule.getModulesOutProfile(id_profile);
+
+    if (queryResponse.length < 1) {
+      return res.status(200).json({
+        message: 'No hay modulos disponibles',
+        queryResponse,
+      });
+    }
+    return res.status(200).json({
+      message: 'Listado de modulos obtenido con exito',
+      queryResponse,
+    });
+  } catch (error) {
+    console.error('Ha ocurrido un error en controlador de Module' + error);
+    res.status(403).json({
+      message: error.message,
+    });
+  }
+};
+
+
 export const getModule = async (req, res) => {
   const { value_module } = req.body;
   try {

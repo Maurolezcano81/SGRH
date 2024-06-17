@@ -63,6 +63,7 @@ import {
   getModule,
   getModules,
   getModulesByProfile,
+  getModulesOutProfile,
   updateModule,
   toggleStatusModule,
   deleteModule,
@@ -188,6 +189,7 @@ router.delete('/type_of_termination', deleteTot);
 router.post('/create/module', createModule);
 router.get('/modules', getModules);
 router.post('/modules/profile', getModulesByProfile);
+router.post('/modules/profile/out', getModulesOutProfile);
 router.post('/module/profile', bindModuleToProfile);
 router.delete('/module/profile', unBindModuleToProfile);
 router.post('/module', getModule);

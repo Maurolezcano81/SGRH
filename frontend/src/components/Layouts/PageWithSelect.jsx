@@ -77,7 +77,7 @@ const PageWithSelect = ({
 
       fetchModules();
     }
-  }, [selectedOption, authData, getContentTable, nameFetchConditioned, modalDeleteIsOpen]);
+  }, [selectedOption, authData, getContentTable, nameFetchConditioned, modalDeleteIsOpen, isOpenModalAdd]);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -109,6 +109,7 @@ const PageWithSelect = ({
     setIsOpenModalAdd(!isOpenModalAdd);
   };
 
+
   return (
     <div className="section__padding-10">
       <div className="section__container">
@@ -139,7 +140,7 @@ const PageWithSelect = ({
         )}
 
         {isOpenModalAdd && (
-          <ListForAdd handleModalListForAdd={handleModalListForAdd} ModulesBinded={arrayWithTableContainer} />
+          <ListForAdd selectedProfile={selectedOption} handleModalListForAdd={handleModalListForAdd} ModulesBinded={arrayWithTableContainer} />
         )}
         <table className="section__table">
           <thead className="table__preference__head page__with__select">

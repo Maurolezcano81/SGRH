@@ -1087,6 +1087,7 @@ input {
 
 .section__table {
   margin: 4rem 0;
+  width: 100%;
 }
 
 .page__with__select > tr:first-child {

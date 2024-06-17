@@ -31,6 +31,18 @@ class Module {
     }
   }
 
+  async getModulesOutProfile(id_profile) {
+    try {
+      const query =
+        'SELECT m.url_module, m.id_module FROM module m LEFT JOIN profile_module pm ON m.id_module = pm.module_fk AND pm.profile_fk = ?  WHERE pm.module_fk IS NULL;';
+      const [results] = await this.connection.promise().query(query, [id_profile]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Modules: ` + error);
+      throw new Error(`Error al obtener el listado de modulos`);
+    }
+  }
+
   async getModule(value_module) {
     try {
       const query =
