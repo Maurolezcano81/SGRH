@@ -1,22 +1,49 @@
 import { useState } from 'react';
 import ButtonBlue from '../ButtonBlue';
+import useAuth from '../../hooks/useAuth';
+import ButtonRed from '../ButtonRed';
 
-const ChangePwd = ({ handleChangePwd, idUserToChange }) => {
+const ChangePwdEmployee = ({ handleChangePwd, idUserToChange }) => {
   const [actualPwd, setActualPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [repeatPwd, setRepeatPwd] = useState('');
   const [message, setMessage] = useState(null);
 
-  const handleSubmit = (e) => {
+  const { authData } = useAuth();
+
+  const changePwdUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/changePwd/employee`;
+
+  const handleSubmitEmployee = async (e) => {
     e.preventDefault();
 
-    console.log(actualPwd);
-    console.log(newPwd);
-    console.log(repeatPwd);
-  };
+    if (newPwd != repeatPwd) {
+      setMessage('Las contraseñas no coinciden');
+      return;
+    }
 
+    const fetchResponse = await fetch(changePwdUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authData.token}`,
+      },
+      body: JSON.stringify({
+        id_user: idUserToChange,
+        pwd_new: newPwd,
+        pwd_actual: actualPwd,
+      }),
+    });
+
+    const data = await fetchResponse.json();
+
+    if (fetchResponse.status === 401) {
+      setMessage(data.message);
+    }
+
+    setMessage(data.message);
+  };
   return (
-    <form onSubmit={handleSubmit} className="change__pwd__container container__section">
+    <form onSubmit={handleSubmitEmployee} className="change__pwd__container container__section">
       <div className="input__form__div">
         <label className="input__form__div__label" htmlFor="pwd_user">
           Contraseña actual
@@ -53,12 +80,15 @@ const ChangePwd = ({ handleChangePwd, idUserToChange }) => {
         />
       </div>
 
-      {message && <p className="error__validation__form-p">{message}</p>}
+      <div className="preferences__modal__error change__pwd ">
+        {message && <p className="error__validation__form-p">{message}</p>}
+      </div>
       <div className="form__button__container">
-        <ButtonBlue title="Guardar Cambios" />
+        <ButtonRed title={'Salir'} onClick={handleChangePwd} />
+        <ButtonBlue title="Guardar Cambios" onClick={handleSubmitEmployee} />
       </div>
     </form>
   );
 };
 
-export default ChangePwd;
+export default ChangePwdEmployee;

@@ -2,7 +2,7 @@ import ButtonBlue from '../ButtonBlue';
 import useAuth from '../../hooks/useAuth';
 import { useState, useEffect } from 'react';
 
-const ListForAdd = ({ handleModalListForAdd }) => {
+const ListForAdd = ({ handleModalListForAdd, ModulesBinded }) => {
   const { authData } = useAuth();
 
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/modules`;
@@ -45,12 +45,12 @@ const ListForAdd = ({ handleModalListForAdd }) => {
   return (
     <div className="alert__background__black">
       <div className="alert__container modal__listforadd">
-        <div className="modal__listforadd__button-container">
+        <div className="form__button__container">
           <ButtonBlue title={'Volver'} onClick={handleModalListForAdd} />
         </div>
 
         {arrayWithValuesFormatted.map((item) => (
-          <div className="modal__listforadd__item-container">
+          <div className="modal__listforadd__item-container" key={item.id_module}>
             <p>{item.name_module}</p>
             <ButtonBlue value={item.id_module} title={'+'} onClick={handleModalListForAdd} />
           </div>

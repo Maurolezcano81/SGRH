@@ -955,6 +955,8 @@ input {
   display: flex;
   justify-content: end;
   width: 100%;
+  gap: 2rem;
+  padding: 0 1rem;
 }
 
 .error__validation__form {
@@ -976,6 +978,10 @@ input {
   background-color: var(--green-0);
   text-align: center;
   margin: 0.5rem 0;
+}
+
+.preferences__modal__error.change__pwd{
+  margin: 1rem 0;
 }
 
 .successfully__validation__form-p {

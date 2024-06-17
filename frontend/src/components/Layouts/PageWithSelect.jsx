@@ -18,6 +18,7 @@ const PageWithSelect = ({
   const [arrayWithOptions, setArrayWithOptions] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState('Seleccione un perfil');
   const [selectedOption, setSelectedOption] = useState('');
+  const [arrayWithTableContainer, setArrayWithTableContainer] = useState([]);
   const [arrayWithTableContainFormatted, setArrayWithTableContainerFormatted] = useState([]);
   const [modalDeleteIsOpen, setModalDeleteIsOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
@@ -65,6 +66,7 @@ const PageWithSelect = ({
             setArrayWithTableContainerFormatted([]);
             setNoDataMessage('No hay módulos en este perfil');
           } else {
+            setArrayWithTableContainer(data.queryResponse)
             formatDataInTable(data.queryResponse);
           }
         } catch (error) {
@@ -103,10 +105,9 @@ const PageWithSelect = ({
     setArrayWithTableContainerFormatted(updatedArray);
   };
 
-  
-const handleModalListForAdd = (e) => {
-  setIsOpenModalAdd(!isOpenModalAdd);
-};
+  const handleModalListForAdd = (e) => {
+    setIsOpenModalAdd(!isOpenModalAdd);
+  };
 
   return (
     <div className="section__padding-10">
@@ -138,9 +139,7 @@ const handleModalListForAdd = (e) => {
         )}
 
         {isOpenModalAdd && (
-          <ListForAdd 
-          handleModalListForAdd={handleModalListForAdd}
-          />
+          <ListForAdd handleModalListForAdd={handleModalListForAdd} ModulesBinded={arrayWithTableContainer} />
         )}
         <table className="section__table">
           <thead className="table__preference__head page__with__select">

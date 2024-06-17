@@ -6,7 +6,6 @@ const router = express.Router();
 const avatarUpload = uploadFiles('avatar_url', 'uploads/avatars');
 
 router.post('/user/create', avatarUpload, handleFileUpload("/uploads/avatars"), createUser);
-router.post('/haspwdchanged', hasToChangePwd);
 
 const UserRoutes = {
   router,

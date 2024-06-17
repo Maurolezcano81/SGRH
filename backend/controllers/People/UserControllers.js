@@ -15,7 +15,7 @@ import EntityDocument from '../../models/People/EntityDocument.js';
 
 import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
 
-import { encryptPwd } from '../../middlewares/Authorization.js';
+import { comparePwd, encryptPwd } from '../../middlewares/Authorization.js';
 import UserCredentials from '../../models/Auth/UserCredentials.js';
 
 const instanceEmployee = new Employee();
@@ -353,6 +353,80 @@ export const hasToChangePwd = async (req, res) => {
   }
 };
 
+export const changePwdEmployee = async (req, res) => {
+  const { id_user, pwd_new, pwd_actual } = req.body;
+  try {
+    if (isInputEmpty(id_user) || isInputEmpty(pwd_new) || isInputEmpty(pwd_actual)) {
+      throw new Error('Debes completar todos los campos');
+    }
+
+    const checkPwdInDb = await instanceUser.getUserByUsername(id_user);
+
+    if (checkPwdInDb.length < 1) {
+      throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
+    }
+
+    const isPwdCorrect = await comparePwd(pwd_actual, checkPwdInDb[0].pwd_user);
+    const hashPwd = await encryptPwd(pwd_new);
+
+    if (!isPwdCorrect) {
+      if (id_user === checkPwdInDb[0].id_user && pwd_actual === checkPwdInDb[0].pwd_user) {
+        const changePwdEmployee = await instanceUser.changePwdEmployee(id_user, hashPwd);
+
+        return res.status(200).json({
+          message: 'Cambio de contraseña finalizado de manera exitosa',
+          changePwdEmployee,
+        });
+      } else {
+        return res.status(401).json({
+          message: 'La contraseña actual es incorrecta',
+        });
+      }
+    }
+
+    const changePwdEmployee = await instanceUser.changePwdEmployee(id_user, hashPwd);
+
+    return res.status(200).json({
+      message: 'Cambio de contraseña finalizado de manera exitosa',
+      changePwdEmployee,
+    });
+  } catch (error) {
+    console.error('Ha ocurrido un error en controlador de ' + error);
+    res.status(401).json({
+      message: error.message,
+    });
+  }
+};
+
+export const changePwdAdmin = async (req, res) => {
+  const { id_user, pwd_user } = req.body;
+  try {
+    if (isInputEmpty(id_user) || isInputEmpty(pwd_user)) {
+      throw new Error('Debes completar todos los campos');
+    }
+
+    const checkPwdInDb = await instanceUser.getUserByUsername(id_user);
+
+    if (checkPwdInDb.length < 1) {
+      throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
+    }
+
+    const hashPwd = await encryptPwd(pwd_user);
+
+    const changePwdAdmin = await instanceUser.changePwdAdmin(id_user, hashPwd);
+
+    return res.status(200).json({
+      message: 'Cambio de contraseña finalizado de manera exitosa',
+      changePwdAdmin,
+    });
+  } catch (error) {
+    console.error('Ha ocurrido un error en controlador de ' + error);
+    res.status(401).json({
+      message: error.message,
+    });
+  }
+};
+
 export const getDataUserForProfile = async (req, res) => {
   const { value_user } = req.body;
   const { id_user, profile_fk } = req;
@@ -369,8 +443,7 @@ export const getDataUserForProfile = async (req, res) => {
       throw new Error('Error al obtener los datos del usuario');
     }
 
-    const { username_user, avatar_user, status_user, haspwdchanged_user, created_at, entity_fk } =
-      getUser[0];
+    const { username_user, avatar_user, status_user, haspwdchanged_user, created_at, entity_fk } = getUser[0];
 
     const getEntity = await instanceEntity.getEntityById(entity_fk);
 

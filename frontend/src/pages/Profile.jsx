@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ButtonWhiteWithShadow from '../components/Buttons/ButtonWhiteWithShadow';
 import useAuth from '../hooks/useAuth';
-import ChangePwd from '../components/Others/ChangePwd';
+import ChangePwdEmployee from '../components/Others/ChangePwdEmployee';
+import ChangePwdAdmin from '../components/Others/ChangePwdAdmin';
 
 const Profile = () => {
   const { authData } = useAuth();
@@ -54,6 +55,8 @@ const Profile = () => {
     userData[0]?.id_user
   );
 
+  console.log(authData);
+
   const formatted = (array) => {
     const format = array.map((item) => ({
       ...item,
@@ -100,7 +103,19 @@ const Profile = () => {
             ) : null}
           </div>
         </div>
-        {toggleChangePwd && <ChangePwd handleChangePwd={setToggleChangePwd} idUserToChange={userData[0]?.id_user} />}
+        {toggleChangePwd && (authData.profile_fk === 3 || authData.profile_fk === 4) && (
+          <ChangePwdEmployee
+            handleChangePwd={() => setToggleChangePwd(!toggleChangePwd)}
+            idUserToChange={userData[0]?.id_user}
+          />
+        )}
+
+        {toggleChangePwd && (authData.profile_fk === 1 || authData.profile_fk === 2) && (
+          <ChangePwdAdmin
+            handleChangePwd={() => setToggleChangePwd(!toggleChangePwd)}
+            idUserToChange={userData[0]?.id_user}
+          />
+        )}
       </div>
       <div className="group__container">
         <div className="section__container">

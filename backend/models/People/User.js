@@ -6,11 +6,11 @@ class User {
     this.connection = mysql.createConnection(database);
   }
 
-  async getUserByUsername(username) {
+  async getUserByUsername(value_user) {
     try {
-      const query = 'Select * from user where username_user = ?';
+      const query = 'Select * from user where username_user = ? or id_user = ?';
 
-      const [results] = await this.connection.promise().query(query, [username]);
+      const [results] = await this.connection.promise().query(query, [value_user, value_user]);
       return results;
     } catch (error) {
       console.error(`Error en modelo de User: ` + error);
@@ -49,6 +49,29 @@ class User {
     }
   }
 
+  async changePwdEmployee(id_user, pwd_user) {
+    try {
+      const query = 'UPDATE USER set pwd_user = ?, haspwdchanged_user = 1, updated_at = now() where id_user = ?';
+
+      const [results] = await this.connection.promise().query(query, [pwd_user, id_user]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de : ` + error);
+      throw new Error(`Error al `);
+    }
+  }
+
+  async changePwdAdmin(id_user, pwd_user) {
+    try {
+      const query = 'UPDATE USER set pwd_user = ?, haspwdchanged_user = 0, updated_at = now() where id_user = ?';
+
+      const [results] = await this.connection.promise().query(query, [pwd_user, id_user]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de : ` + error);
+      throw new Error(`Error al `);
+    }
+  }
 }
 
 export default User;

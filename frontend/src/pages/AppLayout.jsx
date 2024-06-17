@@ -17,7 +17,7 @@ const AppLayout = () => {
   const [showPwdChangedModal, setShowPwdChangedModal] = useState(false); // Estado para controlar el modal específico
 
   const urlCheckPermission = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/checkPermission`;
-  const urlCheckHasToPwdChanged = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/haspwdchanged`;
+  const urlCheckHasToPwdChanged = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/haspwdchanged`;
 
   const location = useLocation();
   const pathActually = location;
@@ -115,6 +115,10 @@ const AppLayout = () => {
     setShowPwdChangedModal(false);
   };
 
+  const goToChangePwd = () => {
+    navigate('profile', { state: { value_user: authData.username_user } });
+    setShowPwdChangedModal(false);
+  };
   return (
     <Suspense fallback={<Spinner />}>
       <Navbar />
@@ -123,9 +127,7 @@ const AppLayout = () => {
         <Warning
           message="Antes de continuar sugerimos cambiar la contraseña
 para evitar ingresos indeseados."
-          redirectFunction={() => {
-            console.log('hola');
-          }}
+          redirectFunction={goToChangePwd}
           skipFunction={closeModalInformattionMessage}
         />
       )}
