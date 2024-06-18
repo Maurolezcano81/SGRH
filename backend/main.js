@@ -41,7 +41,9 @@ import { getDataUserForProfile } from './controllers/People/UserControllers.js';
 app.use('/api', checkPermissionRoutes.router);
 app.use('/api/profile', verifyToken, decodeToken, getDataUserForProfile);
 
+const URL = 'http:localhost:'
+const PORT = process.env.SV_PORT
 // Server
 app.listen(process.env.SV_PORT || 3000, () => {
-  console.log(`Server corriendo en el puerto: ${process.env.SV_PORT}`);
+  console.log(`Server corriendo en : ${URL}${PORT}`);
 });
