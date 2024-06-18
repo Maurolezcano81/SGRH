@@ -132,10 +132,10 @@ const CreateUser = () => {
         <UserDataSection
           setUserData={setUserData}
           setAvatarUser={setAvatarUser}
-          setProfileData={setProfileData} // Añadido para el componente PermissionDataSection
+          setProfileData={setProfileData}
           errorUser={errorsMessage?.user}
           errorFile={errorsMessage?.file}
-          errorPermission={errorsMessage?.permission} // Añadido para el componente PermissionDataSection
+          errorPermission={errorsMessage?.permission}
           token={authData.token}
           setCriticalErrorMessagge={setCriticalErrorMessagge}
           setCriticalErrorToggle={setCriticalErrorToggle}

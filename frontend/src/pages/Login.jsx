@@ -31,7 +31,7 @@ const Login = () => {
           case 'RRHH':
             Navigate('/rrhh/inicio');
             break;
-            case 'RRHH':
+            case 'Personal':
               Navigate('/personal/inicio');
               break;
         }
