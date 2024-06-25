@@ -121,9 +121,6 @@ const Login = () => {
                 </button>
               </div>
 
-              <div className="login__forgot">
-                <Link href="#">¿Olvidates tu contraseña? Haz clic aquí.</Link>
-              </div>
             </form>
           </div>
         </div>

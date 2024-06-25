@@ -7,36 +7,36 @@ const Preferences = () => {
   return (
     <div className="preferences__container">
       <div className='preferences__container-size'>
-      <div className="preferences__container__links">
-        <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
+        <div className="preferences__container__links">
+          <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
 
-        <LinkPreference path="sexo" name="Sexo" />
+          <LinkPreference path="sexo" name="Sexo" />
 
-        <LinkPreference path="pais" name="Pais" />
+          <LinkPreference path="pais" name="Pais" />
 
-        <LinkPreference path="contacto" name="Contacto" />
+          <LinkPreference path="contacto" name="Contacto" />
 
-        <LinkPreference path="nacionalidad" name="Nacionalidad" />
+          <LinkPreference path="nacionalidad" name="Nacionalidad" />
 
-        <LinkPreference path="tipo_estado_solicitud" name="Estado de solicitud" />
+          <LinkPreference path="tipo_estado_solicitud" name="Estado de solicitud" />
 
-        <LinkPreference path="tipo_renuncia" name="Tipo de renuncia" />
+          <LinkPreference path="tipo_renuncia" name="Tipo de renuncia" />
 
-        <LinkPreference path="modulo" name="Modulos" />
-        
-        <LinkPreference path="documento" name="Documentos" />
+          <LinkPreference path="modulo" name="Modulos" />
 
-        <LinkPreference path="departamento" name="Departamentos" />
+          <LinkPreference path="documento" name="Documentos" />
 
-        <LinkPreference path="tipo_anexo" name="Tipos de Anexos" />
+          <LinkPreference path="departamento" name="Departamentos" />
 
-        <LinkPreference path="tipo_asunto_mensaje" name="Tipos de Asuntos de Mensajes" />
+          <LinkPreference path="tipo_anexo" name="Tipos de Anexos" />
 
-      </div>
+          <LinkPreference path="tipo_asunto_mensaje" name="Tipos de Asuntos de Mensajes" />
 
-      <main className="preferences__main">
-        <Outlet />
-      </main>
+        </div>
+
+        <main className="preferences__main">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
