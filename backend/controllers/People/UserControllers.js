@@ -399,8 +399,9 @@ export const changePwdEmployee = async (req, res) => {
 };
 
 export const changePwdAdmin = async (req, res) => {
-  const { id_user, pwd_user } = req.body;
+  const { id_user, pwd_user} = req.body;
   try {
+
     if (isInputEmpty(id_user) || isInputEmpty(pwd_user)) {
       throw new Error('Debes completar todos los campos');
     }

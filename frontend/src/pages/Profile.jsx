@@ -103,14 +103,14 @@ const Profile = () => {
             ) : null}
           </div>
         </div>
-        {toggleChangePwd && (authData.profile_fk === 3 || authData.profile_fk === 4) && (
+        {toggleChangePwd && ( (authData.profile_fk === 1 || authData.profile_fk === 2 || authData.profile_fk === 3 || authData.profile_fk === 4) && permissionsData[0]?.isTheSameUser === true) && (
           <ChangePwdEmployee
             handleChangePwd={() => setToggleChangePwd(!toggleChangePwd)}
             idUserToChange={userData[0]?.id_user}
           />
         )}
 
-        {toggleChangePwd && (authData.profile_fk === 1 || authData.profile_fk === 2) && (
+        {toggleChangePwd && ((authData.profile_fk === 1 || authData.profile_fk === 2)  && permissionsData[0]?.isTheSameUser === false) && (
           <ChangePwdAdmin
             handleChangePwd={() => setToggleChangePwd(!toggleChangePwd)}
             idUserToChange={userData[0]?.id_user}

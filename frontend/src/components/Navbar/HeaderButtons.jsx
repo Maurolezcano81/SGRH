@@ -8,7 +8,7 @@ const HeaderButtons = () => {
 
 
   const handleMyProfile = () =>{
-    navigate('profile', { state: { value_user: "aa" }})
+    navigate('profile', { state: { value_user: authData.username_user }})
   }
   return (
     <div className="navbar__header-redirects">
