@@ -11,7 +11,7 @@ const avatarUpload = uploadFiles('avatar_url', 'uploads/avatars');
 
 router.post('/user/create', avatarUpload, handleFileUpload("/uploads/avatars"), createUser);
 
-router.post('/user/all', userInstance.getAll);
+router.post('/user/all', userInstance.getAll.bind(userInstance));
 
 const UserRoutes = {
   router,

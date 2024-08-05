@@ -13,8 +13,6 @@ import Occupation from '../../models/Department/Occupation.js';
 import EntityDepartmentOccupation from '../../models/Department/EntityDepartmentOccupattion.js';
 import EntityDocument from '../../models/People/EntityDocument.js';
 
-import BaseModel from '../../models/BaseModel.js';
-
 import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
 
 import { comparePwd, encryptPwd } from '../../middlewares/Authorization.js';
@@ -497,7 +495,7 @@ export const getDataUserForProfile = async (req, res) => {
 
 const getAllUsers = (req, res) =>{
   try {
-        
+
   } catch (error) {
     
   }
