@@ -5,6 +5,9 @@ class BaseModel {
         this.model = model;
         this.db = new Connection();
         this.con = this.db.createCon();
+        this.defaultLimitPagination = 10;
+        this.defaultOffsetPagination = 0;
+        this.defaultOrderPagination = 'ASC';
     }
 
     async getAll(){

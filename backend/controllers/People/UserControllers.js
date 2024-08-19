@@ -1,17 +1,17 @@
 import fs from 'fs';
-import Employee from '../../models/People/Employee.js';
+import Employee from '../../models/People/Department/Employee.js'
 import Entity from '../../models/People/Entity.js';
 import User from '../../models/People/User.js';
 import Profile from '../../models/Auth/Profile.js';
-import Contact from '../../models/System/Contact.js';
-import EntityContact from '../../models/Address/EntityContact.js';
-import City from '../../models/Address/City.js';
-import Address from '../../models/Address/Address.js';
-import Document from '../../models/System/Document.js';
-import Department from '../../models/Department/Department.js';
-import Occupation from '../../models/Department/Occupation.js';
-import EntityDepartmentOccupation from '../../models/Department/EntityDepartmentOccupattion.js';
-import EntityDocument from '../../models/People/EntityDocument.js';
+import Contact from '../../models/People/Contact/Contact.js';
+import EntityContact from '../../models/People/Contact/EntityContact.js';
+import City from '../../models/People/Address/City.js';
+import Address from '../../models/People/Address/Address.js';
+import Document from '../../models/People/Document/Document.js';
+import Department from '../../models/People/Department/Department.js';
+import Occupation from '../../models/People/Department/Occupation.js';
+import EntityDepartmentOccupation from '../../models/People/Department/EntityDepartmentOccupattion.js';
+import EntityDocument from '../../models/People/Document/EntityDocument.js';
 
 import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
 
