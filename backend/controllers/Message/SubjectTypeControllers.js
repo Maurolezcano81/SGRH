@@ -7,12 +7,14 @@ import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '..
 class SubjectTypeControllers {
   constructor() {
     this.model = new BaseModel('subject_message');
+    this.nameFieldId = "id_sm"
+    this.nameFieldToSearch = "name_sm"
   }
 
   async getSubjects(req, res) {
-    const {limit, offset} = req.body;
+    const {limit, offset, order, typeOrder, filters} = req.body;
     try {
-      const queryResponse = await this.model.getAllPagination();
+      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
 
       if (queryResponse.length < 1) {
         return res.status(200).json({
@@ -39,7 +41,7 @@ class SubjectTypeControllers {
         throw new Error('Los datos que estas utilizando para la busqueda de tipo de sujeto de mensaje son invalidos');
       }
 
-      const queryResponse = await this.model.getSubject(value_subject);
+      const queryResponse = await this.model.getOne(value_subject, this.nameFieldId);
 
       if (queryResponse.length < 1) {
         throw new Error('Error al obtener el tipo de sujeto de mensaje');
@@ -58,23 +60,23 @@ class SubjectTypeControllers {
   }
 
   async createSubject(req, res) {
-    const { name_sm } = req.body;
+    const data = req.body;
     try {
-      if (isInputEmpty(name_sm)) {
+      if (isInputEmpty(data.name_sm)) {
         throw new Error('Debes completar todos los campos');
       }
-      if (isNotAToZ(name_sm)) {
+      if (isNotAToZ(data.name_sm)) {
         throw new Error('El tipo de sujeto de mensaje no debe contener caracteres especiales');
       }
 
-      const checkExists = await this.model.getSubject(name_sm);
+      const checkExists = await this.model.getOne(data.name_sm, this.nameFieldToSearch);
 
       if (checkExists && checkExists.length > 0) {
-        throw new Error('Tipo de sujero de mensaje ya existente');
+        console.log("hola")
+        throw new Error('Tipo de sujeto de mensaje ya existente');
       }
 
-      const queryResponse = await this.model.createSubject(name_sm);
-
+      const queryResponse = await this.model.createOne(data);
       if (!queryResponse) {
         throw new Error('Error al crear tipo de sujeto de mensaje');
       }
@@ -93,6 +95,7 @@ class SubjectTypeControllers {
 
   async updateSubject(req, res) {
     const { id_sm, name_sm, status_sm } = req.body;
+
     try {
       if (isInputEmpty(name_sm)) {
         throw new Error('Debes completar todos los campos');
@@ -110,13 +113,13 @@ class SubjectTypeControllers {
         throw new Error('Los datos de estado del tipo de sujeto de mensaje son invalidos');
       }
 
-      const checkExists = await this.model.getSubject(id_sm);
+      const checkExists = await this.model.getOne(id_sm, this.nameFieldId);
 
       if (checkExists.length < 1) {
         throw new Error('No se puede actualizar este tipo de sujeto de mensaje, debido a que no existe');
       }
 
-      const queryResponse = await this.model.updateSubject(id_sm, name_sm, status_sm);
+      const queryResponse = await this.model.updateOne({name_sm, status_sm}, [this.nameFieldId, id_sm]);
 
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al actualizar datos del sujeto de mensaje');
@@ -136,19 +139,17 @@ class SubjectTypeControllers {
 
   async toggleStatusSubject(req, res) {
     const { id_sm, status_sm } = req.body;
-    console.log(id_sm);
-    console.log(status_sm);
 
     try {
       if (isNotNumber(id_sm)) throw new Error('Los datos del tipo de sujeto de mensaje son invalidos');
 
-      const checkExists = await this.model.getSubject(id_sm);
+      const checkExists = await this.model.getOne(id_sm, this.nameFieldId);
 
       if (checkExists.length < 1) {
         throw new Error('No se puede actualizar el tipo de sujeto de mensaje, debido a que no existe');
       }
 
-      const queryResponse = await this.model.toggleStatusSubject(id_sm, status_sm);
+      const queryResponse = await this.model.updateOne({status_sm}, [this.nameFieldId, id_sm]);
 
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al cambiar estado del tipo de sujeto de mensaje');
@@ -173,7 +174,7 @@ class SubjectTypeControllers {
         throw new Error('Ha ocurrido un error al eliminar el tipo de sujeto de mensaje, intente reiniciando el sitio');
       }
 
-      const queryResponse = await this.model.deleteSubject(id_sm);
+      const queryResponse = await this.model.deleteOne(id_sm, this.nameFieldId);
 
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al eliminar el tipo de sujeto de mensaje');

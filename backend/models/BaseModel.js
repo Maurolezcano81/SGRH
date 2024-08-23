@@ -34,9 +34,9 @@ class BaseModel {
 
     async getAllPaginationWhere(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = 'id', order = this.defaultOrderPagination, filters = {}) {
         try {
-            const whereClause = this.buildWhereClause(filters);
+            const { whereClause, values } = this.buildWhereClause(filters);
             const query = `SELECT * FROM ${this.model} ${whereClause} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
-            const [results] = await this.con.promise().query(query, [...Object.values(filters), limit, offset]);
+            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
             return results;
         } catch (error) {
             console.error("Error en getAllPaginationWhere:", error.message);
@@ -115,10 +115,26 @@ class BaseModel {
     }
 
     buildWhereClause(filters) {
-        const keys = Object.keys(filters);
-        if (keys.length === 0) return '';
-        const conditions = keys.map(key => `${key} = ?`).join(' AND ');
-        return `WHERE ${conditions}`;
+        const whereClauses = [];
+        const values = [];
+    
+        for (const [key, value] of Object.entries(filters)) {
+            if (value) {
+                // Si el valor es una cadena, usa LIKE
+                if (typeof value === 'string') {
+                    whereClauses.push(`${key} LIKE ?`);
+                    values.push(`%${value}%`);
+                } else {
+                    // Si el valor no es una cadena, usa = (o cualquier otro operador necesario)
+                    whereClauses.push(`${key} = ?`);
+                    values.push(value);
+                }
+            }
+        }
+    
+        // Combina las cláusulas WHERE usando AND
+        const whereClause = whereClauses.length ? 'WHERE ' + whereClauses.join(' AND ') : '';
+        return { whereClause, values };
     }
 }
 

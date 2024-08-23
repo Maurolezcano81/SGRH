@@ -38,10 +38,12 @@ app.use('/uploads/avatars', express.static(staticImagesPath));
 
 import { getDataUserForProfile } from './controllers/People/UserControllers.js';
 
-import SubjectRoutes from './routes/Message/SubjectRoutes.js';
-app.use('/test', SubjectRoutes.router)
 // app.use('/api', checkPermissionRoutes.router);
 // app.use('/api/profile', verifyToken, decodeToken, getDataUserForProfile);
+
+
+import TestRoutes from "./routes/TestRoutes.js"
+app.use('/test', TestRoutes.app)
 
 const URL = 'http:localhost:'
 const PORT = process.env.SV_PORT
