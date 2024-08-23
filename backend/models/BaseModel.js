@@ -1,13 +1,14 @@
 import Connection from '../config/connection.js'
 
 class BaseModel {
-    constructor(model) {
+    constructor(model, defaultOrderBy) {
         this.model = model;
         this.db = new Connection();
         this.con = this.db.createCon();
         this.defaultLimitPagination = 10;
         this.defaultOffsetPagination = 0;
         this.defaultOrderPagination = 'ASC';
+        this.defaultOrderBy = defaultOrderBy
     }
 
     async getAll() {
@@ -21,7 +22,7 @@ class BaseModel {
         }
     }
 
-    async getAllPagination(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = 'id', order = this.defaultOrderPagination) {
+    async getAllPagination(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination) {
         try {
             const query = `SELECT * FROM ${this.model} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
             const [results] = await this.con.promise().query(query, [limit, offset]);
@@ -32,7 +33,7 @@ class BaseModel {
         }
     }
 
-    async getAllPaginationWhere(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = 'id', order = this.defaultOrderPagination, filters = {}) {
+    async getAllPaginationWhere(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
             const query = `SELECT * FROM ${this.model} ${whereClause} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
@@ -59,7 +60,7 @@ class BaseModel {
         try {
             const query = `SELECT * FROM ${this.model} WHERE ${field} = ?`;
             const [results] = await this.con.promise().query(query, [value]);
-            return results.length > 0 ? results[0] : null;
+            return results
         } catch (error) {
             console.error("Error en getOne:", error.message);
             throw new Error("Error en getOne: " + error.message);

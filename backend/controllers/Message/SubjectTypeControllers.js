@@ -6,7 +6,7 @@ import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '..
 
 class SubjectTypeControllers {
   constructor() {
-    this.model = new BaseModel('subject_message');
+    this.model = new BaseModel('subject_message', 'name_sm');
     this.nameFieldId = "id_sm"
     this.nameFieldToSearch = "name_sm"
   }
