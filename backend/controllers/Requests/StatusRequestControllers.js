@@ -4,13 +4,14 @@ import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '..
 class StatusRequestControllers {
   constructor() {
     this.model = new BaseModel('status_request', 'name_sr');
-    this.nameFieldId = "id_sr";
-    this.nameFieldToSearch = "name_sr";
+    this.nameFieldId = 'id_sr';
+    this.nameFieldToSearch = 'name_sr';
   }
 
   async getStatusesRequest(req, res) {
+    const { limit, offset, order, typeOrder, filters } = req.body;
     try {
-      const queryResponse = await this.model.getAll();
+      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
 
       if (queryResponse.length < 1) {
         return res.status(200).json({
@@ -37,7 +38,7 @@ class StatusRequestControllers {
         throw new Error('Los datos utilizados para la búsqueda del estado son inválidos');
       }
 
-      const queryResponse = await this.model.getOne(value_sr, this.nameFieldToSearch);
+      const queryResponse = await this.model.getOne(value_sr, this.nameFieldId);
 
       if (queryResponse.length < 1) {
         throw new Error('Este tipo de estado no existe');
@@ -102,6 +103,10 @@ class StatusRequestControllers {
 
       if (isNotAToZ(name_sr)) {
         throw new Error('El nombre de tipo de estado no debe contener caracteres especiales');
+      }
+
+      if (isNotNumber(id_sr)) {
+        throw new Error('Los datos del tipo de estado son inválidos');
       }
 
       const checkExists = await this.model.getOne(id_sr, this.nameFieldId);
