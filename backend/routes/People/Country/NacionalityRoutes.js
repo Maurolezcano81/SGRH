@@ -1,22 +1,16 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createNacionality,
-  getNacionality,
-  getNacionalities,
-  updateNacionality,
-  toggleStatusNacionality,
-  deleteNacionality,
-} from '../../../controllers/People/Country/NacionalityControllers.js';
+import NacionalityController from '../../../controllers/People/Country/NacionalityControllers.js';
 
+const nacionality = new NacionalityController();
 // NACIONALITY ROUTES
-router.post('/create/nacionality', createNacionality);
-router.post('/nacionality', getNacionality);
-router.get('/nacionalities', getNacionalities);
-router.patch('/nacionality', updateNacionality);
-router.patch('/nacionality/status', toggleStatusNacionality);
-router.delete('/nacionality', deleteNacionality);
+router.post('/nacionality/create', nacionality.createNacionality.bind(nacionality));
+router.post('/nacionality', nacionality.getNacionality.bind(nacionality));
+router.get('/nacionalities', nacionality.getNacionalities.bind(nacionality));
+router.patch('/nacionality', nacionality.updateNacionality.bind(nacionality));
+router.patch('/nacionality/status', nacionality.toggleStatusNacionality.bind(nacionality));
+router.delete('/nacionality', nacionality.deleteNacionality.bind(nacionality));
 
 const NacionalityRoutes = {
   router,

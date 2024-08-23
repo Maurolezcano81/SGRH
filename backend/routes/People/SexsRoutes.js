@@ -1,22 +1,15 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createSex,
-  getSex,
-  getSexs,
-  updateSex,
-  toggleStatusSex,
-  deleteSex,
-} from '../../controllers/People/SexControllers.js';
-
+import SexControllers from '../../controllers/People/SexControllers.js';
+const sex = new SexControllers();
 // SEX ROUTES
-router.post('/create/sex', createSex);
-router.post('/sex', getSex);
-router.get('/sexs', getSexs);
-router.patch('/sex', updateSex);
-router.patch('/sex/status', toggleStatusSex);
-router.delete('/sex', deleteSex);
+router.post('/sex/create', sex.createSex.bind(sex));
+router.post('/sex', sex.getSex.bind(sex));
+router.get('/sexs', sex.getSexs.bind(sex));
+router.patch('/sex', sex.updateSex.bind(sex));
+router.patch('/sex/status', sex.toggleStatusSex.bind(sex));
+router.delete('/sex', sex.deleteSex.bind(sex));
 
 const SexRoutes = {
   router,

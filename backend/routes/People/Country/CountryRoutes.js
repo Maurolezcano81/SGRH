@@ -1,22 +1,15 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createCountry,
-  getCountry,
-  getCountries,
-  updateCountry,
-  toggleStatusCountry,
-  deleteCountry,
-} from '../../../controllers/People/Country/CountryControllers.js';
-
+import CountryController from '../../../controllers/People/Country/CountryControllers.js';
+const country = new CountryController();
 // COUNTRY ROUTES
-router.post('/create/country', createCountry);
-router.post('/country', getCountry);
-router.get('/countries', getCountries);
-router.patch('/country', updateCountry);
-router.patch('/country/status', toggleStatusCountry);
-router.delete('/country', deleteCountry);
+router.post('/country/create', country.createCountry.bind(country));
+router.post('/country', country.getCountry.bind(country));
+router.get('/countries', country.getCountries.bind(country));
+router.patch('/country', country.updateCountry.bind(country));
+router.patch('/country/status', country.toggleStatusCountry.bind(country));
+router.delete('/country', country.deleteCountry.bind(country));
 
 const CountryRoutes = {
   router,

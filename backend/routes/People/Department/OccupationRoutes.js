@@ -1,22 +1,16 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createOccupation,
-  getOccupation,
-  getOccupations,
-  updateOccupation,
-  toggleStatusOccupation,
-  deleteOccupation,
-} from '../../../controllers/People/Department/OccupationController.js';
+import OccupationControllers from '../../../controllers/People/Department/OccupationController.js';
 
+const occupation = new OccupationControllers();
 // OCCUPATION ROUTES
-router.post('/create/occupation', createOccupation);
-router.get('/occupations', getOccupations);
-router.post('/occupation', getOccupation);
-router.patch('/occupation', updateOccupation);
-router.patch('/occupation/status', toggleStatusOccupation);
-router.delete('/occupation', deleteOccupation);
+router.post('/occupation/create', occupation.createOccupation.bind(occupation));
+router.get('/occupations', occupation.getOccupations.bind(occupation));
+router.post('/occupation', occupation.getOccupation.bind(occupation));
+router.patch('/occupation', occupation.updateOccupation.bind(occupation));
+router.patch('/occupation/status', occupation.toggleStatusOccupation.bind(occupation));
+router.delete('/occupation', occupation.deleteOccupation.bind(occupation));
 
 const OccupationRoutes = {
   router,
