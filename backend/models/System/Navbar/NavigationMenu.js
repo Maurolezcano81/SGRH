@@ -1,83 +1,53 @@
-import {database} from "../../../config/database.js"
-import mysql from "mysql2";
+import BaseModel from "../../BaseModel.js";
+import Connection from "../../../config/connection.js";
 
-class NavigationMenu{
-    constructor(){
-        this.connection = mysql.createConnection(database);
+class NavigationMenu extends BaseModel{
+  constructor(){
+    super('navigation_menu', 'id_nm');
+    this.db = new Connection();
+    this.conn = this.db.createCon();
+    this.model = new BaseModel('navigation_menu', 'name_nm');
+  }
+
+  async getMenuParentsByIdProfile(id_profile) {
+    try {
+      const query =
+        'select pa_me.id_pm, name_pm from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? group by name_pm order by pa_me.order_pm asc';
+
+      const [results] = await this.conn.promise().query(query, [id_profile]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Profile: ` + error);
+      throw new Error(`Error al obtener el menu`);
     }
+  }
 
-    async getNavigationMenus() {
-        try {
-          const query = 'SELECT * FROM navigation_menu';
-    
-          const [results] = await this.connection.promise().query(query);
-          return results;
-        } catch (error) {
-          console.error(`Error en modelo de tipo de NavigationMenu: ` + error);
-          throw new Error(`Error al obtener los tipos de menues de navegacion`);
-        }
-      }
-    
-      async getNavigationMenu(value_nm) {
-        try {
-          const query = 'SELECT * FROM navigation_menu where id_nm = ? or name_nm = ?';
-    
-          const [results] = await this.connection.promise().query(query, [value_nm, value_nm]);
-          return results;
-        } catch (error) {
-          console.error(`Error en modelo de tipo de menues de navegacion: ` + error);
-          throw new Error(`Error al obtener el tipo de menu de navegacion`);
-        }
-      }
-    
-      async createNavigationMenu(name_nm) {
-        try {
-          const query =
-            'INSERT INTO navigation_menu(name_nm, status_nm, created_at, updated_at) values(?, 1, now(), now())';
-    
-          const [results] = await this.connection.promise().query(query, [name_nm]);
-          return results;
-        } catch (error) {
-          console.error(`Error en modelo de tipo de menues de navegacion: ` + error);
-          throw new Error(`Error al crear el tipo de tipo de menu de navegacion`);
-        }
-      }
-    
-      async updateNavigationMenu(id_nm, name_nm, status_nm) {
-        try {
-          const query = 'UPDATE navigation_menu SET name_nm = ?, status_nm = ?, updated_at = now() where id_nm = ?';
-    
-          const [results] = await this.connection.promise().query(query, [name_nm, status_nm, id_nm]);
-          return results;
-        } catch (error) {
-          console.error(`Error en modelo de tipo de menues de navegacion: ` + error);
-          throw new Error(`Error al actualizar datos del tipo de tipo de menu de navegacion`);
-        }
-      }
-    
-      async toggleStatusNavigationMenu(id_nm, status_nm) {
-        try {
-          const query = 'UPDATE navigation_menu SET status_nm = ?, updated_at = now() where id_nm = ?';
-    
-          const [results] = await this.connection.promise().query(query, [status_nm, id_nm]);
-          return results;
-        } catch (error) {
-          console.error(`Error en modelo de tipo de menu de navegacion: ` + error);
-          throw new Error(`Error al actualizar el estado del tipo de tipo de menu de navegacion`);
-        }
-      }
-    
-      async deleteNavigationMenu(value_nm) {
-        try {
-          const query = 'DELETE from navigation_menu where id_nm = ? or name_nm = ?';
-    
-          const [results] = await this.connection.promise().query(query, [value_nm, value_nm]);
-          return results;
-        } catch (error) {
-          console.error(`Error en modelo de tipo de menu de navegacion: ` + error);
-          throw new Error(`Error al eliminar este registro, debido a que esta relacionado con datos importantes`);
-        }
-      }
+  async getMenuChildrensByIdProfileAndIdParent(id_profile, id_pm) {
+    try {
+      const query =
+        'select id_module, name_module, url_module  from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? and pa_me.id_pm = ? order by mp.order_mp asc';
+
+      const [results] = await this.conn.promise().query(query, [id_profile, id_pm]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Profile: ` + error);
+      throw new Error(`Error al obtener el menu`);
+    }
+  }
+
+  async getProfileHome(id_user) {
+    try {
+      const query =
+        'select * from profile_module pm join module m on pm.module_fk = m.id_module join profile p on pm.profile_fk = p.id_profile join user u on p.id_profile = u.profile_fk where u.id_user = ? and m.url_module = "/admin/inicio"';
+
+      const [results] = await this.conn.promise().query(query, [id_user]);
+      return results;
+    } catch (error) {
+      console.error(`Error en modelo de Profile: ` + error);
+      throw new Error(`Error al obtener el menu`);
+    }
+  }
 }
+
 
 export default NavigationMenu;

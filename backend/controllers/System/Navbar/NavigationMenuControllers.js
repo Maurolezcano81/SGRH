@@ -1,236 +1,246 @@
-import NavigationMenu from '../../models/System/NavigationMenu.js';
-import Profile from '../../../models/Auth/Profile.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
+import BaseModel from '../../../models/BaseModel.js';
+import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Validations.js';
+import NavigationMenu from '../../../models/System/Navbar/NavigationMenu.js';
 
-const instanceNavigationMenu = new NavigationMenu();
-const instanceProfile = new Profile();
+// Asumiendo que los modelos `NavigationMenu` y `Profile` utilizan la clase BaseModel
+class NavigationMenuControllers {
+  constructor() {
+    this.model = new BaseModel('navigation_menu', 'name_nm');
+    this.navMenuModel = new NavigationMenu();
+    this.profileModel = new BaseModel('profile', 'name_profile');
+    this.nameFieldId = 'id_nm';
+    this.nameFieldToSearch = 'name_nm';
+  }
 
-export const getNavigationMenus = async (req, res) => {
-  try {
-    const queryResponse = await instanceNavigationMenu.getNavigationMenus();
+  async getNavigationMenus(req, res) {
+    const { limit, offset, order, typeOrder, filters } = req.body;
 
-    if (queryResponse.length < 1) {
+    try {
+      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
+
+      if (queryResponse.length < 1) {
+        return res.status(200).json({
+          message: 'No hay tipos de menú de navegación disponibles',
+        });
+      }
+
       return res.status(200).json({
-        message: 'No hay tipos de menu de navegacion disponibles',
+        message: 'Tipos de menú de navegación obtenidos correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación: ' + error);
+      return res.status(403).json({
+        message: error.message,
       });
     }
-
-    return res.status(200).json({
-      message: 'Tipos de menu de navegacion obtenidos correctamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de tipo de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
   }
-};
 
-export const getNavigationMenu = async (req, res) => {
-  const { value_nm } = req.body;
-  try {
-    if (isInputEmpty(value_nm)) {
-      throw new Error('Los datos que estas utilizando para la busqueda de tipo de menu de navegacion son invalidos');
-    }
+  async getNavigationMenu(req, res) {
+    const { value_nm } = req.body;
+    try {
+      if (isInputEmpty(value_nm)) {
+        throw new Error('Los datos que estás utilizando para la búsqueda de tipo de menú de navegación son inválidos');
+      }
 
-    const queryResponse = await instanceNavigationMenu.getNavigationMenu(value_nm);
+      const queryResponse = await this.model.getOne(value_nm, this.nameFieldToSearch);
 
-    if (queryResponse.length < 1) {
-      throw new Error('Error al obtener el tipo de menu de navegacion');
-    }
+      if (queryResponse.length < 1) {
+        throw new Error('Error al obtener el tipo de menú de navegación');
+      }
 
-    return res.status(200).json({
-      message: 'Tipo de menu de navegacion obtenido correctamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
-  }
-};
-
-export const createNavigationMenu = async (req, res) => {
-  const { name_nm } = req.body;
-  try {
-    if (isInputEmpty(name_nm)) {
-      throw new Error('Debes completar todos los campos');
-    }
-    if (isNotAToZ(name_nm)) {
-      throw new Error('El tipo de menu de navegacion no debe contener caracteres especiales');
-    }
-
-    const checkExists = await instanceNavigationMenu.getNavigationMenu(name_nm);
-
-    if (checkExists && checkExists.length > 0) {
-      throw new Error('Tipo de menu de navegacion ya existente');
-    }
-
-    const queryResponse = await instanceNavigationMenu.createNavigationMenu(name_nm);
-
-    if (!queryResponse) {
-      throw new Error('Error al crear tipo de menu de navegacion');
-    }
-
-    return res.status(200).json({
-      message: 'Tipo de menu de navegacion creado exitosamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
-  }
-};
-
-export const updatedNavigationMenu = async (req, res) => {
-  const { id_nm, name_nm, status_nm } = req.body;
-  try {
-    if (isInputEmpty(name_nm)) {
-      throw new Error('Debes completar todos los campos');
-    }
-
-    if (isNotAToZ(name_nm)) {
-      throw new Error('El tipo de menu de navegacion no debe contener caracteres especiales');
-    }
-
-    if (isNotNumber(id_nm)) {
-      throw new Error('Los datos del tipo de menu de navegacion son invalidos');
-    }
-
-    if (isNotNumber(status_nm)) {
-      throw new Error('Los datos de estado del tipo de menu de navegacion son invalidos');
-    }
-
-    const checkExists = await instanceNavigationMenu.getNavigationMenu(id_nm);
-
-    if (checkExists.length < 1) {
-      throw new Error('No se puede actualizar este tipo de menu de navegacion, debido a que no existe');
-    }
-
-    const queryResponse = await instanceNavigationMenu.updatedNavigationMenu(id_nm, name_nm, status_nm);
-
-    if (queryResponse.affectedRows < 1) {
-      throw new Error('Error al actualizar datos del menu de navegacion');
-    }
-
-    return res.status(200).json({
-      message: 'Tipo de menu de navegacion actualizado correctamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
-  }
-};
-
-export const toggleStatusNavigationMenu = async (req, res) => {
-  const { id_nm, status_nm } = req.body;
-
-  try {
-    if (isNotNumber(id_nm)) throw new Error('Los datos del tipo de menu de navegacion son invalidos');
-
-    const checkExists = await instanceNavigationMenu.getNavigationMenu(id_nm);
-
-    if (checkExists.length < 1) {
-      throw new Error('No se puede actualizar el tipo de menu de navegacion, debido a que no existe');
-    }
-
-    const queryResponse = await instanceNavigationMenu.toggleStatusNavigationMenu(id_nm, status_nm);
-
-    if (queryResponse.affectedRows < 1) {
-      throw new Error('Error al cambiar estado del tipo de menu de navegacion');
-    }
-
-    return res.status(200).json({
-      message: 'El estado ha sido actualizado correctamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
-  }
-};
-
-export const deleteNavigationMenu = async (req, res) => {
-  const { id_nm } = req.body;
-  try {
-    if (isNotNumber(id_nm)) {
-      throw new Error('Ha ocurrido un error al eliminar el tipo de menu de navegacion, intente reiniciando el sitio');
-    }
-
-    const queryResponse = await instanceNavigationMenu.deleteNavigationMenu(id_nm);
-
-    if (queryResponse.affectedRows < 1) {
-      throw new Error('Error al eliminar el tipo de menu de navegacion');
-    }
-
-    return res.status(200).json({
-      message: 'Tipo de menu de navegacion eliminado exitosamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
-  }
-};
-
-export const getMenuParentsByIdProfile = async (req, res) => {
-  const { profile_fk } = req;
-
-  
-  console.log(profile_fk);
-  try {
-    const queryResponse = await instanceProfile.getMenuParentsByIdProfile(profile_fk);
-
-    if (queryResponse.length < 1) {
       return res.status(200).json({
-        message: 'No hay tipos de menu de navegacion disponibles',
+        message: 'Tipo de menú de navegación obtenido correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación: ' + error);
+      return res.status(403).json({
+        message: error.message,
       });
     }
-
-    return res.status(200).json({
-      message: 'Tipos de menu de navegacion obtenidos correctamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de tipo de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
   }
-};
 
-export const getMenuChildrensByIdProfileAndIdParent = async (req, res) => {
-  const { profile_fk } = req
-  const { id_pm } = req.body;
+  async createNavigationMenu(req, res) {
+    const { name_nm } = req.body;
+    try {
+      if (isInputEmpty(name_nm)) {
+        throw new Error('Debes completar todos los campos');
+      }
+      if (isNotAToZ(name_nm)) {
+        throw new Error('El tipo de menú de navegación no debe contener caracteres especiales');
+      }
 
-  try {
-    const queryResponse = await instanceProfile.getMenuChildrensByIdProfileAndIdParent(profile_fk, id_pm);
+      const checkExists = await this.model.getOne(name_nm, this.nameFieldToSearch);
 
-    if (queryResponse.length < 1) {
+      if (checkExists && checkExists.length > 0) {
+        throw new Error('Tipo de menú de navegación ya existente');
+      }
+
+      const queryResponse = await this.model.createOne({ name_nm });
+      if (!queryResponse) {
+        throw new Error('Error al crear tipo de menú de navegación');
+      }
+
       return res.status(200).json({
-        message: 'No hay tipos de menu de navegacion disponibles',
+        message: 'Tipo de menú de navegación creado exitosamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación: ' + error);
+      return res.status(403).json({
+        message: error.message,
       });
     }
-
-    return res.status(200).json({
-      message: 'Tipos de menu de navegacion obtenidos correctamente',
-      queryResponse,
-    });
-  } catch (error) {
-    console.error('Error en controlador de tipo de menu de navegacion: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
   }
-};
+
+  async updateNavigationMenu(req, res) {
+    const { id_nm, name_nm, status_nm } = req.body;
+    try {
+      if (isInputEmpty(name_nm)) {
+        throw new Error('Debes completar todos los campos');
+      }
+
+      if (isNotAToZ(name_nm)) {
+        throw new Error('El tipo de menú de navegación no debe contener caracteres especiales');
+      }
+
+      if (isNotNumber(id_nm)) {
+        throw new Error('Los datos del tipo de menú de navegación son inválidos');
+      }
+
+      if (isNotNumber(status_nm)) {
+        throw new Error('Los datos de estado del tipo de menú de navegación son inválidos');
+      }
+
+      const checkExists = await this.model.getOne(id_nm, this.nameFieldId);
+
+      if (checkExists.length < 1) {
+        throw new Error('No se puede actualizar este tipo de menú de navegación, debido a que no existe');
+      }
+
+      const queryResponse = await this.model.updateOne({ name_nm, status_nm }, [this.nameFieldId, id_nm]);
+
+      if (queryResponse.affectedRows < 1) {
+        throw new Error('Error al actualizar datos del menú de navegación');
+      }
+
+      return res.status(200).json({
+        message: 'Tipo de menú de navegación actualizado correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async toggleStatusNavigationMenu(req, res) {
+    const { id_nm, status_nm } = req.body;
+
+    try {
+      if (isNotNumber(id_nm)) throw new Error('Los datos del tipo de menú de navegación son inválidos');
+
+      const checkExists = await this.model.getOne(id_nm, this.nameFieldId);
+
+      if (checkExists.length < 1) {
+        throw new Error('No se puede actualizar el tipo de menú de navegación, debido a que no existe');
+      }
+
+      const queryResponse = await this.model.updateOne({ status_nm }, [this.nameFieldId, id_nm]);
+
+      if (queryResponse.affectedRows < 1) {
+        throw new Error('Error al cambiar estado del tipo de menú de navegación');
+      }
+
+      return res.status(200).json({
+        message: 'El estado ha sido actualizado correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async deleteNavigationMenu(req, res) {
+    const { id_nm } = req.body;
+    try {
+      if (isNotNumber(id_nm)) {
+        throw new Error('Ha ocurrido un error al eliminar el tipo de menú de navegación, intente reiniciando el sitio');
+      }
+
+      const queryResponse = await this.model.deleteOne(id_nm, this.nameFieldId);
+
+      if (queryResponse.affectedRows < 1) {
+        throw new Error('Error al eliminar el tipo de menú de navegación');
+      }
+
+      return res.status(200).json({
+        message: 'Tipo de menú de navegación eliminado exitosamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async getMenuParentsByIdProfile(req, res) {
+    const { profile_fk } = req.body;
+
+    try {
+      const queryResponse = await this.navMenuModel.getMenuParentsByIdProfile(profile_fk)
+
+      if (queryResponse.length < 1) {
+        return res.status(200).json({
+          message: 'No hay menús de navegación disponibles para el perfil',
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Menús de navegación obtenidos correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación por perfil: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async getMenuChildrensByIdProfileAndIdParent(req, res) {
+    const { profile_fk } = req;
+    const { id_pm } = req.body;
+
+
+    try {
+      const queryResponse = await this.navMenuModel.getMenuChildrensByIdProfileAndIdParent(profile_fk, id_pm);
+
+      if (queryResponse.length < 1) {
+        return res.status(200).json({
+          message: 'No hay menús de navegación disponibles para el perfil y padre especificado',
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Menús de navegación obtenidos correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de menú de navegación por perfil y padre: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+}
+
+export default NavigationMenuControllers;

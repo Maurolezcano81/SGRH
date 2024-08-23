@@ -36,7 +36,7 @@ app.use('/uploads/avatars', express.static(staticImagesPath));
 //   StateRoutes.router
 // );
 
-import { getDataUserForProfile } from './controllers/People/UserControllers.js';
+// import { getDataUserForProfile } from './controllers/People/UserControllers.js';
 
 // app.use('/api', checkPermissionRoutes.router);
 // app.use('/api/profile', verifyToken, decodeToken, getDataUserForProfile);

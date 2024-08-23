@@ -1,4 +1,7 @@
-import mysql from "mysql2";
+import mysql from 'mysql2';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class Connection {
     constructor(){

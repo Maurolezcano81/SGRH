@@ -9,6 +9,7 @@ class BaseModel {
         this.defaultOffsetPagination = 0;
         this.defaultOrderPagination = 'ASC';
         this.defaultOrderBy = defaultOrderBy
+        this.testConnection();
     }
 
     async getAll() {
@@ -137,6 +138,16 @@ class BaseModel {
         const whereClause = whereClauses.length ? 'WHERE ' + whereClauses.join(' AND ') : '';
         return { whereClause, values };
     }
+
+    async testConnection() {
+        try {
+          await this.con.promise().query('SELECT 1');
+          console.log('Conexión a la base de datos exitosa');
+        } catch (error) {
+          console.error('Error en la conexión a la base de datos:', error.message);
+          throw new Error('Error en la conexión a la base de datos: ' + error.message);
+        }
+      }
 }
 
 export default BaseModel;

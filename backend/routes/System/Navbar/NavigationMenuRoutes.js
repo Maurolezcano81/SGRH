@@ -1,22 +1,19 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createNavigationMenu,
-  getNavigationMenu,
-  getNavigationMenus,
-  updatedNavigationMenu,
-  toggleStatusNavigationMenu,
-  deleteNavigationMenu,
-} from '../../../controllers/System/Navbar/NavigationMenuControllers.js';
+import NavigationMenuControllers from '../../../controllers/System/Navbar/NavigationMenuControllers.js';
+const navbar = new NavigationMenuControllers();
 
 // NAVIGATION MENU ROUTES
-router.post('/create/navigation_menu', createNavigationMenu);
-router.get('/navigation_menus', getNavigationMenus);
-router.post('/navigation_menu', getNavigationMenu);
-router.patch('/navigation_menu', updatedNavigationMenu);
-router.patch('/navigation_menu/status', toggleStatusNavigationMenu);
-router.delete('/navigation_menu', deleteNavigationMenu);
+router.post('/navigation_menu/create', navbar.createNavigationMenu.bind(navbar));
+router.get('/navigation_menus', navbar.getNavigationMenus.bind(navbar));
+router.post('/navigation_menu', navbar.getNavigationMenu.bind(navbar));
+router.patch('/navigation_menu', navbar.updateNavigationMenu.bind(navbar));
+router.patch('/navigation_menu/status', navbar.toggleStatusNavigationMenu.bind(navbar));
+router.delete('/navigation_menu', navbar.deleteNavigationMenu.bind(navbar));
+
+router.post('/menu/parents', navbar.getMenuParentsByIdProfile.bind(navbar));
+router.post('/menu/childrens', navbar.getMenuChildrensByIdProfileAndIdParent.bind(navbar));
 
 const NavigationMenuRoutes = {
   router,

@@ -1,22 +1,15 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createTot,
-  getTot,
-  getTots,
-  updateTot,
-  toggleStatusTot,
-  deleteTot,
-} from '../../controllers/Termination/Type_of_terminationControllers.js';
-
+import TypeOfTerminationControllers from '../../controllers/Termination/Type_of_terminationControllers.js';
+const termination = new TypeOfTerminationControllers();
 // TYPE OF TERMINATION ROUTES
-router.post('/create/type_of_termination', createTot);
-router.get('/types_of_termination', getTots);
-router.post('/type_of_termination', getTot);
-router.patch('/type_of_termination', updateTot);
-router.patch('/type_of_termination/status', toggleStatusTot);
-router.delete('/type_of_termination', deleteTot);
+router.post('/type_of_termination/create', termination.createTot.bind(termination));
+router.get('/types_of_termination', termination.getTots.bind(termination));
+router.post('/type_of_termination', termination.getTot.bind(termination));
+router.patch('/type_of_termination', termination.updateTot.bind(termination));
+router.patch('/type_of_termination/status', termination.toggleStatusTot.bind(termination));
+router.delete('/type_of_termination', termination.deleteTot.bind(termination));
 
 const TypeOfTerminationRoutes = {
   router,
