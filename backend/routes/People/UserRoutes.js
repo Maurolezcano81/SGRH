@@ -1,17 +1,13 @@
 import express from 'express';
-import { createUser, hasToChangePwd } from '../../controllers/People/UserControllers.js';
-import { uploadFiles, handleFileUpload, printFileUrl } from '../../middlewares/Uploads.js';
 
-import User from '../../controllers/People/User.js';
-
-const userInstance = new User();
+import UserController from '../../controllers/People/User.js';
+const user = new UserController();
 
 const router = express.Router();
-const avatarUpload = uploadFiles('avatar_url', 'uploads/avatars');
 
-router.post('/user/create', avatarUpload, handleFileUpload("/uploads/avatars"), createUser);
 
-router.post('/user/all', userInstance.getAll.bind(userInstance));
+
+router.post('/user/create', user.createUser.bind(user));
 
 const UserRoutes = {
   router,

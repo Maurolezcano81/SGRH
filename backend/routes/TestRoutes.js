@@ -15,6 +15,7 @@ import StatusRequestRoutes from './Requests/StatusRequestRoutes.js';
 import NavigationMenuRoutes from './System/Navbar/NavigationMenuRoutes.js';
 import TypeOfTerminationRoutes from './Termination/TypeOfTerminationRoutes.js';
 import LeavesRoutes from "./Leaves/LeavesRoutes.js";
+import UserRoutes from "./People/UserRoutes.js";
 
 app.use(SubjectRoutes.router)
 app.use(AddressRoutes.router)
@@ -27,13 +28,16 @@ app.use(OccupationRoutes.router);
 app.use(SexRoutes.router);
 app.use(DocumentRoutes.router);
 app.use(StatusRequestRoutes.router);
+app.use(LeavesRoutes.router);
 
 app.use(NavigationMenuRoutes.router);
 
 app.use(TypeOfTerminationRoutes.router);
+
+app.use(UserRoutes.router);
+
 const TestRoutes = {
     app
 }
 
-app.use(LeavesRoutes.router);
 export default TestRoutes;
