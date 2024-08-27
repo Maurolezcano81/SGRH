@@ -122,19 +122,16 @@ class BaseModel {
     
         for (const [key, value] of Object.entries(filters)) {
             if (value) {
-                // Si el valor es una cadena, usa LIKE
                 if (typeof value === 'string') {
                     whereClauses.push(`${key} LIKE ?`);
                     values.push(`%${value}%`);
                 } else {
-                    // Si el valor no es una cadena, usa = (o cualquier otro operador necesario)
                     whereClauses.push(`${key} = ?`);
                     values.push(value);
                 }
             }
         }
     
-        // Combina las cláusulas WHERE usando AND
         const whereClause = whereClauses.length ? 'WHERE ' + whereClauses.join(' AND ') : '';
         return { whereClause, values };
     }

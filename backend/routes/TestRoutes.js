@@ -14,6 +14,7 @@ import DocumentRoutes from './People/Document/DocumentRoutes.js';
 import StatusRequestRoutes from './Requests/StatusRequestRoutes.js';
 import NavigationMenuRoutes from './System/Navbar/NavigationMenuRoutes.js';
 import TypeOfTerminationRoutes from './Termination/TypeOfTerminationRoutes.js';
+import LeavesRoutes from "./Leaves/LeavesRoutes.js";
 
 app.use(SubjectRoutes.router)
 app.use(AddressRoutes.router)
@@ -33,4 +34,6 @@ app.use(TypeOfTerminationRoutes.router);
 const TestRoutes = {
     app
 }
+
+app.use(LeavesRoutes.router);
 export default TestRoutes;
