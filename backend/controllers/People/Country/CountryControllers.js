@@ -127,7 +127,7 @@ class CountryController {
         throw new Error('No se puede actualizar el estado del país, debido a que no existe');
       }
 
-      const queryResponse = await this.model.toggleStatus(id_country, status_country);
+      const queryResponse = await this.model.updateOne({status_country}, [this.nameFieldId, id_country]);
 
       return res.status(200).json({
         message: 'Estado del país actualizado correctamente',

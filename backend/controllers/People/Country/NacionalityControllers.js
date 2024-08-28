@@ -149,7 +149,7 @@ class NacionalityController {
         throw new Error('No se puede actualizar la nacionalidad, debido a que no existe');
       }
 
-      const queryResponse = await this.model.toggleStatus(id_nacionality, status_nacionality);
+      const queryResponse = await this.model.updateOne({status_nacionality}, [this.nameFieldId, id_nacionality]);
 
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al actualizar el estado de la nacionalidad');

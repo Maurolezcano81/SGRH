@@ -15,7 +15,7 @@ import {
 } from '../../../controllers/System/Profile/ModuleControllers.js';
 
 // MODULE ROUTES
-router.post('/create/module', createModule);
+router.post('/module/create', createModule);
 router.get('/modules', getModules);
 router.post('/modules/profile', getModulesByProfile);
 router.post('/modules/profile/out', getModulesOutProfile);
