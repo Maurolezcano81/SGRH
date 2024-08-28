@@ -46,7 +46,6 @@ export const decodeTokenForAdministrator = (req, res, next) => {
 
 export const decodeToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (!authHeader) {
     return res.status(403).json({
       message: 'Primero debe iniciar sesión',

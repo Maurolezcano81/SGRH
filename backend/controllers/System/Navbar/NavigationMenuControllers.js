@@ -193,7 +193,7 @@ class NavigationMenuControllers {
   }
 
   async getMenuParentsByIdProfile(req, res) {
-    const { profile_fk } = req.body;
+    const { profile_fk } = req.user;
 
     try {
       const queryResponse = await this.navMenuModel.getMenuParentsByIdProfile(profile_fk)

@@ -17,33 +17,28 @@ const staticImagesPath = path.join('./uploads/');
 app.use('/uploads/avatars', express.static(staticImagesPath));
 
 // Rutas
-// import UserCredentialsRoutes from './routes/Auth/UserCredentialsRoutes.js';
-// import AdminRoutes from './routes/AdminRoutes.js'
+import UserCredentialsRoutes from './routes/Auth/UserCredentialsRoutes.js';
+import AdminRoutes from './routes/AdminRoutes.js'
 
-// import { decodeToken, decodeTokenForAdministrator, verifyToken } from './middlewares/Authorization.js';
-// import UserRoutes from './routes/People/UserRoutes.js';
-// import StateRoutes from './routes/People/Address/AddressRoutes.js';
-// import checkPermissionRoutes from './routes/Auth/CheckPermissionRoutes.js';
+import { decodeToken, decodeTokenForAdministrator, verifyToken } from './middlewares/Authorization.js';
+import UserRoutes from './routes/People/UserRoutes.js';
+import StateRoutes from './routes/People/Address/AddressRoutes.js';
+import checkPermissionRoutes from './routes/Auth/CheckPermissionRoutes.js';
 
-// app.use('/api', UserCredentialsRoutes.router);
+app.use('/api', UserCredentialsRoutes.router);
 
-// app.use(
-//   '/api/admin',
-//   verifyToken,
-//   decodeTokenForAdministrator,
-//   AdminRoutes.router,
-//   UserRoutes.router,
-//   StateRoutes.router
-// );
-
-// import { getDataUserForProfile } from './controllers/People/UserControllers.js';
-
-// app.use('/api', checkPermissionRoutes.router);
-// app.use('/api/profile', verifyToken, decodeToken, getDataUserForProfile);
+app.use(
+  '/api/admin',
+  verifyToken,
+  decodeTokenForAdministrator,
+  AdminRoutes.app,
+  UserRoutes.router,
+  StateRoutes.router
+);
 
 
-import TestRoutes from "./routes/TestRoutes.js"
-app.use('/test', TestRoutes.app)
+app.use('/api', checkPermissionRoutes.router);
+app.use('/api/profile', verifyToken, decodeToken);
 
 const URL = 'http:localhost:'
 const PORT = process.env.SV_PORT
