@@ -16,8 +16,8 @@ const AppLayout = () => {
   const [isTokenChecked, setIsTokenChecked] = useState(false);
   const [showPwdChangedModal, setShowPwdChangedModal] = useState(false); // Estado para controlar el modal específico
 
-  const urlCheckPermission = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/checkPermission`;
-  const urlCheckHasToPwdChanged = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/haspwdchanged`;
+  const urlCheckPermission = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_CANMODULE}`;
+  const urlCheckHasToPwdChanged = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_CANPWD}`;
 
   const location = useLocation();
   const pathActually = location;

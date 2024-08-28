@@ -3,7 +3,7 @@ import useAuth from '../../hooks/useAuth';
 import DropDownButton from './DropDownButton';
 
 const NavbarContent = () => {
-  const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/menu/parents`;
+  const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_MENUPARENTS}`;
 
   const { authData } = useAuth();
   const [parentList, setParentList] = useState([]);

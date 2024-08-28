@@ -8,7 +8,7 @@ import useAuth from '../hooks/useAuth';
 import ErrorMessage from '../components/Alerts/ErrorMessage';
 import SuccessfullyMessage from '../components/Alerts/SuccessfullyMessage';
 const Login = () => {
-  const urlApi = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/login`;
+  const urlApi = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_LOGIN}`;
 
   const [error, setError] = useState(null);
   const [successfullyMessage, setSuccessfullyMessage] = useState(null);
