@@ -1,22 +1,16 @@
 import express from 'express';
 const router = express.Router();
 
-import {
-  createProfile,
-  getProfile,
-  getProfiles,
-  updateProfile,
-  toggleStatusProfile,
-  deleteProfile,
-} from '../../../controllers/System/Profile/Profile.js';
+import ProfileController from '../../../controllers/System/Profile/Profile.js';
 
+const profile = new ProfileController();
 // PROFILE ROUTES
-router.post('/create/profile', createProfile);
-router.get('/profiles', getProfiles);
-router.post('/profile', getProfile);
-router.patch('/profile', updateProfile);
-router.patch('/profile/status', toggleStatusProfile);
-router.delete('/profile', deleteProfile);
+router.post('/profile/create', profile.createProfile.bind(profile));
+router.get('/profiles', profile.getProfiles.bind(profile));
+router.post('/profile', profile.getProfile.bind(profile));
+router.patch('/profile', profile.updateProfile.bind(profile));
+router.patch('/profile/status', profile.toggleStatusProfile.bind(profile));
+router.delete('/profile', profile.deleteProfile.bind(profile));
 
 const ProfileRoutes = {
   router,

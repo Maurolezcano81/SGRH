@@ -3,7 +3,7 @@ import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Valid
 
 class AttachmentControllers {
   constructor() {
-    this.model = new BaseModel('type_attachment', 'name_attachment');
+    this.model = new BaseModel('type_attachment', 'name_ta');
     this.nameFieldId = "id_ta";
     this.nameFieldToSearch = "name_ta";
   }
