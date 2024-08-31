@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-import useNav from '../../../hooks/useNav';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
 
-const Sex = () => {
+const Document = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [sexs, setSexs] = useState([]);
-  const [sexsFormatted, setSexsFormatted] = useState([]);
+  const [documents, setDocuments] = useState([]);
+  const [documentsFormatted, setDocumentsFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
@@ -48,17 +48,16 @@ const Sex = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`;
-const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_SEX}`;
-const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_SEX}`;
-const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_SEX}`;
-const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_SEX}`;
-const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_SEX}`;
-
-
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_DOCUMENT}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_DOCUMENT}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_DOCUMENT}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_DOCUMENT}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_DOCUMENT}`;
+  
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchSexs = async () => {
+    const fetchDocuments = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -68,32 +67,32 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de sexo');
+          throw new Error('Ha ocurrido un error al obtener los tipos de documentos');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setSexs([]);
-          setSexsFormatted([]);
+          setDocuments([]);
+          setDocumentsFormatted([]);
         } else {
-          setSexs(data.queryResponse);
-          formatSexs(data.queryResponse);
+          setDocuments(data.queryResponse);
+          formatDocuments(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener los tipos de sexo', error);
+        console.error('Error al obtener los tipos de documentos', error);
       }
     };
 
-    fetchSexs();
+    fetchDocuments();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatSexs = (sexs) => {
-    const formatted = sexs.map((sex) => ({
-      ...sex,
+  const formatDocuments = (documents) => {
+    const formatted = documents.map((document) => ({
+      ...document,
     }));
-    setSexsFormatted(formatted);
+    setDocumentsFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -103,7 +102,7 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_sex);
+    setIdToGet(item.id_document);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -114,11 +113,11 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_sex);
+    setIdToDelete(item.id_document);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_sex);
+    setIdToToggle(item.id_document);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -144,14 +143,14 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Sexo" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Tipo de Documento" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de Sexo'}
+          title_modal={'Nuevo Tipo de Documento'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_sex']}
+          fetchData={['name_document']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -160,19 +159,19 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Sexo'}
+          title_modal={'Editar Documento'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_sex']}
+          fetchData={['name_document']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_sex"
+          idFetchData="value_document"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={'status_sex'}
+          fetchData_select={"status_document"}
         />
       )}
 
@@ -180,7 +179,7 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_sex'}
+          field_name={'id_document'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -193,11 +192,11 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {sexsFormatted.length > 0 ? (
+          {documentsFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={sexsFormatted}
-              keys={['name_sex']}
-              status_name={['id_sex', 'status_sex']}
+              items={documentsFormatted}
+              keys={['name_document']}
+              status_name={['id_document', 'status_document']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -217,4 +216,4 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
   );
 };
 
-export default Sex;
+export default Document;

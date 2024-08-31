@@ -3,7 +3,7 @@ import useAuth from '../../hooks/useAuth';
 import ButtonBlue from '../ButtonBlue';
 import PreferencesTableHeader from '../Table/TablePreferences/PreferencesTableHeader';
 import DeleteButton from '../Buttons/DeleteButton';
-import ModalDelete from '../../pages/Admin/ModalDelete'; // Asegúrate de importar ModalDelete
+import ModalDelete from '../Modals/ModalDelete'; // Asegúrate de importar ModalDelete
 import ListForAdd from '../Modals/ListForAdd';
 
 const PageWithSelect = ({
@@ -42,7 +42,7 @@ const PageWithSelect = ({
     };
 
     fetchOptions();
-  }, [authData, getOptions]);
+  }, [authData, getOptions, arrayWithOptions]);
 
   useEffect(() => {
     if (selectedOption) {
@@ -77,7 +77,7 @@ const PageWithSelect = ({
 
       fetchModules();
     }
-  }, [selectedOption, authData, getContentTable, nameFetchConditioned, modalDeleteIsOpen, isOpenModalAdd]);
+  }, [selectedOption, authData, getContentTable, nameFetchConditioned, modalDeleteIsOpen, isOpenModalAdd ]);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -111,61 +111,59 @@ const PageWithSelect = ({
 
 
   return (
-    <div className="section__padding-10">
-      <div className="section__container">
-        <div className="section__header">
-          <div className="section__header__container-select">
-            <select className="input__form__div__input" onChange={handleSelectChange}>
-              <option value="">Seleccione una opción</option>
-              {arrayWithOptions.map((option) => (
-                <option key={option[selectFields.id]} value={option[selectFields.id]}>
-                  {option[selectFields.name]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="section__header__container-button">
-            <ButtonBlue title={'Agregar Nuevo'} onClick={handleModalListForAdd} />
-          </div>
+    <div className=''>
+      <div className="section__header">
+        <div className="section__header__container-select">
+          <select className="input__form__div__input" onChange={handleSelectChange}>
+            <option value="">Seleccione una opción</option>
+            {arrayWithOptions.map((option) => (
+              <option key={option[selectFields.id]} value={option[selectFields.id]}>
+                {option[selectFields.name]}
+              </option>
+            ))}
+          </select>
         </div>
-
-        {modalDeleteIsOpen && (
-          <ModalDelete
-            handleModalDelete={handleModalDelete}
-            field_name={field_name}
-            idToDelete={idToDelete}
-            deleteOne={deleteOne}
-            onSubmitDelete={onSubmitDelete}
-          />
-        )}
-
-        {isOpenModalAdd && (
-          <ListForAdd selectedProfile={selectedOption} handleModalListForAdd={handleModalListForAdd} ModulesBinded={arrayWithTableContainer} />
-        )}
-        <table className="section__table">
-          <thead className="table__preference__head page__with__select">
-            <tr>
-              <PreferencesTableHeader keys={['Modulos', 'Acciones']} />
-            </tr>
-          </thead>
-          <tbody className="table__preference__body page__with__select">
-            {arrayWithTableContainFormatted.length > 0 ? (
-              arrayWithTableContainFormatted.map((item, index) => (
-                <tr key={index}>
-                  <td className="page__with__select__table__body-first">{item[tableFields.name]}</td>
-                  <td className="page__with__select__table__body-second">
-                    <DeleteButton action={() => handleUnbind(item[tableFields.id])} />
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="2">{noDataMessage}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <div className="section__header__container-button">
+          <ButtonBlue title={'Agregar Nuevo'} onClick={handleModalListForAdd} />
+        </div>
       </div>
+
+      {modalDeleteIsOpen && (
+        <ModalDelete
+          handleModalDelete={handleModalDelete}
+          field_name={field_name}
+          idToDelete={idToDelete}
+          deleteOne={deleteOne}
+          onSubmitDelete={onSubmitDelete}
+        />
+      )}
+
+      {isOpenModalAdd && (
+        <ListForAdd selectedProfile={selectedOption} handleModalListForAdd={handleModalListForAdd} ModulesBinded={arrayWithTableContainer} />
+      )}
+      <table className="section__table">
+        <thead className="table__preference__head page__with__select">
+          <tr>
+            <PreferencesTableHeader keys={['Modulos', 'Acciones']} />
+          </tr>
+        </thead>
+        <tbody className="table__preference__body page__with__select">
+          {arrayWithTableContainFormatted.length > 0 ? (
+            arrayWithTableContainFormatted.map((item, index) => (
+              <tr key={index}>
+                <td className="page__with__select__table__body-first">{item[tableFields.name]}</td>
+                <td className="page__with__select__table__body-second">
+                  <DeleteButton action={() => handleUnbind(item[tableFields.id])} />
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="2">{noDataMessage}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

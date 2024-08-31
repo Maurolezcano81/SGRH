@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-import useNav from '../../../hooks/useNav';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
 
-const Document = () => {
+const Subject = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [documents, setDocuments] = useState([]);
-  const [documentsFormatted, setDocumentsFormatted] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [subjectsFormatted, setSubjectsFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
@@ -25,7 +25,7 @@ const Document = () => {
     const pathParts = location.pathname.split('/');
     const lastPart = pathParts[pathParts.length - 1];
     storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
+}, [location.pathname, storageNavbarTitle]);
 
 
   // MODALES
@@ -48,16 +48,16 @@ const Document = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/documents`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/document`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/document`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/create/document`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/document/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/document`;
-
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SUBJECT}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_SUBJECT}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_SUBJECT}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_SUBJECT}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_SUBJECT}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_SUBJECT}`;
+  
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchDocuments = async () => {
+    const fetchSubjects = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -67,32 +67,32 @@ const Document = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de documentos');
+          throw new Error('Ha ocurrido un error al obtener los tipos de asunto de mensaje');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setDocuments([]);
-          setDocumentsFormatted([]);
+          setSubjects([]);
+          setSubjectsFormatted([]);
         } else {
-          setDocuments(data.queryResponse);
-          formatDocuments(data.queryResponse);
+          setSubjects(data.queryResponse);
+          formatSubjects(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener los tipos de documentos', error);
+        console.error('Error al obtener los tipos de asunto de mensaje', error);
       }
     };
 
-    fetchDocuments();
+    fetchSubjects();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatDocuments = (documents) => {
-    const formatted = documents.map((document) => ({
-      ...document,
+  const formatSubjects = (subjects) => {
+    const formatted = subjects.map((subject) => ({
+      ...subject,
     }));
-    setDocumentsFormatted(formatted);
+    setSubjectsFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -102,7 +102,7 @@ const Document = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_document);
+    setIdToGet(item.id_sm);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -113,11 +113,11 @@ const Document = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_document);
+    setIdToDelete(item.id_sm);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_document);
+    setIdToToggle(item.id_sm);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -143,14 +143,14 @@ const Document = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Tipo de Documento" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Tipo de mensaje" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de Documento'}
+          title_modal={'Nuevo Tipo de Asunto de Mensaje'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_document']}
+          fetchData={['name_sm']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -159,19 +159,20 @@ const Document = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Documento'}
+          title_modal={'Editar Departamento'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_document']}
+          fetchData={['name_sm']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_document"
+          idFetchData="value_subject"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_document"}
+          label_select={["Estado"]}
+          fetchData_select={"status_sm"}
         />
       )}
 
@@ -179,7 +180,7 @@ const Document = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_document'}
+          field_name={'id_sm'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -192,11 +193,11 @@ const Document = () => {
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {documentsFormatted.length > 0 ? (
+          {subjectsFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={documentsFormatted}
-              keys={['name_document']}
-              status_name={['id_document', 'status_document']}
+              items={subjectsFormatted}
+              keys={['name_sm']}
+              status_name={['id_sm', 'status_sm']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -216,4 +217,4 @@ const Document = () => {
   );
 };
 
-export default Document;
+export default Subject;

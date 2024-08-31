@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-import useNav from '../../../hooks/useNav';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
 
-const Department = () => {
+const Country = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [departments, setDepartments] = useState([]);
-  const [departmentsFormatted, setDepartmentsFormatted] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [countriesFormatted, setCountriesFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
-  const {storageNavbarTitle}  = useNav();
+  const { storageNavbarTitle } = useNav();
 
   const location = useLocation();
 
@@ -26,7 +26,6 @@ const Department = () => {
     const lastPart = pathParts[pathParts.length - 1];
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
-
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
@@ -48,16 +47,16 @@ const Department = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/departments`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/create/department`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/department`;
-
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_COUNTRY}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_COUNTRY}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_COUNTRY}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_COUNTRY}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_COUNTRY}`;
+  
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchDepartments = async () => {
+    const fetchCountries = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -67,32 +66,32 @@ const Department = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de departamentos');
+          throw new Error('Ha ocurrido un error al obtener las ocupaciones');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setDepartments([]);
-          setDepartmentsFormatted([]);
+          setCountries([]);
+          setCountriesFormatted([]);
         } else {
-          setDepartments(data.queryResponse);
-          formatDepartments(data.queryResponse);
+          setCountries(data.queryResponse);
+          formatCountries(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener los tipos de departamentos', error);
+        console.error('Error al obtener las ocupaciones', error);
       }
     };
 
-    fetchDepartments();
+    fetchCountries();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatDepartments = (departments) => {
-    const formatted = departments.map((department) => ({
-      ...department,
+  const formatCountries = (countries) => {
+    const formatted = countries.map((country) => ({
+      ...country,
     }));
-    setDepartmentsFormatted(formatted);
+    setCountriesFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -102,7 +101,7 @@ const Department = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_department);
+    setIdToGet(item.id_country);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -113,11 +112,11 @@ const Department = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_department);
+    setIdToDelete(item.id_country);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_department);
+    setIdToToggle(item.id_country);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -143,14 +142,14 @@ const Department = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Departamento" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Pais" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de Departamento'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
+          title_modal={'Nuevo Pais'}
+          labels={['Nombre', 'Abreviacion']}
+          placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
           method={'POST'}
-          fetchData={['name_department']}
+          fetchData={['name_country', 'abbreviation_country']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -159,27 +158,28 @@ const Department = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Departamento'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
+          title_modal={'Editar Pais'}
+          labels={['Nombre', 'Abreviacion']}
+          placeholders={['Ingrese nombre', 'Ingrese la abreviacion']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_department']}
+          fetchData={['name_country', 'abbreviation_country']}
           getOneUrl={getSingleUrl}
-          idFetchData="id_department"
+          idFetchData="value_country"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_department"}
+          fetchData_select={'status_country'}
         />
+        
       )}
 
       {toggleModalDelete && (
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_department'}
+          field_name={'id_country'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -188,15 +188,15 @@ const Department = () => {
       <table className="table__preference">
         <thead className="table__preference__head">
           <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
+            <PreferencesTableHeader keys={['Nombre', 'Abreviacion', 'Estado', 'Acciones']} />
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {departmentsFormatted.length > 0 ? (
+          {countriesFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={departmentsFormatted}
-              keys={['name_department']}
-              status_name={['id_department', 'status_department']}
+              items={countriesFormatted}
+              keys={['name_country', 'abbreviation_country']}
+              status_name={['id_country', 'status_country']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -207,7 +207,7 @@ const Department = () => {
             />
           ) : (
             <tr>
-              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
+              <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
             </tr>
           )}
         </tbody>
@@ -216,4 +216,4 @@ const Department = () => {
   );
 };
 
-export default Department;
+export default Country;

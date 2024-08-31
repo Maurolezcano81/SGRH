@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import useNav from '../../../hooks/useNav';
+import useAuth from '../../hooks/useAuth';
+import useNav from '../../hooks/useNav';
 import {
   useLocation
 } from 'react-router-dom'
 
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
 
 const StatusRequest = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO

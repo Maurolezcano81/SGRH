@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import useNav from '../../../hooks/useNav';
-import {
-  useLocation
-} from 'react-router-dom'
-
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
+import { useLocation } from 'react-router-dom';
 
-const Contact = () => {
+const Occupation = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [contacts, setContacts] = useState([]);
-  const [contactsFormatted, setContactsFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(""); // Estado para almacenar el mensaje de "no hay datos"
+  const [occupations, setOccupations] = useState([]);
+  const [occupationsFormatted, setOccupationsFormatted] = useState([]);
+  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
+
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
   const {storageNavbarTitle}  = useNav();
@@ -29,7 +27,7 @@ const Contact = () => {
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
 
-  
+
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
   const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
@@ -50,16 +48,16 @@ const Contact = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT}`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_CONTACT}`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_CONTACT}`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_CONTACT}`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_CONTACT}`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_CONTACT}`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_OCCUPATION}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_OCCUPATION}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_OCCUPPATION}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_OCCUPATION}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_OCCUPATION}`;
   
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchContacts = async () => {
+    const fetchOccupations = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -69,32 +67,42 @@ const Contact = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de sexo');
+          throw new Error('Ha ocurrido un error al obtener las ocupaciones');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
-            setNoDataMessage(data.message);
-            setContacts([]);
-            setContactsFormatted([]);
-          } else {
-            setContacts(data.queryResponse);
-            formatContacts(data.queryResponse);
-            setNoDataMessage("");
-          }
+          setNoDataMessage(data.message);
+          setOccupations([]);
+          setOccupationsFormatted([]);
+        } else {
+          setOccupations(data.queryResponse);
+          formatOccupations(data.queryResponse);
+          setNoDataMessage('');
+        }
       } catch (error) {
-        console.error('Error al obtener los tipos de sexo', error);
+        console.error('Error al obtener las ocupaciones', error);
       }
     };
 
-    fetchContacts();
+    fetchOccupations();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatContacts = (contacts) => {
-    const formatted = contacts.map((contact) => ({
-      ...contact
+  const formatOccupations = (occupations) => {
+    const formatted = occupations.map((occupation) => ({
+      ...occupation,
+      salary_occupation: currencyFormatter(occupation.salary_occupation),
     }));
-    setContactsFormatted(formatted);
+    setOccupationsFormatted(formatted);
+  };
+
+  const currencyFormatter = (value) => {
+    const formatter = new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 2,
+    });
+    return formatter.format(value);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -104,7 +112,7 @@ const Contact = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_contact);
+    setIdToGet(item.id_occupation);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -115,11 +123,11 @@ const Contact = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_contact);
+    setIdToDelete(item.id_occupation);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_contact);
+    setIdToToggle(item.id_occupation);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -145,14 +153,14 @@ const Contact = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Contacto" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Ocupación" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de Contacto'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
+          title_modal={'Nueva Ocupacion'}
+          labels={['Nombre', 'Salario']}
+          placeholders={['Ingrese nombre', 'Ingrese el salario']}
           method={'POST'}
-          fetchData={['name_contact']}
+          fetchData={['name_occupation', 'salary_occupation']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -161,19 +169,19 @@ const Contact = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Contacto'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
+          title_modal={'Editar Ocupacion'}
+          labels={['Nombre', 'Salario']}
+          placeholders={['Ingrese nombre', 'Ingrese el salario']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_contact']}
+          fetchData={['name_occupation', 'salary_occupation']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_contact"
+          idFetchData="value_occupation"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_contact"}
+          fetchData_select={"status_occupation"}
         />
       )}
 
@@ -181,7 +189,7 @@ const Contact = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_contact'}
+          field_name={'id_occupation'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -190,26 +198,26 @@ const Contact = () => {
       <table className="table__preference">
         <thead className="table__preference__head">
           <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
+            <PreferencesTableHeader keys={['Nombre', 'Salario', 'Estado', 'Acciones']} />
           </tr>
         </thead>
         <tbody className="table__preference__body">
-        {contactsFormatted.length > 0 ? (
-                    <PreferencesBodyRow
-                    items={contactsFormatted}
-                    keys={['name_contact']}
-                    status_name={['id_contact', 'status_contact']}
-                    fetchUrl={toggleStatus}
-                    idToToggle={idToToggle}
-                    handleStatusToggle={handleStatusToggle}
-                    handleDependencyToggle={handleDependencyToggle}
-                    handleEdit={handleModalUpdate}
-                    handleModalDelete={handleModalDelete}
-                    handleDelete={handleDelete}
-                  />
+          {occupationsFormatted.length > 0 ? (
+            <PreferencesBodyRow
+              items={occupationsFormatted}
+              keys={['name_occupation', 'salary_occupation']}
+              status_name={['id_occupation', 'status_occupation']}
+              fetchUrl={toggleStatus}
+              idToToggle={idToToggle}
+              handleStatusToggle={handleStatusToggle}
+              handleDependencyToggle={handleDependencyToggle}
+              handleEdit={handleModalUpdate}
+              handleModalDelete={handleModalDelete}
+              handleDelete={handleDelete}
+            />
           ) : (
             <tr>
-              <td colSpan="3">{noDataMessage || "No hay datos ingresados"}</td>
+              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
             </tr>
           )}
         </tbody>
@@ -218,4 +226,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default Occupation;

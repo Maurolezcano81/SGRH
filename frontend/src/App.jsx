@@ -1,29 +1,29 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthProvider';
-
-import Login from './pages/Login';
-import AppLayout from './pages/AppLayout'; // Asegúrate de que AppLayout esté en la carpeta correcta
-import Contact from './pages/Admin/System/Contact';
-import Preferences from './pages/Admin/System/PreferencesLayout';
-import Occupation from './pages/Admin/System/Occupation';
-import Sex from './pages/Admin/System/Sex';
-import Country from './pages/Admin/System/Country';
-import Nacionality from './pages/Admin/System/Nacionality';
+import Login from './pages/Login/Login';
+import AppLayout from './pages/AppLayout';
+import HomeAdmin from './pages/Homes/HomeAdmin';
+import Profiles from './pages/MasterTables/Profiles';
+import HomeRRHH from './pages/Homes/HomeRRHH';
+import CreateUser from './pages/User/CreateUser/CreateUserLayout';
+import Preferences from './pages/MasterTables/PreferencesLayout';
+import Occupation from './pages/MasterTables/Occupation';
+import Sex from './pages/MasterTables/Sex';
+import Contact from './pages/MasterTables/Contact';
+import Country from './pages/MasterTables/Country';
+import Nacionality from './pages/MasterTables/Nacionality';
+import StatusRequest from './pages/MasterTables/StatusRequest';
+import Module from './pages/MasterTables/Module';
+import TypeTermination from './pages/MasterTables/TypeOfTermination';
+import Document from './pages/MasterTables/Document';
+import Department from './pages/MasterTables/Department';
+import Subject from './pages/MasterTables/Subject';
+import Attachment from './pages/MasterTables/Attachment';
+import HomePersonal from './pages/Homes/HomePersonal';
+import Profile from './pages/User/Profile/Profile';
 import { NavbarProvider } from './contexts/NavbarProvider';
-import StatusRequest from './pages/Admin/System/StatusRequest';
-import Module from './pages/Admin/System/Module';
-import TypeTermination from './pages/Admin/System/TypeOfTermination';
-import Department from './pages/Admin/System/Department';
-import Document from './pages/Admin/System/Document';
-import CreateUser from './pages/Admin/User/CreateUserLayout';
-import Subject from './pages/Admin/System/Subject';
-import Attachment from './pages/Admin/System/Attachment';
-import HomeAdmin from './pages/HomeAdmin';
-import HomeRRHH from './pages/HomeRRHH';
-import HomePersonal from './pages/HomePersonal';
-import Profiles from './pages/Admin/System/Profiles';
-import Profile from './pages/Profile';
+
 
 function App() {
   return (

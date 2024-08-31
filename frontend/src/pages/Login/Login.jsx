@@ -1,12 +1,12 @@
-import User from '../assets/Icons/Login/User.png';
-import Invisible from '../assets/Icons/Login/Invisible.png';
-import Enterprise from '../assets/Enterprise.png';
+import User from '../../assets/Icons/Login/User.png';
+import Invisible from '../../assets/Icons/Login/Invisible.png';
+import Enterprise from '../../assets/Enterprise.png';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import useAuth from '../hooks/useAuth';
-import ErrorMessage from '../components/Alerts/ErrorMessage';
-import SuccessfullyMessage from '../components/Alerts/SuccessfullyMessage';
+import useAuth from '../../hooks/useAuth';
+import ErrorMessage from '../../components/Alerts/ErrorMessage';
+import SuccessfullyMessage from '../../components/Alerts/SuccessfullyMessage';
 const Login = () => {
   const urlApi = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_LOGIN}`;
 

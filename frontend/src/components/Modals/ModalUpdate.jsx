@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import ButtonBlue from '../../components/ButtonBlue';
-import ButtonRed from '../../components/ButtonRed';
+import ButtonBlue from '../ButtonBlue';
+import ButtonRed from '../ButtonRed';
 import useAuth from '../../hooks/useAuth';
-import AlertSuccesfully from '../../components/Alerts/AlertSuccesfully';
+import AlertSuccesfully from '../Alerts/AlertSuccesfully';
 
 const ModalUpdate = ({
   title_modal,

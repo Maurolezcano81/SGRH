@@ -1,4 +1,4 @@
-import ButtonBlue from "../../../components/ButtonBlue"
+import ButtonBlue from "../../components/ButtonBlue"
 
 const PreferenceTitle = (props) =>{
     return(

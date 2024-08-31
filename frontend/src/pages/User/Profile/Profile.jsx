@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import ButtonWhiteWithShadow from '../components/Buttons/ButtonWhiteWithShadow';
-import useAuth from '../hooks/useAuth';
-import ChangePwdEmployee from '../components/Others/ChangePwdEmployee';
-import ChangePwdAdmin from '../components/Others/ChangePwdAdmin';
+import ButtonWhiteWithShadow from '../../../components/Buttons/ButtonWhiteWithShadow';
+import useAuth from '../../../hooks/useAuth';
+import ChangePwdEmployee from '../../../components/Others/ChangePwdEmployee';
+import ChangePwdAdmin from '../../../components/Others/ChangePwdAdmin';
 
 const Profile = () => {
   const { authData } = useAuth();

@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import useNav from '../../../hooks/useNav';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
+import PreferenceTitle from './PreferenceTitle';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
 
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-
-const TypeTermination = () => {
+const Sex = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [typesTermination, setTypesTermination] = useState([]);
-  const [typesTerminationFormatted, setTypesTerminationFormatted] = useState([]);
+  const [sexs, setSexs] = useState([]);
+  const [sexsFormatted, setSexsFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
+
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
-  const { storageNavbarTitle } = useNav();
+  const {storageNavbarTitle}  = useNav();
 
   const location = useLocation();
 
@@ -26,6 +26,7 @@ const TypeTermination = () => {
     const lastPart = pathParts[pathParts.length - 1];
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
+
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
@@ -47,16 +48,17 @@ const TypeTermination = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_TYPE_OF_TERMINATION}`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_TYPE_OF_TERMINATION}`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_TYPE_OF_TERMINATION}`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_TYPE_OF_TERMINATION}`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_TYPE_OF_TERMINATION}`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_TYPE_OF_TERMINATION}`;
-  
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`;
+const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_SEX}`;
+const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_SEX}`;
+const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_SEX}`;
+const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_SEX}`;
+const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_SEX}`;
+
+
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchTypeTermination = async () => {
+    const fetchSexs = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -66,32 +68,32 @@ const TypeTermination = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los estados de solicitud');
+          throw new Error('Ha ocurrido un error al obtener los tipos de sexo');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setTypesTermination([]);
-          setTypesTerminationFormatted([]);
+          setSexs([]);
+          setSexsFormatted([]);
         } else {
-          setTypesTermination(data.queryResponse);
-          formatStatuses(data.queryResponse);
+          setSexs(data.queryResponse);
+          formatSexs(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener los estados de solicitud', error);
+        console.error('Error al obtener los tipos de sexo', error);
       }
     };
 
-    fetchTypeTermination();
+    fetchSexs();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatStatuses = (typesTermination) => {
-    const formatted = typesTermination.map((typeTermination) => ({
-      ...typeTermination,
+  const formatSexs = (sexs) => {
+    const formatted = sexs.map((sex) => ({
+      ...sex,
     }));
-    setTypesTerminationFormatted(formatted);
+    setSexsFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -101,7 +103,7 @@ const TypeTermination = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_tot);
+    setIdToGet(item.id_sex);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -112,11 +114,11 @@ const TypeTermination = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_tot);
+    setIdToDelete(item.id_sex);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_tot);
+    setIdToToggle(item.id_sex);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -142,14 +144,14 @@ const TypeTermination = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Estado" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Sexo" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de salida'}
+          title_modal={'Nuevo Tipo de Sexo'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['description_tot']}
+          fetchData={['name_sex']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -158,19 +160,19 @@ const TypeTermination = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar tipo de salida'}
+          title_modal={'Editar Sexo'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['description_tot']}
+          fetchData={['name_sex']}
           getOneUrl={getSingleUrl}
-          idFetchData="id_tot"
+          idFetchData="value_sex"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={'status_tot'}
+          fetchData_select={'status_sex'}
         />
       )}
 
@@ -178,7 +180,7 @@ const TypeTermination = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_tot'}
+          field_name={'id_sex'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -191,11 +193,11 @@ const TypeTermination = () => {
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {typesTerminationFormatted.length > 0 ? (
+          {sexsFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={typesTerminationFormatted}
-              keys={['description_tot']}
-              status_name={['id_tot', 'status_tot']}
+              items={sexsFormatted}
+              keys={['name_sex']}
+              status_name={['id_sex', 'status_sex']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -215,4 +217,4 @@ const TypeTermination = () => {
   );
 };
 
-export default TypeTermination;
+export default Sex;

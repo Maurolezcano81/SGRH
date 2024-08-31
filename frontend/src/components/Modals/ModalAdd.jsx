@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ButtonBlue from '../../components/ButtonBlue';
-import ButtonRed from '../../components/ButtonRed';
+import ButtonBlue from '../ButtonBlue';
+import ButtonRed from '../ButtonRed';
 import authData from '../../hooks/useAuth';
 import useAuth from '../../hooks/useAuth';
 

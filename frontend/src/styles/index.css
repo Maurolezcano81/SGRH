@@ -1199,6 +1199,17 @@ input {
 }
 /* START CREATE USER FORM */
 
+.button__container__full{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button__container__full button{
+  width: 100%;
+}
+
 @media (width >= 468px) {
   .table__preference__head tr th {
     padding: 1rem 2rem;

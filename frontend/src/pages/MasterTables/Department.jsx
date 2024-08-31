@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-import useNav from '../../../hooks/useNav';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
 
-const Occupation = () => {
+const Department = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [occupations, setOccupations] = useState([]);
-  const [occupationsFormatted, setOccupationsFormatted] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [departmentsFormatted, setDepartmentsFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
@@ -48,16 +48,16 @@ const Occupation = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_OCCUPATION}`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_OCCUPATION}`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_OCCUPPATION}`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_OCCUPATION}`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_OCCUPATION}`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_DEPARTMENT}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_DEPARTMENT}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_DEPARTMENT}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_DEPARTMENT}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_DEPARTMENT}`;
   
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchOccupations = async () => {
+    const fetchDepartments = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -67,42 +67,32 @@ const Occupation = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener las ocupaciones');
+          throw new Error('Ha ocurrido un error al obtener los tipos de departamentos');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setOccupations([]);
-          setOccupationsFormatted([]);
+          setDepartments([]);
+          setDepartmentsFormatted([]);
         } else {
-          setOccupations(data.queryResponse);
-          formatOccupations(data.queryResponse);
+          setDepartments(data.queryResponse);
+          formatDepartments(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener las ocupaciones', error);
+        console.error('Error al obtener los tipos de departamentos', error);
       }
     };
 
-    fetchOccupations();
+    fetchDepartments();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatOccupations = (occupations) => {
-    const formatted = occupations.map((occupation) => ({
-      ...occupation,
-      salary_occupation: currencyFormatter(occupation.salary_occupation),
+  const formatDepartments = (departments) => {
+    const formatted = departments.map((department) => ({
+      ...department,
     }));
-    setOccupationsFormatted(formatted);
-  };
-
-  const currencyFormatter = (value) => {
-    const formatter = new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 2,
-    });
-    return formatter.format(value);
+    setDepartmentsFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -112,7 +102,7 @@ const Occupation = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_occupation);
+    setIdToGet(item.id_department);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -123,11 +113,11 @@ const Occupation = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_occupation);
+    setIdToDelete(item.id_department);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_occupation);
+    setIdToToggle(item.id_department);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -153,14 +143,14 @@ const Occupation = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Ocupación" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Departamento" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nueva Ocupacion'}
-          labels={['Nombre', 'Salario']}
-          placeholders={['Ingrese nombre', 'Ingrese el salario']}
+          title_modal={'Nuevo Tipo de Departamento'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_occupation', 'salary_occupation']}
+          fetchData={['name_department']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -169,19 +159,19 @@ const Occupation = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Ocupacion'}
-          labels={['Nombre', 'Salario']}
-          placeholders={['Ingrese nombre', 'Ingrese el salario']}
+          title_modal={'Editar Departamento'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_occupation', 'salary_occupation']}
+          fetchData={['name_department']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_occupation"
+          idFetchData="id_department"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_occupation"}
+          fetchData_select={"status_department"}
         />
       )}
 
@@ -189,7 +179,7 @@ const Occupation = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_occupation'}
+          field_name={'id_department'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -198,15 +188,15 @@ const Occupation = () => {
       <table className="table__preference">
         <thead className="table__preference__head">
           <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Salario', 'Estado', 'Acciones']} />
+            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {occupationsFormatted.length > 0 ? (
+          {departmentsFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={occupationsFormatted}
-              keys={['name_occupation', 'salary_occupation']}
-              status_name={['id_occupation', 'status_occupation']}
+              items={departmentsFormatted}
+              keys={['name_department']}
+              status_name={['id_department', 'status_department']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -226,4 +216,4 @@ const Occupation = () => {
   );
 };
 
-export default Occupation;
+export default Department;

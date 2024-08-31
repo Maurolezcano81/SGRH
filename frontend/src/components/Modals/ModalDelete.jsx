@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import ErrorMessage from '../../components/Alerts/ErrorMessage';
-import ButtonBlue from '../../components/ButtonBlue';
-import ButtonRed from '../../components/ButtonRed';
+import ErrorMessage from '../Alerts/ErrorMessage';
+import ButtonBlue from '../ButtonBlue';
+import ButtonRed from '../ButtonRed';
 import useAuth from '../../hooks/useAuth';
 const ModalDelete = ({ handleModalDelete, deleteOne, field_name, idToDelete, onSubmitDelete }) => {
   const [message, setMessage] = useState('');

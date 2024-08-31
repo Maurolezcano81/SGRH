@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import useNav from '../../hooks/useNav';
+import {
+  useLocation
+} from 'react-router-dom'
+
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-import useNav from '../../../hooks/useNav';
-import { useLocation } from 'react-router-dom';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
 
-const Attachment = () => {
+const Contact = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [attachments, setAttachments] = useState([]);
-  const [attachmentsFormatted, setAttachmentFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
-
+  const [contacts, setContacts] = useState([]);
+  const [contactsFormatted, setContactsFormatted] = useState([]);
+  const [noDataMessage, setNoDataMessage] = useState(""); // Estado para almacenar el mensaje de "no hay datos"
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
   const {storageNavbarTitle}  = useNav();
@@ -27,7 +29,7 @@ const Attachment = () => {
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
 
-
+  
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
   const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
@@ -48,16 +50,16 @@ const Attachment = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/attachments`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/attachment`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/attachment`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/create/attachment`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/attachment/status`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/attachment`;
-
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_CONTACT}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_CONTACT}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_CONTACT}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_CONTACT}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_CONTACT}`;
+  
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchAttachment = async () => {
+    const fetchContacts = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -67,32 +69,32 @@ const Attachment = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de anexo');
+          throw new Error('Ha ocurrido un error al obtener los tipos de sexo');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setAttachments([]);
-          setAttachmentFormatted([]);
-        } else {
-          setAttachments(data.queryResponse);
-          formatAttachments(data.queryResponse);
-          setNoDataMessage('');
-        }
+            setNoDataMessage(data.message);
+            setContacts([]);
+            setContactsFormatted([]);
+          } else {
+            setContacts(data.queryResponse);
+            formatContacts(data.queryResponse);
+            setNoDataMessage("");
+          }
       } catch (error) {
-        console.error('Error al obtener los tipos de anexo', error);
+        console.error('Error al obtener los tipos de sexo', error);
       }
     };
 
-    fetchAttachment();
+    fetchContacts();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatAttachments = (attachments) => {
-    const formatted = attachments.map((attachment) => ({
-      ...attachment,
+  const formatContacts = (contacts) => {
+    const formatted = contacts.map((contact) => ({
+      ...contact
     }));
-    setAttachmentFormatted(formatted);
+    setContactsFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -102,7 +104,7 @@ const Attachment = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_ta);
+    setIdToGet(item.id_contact);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -113,11 +115,11 @@ const Attachment = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_ta);
+    setIdToDelete(item.id_contact);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_ta);
+    setIdToToggle(item.id_contact);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -143,14 +145,14 @@ const Attachment = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Tipo de mensaje" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Contacto" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Tipo de Anexo'}
+          title_modal={'Nuevo Tipo de Contacto'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_ta']}
+          fetchData={['name_contact']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -159,19 +161,19 @@ const Attachment = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Departamento'}
+          title_modal={'Editar Contacto'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_ta']}
+          fetchData={['name_contact']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_attachment"
+          idFetchData="value_contact"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_ta"}
+          fetchData_select={"status_contact"}
         />
       )}
 
@@ -179,7 +181,7 @@ const Attachment = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_ta'}
+          field_name={'id_contact'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -192,22 +194,22 @@ const Attachment = () => {
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {attachmentsFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={attachmentsFormatted}
-              keys={['name_ta']}
-              status_name={['id_ta', 'status_ta']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
+        {contactsFormatted.length > 0 ? (
+                    <PreferencesBodyRow
+                    items={contactsFormatted}
+                    keys={['name_contact']}
+                    status_name={['id_contact', 'status_contact']}
+                    fetchUrl={toggleStatus}
+                    idToToggle={idToToggle}
+                    handleStatusToggle={handleStatusToggle}
+                    handleDependencyToggle={handleDependencyToggle}
+                    handleEdit={handleModalUpdate}
+                    handleModalDelete={handleModalDelete}
+                    handleDelete={handleDelete}
+                  />
           ) : (
             <tr>
-              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
+              <td colSpan="3">{noDataMessage || "No hay datos ingresados"}</td>
             </tr>
           )}
         </tbody>
@@ -216,4 +218,4 @@ const Attachment = () => {
   );
 };
 
-export default Attachment;
+export default Contact;

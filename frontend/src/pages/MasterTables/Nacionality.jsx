@@ -1,31 +1,21 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
-import useNav from '../../../hooks/useNav';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
 import { useLocation } from 'react-router-dom';
+import useNav from '../../hooks/useNav';
 
-const Country = () => {
+const Nacionality = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [countries, setCountries] = useState([]);
-  const [countriesFormatted, setCountriesFormatted] = useState([]);
+  const [nacionalities, setNacionalities] = useState([]);
+  const [nacionalitiesFormatted, setNacionalitiesFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-
-  const { storageNavbarTitle } = useNav();
-
-  const location = useLocation();
-
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
@@ -47,16 +37,26 @@ const Country = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY}`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_COUNTRY}`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_COUNTRY}`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_COUNTRY}`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_COUNTRY}`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_COUNTRY}`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NACIONALITY}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_NACIONALITY}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_NACIONALITY}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_NACIONALITY}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_NACIONALITY}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_NACIONALITY}`;
+  const {storageNavbarTitle}  = useNav();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    storageNavbarTitle(lastPart);
+  }, [location.pathname, storageNavbarTitle]);
+
   
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchCountries = async () => {
+    const fetchNacionalities = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -66,32 +66,32 @@ const Country = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener las ocupaciones');
+          throw new Error('Ha ocurrido un error al obtener las nacionalidades');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setCountries([]);
-          setCountriesFormatted([]);
+          setNacionalities([]);
+          setNacionalitiesFormatted([]);
         } else {
-          setCountries(data.queryResponse);
+          setNacionalities(data.queryResponse);
           formatCountries(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener las ocupaciones', error);
+        console.error('Error al obtener las nacionalidades', error);
       }
     };
 
-    fetchCountries();
+    fetchNacionalities();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatCountries = (countries) => {
-    const formatted = countries.map((country) => ({
-      ...country,
+  const formatCountries = (nacionalities) => {
+    const formatted = nacionalities.map((nacionality) => ({
+      ...nacionality
     }));
-    setCountriesFormatted(formatted);
+    setNacionalitiesFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -101,7 +101,7 @@ const Country = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_country);
+    setIdToGet(item.id_nacionality);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -112,11 +112,11 @@ const Country = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_country);
+    setIdToDelete(item.id_nacionality);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_country);
+    setIdToToggle(item.id_nacionality);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -142,14 +142,14 @@ const Country = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Pais" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Nacionalidad" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nuevo Pais'}
+          title_modal={'Nueva Nacionalidad'}
           labels={['Nombre', 'Abreviacion']}
           placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
           method={'POST'}
-          fetchData={['name_country', 'abbreviation_country']}
+          fetchData={['name_nacionality', 'abbreviation_nacionality']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -158,28 +158,27 @@ const Country = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Pais'}
+          title_modal={'Editar Nacionalidad'}
           labels={['Nombre', 'Abreviacion']}
           placeholders={['Ingrese nombre', 'Ingrese la abreviacion']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_country', 'abbreviation_country']}
+          fetchData={['name_nacionality', 'abbreviation_nacionality']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_country"
+          idFetchData="value_nacionality"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={'status_country'}
+          fetchData_select={"status_nacionality"}
         />
-        
       )}
 
       {toggleModalDelete && (
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_country'}
+          field_name={'id_nacionality'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -192,11 +191,11 @@ const Country = () => {
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {countriesFormatted.length > 0 ? (
+          {nacionalitiesFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={countriesFormatted}
-              keys={['name_country', 'abbreviation_country']}
-              status_name={['id_country', 'status_country']}
+              items={nacionalitiesFormatted}
+              keys={['name_nacionality', 'abbreviation_nacionality']}
+              status_name={['id_nacionality', 'status_nacionality']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -216,4 +215,4 @@ const Country = () => {
   );
 };
 
-export default Country;
+export default Nacionality;

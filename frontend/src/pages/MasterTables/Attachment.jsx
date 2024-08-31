@@ -1,21 +1,32 @@
 import { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import PreferencesTableHeader from '../../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../../components/Table/TablePreferences/PreferencesBodyRow';
+import useAuth from '../../hooks/useAuth';
+import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
+import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
 import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../ModalAdd';
-import ModalUpdate from '../ModalUpdate';
-import ModalDelete from '../ModalDelete';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
-import useNav from '../../../hooks/useNav';
 
-const Nacionality = () => {
+const Attachment = () => {
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [nacionalities, setNacionalities] = useState([]);
-  const [nacionalitiesFormatted, setNacionalitiesFormatted] = useState([]);
+  const [attachments, setAttachments] = useState([]);
+  const [attachmentsFormatted, setAttachmentFormatted] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
 
   // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
+
+  const {storageNavbarTitle}  = useNav();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    storageNavbarTitle(lastPart);
+  }, [location.pathname, storageNavbarTitle]);
+
 
   // MODALES
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
@@ -37,26 +48,16 @@ const Nacionality = () => {
   const { authData } = useAuth();
 
   // VARIABLES CON LAS PETICIONES FETCH
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NACIONALITY}`;
-  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_NACIONALITY}`;
-  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_NACIONALITY}`;
-  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_NACIONALITY}`;
-  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_NACIONALITY}`;
-  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_NACIONALITY}`;
-  const {storageNavbarTitle}  = useNav();
-
-  const location = useLocation();
-
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
-
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_ATTACHMENT}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_ATTACHMENT}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ATTACHMENT}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_ATTACHMENT}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_ATTACHMENT}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_ATTACHMENT}`;
   
   // ARRAY PARA MAPEAR EN LA TABLA
   useEffect(() => {
-    const fetchNacionalities = async () => {
+    const fetchAttachment = async () => {
       try {
         const fetchResponse = await fetch(getAllUrl, {
           method: 'GET',
@@ -66,32 +67,32 @@ const Nacionality = () => {
           },
         });
         if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener las nacionalidades');
+          throw new Error('Ha ocurrido un error al obtener los tipos de anexo');
         }
 
         const data = await fetchResponse.json();
         if (data.queryResponse.length == 0) {
           setNoDataMessage(data.message);
-          setNacionalities([]);
-          setNacionalitiesFormatted([]);
+          setAttachments([]);
+          setAttachmentFormatted([]);
         } else {
-          setNacionalities(data.queryResponse);
-          formatCountries(data.queryResponse);
+          setAttachments(data.queryResponse);
+          formatAttachments(data.queryResponse);
           setNoDataMessage('');
         }
       } catch (error) {
-        console.error('Error al obtener las nacionalidades', error);
+        console.error('Error al obtener los tipos de anexo', error);
       }
     };
 
-    fetchNacionalities();
+    fetchAttachment();
   }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatCountries = (nacionalities) => {
-    const formatted = nacionalities.map((nacionality) => ({
-      ...nacionality
+  const formatAttachments = (attachments) => {
+    const formatted = attachments.map((attachment) => ({
+      ...attachment,
     }));
-    setNacionalitiesFormatted(formatted);
+    setAttachmentFormatted(formatted);
   };
   // ARRAY PARA MAPEAR EN LA TABLA
 
@@ -101,7 +102,7 @@ const Nacionality = () => {
   };
 
   const handleModalUpdate = (item) => {
-    setIdToGet(item.id_nacionality);
+    setIdToGet(item.id_ta);
     setToggleModalUpdate(!toggleModalUpdate);
   };
   // FUNCIONES PARA MANEJAR MODALES
@@ -112,11 +113,11 @@ const Nacionality = () => {
 
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
   const handleDelete = (item) => {
-    setIdToDelete(item.id_nacionality);
+    setIdToDelete(item.id_ta);
   };
 
   const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_nacionality);
+    setIdToToggle(item.id_ta);
   };
   // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
 
@@ -142,14 +143,14 @@ const Nacionality = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Nacionalidad" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Tipo de mensaje" handleModalAdd={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
-          title_modal={'Nueva Nacionalidad'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
+          title_modal={'Nuevo Tipo de Anexo'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_nacionality', 'abbreviation_nacionality']}
+          fetchData={['name_ta']}
           createOne={createOne}
           handleDependencyAdd={handleDependencyAdd}
           handleModalAdd={handleModalAdd}
@@ -158,19 +159,19 @@ const Nacionality = () => {
 
       {toggleModalUpdate && (
         <ModalUpdate
-          title_modal={'Editar Nacionalidad'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la abreviacion']}
+          title_modal={'Editar Departamento'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_nacionality', 'abbreviation_nacionality']}
+          fetchData={['name_ta']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_nacionality"
+          idFetchData="value_attachment"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={onSubmitUpdate}
           handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_nacionality"}
+          fetchData_select={"status_ta"}
         />
       )}
 
@@ -178,7 +179,7 @@ const Nacionality = () => {
         <ModalDelete
           handleModalDelete={handleModalDelete}
           deleteOne={deleteOne}
-          field_name={'id_nacionality'}
+          field_name={'id_ta'}
           idToDelete={idToDelete}
           onSubmitDelete={onSubmitDelete}
         />
@@ -187,15 +188,15 @@ const Nacionality = () => {
       <table className="table__preference">
         <thead className="table__preference__head">
           <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Abreviacion', 'Estado', 'Acciones']} />
+            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
           </tr>
         </thead>
         <tbody className="table__preference__body">
-          {nacionalitiesFormatted.length > 0 ? (
+          {attachmentsFormatted.length > 0 ? (
             <PreferencesBodyRow
-              items={nacionalitiesFormatted}
-              keys={['name_nacionality', 'abbreviation_nacionality']}
-              status_name={['id_nacionality', 'status_nacionality']}
+              items={attachmentsFormatted}
+              keys={['name_ta']}
+              status_name={['id_ta', 'status_ta']}
               fetchUrl={toggleStatus}
               idToToggle={idToToggle}
               handleStatusToggle={handleStatusToggle}
@@ -206,7 +207,7 @@ const Nacionality = () => {
             />
           ) : (
             <tr>
-              <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
+              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
             </tr>
           )}
         </tbody>
@@ -215,4 +216,4 @@ const Nacionality = () => {
   );
 };
 
-export default Nacionality;
+export default Attachment;
