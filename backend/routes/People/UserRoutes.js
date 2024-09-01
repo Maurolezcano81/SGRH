@@ -7,6 +7,7 @@ const avatarUpload = uploadFiles('avatar_url', 'uploads/avatars');
 
 
 const user = new UserController();
+
 const router = express.Router();
 
 

@@ -34,7 +34,7 @@ const UserDataSection = ({
 
           if (fetchResponse.status === 500) {
             setCriticalErrorToggle(true);
-            setCriticalErrorMessage(profilesData.message); // Corregido el nombre de la función
+            setCriticalErrorMessage(profilesData.message);
             return;
           }
 

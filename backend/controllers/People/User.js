@@ -4,18 +4,17 @@ import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
 
 import { comparePwd, encryptPwd } from '../../middlewares/Authorization.js';
 import UserModel from "../../models/People/User.js";
-import DeparmentModel from "../../models/People/Department/Department.js";
-import OccupationModel from "../../models/People/Department/Occupation.js";
+import EntityModel from "../../models/People/People/Entity.js";
 
 class UserController {
   constructor() {
     this.user = new UserModel();
     this.employee = new BaseModel('employee', 'file_employee');
-    this.entity = new BaseModel('entity', 'name_entity');
+    this.entity = new EntityModel();
     this.profile = new BaseModel('profile', 'name_profile');
     this.contact = new BaseModel('contact', 'name_contact');
-    this.department = new DeparmentModel();
-    this.occupation = new OccupationModel();
+    this.department = new BaseModel('department', 'name_entity');
+    this.occupation = new BaseModel('occupation', 'name_occupation');
     this.document = new BaseModel('document', 'name_document');
 
     this.city = new BaseModel('city', 'name_city');
@@ -48,47 +47,95 @@ class UserController {
 
       const { username_user, avatar_user, status_user, haspwdchanged_user, created_at, entity_fk } = getUser[0];
 
-      const getEntity = await this.entity.getOne(entity_fk, 'id_entity');
+      const getEntity = await this.entity.getDataPersonal(entity_fk, 'id_entity');
 
       if (getEntity.length < 1) {
         throw new Error('Error al obtener los datos del usuario');
       }
 
+      const getDocuments = await this.entity.getEntityDocuments(entity_fk);
 
-      const getDepartment = await this.department.getEntityDepartment(entity_fk);
+      const personalData = {
+        entity:{
+        ...getEntity
+        },
+        documents: {
+          ...getDocuments
+        }
+      }
 
-      const getOccupation = await this.occupation.getEntityOccupation(entity_fk);
+      const getContacts = await this.entity.getEntityContacts(entity_fk);
 
-      const department__data = {
-        ...getDepartment,
-      };
+      const getProfile= await this.user.getUserProfile(id_user);
 
-      const occupation__data = {
-        ...getOccupation,
-      };
 
-      const user__data = {
+      const userData = {
+        user:{
         ...getUser,
+        },
+        contact:{
+          ...getContacts
+        },
+        profile:{
+        ...getProfile
+        }
+      }
+
+      const getAddress = await this.entity.getEntityAddress(entity_fk);
+
+      const addressData = {
+        ...getAddress
       };
 
-      const entity__data = {
-        ...getEntity,
-      };
+      const getDepartment = await this.entity.getEntityDepartment(entity_fk);
+
+      const getOccupation = await this.entity.getEntityOccupation(entity_fk);
+
+      const getEmployee = await this.entity.getEntityEmployee(entity_fk);
+
+      const employeeData = {
+        occupation: {
+          ...getOccupation
+        },
+        department:{
+          ...getDepartment
+        },
+        employee:{
+          ...getEmployee
+        }
+      }
 
       const isTheSameUser = id_user === getUser[0].id_user ? true : false;
 
-      const canEdit = profile_fk === 1 || profile_fk === 2 ? true : false;
+      const canChangePwdRrhh = await this.user.canViewModule(id_user, '/rrhh/contraseña/cambiar');
+
+
+      const canChangePwdEmployee = await this.user.canViewModule(id_user, '/personal/contraseña/cambiar');
+
+      let isRrhh;
+      let isEmployee;
+
+      if(canChangePwdRrhh.length > 0){
+        isRrhh = 1;
+      }
+
+      if(canChangePwdEmployee.length > 0){
+        isEmployee = 1;
+      }
+
+      const canEdit = isRrhh === 1 || isEmployee === 1 ? true : false;
 
       const permissions__data = {
         isTheSameUser: isTheSameUser,
         canEdit: canEdit,
       };
+
       res.status(200).json({
         message: 'Perfil obtenido con exito',
-        department__data,
-        occupation__data,
-        user__data,
-        entity__data,
+        userData,
+        personalData,
+        addressData,
+        employeeData,
         permissions__data: permissions__data,
       });
 

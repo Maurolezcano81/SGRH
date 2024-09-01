@@ -46,6 +46,19 @@ class UserModel extends BaseModel {
       throw new Error(`Error al `);
     }
   }
+
+  async getUserProfile(id_user) {
+    try {
+        const query = "SELECT name_profile from user u join profile p on u.profile_fk = p.id_profile where id_user = ?";
+
+        const [results] = await this.conn.promise().query(query, [id_user]);
+
+        return results;
+    } catch (error) {
+        console.error(`Error en modelo de User: ` + error);
+        throw new Error(`Error al obtener los datos del usuario`);
+    }
+}
 }
 
 export default UserModel
