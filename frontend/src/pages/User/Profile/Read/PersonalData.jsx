@@ -1,3 +1,5 @@
+import Edit from '../../../../assets/Icons/Preferences/Edit.png';
+
 const PersonalData = ({ personalData }) => {
     const entity = personalData?.entity?.["0"]; 
     const documents = Object.values(personalData?.documents || {});

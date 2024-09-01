@@ -8,6 +8,7 @@ import PersonalData from './Read/PersonalData';
 import UserData from './Read/UserData';
 import AddressData from './Read/AddressData';
 import EmployeeData from './Read/EmployeeData';
+import Edit from '../../../assets/Icons/Preferences/Edit.png'
 
 const Profile = () => {
   const profileURL = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USER_PROFILE}`
@@ -85,25 +86,24 @@ const Profile = () => {
 
   return (
     <div className="container__profile">
-      {userData && user && (
-        <img
-          src={profilePicture}
-          alt="Avatar"
-        />
-      )}
       <div className="container__title-form">
         <h2>Perfil de Empleado</h2>
       </div>
       <div className="profile__header">
         <div className="profile__header__container">
           <div className="profile__img__container">
-            <img src={`${process?.env.SV_HOST}${process?.env.SV_PORT}${process?.env.SV_ADDRESS}${userData[0]?.avatar_user}`} alt="" />
+            {userData && user && (
+              <img
+                src={profilePicture}
+                alt="Avatar"
+              />
+            )}
           </div>
           {personalData?.entity?.[0] ? (
             <div className="profile__personal__data__container">
               <h2>{`${personalData.entity[0].name_entity} ${personalData.entity[0].lastname_entity}`}</h2>
-              <p>{personalData.entity[0].name_occupation}</p>
-              <p>{personalData.entity[0].name_department}</p>
+              <p>{occupation?.name_occupation}</p>
+              <p>{department?.name_department}</p>
             </div>
           ) : (
             <p>No hay datos personales disponibles.</p>

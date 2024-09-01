@@ -1143,6 +1143,7 @@ input {
 
 .profile__img__container {
   box-shadow: var(--shadow-a-25-b-02);
+  max-width: 50%;
 }
 
 .profile__personal__data__container {
@@ -1253,7 +1254,7 @@ input {
   }
 
   .profile__personal__data__container{
-    align-items: flex-start;
+    align-items: flex-end;
     margin-left: 5rem;
   }
 
@@ -1337,6 +1338,10 @@ input {
 
   .container__section {
     width: 100%;
+  }
+
+  .profile__personal__data__container {
+    height: 20rem;
   }
 }
 
