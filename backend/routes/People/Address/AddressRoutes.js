@@ -22,9 +22,6 @@ router.patch('/address/state', state.updateState.bind(state)); // Actualizar un 
 router.patch('/address/state/status', state.toggleStatusState.bind(state)); // Cambiar el estado de un estado
 router.delete('/address/state', state.deleteState.bind(state)); // Eliminar un estado por ID
 
-// Ruta para obtener ciudades por estado
-router.post('/address/cities/by-state', city.getCitiesByState.bind(city));
-
 const AddressRoutes = {
     router
 };

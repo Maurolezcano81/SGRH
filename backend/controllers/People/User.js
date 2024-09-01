@@ -4,6 +4,9 @@ import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
 
 import { comparePwd, encryptPwd } from '../../middlewares/Authorization.js';
 import UserModel from "../../models/People/User.js";
+import DeparmentModel from "../../models/People/Department/Department.js";
+import OccupationModel from "../../models/People/Department/Occupation.js";
+
 class UserController {
   constructor() {
     this.user = new UserModel();
@@ -11,8 +14,8 @@ class UserController {
     this.entity = new BaseModel('entity', 'name_entity');
     this.profile = new BaseModel('profile', 'name_profile');
     this.contact = new BaseModel('contact', 'name_contact');
-    this.department = new BaseModel('department', 'name_department');
-    this.occupation = new BaseModel('occupation', 'name_occupation');
+    this.department = new DeparmentModel();
+    this.occupation = new OccupationModel();
     this.document = new BaseModel('document', 'name_document');
 
     this.city = new BaseModel('city', 'name_city');
@@ -25,6 +28,75 @@ class UserController {
 
   }
 
+
+  async getProfileUserData(req, res) {
+    const { value_user } = req.body;
+    const { id_user, profile_fk } = req;
+
+    try {
+      if (isInputEmpty(value_user)) {
+        res.status(403).json({
+          message: 'No tiene permisos',
+        });
+      }
+
+      const getUser = await this.user.getOne(value_user, 'username_user');
+
+      if (getUser.length < 1) {
+        throw new Error('Error al obtener los datos del usuario');
+      }
+
+      const { username_user, avatar_user, status_user, haspwdchanged_user, created_at, entity_fk } = getUser[0];
+
+      const getEntity = await this.entity.getOne(entity_fk, 'id_entity');
+
+      if (getEntity.length < 1) {
+        throw new Error('Error al obtener los datos del usuario');
+      }
+
+
+      const getDepartment = await this.department.getEntityDepartment(entity_fk);
+
+      const getOccupation = await this.occupation.getEntityOccupation(entity_fk);
+
+      const department__data = {
+        ...getDepartment,
+      };
+
+      const occupation__data = {
+        ...getOccupation,
+      };
+
+      const user__data = {
+        ...getUser,
+      };
+
+      const entity__data = {
+        ...getEntity,
+      };
+
+      const isTheSameUser = id_user === getUser[0].id_user ? true : false;
+
+      const canEdit = profile_fk === 1 || profile_fk === 2 ? true : false;
+
+      const permissions__data = {
+        isTheSameUser: isTheSameUser,
+        canEdit: canEdit,
+      };
+      res.status(200).json({
+        message: 'Perfil obtenido con exito',
+        department__data,
+        occupation__data,
+        user__data,
+        entity__data,
+        permissions__data: permissions__data,
+      });
+
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async createUser(req, res) {
     const avatarUrl = req.file;
@@ -336,7 +408,7 @@ class UserController {
 
       if (!isPwdCorrect) {
         if (id_user === checkPwdInDb[0].id_user && pwd_actual === checkPwdInDb[0].pwd_user) {
-          const changePwdEmployee = await this.user.updateOne({pwd_user: hashPwd}, ["id_user", id_user]);
+          const changePwdEmployee = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
 
           return res.status(200).json({
             message: 'Cambio de contraseña finalizado de manera exitosa',
@@ -349,7 +421,7 @@ class UserController {
         }
       }
 
-      const changePwdEmployee = await this.user.updateOne({pwd_user: hashPwd}, ["id_user", id_user]);
+      const changePwdEmployee = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
 
       return res.status(200).json({
         message: 'Cambio de contraseña finalizado de manera exitosa',
@@ -363,149 +435,157 @@ class UserController {
     }
   }
 
-   
-async changePwdAdmin(req, res){
-  const { id_user, pwd_user} = req.body;
-  try {
 
-    if (isInputEmpty(id_user) || isInputEmpty(pwd_user)) {
-      throw new Error('Debes completar todos los campos');
-    }
+  async changePwdAdmin(req, res) {
+    const { id_user, pwd_user } = req.body;
+    try {
 
-    const checkPwdInDb = await this.user.updateOne({pwd_user: hashPwd}, ["id_user", id_user]);
+      if (isInputEmpty(id_user) || isInputEmpty(pwd_user)) {
+        throw new Error('Debes completar todos los campos');
+      }
 
-    if (checkPwdInDb.length < 1) {
-      throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
-    }
+      const checkPwdInDb = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
 
-    const hashPwd = await encryptPwd(pwd_user);
+      if (checkPwdInDb.length < 1) {
+        throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
+      }
 
-    const changePwdAdmin = await this.user.updateOne({pwd_user: hashPwd}, ["id_user", id_user]);
+      const hashPwd = await encryptPwd(pwd_user);
 
-    return res.status(200).json({
-      message: 'Cambio de contraseña finalizado de manera exitosa',
-      changePwdAdmin,
-    });
-  } catch (error) {
-    console.error('Ha ocurrido un error en controlador de ' + error);
-    res.status(401).json({
-      message: error.message,
-    });
-  }
-  
-}
+      const changePwdAdmin = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
 
-
-async getDataUserForProfile(req,res){
-  const { value_user } = req.body;
-  const { user } = req;
-  try {
-    if (isInputEmpty(value_user)) {
-      res.status(403).json({
-        message: 'No tiene permisos',
+      return res.status(200).json({
+        message: 'Cambio de contraseña finalizado de manera exitosa',
+        changePwdAdmin,
+      });
+    } catch (error) {
+      console.error('Ha ocurrido un error en controlador de ' + error);
+      res.status(401).json({
+        message: error.message,
       });
     }
 
-    const getUser = await this.user.getOne(value_user, "username_user");
-
-    if (getUser.length < 1) {
-      throw new Error('Error al obtener los datos del usuario');
-    }
-
-    const { username_user, avatar_user, status_user, haspwdchanged_user, created_at, entity_fk } = getUser[0];
-
-    const getEntity = await this.entity.getOne(entity_fk, "id_entity");
-
-    if (getEntity.length < 1) {
-      throw new Error('Error al obtener los datos del usuario');
-    }
-
-    const getDepartment = await this.department.getOne(entity_fk, "entity_fk");
-
-    const getOccupation = await this.occupation.getOne(entity_fk, "entity_fk");
-
-    const department__data = {
-      ...getDepartment,
-    };
-
-    const occupation__data = {
-      ...getOccupation,
-    };
-
-    const user__data = {
-      ...getUser,
-    };
-
-    const entity__data = {
-      ...getEntity,
-    };
-
-    const isTheSameUser = user.userId === getUser[0].id_user ? true : false;
-
-    const canEdit = user.profile_fk === 1 || user.profile_fk === 2 ? true : false;
-
-    const permissions__data = {
-      isTheSameUser: isTheSameUser,
-      canEdit: canEdit,
-    };
-    res.status(200).json({
-      message: 'Perfil obtenido con exito',
-      department__data,
-      occupation__data,
-      user__data,
-      entity__data,
-      permissions__data: permissions__data,
-    });
-  } catch (error) {
-    console.log(error);
   }
-}
 
-async hasToChangePwd(req, res){
-  try {
-    const { user } = req;
+  async hasToChangePwd(req, res) {
+    try {
+      const { id_user } = req;
 
-    const results = await this.user.hasToChangePwd(user.userId);
+      const results = await this.user.getOne(id_user, 'id_user');
 
-    console.log(results)
+      if (results.length < 1) {
+        return res.status(422).json({
+          message: 'Ha ocurrido un error',
+        });
+      }
 
-    if (results.length < 1) {
-      return res.status(422).json({
-        message: 'Ha ocurrido un error',
-      });
-    }
+      if (results[0].haspwdchanged_user === 0) {
+        return res.status(200).json({
+          haspwdchanged: true,
+        });
+      }
 
-    if (results[0].haspwdchanged_user === 0) {
       return res.status(200).json({
         haspwdchanged: false,
       });
+    } catch (error) {
+      console.error('Error al comprobar el cambio de contraseña del usuario:', error);
+      res.status(500).json({ message: 'Error al comprobar el cambio de contraseña del usuario', group: 'alert' });
     }
-
-    return res.status(200).json({
-      haspwdchanged: true,
-    });
-  } catch (error) {
-    console.error('Error al comprobar el cambio de contraseña del usuario:', error);
-    res.status(500).json({ message: 'Error al comprobar el cambio de contraseña del usuario', group: 'alert' });
   }
-}
 
-async canViewModule(req, res){
-  const { user } = req;
-  const { urlToCheck } = req.body;
+  async canViewModule(req, res) {
+    const { id_user } = req;
+    const { urlToCheck } = req.body;
 
-  try {
-    const results = await this.user.canViewModule(user.userId, urlToCheck);
-    if (results.length > 0) {
-      res.status(200).json({ message: 'El usuario tiene permisos para ver este módulo' });
-    } else {
-      res.status(403).json({ message: 'El usuario no tiene permisos para ver este módulo' });
+    try {
+      const results = await this.user.canViewModule(id_user, urlToCheck);
+      if (results.length > 0) {
+        res.status(200).json({ message: 'El usuario tiene permisos para ver este módulo' });
+      } else {
+        res.status(403).json({ message: 'El usuario no tiene permisos para ver este módulo' });
+      }
+    } catch (error) {
+      console.error('Error al verificar permisos:', error);
+      res.status(500).json({ message: 'Error al verificar permisos del usuario' });
     }
-  } catch (error) {
-    console.error('Error al verificar permisos:', error);
-    res.status(500).json({ message: 'Error al verificar permisos del usuario' });
   }
-}
+
+  async changePwdEmployee(req, res) {
+    const { id_user, pwd_new, pwd_actual } = req.body;
+    try {
+      if (isInputEmpty(id_user) || isInputEmpty(pwd_new) || isInputEmpty(pwd_actual)) {
+        throw new Error('Debes completar todos los campos');
+      }
+
+      const checkPwdInDb = await this.user.getOne(id_user, 'id_user');
+
+      if (checkPwdInDb.length < 1) {
+        throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
+      }
+
+      const isPwdCorrect = await comparePwd(pwd_actual, checkPwdInDb[0].pwd_user);
+      const hashPwd = await encryptPwd(pwd_new);
+
+      if (!isPwdCorrect) {
+        if (id_user === checkPwdInDb[0].id_user && pwd_actual === checkPwdInDb[0].pwd_user) {
+          const changePwdEmployee = await this.user.changePwdEmployee(id_user, hashPwd);
+
+          return res.status(200).json({
+            message: 'Cambio de contraseña finalizado de manera exitosa',
+            changePwdEmployee,
+          });
+        } else {
+          return res.status(401).json({
+            message: 'La contraseña actual es incorrecta',
+          });
+        }
+      }
+
+      const changePwdEmployee = await this.user.changePwdEmployee(id_user, hashPwd);
+
+      return res.status(200).json({
+        message: 'Cambio de contraseña finalizado de manera exitosa',
+        changePwdEmployee,
+      });
+    } catch (error) {
+      console.error('Ha ocurrido un error en controlador de ' + error);
+      res.status(401).json({
+        message: error.message,
+      });
+    }
+  };
+
+  async changePwdAdmin(req, res) {
+    const { id_user, pwd_user } = req.body;
+    try {
+
+      if (isInputEmpty(id_user) || isInputEmpty(pwd_user)) {
+        throw new Error('Debes completar todos los campos');
+      }
+
+      const checkPwdInDb = await this.user.getOne(id_user, 'id_user');
+
+      if (checkPwdInDb.length < 1) {
+        throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
+      }
+
+      const hashPwd = await encryptPwd(pwd_user);
+
+      const changePwdAdmin = await this.changePwdAdmin(id_user, hashPwd);
+
+      return res.status(200).json({
+        message: 'Cambio de contraseña finalizado de manera exitosa',
+        changePwdAdmin,
+      });
+    } catch (error) {
+      console.error('Ha ocurrido un error en controlador de ' + error);
+      res.status(401).json({
+        message: error.message,
+      });
+    }
+  };
+
 }
 
 

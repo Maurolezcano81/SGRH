@@ -9,7 +9,6 @@ class BaseModel {
         this.defaultOffsetPagination = 0;
         this.defaultOrderPagination = 'ASC';
         this.defaultOrderBy = defaultOrderBy
-        this.testConnection();
     }
 
     async getAll() {

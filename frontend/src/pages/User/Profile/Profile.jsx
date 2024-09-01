@@ -4,8 +4,11 @@ import ButtonWhiteWithShadow from '../../../components/Buttons/ButtonWhiteWithSh
 import useAuth from '../../../hooks/useAuth';
 import ChangePwdEmployee from '../../../components/Others/ChangePwdEmployee';
 import ChangePwdAdmin from '../../../components/Others/ChangePwdAdmin';
+import PersonalData from './PersonalData';
 
 const Profile = () => {
+  const profileURL = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USER_PROFILE}`
+
   const { authData } = useAuth();
   const location = useLocation();
   const { value_user } = location.state || {};
@@ -21,41 +24,46 @@ const Profile = () => {
 
   useEffect(
     () => {
-      const DataProfile = async () => {
-        if (!authData.token) {
-          return console.log('No token');
-        }
-        const fetchResponse = await fetch('http://localhost:4500/api/profile', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-          body: JSON.stringify({
-            value_user: value_user,
-          }),
-        });
 
-        const fetchData = await fetchResponse.json();
+      try {
+        const DataProfile = async () => {
+          if (!authData.token) {
+            return console.log('No token');
+          }
+          const fetchResponse = await fetch(profileURL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authData.token}`,
+            },
+            body: JSON.stringify({
+              value_user: value_user,
+            }),
+          });
 
-        if (fetchResponse.status != 200) {
-          return console.log(fetchResponse.status);
-        }
+          const fetchData = await fetchResponse.json();
 
-        setUserData(fetchData.user__data);
-        setEntityData(fetchData.entity__data);
-        setDepartmentData(fetchData.department__data);
-        setOccupationsData(fetchData.occupation__data);
-        setPermissionsData([fetchData.permissions__data]);
-      };
+          if (fetchResponse.status != 200) {
+            return console.log(fetchResponse.status);
+          }
 
-      DataProfile();
+          setUserData(fetchData.user__data);
+          setEntityData(fetchData.entity__data);
+          setDepartmentData(fetchData.department__data);
+          setOccupationsData(fetchData.occupation__data);
+          setPermissionsData([fetchData.permissions__data]);
+        };
+
+        DataProfile();
+      } catch (error) {
+        console.log(error)
+      }
+
     },
     [authData.token, value_user, permissionsData[0]?.canEdit, permissionsData[0]?.isTheSameUser],
     userData[0]?.id_user
   );
 
-  console.log(authData);
 
   const formatted = (array) => {
     const format = array.map((item) => ({
@@ -66,13 +74,14 @@ const Profile = () => {
 
   return (
     <div className="container__profile">
+      <img src={`${process?.env.SV_HOST}${process?.env.SV_PORT}${process?.env.SV_ADDRESS}${userData[0]?.avatar_user}`} alt="" />
       <div className="container__title-form">
         <h2>Perfil de Empleado</h2>
       </div>
       <div className="profile__header">
         <div className="profile__header__container">
           <div className="profile__img__container">
-            <img src={`${process?.env.SV_IMAGE_URL}${userData[0]?.avatar_user}`} alt="" />
+            <img src={`${process?.env.SV_HOST}${process?.env.SV_PORT}${process?.env.SV_ADDRESS}${userData[0]?.avatar_user}`} alt="" />
           </div>
           <div className="profile__personal__data__container">
             <h2>{`${entityData[0]?.name_entity} ${entityData[0]?.lastname_entity}`}</h2>
@@ -103,14 +112,14 @@ const Profile = () => {
             ) : null}
           </div>
         </div>
-        {toggleChangePwd && ( (authData.profile_fk === 1 || authData.profile_fk === 2 || authData.profile_fk === 3 || authData.profile_fk === 4) && permissionsData[0]?.isTheSameUser === true) && (
+        {toggleChangePwd && ((authData.profile_fk === 1 || authData.profile_fk === 2 || authData.profile_fk === 3 || authData.profile_fk === 4) && permissionsData[0]?.isTheSameUser === true) && (
           <ChangePwdEmployee
             handleChangePwd={() => setToggleChangePwd(!toggleChangePwd)}
             idUserToChange={userData[0]?.id_user}
           />
         )}
 
-        {toggleChangePwd && ((authData.profile_fk === 1 || authData.profile_fk === 2)  && permissionsData[0]?.isTheSameUser === false) && (
+        {toggleChangePwd && ((authData.profile_fk === 1 || authData.profile_fk === 2) && permissionsData[0]?.isTheSameUser === false) && (
           <ChangePwdAdmin
             handleChangePwd={() => setToggleChangePwd(!toggleChangePwd)}
             idUserToChange={userData[0]?.id_user}
@@ -118,19 +127,12 @@ const Profile = () => {
         )}
       </div>
       <div className="group__container">
-        <div className="section__container">
-          <div className="container__title-form">
-            <h2>Información de trabajo</h2>
-          </div>
-          <div className="input__form__div">
-            <p className="input__form__div__label">Puesto de trabajo </p>
-            <p className="input__form__div__input">{occupationsData[0]?.name_occupation}</p>
-          </div>
-          <div className="input__form__div">
-            <p className="input__form__div__label">Departamento</p>
-            <p className="input__form__div__input">{departmentData[0]?.name_department}</p>
-          </div>
-        </div>
+
+        <PersonalData
+          occupation_data={occupationsData}
+          department_data={departmentData}
+          entity_data={entityData}
+        />
 
         <div className="section__container">
           <div className="container__title-form">

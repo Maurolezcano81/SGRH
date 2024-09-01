@@ -20,7 +20,6 @@ import ProfileRoutes from "./System/Profile/ProfileRoutes.js";
 import ModuleRoutes from "./System/Profile/ModuleRoutes.js";
 
 app.use(SubjectRoutes.router)
-app.use(AddressRoutes.router)
 app.use(AttachmentRoutes.router)
 app.use(ContactRoutes.router);
 app.use(CountryRoutes.router);

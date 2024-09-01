@@ -25,6 +25,7 @@ import { decodeToken, decodeTokenForAdministrator, verifyToken } from './middlew
 import UserRoutes from './routes/People/UserRoutes.js';
 import StateRoutes from './routes/People/Address/AddressRoutes.js';
 import checkPermissionRoutes from './routes/Auth/CheckPermissionRoutes.js';
+import EmployeeRoutes from './routes/EmployeeRoutes.js';
 
 app.use('/api', UserCredentialsRoutes.router);
 
@@ -38,8 +39,8 @@ app.use(
 );
 
 
-app.use('/api', checkPermissionRoutes.router);
-app.use('/api/profile', verifyToken, decodeToken);
+app.use('/api', verifyToken, decodeToken, checkPermissionRoutes.router);
+app.use('/api/user', verifyToken, decodeToken, EmployeeRoutes.router);
 
 const URL = 'http:localhost:'
 const PORT = process.env.SV_PORT

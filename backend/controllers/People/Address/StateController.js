@@ -191,6 +191,9 @@ class StateControllers {
 
   async getStatesByCountry(req, res) {
     const { country_fk } = req.body;
+
+    console.log(country_fk);
+    
     try {
       if (isInputEmpty(country_fk)) {
         throw new Error('Debe completar todos los campos de Domicilio');
@@ -203,7 +206,9 @@ class StateControllers {
         });
       }
 
-      const queryResponse = await this.model.getAllPaginationWhere(10, 0, 'name_state', 'ASC', { country_fk });
+      const queryResponse = await this.model.getAllPaginationWhere(1000, 0, 'name_state', 'ASC', { country_fk: country_fk });
+
+      console.log(queryResponse);
 
       return res.status(200).json({
         message: 'Provincias obtenidas correctamente',

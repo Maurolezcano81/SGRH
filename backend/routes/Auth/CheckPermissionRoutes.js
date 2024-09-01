@@ -9,9 +9,9 @@ import navigationMenu from "../../controllers/System/Navbar/NavigationMenuContro
 const user = new UserController();
 const menu = new navigationMenu(); 
 
-router.post('/checkPermission', verifyToken, decodeToken, user.canViewModule.bind(user));
-router.post('/menu/parents', verifyToken, decodeToken, menu.getMenuParentsByIdProfile.bind(menu));
-router.post('/menu/childrens', verifyToken, decodeToken, menu.getMenuChildrensByIdProfileAndIdParent.bind(menu));
+router.post('/checkPermission', user.canViewModule.bind(user));
+router.post('/menu/parents', menu.getMenuParentsByIdProfile.bind(menu));
+router.post('/menu/childrens', menu.getMenuChildrensByIdProfileAndIdParent.bind(menu));
 
 const checkPermissionRoutes = {
   router,

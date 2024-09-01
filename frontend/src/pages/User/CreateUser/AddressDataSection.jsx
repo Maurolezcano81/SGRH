@@ -9,9 +9,9 @@ const AddressdataSection = ({ setAddressData, error, setCriticalErrorToggle, set
 
   const { authData } = useAuth();
 
-  const getCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/countries`;
-  const getStatesByCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/address/states`;
-  const getCitiesByState = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/address/cities`;
+  const getCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY}`;
+  const getStatesByCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.STATES_BY_COUNTRY}`;
+  const getCitiesByState = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.CITIES_BY_STATE}`;
 
   useEffect(() => {
     const fetchCountriesRequest = async () => {
