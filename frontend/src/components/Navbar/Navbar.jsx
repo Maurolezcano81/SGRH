@@ -1,10 +1,7 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
 import useAuth from '../../hooks/useAuth';
 import useNav from '../../hooks/useNav';
-
 import Profile from './Profile';
 import HeaderButtons from './HeaderButtons';
 import NavbarContent from './NavbarContent';
@@ -12,20 +9,18 @@ import Hamburguer from '../../assets/Icons/Navbar/hamburguer.png';
 
 const Navbar = () => {
   const { authData, deleteAuthData } = useAuth();
-  const Navigate = useNavigate();
-
+  const navigate = useNavigate();
   const { navbarTitle } = useNav();
-
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
   const toggleNavbar = () => {
-    setIsNavbarOpen(!isNavbarOpen);
+    setIsNavbarOpen(prevState => !prevState);
   };
 
   const handleLogout = () => {
     deleteAuthData();
     localStorage.removeItem('token');
-    Navigate('/');
+    navigate('/');
   };
 
   return (
@@ -33,7 +28,7 @@ const Navbar = () => {
       <div className={`navbar__container-open ${isNavbarOpen ? 'hidden' : ''}`}>
         <div>
           <button onClick={toggleNavbar} className="navbar__collapsed-button">
-            <img src={Hamburguer} alt="" />
+            <img src={Hamburguer} alt="Menu" />
           </button>
         </div>
         {navbarTitle && (
@@ -52,13 +47,9 @@ const Navbar = () => {
             name={`${authData?.name_entity} ${authData?.lastname_entity}`}
             occupation={authData?.name_occupation}
           />
-          <HeaderButtons username={authData?.username_user} />
+          <HeaderButtons username={authData?.id_user} />
         </div>
-
-
         <NavbarContent />
-
-        
         <div className="navbar__footer">
           <button onClick={handleLogout} className="button__navbar">
             Cerrar Sesión

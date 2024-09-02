@@ -628,6 +628,14 @@ input {
 .table__preference__head tr th {
 }
 
+.input__form__div__container {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: .5rem;
+  min-width: 50%;
+}
 .table__preference__body tr td {
   text-align: center;
   vertical-align: middle;
@@ -1246,7 +1254,9 @@ input {
     height: 50%;
   }
   .group__container {
-    width: 50%;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
     flex-direction: row;
   }
   .profile__header {

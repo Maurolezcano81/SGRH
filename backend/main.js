@@ -9,13 +9,19 @@ const app = express();
 const staticImagesAvatarsPath = path.join('uploads/avatars');
 
 // Servir archivos estáticos desde la carpeta de imágenes
-app.use('/uploads/avatars/', express.static(staticImagesAvatarsPath));
+app.use('/api/uploads/avatars/', express.static(staticImagesAvatarsPath));
 
-
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
+
+
 
 dotenv.config();
 

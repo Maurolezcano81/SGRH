@@ -1,59 +1,94 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import Spinner from '../components/Spinner';
 import AlertErrorNoAuth from '../components/Alerts/AlertErrorNoAuth';
 import Warning from '../components/Alerts/Warning';
-
-const Navbar = lazy(() => import('../components/Navbar/Navbar'));
+import Navbar from '../components/Navbar/Navbar';
 
 const AppLayout = () => {
   const navigate = useNavigate();
-  const { authData } = useAuth();
+  const { authData, storageAuthData } = useAuth();
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isTokenChecked, setIsTokenChecked] = useState(false);
-  const [showPwdChangedModal, setShowPwdChangedModal] = useState(false); // Estado para controlar el modal específico
+  const [showPwdChangedModal, setShowPwdChangedModal] = useState(false);
 
   const urlCheckPermission = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_CANMODULE}`;
   const urlCheckHasToPwdChanged = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_CANPWD}`;
+  const urlCheckToken = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.CHECK_USER_TOKEN}`;
 
   const location = useLocation();
-  const pathActually = location;
-  const storedToken = JSON.parse(localStorage.getItem('token'));
+  const pathActually = location.pathname;
+
+  const local = JSON.parse(localStorage.getItem('token'));
+
+  const token = local.token;
 
   useEffect(() => {
-    const checkTokenAvailability = () => {
-      if (authData.token || storedToken) {
-        setIsTokenChecked(true);
-      } else {
+    const checkTokenAvailability = async () => {
+      // Verificar si hay token antes de proceder
+      if (!token) {
         setShowErrorMessage(true);
         setErrorMessage('Primero debes iniciar sesión');
         setIsLoading(false);
+  
         setTimeout(() => {
           navigate('/');
           setShowErrorMessage(false);
         }, 3000);
+        return;
+      }
+  
+      setIsTokenChecked(true);
+  
+      try {
+        // Llamada a la API para verificar el token
+        const response = await fetch(urlCheckToken, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Primero debes iniciar sesión');
+        }
+  
+        const fetchData = await response.json();
+        const currentLocalToken = JSON.parse(localStorage.getItem('token'));
+  
+        // Comparar token actual con el nuevo token y actualizar solo si es necesario
+        if (currentLocalToken.token !== fetchData.queryResponse.token) {
+          storageAuthData(fetchData.queryResponse); // Actualizar el contexto
+          localStorage.setItem('token', JSON.stringify(fetchData.queryResponse)); // Actualizar localStorage solo si ha cambiado
+        }
+  
+      } catch (error) {
+        setShowErrorMessage(true);
+        setErrorMessage(error.message || 'Error al verificar el token');
+        setIsLoading(false);
       }
     };
-
+  
     checkTokenAvailability();
-  }, [authData.token, storedToken]);
+  }, [token, authData, navigate, storageAuthData, urlCheckToken]);
+
 
   useEffect(() => {
-    const fetchPermissions = async () => {
-      if (!isTokenChecked) return;
+    if (!isTokenChecked) return;
 
+    const fetchPermissions = async () => {
       try {
-        const token = authData.token || storedToken;
         const fetchResponse = await fetch(urlCheckPermission, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ urlToCheck: pathActually.pathname }),
+          body: JSON.stringify({ urlToCheck: pathActually }),
         });
 
         const fetchData = await fetchResponse.json();
@@ -81,12 +116,12 @@ const AppLayout = () => {
     };
 
     fetchPermissions();
-  }, [authData.token, navigate, pathActually.pathname, storedToken, urlCheckPermission, isTokenChecked]);
+  }, [isTokenChecked, pathActually, token]); // Asegúrate de incluir el token y otros valores necesarios en las dependencias.
 
   useEffect(() => {
     const checkHasPwdChanged = async () => {
+
       try {
-        const token = authData.token || storedToken;
         const fieldResponse = await fetch(urlCheckHasToPwdChanged, {
           method: 'POST',
           headers: {
@@ -105,7 +140,7 @@ const AppLayout = () => {
     };
 
     checkHasPwdChanged();
-  }, [authData.token]);
+  }, [local.profile_fk, urlCheckHasToPwdChanged]);
 
   if (isLoading) {
     return <Spinner />;
@@ -116,23 +151,21 @@ const AppLayout = () => {
   };
 
   const goToChangePwd = () => {
-    navigate('profile', { state: { value_user: authData.username_user } });
+    navigate('profile', { state: { value_user: authData.id_user } });
     setShowPwdChangedModal(false);
   };
+
   return (
     <Suspense fallback={<Spinner />}>
       <Navbar />
       {showErrorMessage && <AlertErrorNoAuth errorMessage={errorMessage} />}
       {showPwdChangedModal && (
         <Warning
-          message="Antes de continuar sugerimos cambiar la contraseña
-para evitar ingresos indeseados."
+          message="Antes de continuar sugerimos cambiar la contraseña para evitar ingresos indeseados."
           redirectFunction={goToChangePwd}
           skipFunction={closeModalInformattionMessage}
         />
       )}
-      {/* FALTA AGREGAR BOTON PARA REDIRECCIONAR A PAGINA */}
-
       <main>
         <Outlet />
       </main>

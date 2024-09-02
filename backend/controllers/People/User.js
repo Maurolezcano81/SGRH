@@ -1,8 +1,8 @@
 import BaseModel from "../../models/BaseModel.js";
 import fs from 'fs';
-import { isInputEmpty, isNotDate } from '../../middlewares/Validations.js';
+import { isInputEmpty, isNotAToZ, isNotDate, isNotNumber } from '../../middlewares/Validations.js';
 
-import { comparePwd, encryptPwd } from '../../middlewares/Authorization.js';
+import { comparePwd, encryptPwd,createToken } from '../../middlewares/Authorization.js';
 import UserModel from "../../models/People/User.js";
 import EntityModel from "../../models/People/People/Entity.js";
 
@@ -25,13 +25,91 @@ class UserController {
     this.entityDepartmentOccupation = new BaseModel('entity_department_occupation', 'id_edc');
     this.entityDocument = new BaseModel('entity_document', 'id_ed');
 
+    this.nameFieldId = 'id_user';
   }
 
+  async checkToken(req, res) {
+    const { id_user } = req;
+
+    const userDataLogin = await this.user.getUserDataLogin(id_user);
+
+    const dataToToken = {
+      userId: userDataLogin.id_user,
+      profile_fk: userDataLogin.profile_fk,
+    };
+
+    const queryResponse = {
+      ...userDataLogin,
+      token: createToken(dataToToken),
+    };
+
+    return res.status(200).json({
+      message: "Sesion verificada",
+      queryResponse
+    })
+  }
+
+  async updateProfile(req, res) {
+    const { id_user, profile_fk } = req.body;
+
+    if (isNotNumber(profile_fk)) {
+      return res.status(403).json({
+        message: "Los datos del tipo de permiso son incorrectos, intente nuevamente actualizando la pagina"
+      })
+    }
+
+    if (isNotNumber(id_user)) {
+      return res.status(403).json({
+        message: "Los datos de la persona a actualizar son incorrectos, intente nuevamente actualizando la pagina"
+      })
+    }
+
+    const update = await this.user.updateOne({ id_user: id_user, profile_fk: profile_fk }, [this.nameFieldId, id_user]);
+
+    if (update.affectedRows < 1) {
+      return res.status(403).json({
+        message: "No se ha podido actualizar"
+      })
+    }
+
+    return res.status(200).json({
+      message: "Nombre actualizado correctamente"
+    })
+  }
+
+  async updateUsername(req, res) {
+    const { id_user, username_user } = req.body;
+
+    if (isNotNumber(id_user)) {
+      return res.status(403).json({
+        message: "Los datos de la persona a actualizar son incorrectos, intente nuevamente actualizando la pagina"
+      })
+    }
+
+    if (isInputEmpty(username_user)) {
+      return res.status(403).json({
+        message: "Debe completar todos los campos"
+      })
+    }
+
+    const update = await this.user.updateOne({ username_user: username_user }, [this.nameFieldId, id_user]);
+
+    if (update.affectedRows < 1) {
+      return res.status(403).json({
+        message: "No se ha podido actualizar"
+      })
+    }
+
+    return res.status(200).json({
+      message: "Nombre actualizado correctamente"
+    })
+  }
 
   async getProfileUserData(req, res) {
     const { value_user } = req.body;
     const { id_user, profile_fk } = req;
 
+    console.log(value_user);
     try {
       if (isInputEmpty(value_user)) {
         res.status(403).json({
@@ -39,7 +117,7 @@ class UserController {
         });
       }
 
-      const getUser = await this.user.getOne(value_user, 'username_user');
+      const getUser = await this.user.getOne(value_user, 'id_user');
 
       if (getUser.length < 1) {
         throw new Error('Error al obtener los datos del usuario');
@@ -56,8 +134,8 @@ class UserController {
       const getDocuments = await this.entity.getEntityDocuments(entity_fk);
 
       const personalData = {
-        entity:{
-        ...getEntity
+        entity: {
+          ...getEntity
         },
         documents: {
           ...getDocuments
@@ -66,18 +144,18 @@ class UserController {
 
       const getContacts = await this.entity.getEntityContacts(entity_fk);
 
-      const getProfile= await this.user.getUserProfile(id_user);
+      const getProfile = await this.user.getUserProfile(id_user);
 
 
       const userData = {
-        user:{
-        ...getUser,
+        user: {
+          ...getUser,
         },
-        contact:{
+        contact: {
           ...getContacts
         },
-        profile:{
-        ...getProfile
+        profile: {
+          ...getProfile
         }
       }
 
@@ -97,10 +175,10 @@ class UserController {
         occupation: {
           ...getOccupation
         },
-        department:{
+        department: {
           ...getDepartment
         },
-        employee:{
+        employee: {
           ...getEmployee
         }
       }
@@ -115,11 +193,11 @@ class UserController {
       let isRrhh;
       let isEmployee;
 
-      if(canChangePwdRrhh.length > 0){
+      if (canChangePwdRrhh.length > 0) {
         isRrhh = 1;
       }
 
-      if(canChangePwdEmployee.length > 0){
+      if (canChangePwdEmployee.length > 0) {
         isEmployee = 1;
       }
 

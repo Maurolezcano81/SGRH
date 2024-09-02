@@ -3,6 +3,7 @@ import express from 'express';
 import UserController from '../../controllers/People/User.js';
 
 import { uploadFiles, handleFileUpload, printFileUrl } from '../../middlewares/Uploads.js';
+
 const avatarUpload = uploadFiles('avatar_url', 'uploads/avatars');
 
 

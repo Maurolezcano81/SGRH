@@ -1,11 +1,12 @@
-import BaseModel from '../../../models/BaseModel.js';  
+import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Validations.js';
 
 class DocumentControllers {
   constructor() {
-    this.model = new BaseModel('document', 'name_document'); 
+    this.model = new BaseModel('document', 'name_document');
     this.nameFieldId = "id_document";
     this.nameFieldToSearch = "name_document";
+    this.entityDocument = new BaseModel('entity_document', 'value_ed');
   }
 
   async getDocuments(req, res) {
@@ -181,6 +182,30 @@ class DocumentControllers {
         message: 'Tipo de documento eliminado exitosamente',
         queryResponse,
       });
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async updateEntityDocument(req, res) {
+    const { id_ed, entity_fk, value_ed, document_fk } = req.body;
+
+    try {
+      const queryResponse = await this.entityDocument.updateOne({ value_ed, document_fk }, ['id_ed', id_ed]);
+
+      if (queryResponse.affectedRows < 1) {
+        return res.status(403).json({
+          message: "No se ha podido actualizar"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Actualizado correctamente",
+        queryResponse
+      })
     } catch (error) {
       console.error('Error en controlador de documento: ' + error);
       return res.status(403).json({

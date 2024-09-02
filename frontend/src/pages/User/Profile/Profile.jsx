@@ -26,6 +26,8 @@ const Profile = () => {
   const [permissionsData, setPermissionsData] = useState([]);
   const [toggleChangePwd, setToggleChangePwd] = useState(false);
 
+  const [updateDependency, setUpdateDependency] = useState(false);
+
   useEffect(
     () => {
       try {
@@ -65,7 +67,7 @@ const Profile = () => {
       }
 
     },
-    [authData.token, value_user, permissionsData?.canEdit, permissionsData?.isTheSameUser],
+    [authData.token, value_user, permissionsData?.canEdit, permissionsData?.isTheSameUser, updateDependency],
     userData[0]?.id_user
   );
 
@@ -76,6 +78,10 @@ const Profile = () => {
     }));
     setUserDataFormatted(format);
   };
+
+  const updateProfile = () =>{
+    setUpdateDependency(!updateDependency);
+  }
 
   const user = userData?.user?.["0"];
 
@@ -152,22 +158,26 @@ const Profile = () => {
 
         <PersonalData
           personalData={personalData}
+          updateProfile={updateProfile}
         />
-
-
-        <EmployeeData
-          employeeData={employeeData}
-        />
-
       </div>
 
-      <div className='group__container'>
+
+      <div className="group__container">
         <AddressData
           addressData={addressData}
-        />
+        /></div>
 
+      <div className="group__container">
         <UserData
           userData={userData}
+          updateProfile={updateProfile}
+        />
+      </div>
+
+      <div className="group__container">
+        <EmployeeData
+          employeeData={employeeData}
         />
       </div>
 

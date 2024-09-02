@@ -1,8 +1,10 @@
-const UserData = ({ userData }) => {
+import ProfileUserUpdate from "../Edit/Fields/User/ProfileUserUpdate";
+import Username from "../Edit/Fields/User/Username";
+
+const UserData = ({ userData, updateProfile }) => {
     const user = userData?.user?.["0"];
     const contacts = Object.values(userData?.contacts || {});
     const profile = userData?.profile?.["0"];
-
 
     if (!user) {
         return <div>Error: No hay datos de usuario disponibles.</div>;
@@ -22,10 +24,10 @@ const UserData = ({ userData }) => {
                 <h2>Usuario</h2>
             </div>
 
-            <div className="input__form__div">
-                <p className="input__form__div__label">Nombre de usuario: </p>
-                <p className="input__form__div__input">{user.username_user}</p>
-            </div>
+            <Username
+                user={user}
+                updateProfile={updateProfile}
+            />
 
             {contacts.map((contact, index) => (
                 <div key={index} className="input__form__div">
@@ -34,10 +36,11 @@ const UserData = ({ userData }) => {
                 </div>
             ))}
 
-            <div className="input__form__div">
-                <p className="input__form__div__label">Tipo de perfil: </p>
-                <p className="input__form__div__input">{profile.name_profile}</p>
-            </div>
+            <ProfileUserUpdate
+                user={user}
+                profile={profile}
+                updateProfile={updateProfile}
+            />
 
             <div className="input__form__div">
                 <p className="input__form__div__label">Cuenta creada en: </p>

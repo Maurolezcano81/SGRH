@@ -50,7 +50,6 @@ const getUser = async (req, res) => {
           ...userDataLogin,
           token: createToken(dataToToken),
         };
-        delete userData.id_user;
 
         return res.status(200).json({
           message: 'Autenticación exitosa',
@@ -74,7 +73,6 @@ const getUser = async (req, res) => {
       ...userDataLogin,
       token: createToken(dataToToken),
     };
-    delete userData.id_user;
 
     return res.status(200).json({
       message: 'Autenticación exitosa',
