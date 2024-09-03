@@ -23,6 +23,7 @@ import Attachment from './pages/MasterTables/Attachment';
 import HomePersonal from './pages/Homes/HomePersonal';
 import Profile from './pages/User/Profile/Profile';
 import { NavbarProvider } from './contexts/NavbarProvider';
+import ListUsers from './pages/User/ListUsers/ListUsers';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
               <Route path="rrhh/*">
                 <Route path="inicio" element={<HomeRRHH />} />
                 <Route path="personal/crear" element={<CreateUser />} />
+                <Route path="personal/ver" element={<ListUsers />} />
                 <Route path="ajustes/*" element={<Preferences />}>
                   <Route path="ocupacion" element={<Occupation />} />
                   <Route path="sexo" element={<Sex />} />

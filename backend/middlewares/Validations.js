@@ -2,7 +2,7 @@ const regularExpressions = {
     whiteSpaces: /\s/,
     onlyNumbers: /^\d+(\.\d+)?$/,
     aToZ: /^[A-Za-zñÑ\/]+(?: [A-Za-zñÑ\/]+)*$/,
-    isDate: /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/
+    isDate: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 }
 
 export const isInputEmpty = (input) => {

@@ -79,7 +79,7 @@ const Profile = () => {
     setUserDataFormatted(format);
   };
 
-  const updateProfile = () =>{
+  const updateProfile = () => {
     setUpdateDependency(!updateDependency);
   }
 
@@ -166,7 +166,9 @@ const Profile = () => {
       <div className="group__container">
         <AddressData
           addressData={addressData}
-        /></div>
+          updateProfile={updateProfile}
+        />
+      </div>
 
       <div className="group__container">
         <UserData
@@ -178,6 +180,7 @@ const Profile = () => {
       <div className="group__container">
         <EmployeeData
           employeeData={employeeData}
+          updateProfile={updateProfile}
         />
       </div>
 

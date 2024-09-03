@@ -9,6 +9,28 @@ class UserModel extends BaseModel {
     this.module = new BaseModel("module", "name_module")
   }
 
+
+  async getUsersInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    try {
+      const { whereClause, values } = this.buildWhereClause(filters);
+      const query = `SELECT id_user, username_user, name_entity, lastname_entity, avatar_user, value_ed, value_ec, file_employee, name_occupation, salary_occupation, name_department, status_user, name_profile FROM user u
+        join profile p on u.profile_fk = p.id_profile 
+        join entity e on u.entity_fk = e.id_entity 
+        join entity_document ed on ed.entity_fk = e.id_entity 
+        join entity_contact ec on ec.entity_fk = e.id_entity 
+        join employee emp on emp.entity_fk = e.id_entity 
+        join entity_department_occupation edo on edo.entity_fk = e.id_entity 
+        join occupation o on edo.occupation_fk = o.id_occupation 
+        join department d on edo.department_fk = d.id_department 
+        ${whereClause} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
+      const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+      return results;
+    } catch (error) {
+      console.error("Error en Users Model:", error.message);
+      throw new Error("Error en Users Model: " + error.message);
+    }
+  }
+
   async getUserDataLogin(value) {
     try {
       const queryDataUser =
@@ -26,7 +48,7 @@ class UserModel extends BaseModel {
       throw error;
     }
   }
-  
+
 
   async canViewModule(id_user, urlToCheck) {
     try {
@@ -68,16 +90,16 @@ class UserModel extends BaseModel {
 
   async getUserProfile(id_user) {
     try {
-        const query = "SELECT id_profile, name_profile from user u join profile p on u.profile_fk = p.id_profile where id_user = ?";
+      const query = "SELECT id_profile, name_profile from user u join profile p on u.profile_fk = p.id_profile where id_user = ?";
 
-        const [results] = await this.conn.promise().query(query, [id_user]);
+      const [results] = await this.conn.promise().query(query, [id_user]);
 
-        return results;
+      return results;
     } catch (error) {
-        console.error(`Error en modelo de User: ` + error);
-        throw new Error(`Error al obtener los datos del usuario`);
+      console.error(`Error en modelo de User: ` + error);
+      throw new Error(`Error al obtener los datos del usuario`);
     }
-}
+  }
 }
 
 export default UserModel

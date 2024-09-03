@@ -14,6 +14,7 @@ const router = express.Router();
 
 
 router.post('/user/create', avatarUpload, handleFileUpload("/uploads/avatars"), user.createUser.bind(user));
+router.post('/users', user.getUsers.bind(user));
 
 const UserRoutes = {
   router,

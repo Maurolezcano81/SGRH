@@ -76,7 +76,7 @@ class EntityModel extends BaseModel {
 
     async getEntityAddress(fk_entity) {
         try {
-            const query = "SELECT description_address, name_city, name_state, name_country from address a join city c on a.city_fk = c.id_city join state s on c.state_fk = s.id_state join country co on s.country_fk = co.id_country";
+            const query = "SELECT id_address, id_state, id_country, id_city, description_address, name_city, name_state, name_country from address a join city c on a.city_fk = c.id_city join state s on c.state_fk = s.id_state join country co on s.country_fk = co.id_country";
             const [results] = await this.conn.promise().query(query, [fk_entity]);
 
             return results;

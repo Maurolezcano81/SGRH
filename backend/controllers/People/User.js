@@ -2,7 +2,7 @@ import BaseModel from "../../models/BaseModel.js";
 import fs from 'fs';
 import { isInputEmpty, isNotAToZ, isNotDate, isNotNumber } from '../../middlewares/Validations.js';
 
-import { comparePwd, encryptPwd,createToken } from '../../middlewares/Authorization.js';
+import { comparePwd, encryptPwd, createToken } from '../../middlewares/Authorization.js';
 import UserModel from "../../models/People/User.js";
 import EntityModel from "../../models/People/People/Entity.js";
 
@@ -26,6 +26,28 @@ class UserController {
     this.entityDocument = new BaseModel('entity_document', 'id_ed');
 
     this.nameFieldId = 'id_user';
+    this.nameFieldToSearch = 'username_user';
+
+  }
+
+
+  async getUsers(req, res) {
+    const { limit, offset, order, orderBy, filters } = req.body;
+
+    const list = await this.user.getUsersInformation(limit, offset, orderBy, order, filters);
+
+    if (!list) {
+      return res.status(403).json({
+        message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
+      })
+    }
+
+
+    return res.status(200).json({
+      message: "Lista de usuarios obtenida con exito",
+      list
+    })
+
   }
 
   async checkToken(req, res) {
@@ -92,6 +114,14 @@ class UserController {
       })
     }
 
+    const checkExistsUsername = await this.user.getOne(username_user, this.nameFieldToSearch);
+
+    if (checkExistsUsername.length >= 1) {
+      return res.status(403).json({
+        message: "Este nombre de usuario ya existe"
+      })
+    }
+
     const update = await this.user.updateOne({ username_user: username_user }, [this.nameFieldId, id_user]);
 
     if (update.affectedRows < 1) {
@@ -109,7 +139,6 @@ class UserController {
     const { value_user } = req.body;
     const { id_user, profile_fk } = req;
 
-    console.log(value_user);
     try {
       if (isInputEmpty(value_user)) {
         res.status(403).json({
