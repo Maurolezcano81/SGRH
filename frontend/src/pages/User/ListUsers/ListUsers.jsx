@@ -9,7 +9,13 @@ const ListUsers = () => {
     const [sortOrder, setSortOrder] = useState('ASC');
     const [filters, setFilters] = useState({});
     const [pagination, setPagination] = useState({ limit: 10, offset: 0, total: 0 });
-    const urlGet = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchField, setSearchField] = useState('username_user'); // Estado para el campo de búsqueda
+    const [filterOptions, setFilterOptions] = useState({
+        occupations: ['Asociado de Ventas', 'Contador', 'Analyst'], // Ejemplos de opciones
+        departments: ['Marketing', 'Recursos Humanos', 'IT'] // Ejemplos de opciones
+    });
+    const urlGet = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`;
 
     const { authData } = useAuth();
 
@@ -26,7 +32,7 @@ const ListUsers = () => {
                 offset: pagination.offset,
                 orderBy: sortField,
                 order: sortOrder,
-                filters: filters
+                filters: { ...filters, [searchField]: searchTerm } // Agregar búsqueda a los filtros
             })
         });
         const data = await response.json();
@@ -38,7 +44,7 @@ const ListUsers = () => {
     // Efecto para cargar los datos al montar el componente o cambiar filtros/paginación
     useEffect(() => {
         fetchData();
-    }, [filters, sortField, sortOrder, pagination.offset, pagination.limit]);
+    }, [filters, sortField, sortOrder, pagination.offset, pagination.limit, searchTerm, searchField]);
 
     // Funciones para manejar el orden
     const handleSort = (field) => {
@@ -53,7 +59,9 @@ const ListUsers = () => {
     // Función para manejar la eliminación de filtros
     const clearFilters = () => {
         setFilters({});
-        setSortField('id_user');
+        setSearchTerm('');
+        setSearchField('username_user'); // Restablecer campo de búsqueda
+        setSortField('username_user');
         setSortOrder('ASC');
     };
 
@@ -63,18 +71,72 @@ const ListUsers = () => {
     };
 
     // Función para agregar filtros
-    const addFilter = (filter) => {
-        setFilters(prev => ({ ...prev, ...filter }));
+    const addFilter = (filterKey, value) => {
+        setFilters(prev => ({ ...prev, [filterKey]: value }));
+    };
+
+    // Función para manejar el cambio en el campo de búsqueda
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // Función para manejar la selección de filtros
+    const handleFilterChange = (filterKey, e) => {
+        addFilter(filterKey, e.target.value);
+    };
+
+    // Función para manejar el cambio en el select de búsqueda
+    const handleSearchFieldChange = (e) => {
+        setSearchField(e.target.value);
     };
 
     return (
         <div>
+            <div>
+                <select onChange={handleSearchFieldChange} value={searchField}>
+                    <option value="username_user">Nombre de usuario</option>
+                    <option value="name_entity">Nombre</option>
+                    <option value="lastname_entity">Apellido</option>
+                    <option value="value_ed">Nro. Documento</option>
+                    <option value="value_ec">Contacto</option>
+                    <option value="file_employee">Legajo</option>
+                    <option value="name_occupation">Ocupación</option>
+                    <option value="salary_occupation">Salario</option>
+                    <option value="name_department">Departamento</option>
+                    <option value="status_user">Estado</option>
+                </select>
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder={`Buscar por ${searchField.replace('_', ' ')}`}
+                />
+            </div>
             <button onClick={clearFilters}>Eliminar Filtros y Ordenes</button>
+
+            <div>
+                <label>Ocupación:
+                    <select onChange={(e) => handleFilterChange('name_occupation', e)}>
+                        <option value="">Seleccionar</option>
+                        {filterOptions.occupations.map(occupation => (
+                            <option key={occupation} value={occupation}>{occupation}</option>
+                        ))}
+                    </select>
+                </label>
+                <label>Departamento:
+                    <select onChange={(e) => handleFilterChange('name_department', e)}>
+                        <option value="">Seleccionar</option>
+                        {filterOptions.departments.map(department => (
+                            <option key={department} value={department}>{department}</option>
+                        ))}
+                    </select>
+                </label>
+            </div>
 
             <table>
                 <thead>
                     <tr>
-                    <th onClick={() => handleSort('name_entity')}>Nombre de usuario</th>
+                        <th onClick={() => handleSort('username_user')}>Nombre de usuario</th>
                         <th onClick={() => handleSort('name_entity')}>Nombre</th>
                         <th onClick={() => handleSort('lastname_entity')}>Apellido</th>
                         <th onClick={() => handleSort('value_ed')}>Nro. Documento</th>
@@ -89,27 +151,26 @@ const ListUsers = () => {
                 </thead>
                 <tbody>
                     {users && (
-                            users.map(user => (
-                                <tr key={user.id}>
-                                    <td>{user.username_user}</td>
-                                    <td>{user.name_entity}</td>
-                                    <td>{user.lastname_entity}</td>
-                                    <td>{user.value_ed}</td>
-                                    <td>{user.value_ec}</td>
-                                    <td>{user.file_employee}</td>
-                                    <td>{user.name_occupation}</td>
-                                    <td>{user.salary_occupation}</td>
-                                    <td>{user.name_department}</td>
-                                    <td>{user.status_user}</td>
-                                    <td>
-                                        <button>Ver</button>
-                                        <button>Editar</button>
-                                        <button>Eliminar</button>
-                                    </td>
-                                </tr>
-                            ))
+                        users.map(user => (
+                            <tr key={user.id}>
+                                <td>{user.username_user}</td>
+                                <td>{user.name_entity}</td>
+                                <td>{user.lastname_entity}</td>
+                                <td>{user.value_ed}</td>
+                                <td>{user.value_ec}</td>
+                                <td>{user.file_employee}</td>
+                                <td>{user.name_occupation}</td>
+                                <td>{user.salary_occupation}</td>
+                                <td>{user.name_department}</td>
+                                <td>{user.status_user}</td>
+                                <td>
+                                    <button>Ver</button>
+                                    <button>Editar</button>
+                                    <button>Eliminar</button>
+                                </td>
+                            </tr>
+                        ))
                     )}
-
                 </tbody>
             </table>
 
