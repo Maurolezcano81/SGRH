@@ -42,10 +42,10 @@ class UserController {
       })
     }
 
-
     return res.status(200).json({
       message: "Lista de usuarios obtenida con exito",
-      list
+      list: list,
+      total: list.length
     })
 
   }

@@ -13,16 +13,33 @@ class UserModel extends BaseModel {
   async getUsersInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
     try {
       const { whereClause, values } = this.buildWhereClause(filters);
-      const query = `SELECT id_user, username_user, name_entity, lastname_entity, avatar_user, value_ed, value_ec, file_employee, name_occupation, salary_occupation, name_department, status_user, name_profile FROM user u
-        join profile p on u.profile_fk = p.id_profile 
-        join entity e on u.entity_fk = e.id_entity 
-        join entity_document ed on ed.entity_fk = e.id_entity 
-        join entity_contact ec on ec.entity_fk = e.id_entity 
-        join employee emp on emp.entity_fk = e.id_entity 
-        join entity_department_occupation edo on edo.entity_fk = e.id_entity 
-        join occupation o on edo.occupation_fk = o.id_occupation 
-        join department d on edo.department_fk = d.id_department 
-        ${whereClause} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
+      const query = `SELECT 
+              u.id_user, 
+              u.username_user, 
+              e.name_entity, 
+              e.lastname_entity, 
+              u.avatar_user, 
+              MAX(ed.value_ed) AS value_ed, 
+              MAX(ec.value_ec) AS value_ec, 
+              MAX(emp.file_employee) AS file_employee, 
+              MAX(o.name_occupation) AS name_occupation, 
+              MAX(o.salary_occupation) AS salary_occupation, 
+              MAX(d.name_department) AS name_department, 
+              u.status_user, 
+              p.name_profile
+              FROM user u
+              JOIN profile p ON u.profile_fk = p.id_profile 
+              JOIN entity e ON u.entity_fk = e.id_entity 
+              LEFT JOIN entity_document ed ON ed.entity_fk = e.id_entity 
+              LEFT JOIN entity_contact ec ON ec.entity_fk = e.id_entity 
+              LEFT JOIN employee emp ON emp.entity_fk = e.id_entity 
+              LEFT JOIN entity_department_occupation edo ON edo.entity_fk = e.id_entity 
+              LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
+              LEFT JOIN department d ON edo.department_fk = d.id_department 
+              ${whereClause}
+              GROUP BY u.id_user, u.username_user, e.name_entity, e.lastname_entity, u.avatar_user, u.status_user, p.name_profile
+              ORDER BY ${orderBy} ${order} 
+              LIMIT ? OFFSET ?`;
       const [results] = await this.con.promise().query(query, [...values, limit, offset]);
       return results;
     } catch (error) {
