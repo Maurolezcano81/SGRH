@@ -1161,6 +1161,34 @@ input {
   min-width: 100%;
 }
 
+.table__primary__pagination{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table__primary__pagination button{
+  margin: 2rem 0;
+  padding: .5rem 1rem;
+  text-align: center;
+  vertical-align: middle;
+  background-color: var(--blue-0);
+  color: var(--white-2);
+  box-shadow: var(--shadow-a-25-b-02);
+}
+
+.table__primary__img{
+  border: .2rem solid var(--blue-0);
+  border-radius: 100%;
+  max-height: 6rem;
+  max-width: 6rem;
+  min-height: 6rem;
+  min-width: 6rem;
+  aspect-ratio: 4/3;
+  object-fit: contain;
+}
+
 .table__primary thead {
   background-color: var(--blue-0);
   color: var(--white-2);
@@ -1183,6 +1211,20 @@ input {
 .table__primary thead th:hover {
   background-color: var(--blue-3);
   cursor: pointer;
+}
+
+.table__primary__pagination__info{
+  padding: 1rem 2rem;
+  background-color: var(--blue-0);
+  color: var(--white-2);
+  box-shadow: var(--shadow-a-25-b-02);
+}
+
+.table__primary__pagination__buttons{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
 }
 
 
@@ -1311,8 +1353,10 @@ input {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin: 0 0 2rem 0;
-  padding: 2rem 2rem 0 2rem;
+  background-color: var(--blue-0);
+  padding: 3rem 2rem;
+  border-radius: 0 0 4rem 4rem;
+  color: var(--white-2);
 }
 
 .table__search__select__container {

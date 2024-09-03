@@ -7,6 +7,7 @@ const ListUsers = () => {
     const { authData } = useAuth();
 
     const columns = [
+        {field: 'avatar_user', label: ''},
         { field: 'username_user', label: 'Nombre de usuario' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
@@ -51,18 +52,18 @@ const ListUsers = () => {
     const viewAction = (row) => {
         alert(`Ver detalles de: ${row.name}`);
     };
-    
+
     const editAction = (row) => {
         alert(`Editar: ${row.name}`);
     };
-    
+
     const deleteAction = (row) => {
         if (window.confirm(`¿Estás seguro de que deseas eliminar a ${row.name}?`)) {
             alert(`Eliminado: ${row.name}`);
         }
     };
 
-    const handleModalAdd = () =>{
+    const handleModalAdd = () => {
         console.log('add');
     }
 
@@ -89,6 +90,7 @@ const ListUsers = () => {
             actionColumn='id_user'
             handleModalAdd={handleModalAdd}
             title_table={"Personal"}
+            paginationLabelInfo={"Usuarios"}
         />
     );
 };

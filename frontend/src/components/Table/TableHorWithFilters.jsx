@@ -17,7 +17,8 @@ const TableHorWithFilters = ({
     showActions = {},
     handleModalAdd,
     title_table,
-    actionColumn = ''  // Nueva prop para especificar la propiedad del row
+    actionColumn = '',  // Nueva prop para especificar la propiedad del row
+    paginationLabelInfo
 }) => {
     // Estados
     const [data, setData] = useState([]);
@@ -192,7 +193,13 @@ const TableHorWithFilters = ({
                                 {data.map(row => (
                                     <tr key={row[actionColumn]}>
                                         {columns.map(column => (
-                                            <td key={column.field}>{row[column.field]}</td>
+                                            <td key={column.field}>
+                                                {column.field === 'avatar_user' ? (
+                                                    <img className='table__primary__img' src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`} alt="Avatar" />
+                                                ) : (
+                                                    row[column.field]
+                                                )}
+                                            </td>
                                         ))}
                                         <td>
                                             {showActions.view && actions.view && (
@@ -214,31 +221,36 @@ const TableHorWithFilters = ({
                     </div>
                 )}
             </div>
-            <div>
-                <button
-                    onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
-                    disabled={pagination.offset === 0}
-                >
-                    &lt;
-                </button>
-                {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handlePagination(index * pagination.limit)}
-                        disabled={index + 1 === currentPage}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-                <button
-                    onClick={() => handlePagination(pagination.offset + pagination.limit)}
-                    disabled={pagination.offset + pagination.limit >= pagination.total}
-                >
-                    &gt;
-                </button>
-            </div>
+            <div className='table__primary__pagination'>
+                <div className='table__primary__pagination__info'>
+                    <p>{`Cantidad total de ${paginationLabelInfo}: ${pagination.total}`}</p>
+                </div>
 
-            <div>Total de resultados: {pagination.total}</div>
+                <div className='table__primary__pagination__buttons'>
+                    <div className='table__primary__pagination__back'>
+                        <button
+                            onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
+                            disabled={currentPage === 1}
+                        >
+                            &lt;
+                        </button>
+                    </div>
+
+                    <span className='table__primary__pagination__current-page'>
+                        {currentPage}
+                    </span>
+
+                    <div className='table__primary__pagination__next'>
+                        <button
+                            onClick={() => handlePagination(pagination.offset + pagination.limit)}
+                            disabled={currentPage === totalPages} // Deshabilitar si está en la última página
+                        >
+                            &gt;
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     );
