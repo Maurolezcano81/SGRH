@@ -62,6 +62,10 @@ const ListUsers = () => {
         }
     };
 
+    const handleModalAdd = () =>{
+        console.log('add');
+    }
+
     return (
         <TableHorWithFilters
             url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
@@ -83,7 +87,8 @@ const ListUsers = () => {
                 delete: true
             }}
             actionColumn='id_user'
-
+            handleModalAdd={handleModalAdd}
+            title_table={"Personal"}
         />
     );
 };

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import PreferenceTitle from '../../pages/MasterTables/PreferenceTitle';
+import ButtonRed from '../ButtonRed';
 
 const TableHorWithFilters = ({
     url,
@@ -13,6 +15,8 @@ const TableHorWithFilters = ({
     initialSearchField = '',
     actions = {},
     showActions = {},
+    handleModalAdd,
+    title_table,
     actionColumn = ''  // Nueva prop para especificar la propiedad del row
 }) => {
     // Estados
@@ -119,100 +123,124 @@ const TableHorWithFilters = ({
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
     return (
-        <div>
-            <div>
-                <select onChange={handleSearchFieldChange} value={searchField}>
-                    {searchOptions.map(option => (
-                        <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                </select>
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    placeholder={`Buscar por ${searchPlaceholder}`}
+
+        <div className='container__page'>
+            <div className='preferences__main'>
+                <PreferenceTitle
+                    title={title_table}
+                    onClick={handleModalAdd}
                 />
-            </div>
-            <button onClick={clearFilters}>Eliminar Filtros y Ordenes</button>
-
-            <div>
-                {filterConfigs.map(config => (
-                    <label key={config.key}>{config.label}:
-                        <select onChange={(e) => addFilter(config.key, e.target.value)} value={filters[config.key] || ''}>
-                            <option value="">Seleccionar</option>
-                            {(filterOptions[config.key] || []).map(option => (
-                                <option key={option.value} value={option.value}> {option[config.name_field]}</option>
-                            ))}
-                        </select>
-                    </label>
-                ))}
-            </div>
-
-            {data.length === 0 ? (
-                <p>No hay datos disponibles</p>
-            ) : (
-                <>
-                    <table>
-                        <thead>
-                            <tr>
-                                {columns.map(column => (
-                                    <th key={column.field} onClick={() => handleSort(column.field)}>
-                                        {column.label}
-                                    </th>
+                <div className='table__filters__container'>
+                    <div className='table__search__container'>
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            placeholder={`Buscar por ${searchPlaceholder}`}
+                        />
+                        <div className='table__search__select__container'>
+                            <label>Buscar por:</label>
+                            <select onChange={handleSearchFieldChange} value={searchField}>
+                                {searchOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
                                 ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map(row => (
-                                <tr key={row[actionColumn]}>
-                                    {columns.map(column => (
-                                        <td key={column.field}>{row[column.field]}</td>
-                                    ))}
-                                    <td>
-                                        {showActions.view && actions.view && (
-                                            <button onClick={() => actions.view(row)}>Ver</button>
-                                        )}
-                                        {showActions.edit && actions.edit && (
-                                            <button onClick={() => actions.edit(row)}>Editar</button>
-                                        )}
-                                        {showActions.delete && actions.delete && (
-                                            <button onClick={() => actions.delete(row)}>Eliminar</button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    <div>
-                        <button
-                            onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
-                            disabled={pagination.offset === 0}
-                        >
-                            &lt;
-                        </button>
-                        {Array.from({ length: totalPages }).map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => handlePagination(index * pagination.limit)}
-                                disabled={index + 1 === currentPage}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() => handlePagination(pagination.offset + pagination.limit)}
-                            disabled={pagination.offset + pagination.limit >= pagination.total}
-                        >
-                            &gt;
-                        </button>
+                            </select>
+                        </div>
                     </div>
 
-                    <div>Total de resultados: {pagination.total}</div>
-                </>
-            )}
+                    <div className='table__filter__container'>
+                        <div className='table__filter__select'>
+                            {filterConfigs.map(config => (
+                                <label key={config.key}>{config.label}:
+                                    <select onChange={(e) => addFilter(config.key, e.target.value)} value={filters[config.key] || ''}>
+                                        <option value="">Seleccionar</option>
+                                        {(filterOptions[config.key] || []).map(option => (
+                                            <option key={option.value} value={option.value}> {option[config.name_field]}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                            ))}
+
+                            <div className='table__filter__container__button'>
+                                <ButtonRed
+                                    title={"Limpiar Filtros"}
+                                    onClick={clearFilters}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                {data.length === 0 ? (
+                    <p>No hay datos disponibles</p>
+                ) : (
+                    <div className='table__primary__container'>
+                        <table className='table__primary'>
+                            <thead>
+                                <tr>
+                                    {columns.map(column => (
+                                        <th key={column.field} onClick={() => handleSort(column.field)}>
+                                            {column.label}
+                                        </th>
+                                    ))}
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.map(row => (
+                                    <tr key={row[actionColumn]}>
+                                        {columns.map(column => (
+                                            <td key={column.field}>{row[column.field]}</td>
+                                        ))}
+                                        <td>
+                                            {showActions.view && actions.view && (
+                                                <button onClick={() => actions.view(row)}>Ver</button>
+                                            )}
+                                            {showActions.edit && actions.edit && (
+                                                <button onClick={() => actions.edit(row)}>Editar</button>
+                                            )}
+                                            {showActions.delete && actions.delete && (
+                                                <button onClick={() => actions.delete(row)}>Eliminar</button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                )}
+            </div>
+            <div>
+                <button
+                    onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
+                    disabled={pagination.offset === 0}
+                >
+                    &lt;
+                </button>
+                {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => handlePagination(index * pagination.limit)}
+                        disabled={index + 1 === currentPage}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+                <button
+                    onClick={() => handlePagination(pagination.offset + pagination.limit)}
+                    disabled={pagination.offset + pagination.limit >= pagination.total}
+                >
+                    &gt;
+                </button>
+            </div>
+
+            <div>Total de resultados: {pagination.total}</div>
         </div>
+
     );
 };
 
