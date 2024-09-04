@@ -11,7 +11,7 @@ const ChangePwdEmployee = ({ handleChangePwd, idUserToChange }) => {
 
   const { authData } = useAuth();
 
-  const changePwdUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_USER_EMPLOYEE_PWD}`;
+  const changePwdUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/changePwd/employee`;
 
   const handleSubmitEmployee = async (e) => {
     e.preventDefault();
@@ -43,53 +43,51 @@ const ChangePwdEmployee = ({ handleChangePwd, idUserToChange }) => {
     setMessage(data.message);
   };
   return (
-    <div className='profile__header__container'>
-      <form onSubmit={handleSubmitEmployee} className="change__pwd__container container__section">
-        <div className="input__form__div">
-          <label className="input__form__div__label" htmlFor="pwd_user">
-            Contraseña actual
-          </label>
-          <input
-            type="password"
-            className="input__form__div__input"
-            name="pwd_user"
-            onChange={(e) => setActualPwd(e.target.value)}
-          />
-        </div>
+    <form onSubmit={handleSubmitEmployee} className="change__pwd__container container__section">
+      <div className="input__form__div">
+        <label className="input__form__div__label" htmlFor="pwd_user">
+          Contraseña actual
+        </label>
+        <input
+          type="password"
+          className="input__form__div__input"
+          name="pwd_user"
+          onChange={(e) => setActualPwd(e.target.value)}
+        />
+      </div>
 
-        <div className="input__form__div">
-          <label className="input__form__div__label" htmlFor="new_pwd">
-            Contraseña nueva
-          </label>
-          <input
-            type="password"
-            className="input__form__div__input"
-            name="new_pwd"
-            onChange={(e) => setNewPwd(e.target.value)}
-          />
-        </div>
+      <div className="input__form__div">
+        <label className="input__form__div__label" htmlFor="new_pwd">
+          Contraseña nueva
+        </label>
+        <input
+          type="password"
+          className="input__form__div__input"
+          name="new_pwd"
+          onChange={(e) => setNewPwd(e.target.value)}
+        />
+      </div>
 
-        <div className="input__form__div">
-          <label className="input__form__div__label" htmlFor="repeat_new_pwd">
-            Repetir contraseña nueva
-          </label>
-          <input
-            type="password"
-            className="input__form__div__input"
-            name="repeat_new_pwd"
-            onChange={(e) => setRepeatPwd(e.target.value)}
-          />
-        </div>
+      <div className="input__form__div">
+        <label className="input__form__div__label" htmlFor="repeat_new_pwd">
+          Repetir contraseña nueva
+        </label>
+        <input
+          type="password"
+          className="input__form__div__input"
+          name="repeat_new_pwd"
+          onChange={(e) => setRepeatPwd(e.target.value)}
+        />
+      </div>
 
-        <div className="preferences__modal__error change__pwd ">
-          {message && <p className="error__validation__form-p">{message}</p>}
-        </div>
-        <div className="form__button__container">
-          <ButtonRed title={'Salir'} onClick={handleChangePwd} />
-          <ButtonBlue title="Guardar Cambios" />
-        </div>
-      </form>
-    </div>
+      <div className="preferences__modal__error change__pwd ">
+        {message && <p className="error__validation__form-p">{message}</p>}
+      </div>
+      <div className="form__button__container">
+        <ButtonRed title={'Salir'} onClick={handleChangePwd} />
+        <ButtonBlue title="Guardar Cambios" onClick={handleSubmitEmployee} />
+      </div>
+    </form>
   );
 };
 

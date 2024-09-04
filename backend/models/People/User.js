@@ -83,7 +83,7 @@ class UserModel extends BaseModel {
 
   async changePwdEmployee(id_user, pwd_user) {
     try {
-      const query = 'UPDATE USER set pwd_user = ?, haspwdchanged_user = 1, updated_at = now() where id_user = ?';
+      const query = 'UPDATE USER set pwd_user = ?, haspwdchanged_user = 0, updated_at = now() where id_user = ?';
 
       const [results] = await this.conn.promise().query(query, [pwd_user, id_user]);
       return results;
@@ -95,7 +95,7 @@ class UserModel extends BaseModel {
 
   async changePwdAdmin(id_user, pwd_user) {
     try {
-      const query = 'UPDATE USER set pwd_user = ?, haspwdchanged_user = 0, updated_at = now() where id_user = ?';
+      const query = 'UPDATE USER set pwd_user = ?, haspwdchanged_user = 1, updated_at = now() where id_user = ?';
 
       const [results] = await this.conn.promise().query(query, [pwd_user, id_user]);
       return results;

@@ -14,8 +14,7 @@ const Profile = () => {
 
   const { authData } = useAuth();
   const location = useLocation();
-  const { value_user } = location.state || {};
-  const { isRedirectToChangePwd } = location.state || {};
+  const { value_user, isRedirectToChangePwd } = location.state || {};
 
   const [userData, setUserData] = useState([]);
   const [personalData, setPersonalData] = useState([]);
@@ -29,6 +28,13 @@ const Profile = () => {
 
   const [updateDependency, setUpdateDependency] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  useEffect(() => {
+    if (isRedirectToChangePwd && !redirectedToChangePwd) {
+      setToggleChangePwd(true); // Activa el cambio de contraseña
+      setRedirectedToChangePwd(true); // Evita que se active nuevamente si ya se redirigió
+    }
+  }, [isRedirectToChangePwd, redirectedToChangePwd]);
 
 
   useEffect(
@@ -74,13 +80,6 @@ const Profile = () => {
     userData[0]?.id_user
   );
 
-
-  useEffect(() => {
-    if (isRedirectToChangePwd) {
-      setRedirectedToChangePwd(true);
-    }
-  }, [isRedirectToChangePwd]);
-
   const formatted = (array) => {
     const format = array.map((item) => ({
       ...item,
@@ -104,7 +103,7 @@ const Profile = () => {
   }
 
   const handleChangePwdToggle = () => {
-    setToggleChangePwd(!toggleChangePwd)
+    setToggleChangePwd(prev => !prev);
     if (!redirectedToChangePwd) {
       setRedirectedToChangePwd(true);
     }
@@ -158,22 +157,22 @@ const Profile = () => {
 
             {permissionsData?.isTheSameUser || permissionsData?.canEdit ? (
               <ButtonEditable
-                color={toggleChangePwd || redirectedToChangePwd ? "blue" : "white"}
+                color={toggleChangePwd ? "blue" : "white"}
                 title={'Cambiar Contraseña'}
-                data-id={userData[0]?.id_user}
+                data-id={user?.id_user}
                 onClick={handleChangePwdToggle}
               />
             ) : null}
           </div>
         </div>
-        {(toggleChangePwd || redirectedToChangePwd) && (permissionsData?.isTheSameUser === true) && (
+        {(toggleChangePwd) && (permissionsData?.isTheSameUser === true) && (
           <ChangePwdEmployee
             handleChangePwd={handleChangePwdToggle}
             idUserToChange={user?.id_user}
           />
         )}
 
-        {(toggleChangePwd || redirectedToChangePwd) && ((permissionsData?.isAdmin === 1 || permissionsData?.isRrhh === 1) && permissionsData?.isTheSameUser === false) && (
+        {(toggleChangePwd) && ((permissionsData?.isAdmin === 1 || permissionsData?.isRrhh === 1) && permissionsData?.isTheSameUser === false) && (
           <ChangePwdAdmin
             handleChangePwd={handleChangePwdToggle}
             idUserToChange={user?.id_user}
