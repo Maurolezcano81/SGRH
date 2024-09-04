@@ -1124,7 +1124,16 @@ input {
 
 .container__page {
   padding: 1rem 0;
-  min-width: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+.container__content{
+  width: 80%;
 }
 
 .table__primary__container {
@@ -1227,6 +1236,43 @@ input {
   gap: 3rem;
 }
 
+.table__primary__body__col{
+}
+
+.blue{
+  background-color: var(--blue-0);
+}
+
+.red{
+  background-color: var(--red-1);
+}
+
+.table__primary__actions__container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.button__img__text{
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+.button__img__text img{
+  width: 3rem;
+  height: 3rem;
+  border-radius: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  padding: .5rem;
+}
 
 .table__primary th {
   font-weight: 600;
@@ -1339,6 +1385,7 @@ input {
   width: 100%;
   margin: 2rem 0;
   box-shadow: var(--shadow-a-25-b-02);
+  border-radius: 0 0 5rem 5rem;
 }
 
 .table__filters__container select {
@@ -1394,7 +1441,7 @@ input {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  padding: 2rem;
+  padding: 2rem 4rem 4rem 2rem;
 }
 
 .table__filter__select label select {

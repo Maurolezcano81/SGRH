@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PreferenceTitle from '../../pages/MasterTables/PreferenceTitle';
 import ButtonRed from '../ButtonRed';
+import ButtonImgTxt from '../ButtonImgTex';
+import Services from "../../assets/Icons/Buttons/Services.png"
 
 const TableHorWithFilters = ({
     url,
@@ -18,7 +20,10 @@ const TableHorWithFilters = ({
     handleModalAdd,
     title_table,
     actionColumn = '',  // Nueva prop para especificar la propiedad del row
-    paginationLabelInfo
+    paginationLabelInfo,
+    buttonOneInfo = { img: "", color: "", title: "" },
+    buttonTwoInfo = { img: "", color: "", title: "" },
+    buttonTreeInfo = { img: "", color: "", title: "" }
 }) => {
     // Estados
     const [data, setData] = useState([]);
@@ -30,6 +35,7 @@ const TableHorWithFilters = ({
     const [searchField, setSearchField] = useState(initialSearchField || (searchOptions[0]?.value || ''));
     const [searchPlaceholder, setSearchPlaceholder] = useState(initialSearchField || (searchOptions[0]?.label || ''));
     const [filterOptions, setFilterOptions] = useState({});
+    const [hiddenFilterSection, setHiddenFilterSection] = useState(false);
 
     // Función para obtener las opciones de los filtros
     const fetchFilterOptions = async () => {
@@ -120,13 +126,17 @@ const TableHorWithFilters = ({
         setSearchField(e.target.value);
     };
 
+    const toggleFiltersSection = () => {
+        setHiddenFilterSection(!hiddenFilterSection)
+    }
+
     const totalPages = Math.ceil(pagination.total / pagination.limit);
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
     return (
 
         <div className='container__page'>
-            <div className='preferences__main'>
+            <div className='container__content'>
                 <PreferenceTitle
                     title={title_table}
                     onClick={handleModalAdd}
@@ -147,29 +157,40 @@ const TableHorWithFilters = ({
                                 ))}
                             </select>
                         </div>
-                    </div>
 
-                    <div className='table__filter__container'>
-                        <div className='table__filter__select'>
-                            {filterConfigs.map(config => (
-                                <label key={config.key}>{config.label}:
-                                    <select onChange={(e) => addFilter(config.key, e.target.value)} value={filters[config.key] || ''}>
-                                        <option value="">Seleccionar</option>
-                                        {(filterOptions[config.key] || []).map(option => (
-                                            <option key={option.value} value={option.value}> {option[config.name_field]}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                            ))}
-
-                            <div className='table__filter__container__button'>
-                                <ButtonRed
-                                    title={"Limpiar Filtros"}
-                                    onClick={clearFilters}
-                                />
-                            </div>
+                        <div className='table__search__buttons__container'>
+                            {hiddenFilterSection ? (
+                                <ButtonImgTxt title={"Mostrar filtros"} onClick={toggleFiltersSection} img={Services} color={"red"}  />
+                            ) : (
+                                <ButtonImgTxt title={"Ocultar filtros"} onClick={toggleFiltersSection} img={Services} color={"red"}  />
+                            )}
                         </div>
                     </div>
+
+                    {hiddenFilterSection && (
+                        <div className='table__filter__container'>
+                            <div className='table__filter__select'>
+                                {filterConfigs.map(config => (
+                                    <label key={config.key}>{config.label}:
+                                        <select onChange={(e) => addFilter(config.key, e.target.value)} value={filters[config.key] || ''}>
+                                            <option value="">Seleccionar</option>
+                                            {(filterOptions[config.key] || []).map(option => (
+                                                <option key={option.value} value={option.value}> {option[config.name_field]}</option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                ))}
+
+                                <div className='table__filter__container__button'>
+                                    <ButtonRed
+                                        title={"Limpiar Filtros"}
+                                        onClick={clearFilters}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
 
                 </div>
 
@@ -193,7 +214,7 @@ const TableHorWithFilters = ({
                                 {data.map(row => (
                                     <tr key={row[actionColumn]}>
                                         {columns.map(column => (
-                                            <td key={column.field}>
+                                            <td className='table__primary__body__col' key={column.field}>
                                                 {column.field === 'avatar_user' ? (
                                                     <img className='table__primary__img' src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`} alt="Avatar" />
                                                 ) : (
@@ -202,15 +223,17 @@ const TableHorWithFilters = ({
                                             </td>
                                         ))}
                                         <td>
-                                            {showActions.view && actions.view && (
-                                                <button onClick={() => actions.view(row)}>Ver</button>
-                                            )}
-                                            {showActions.edit && actions.edit && (
-                                                <button onClick={() => actions.edit(row)}>Editar</button>
-                                            )}
-                                            {showActions.delete && actions.delete && (
-                                                <button onClick={() => actions.delete(row)}>Eliminar</button>
-                                            )}
+                                            <div className='table__primary__actions__container'>
+                                                {showActions.view && actions.view && (
+                                                    <ButtonImgTxt onClick={() => actions.view(row)} title={buttonOneInfo.title} img={buttonOneInfo.img} color={buttonOneInfo.color} />
+                                                )}
+                                                {showActions.edit && actions.edit && (
+                                                    <ButtonImgTxt onClick={() => actions.edit(row)} title={buttonTwoInfo.title} img={buttonTwoInfo.img} color={buttonTwoInfo.color} />
+                                                )}
+                                                {showActions.delete && actions.delete && (
+                                                    <ButtonImgTxt onClick={() => actions.delete(row)} title={buttonTreeInfo.title} img={buttonTreeInfo.img} color={buttonTreeInfo.color} />
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -220,37 +243,39 @@ const TableHorWithFilters = ({
 
                     </div>
                 )}
-            </div>
-            <div className='table__primary__pagination'>
-                <div className='table__primary__pagination__info'>
-                    <p>{`Cantidad total de ${paginationLabelInfo}: ${pagination.total}`}</p>
-                </div>
 
-                <div className='table__primary__pagination__buttons'>
-                    <div className='table__primary__pagination__back'>
-                        <button
-                            onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
-                            disabled={currentPage === 1}
-                        >
-                            &lt;
-                        </button>
+                <div className='table__primary__pagination'>
+                    <div className='table__primary__pagination__info'>
+                        <p>{`Cantidad total de ${paginationLabelInfo}: ${pagination.total}`}</p>
                     </div>
 
-                    <span className='table__primary__pagination__current-page'>
-                        {currentPage}
-                    </span>
+                    <div className='table__primary__pagination__buttons'>
+                        <div className='table__primary__pagination__back'>
+                            <button
+                                onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
+                                disabled={currentPage === 1}
+                            >
+                                &lt;
+                            </button>
+                        </div>
 
-                    <div className='table__primary__pagination__next'>
-                        <button
-                            onClick={() => handlePagination(pagination.offset + pagination.limit)}
-                            disabled={currentPage === totalPages} // Deshabilitar si está en la última página
-                        >
-                            &gt;
-                        </button>
+                        <span className='table__primary__pagination__current-page'>
+                            {currentPage}
+                        </span>
+
+                        <div className='table__primary__pagination__next'>
+                            <button
+                                onClick={() => handlePagination(pagination.offset + pagination.limit)}
+                                disabled={currentPage === totalPages} // Deshabilitar si está en la última página
+                            >
+                                &gt;
+                            </button>
+                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
+
         </div>
 
     );

@@ -2,9 +2,12 @@ import React from 'react';
 import TableHorWithFilters from '../../../components/Table/TableHorWithFilters'; // Ajusta la ruta según sea necesario
 import useAuth from '../../../hooks/useAuth';
 import ButtonRed from '../../../components/ButtonRed';
-
+import User from "../../../assets/Icons/Buttons/User.png"
+import Trash from "../../../assets/Icons/Preferences/Trash.png"
+import { useNavigate } from 'react-router-dom';
 const ListUsers = () => {
     const { authData } = useAuth();
+    const navigate = useNavigate();
 
     const columns = [
         {field: 'avatar_user', label: ''},
@@ -50,7 +53,8 @@ const ListUsers = () => {
 
 
     const viewAction = (row) => {
-        alert(`Ver detalles de: ${row.name}`);
+        navigate("/profile", { state: {value_user: row.id_user}})
+        console.log(row.id_user)
     };
 
     const editAction = (row) => {
@@ -78,7 +82,7 @@ const ListUsers = () => {
             initialSearchTerm={''}
             initialSort={{ field: 'name_entity', order: 'ASC' }}
             actions={{
-                view: (row) => console.log("Ver", row),
+                view: viewAction,
                 edit: (row) => console.log("Editar", row),
                 delete: (row) => console.log("Eliminar", row.id_user),
             }}
@@ -91,7 +95,9 @@ const ListUsers = () => {
             handleModalAdd={handleModalAdd}
             title_table={"Personal"}
             paginationLabelInfo={"Usuarios"}
-        />
+            buttonOneInfo={{img: User, color: "blue", title: "Ver"}}
+            buttonTreeInfo={{img: Trash, color: "red", title: "Eliminar"}}
+            />
     );
 };
 

@@ -1,0 +1,908 @@
+drop database if exists employes;
+create database employes;
+use employes;
+
+-- TABLA QUE ALMACENA LOS DISTINTOS TIPOS DE SEXO
+create table sex(
+    id_sex int not null primary key auto_increment,
+    name_sex varchar(30) not null,
+    status_sex bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table navigation_menu(
+    id_nm int not null primary key auto_increment,
+    name_nm varchar(20) not null,
+    status_nm bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+CREATE TABLE profile (
+    id_profile int NOT NULL PRIMARY KEY auto_increment,
+    name_profile varchar(50) not null,
+    status_profile bool not null default 1,
+    nm_fk int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    foreign key (nm_fk) references navigation_menu(id_nm)
+);
+
+create table nacionality (
+    id_nacionality int not null primary key auto_increment,
+    name_nacionality varchar(50) not null,
+    abbreviation_nacionality varchar(10) unique not null,
+    status_nacionality bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+-- TABLA QUE ALMACENA LOS DISTINTOS TIPOS DE CONTACTO
+create table contact(
+    id_contact int not null primary key auto_increment,
+    name_contact varchar(50) not null,
+    status_contact bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+-- TABLA QUE ALMACENA LOS DISTINTOS TIPOS DE DEPARTAMENTO
+create table department(
+    id_department int not null primary key auto_increment,
+    name_department varchar(120) not null,
+    status_department bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+-- TABLA QUE ALMACENA LOS DISTINTOS TIPOS DE DOCUMENTOS
+create table document(
+    id_document int not null primary key auto_increment,
+    name_document varchar(100) not null,
+    status_document bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+-- TABLA QUE ALMACENA LOS DISTINTOS PUESTOS DE TRABAJO
+create table occupation(
+    id_occupation int not null primary key auto_increment,
+    name_occupation varchar(40) not null,
+    salary_occupation decimal(12,2) not null,
+    status_occupation bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+-- TABLA QUE ALMACENA DATOS DE LAS PERSONAS
+create table entity(
+    id_entity int not null primary key auto_increment,
+    name_entity varchar(50) not null,
+    lastname_entity varchar(50) not null,
+    date_birth_entity date,
+    sex_fk int not null,
+    nacionality_fk int not null,
+    status_entity bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (sex_fk) references sex(id_sex),
+    foreign key (nacionality_fk) references nacionality(id_nacionality)
+);
+
+-- TABLA PARA ALMACENAR LOS DATOS DE UN USUARIO
+create table user(
+    id_user int not null primary key auto_increment,
+    username_user varchar(20) not null,
+    pwd_user text not null,
+    avatar_user text not null,
+    status_user bool not null default 1,
+    haspwdchanged_user bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    entity_fk int not null,
+    profile_fk int not null,
+    
+    foreign key (entity_fk) references entity(id_entity),
+    foreign key (profile_fk) references profile(id_profile)
+);
+
+-- TABLA PARA RELACIONAR A UNA PERSONA CON DISTINTOS TIPOS DE CONTACTO
+create table entity_contact(
+    id_ec int not null primary key auto_increment,
+    value_ec varchar(120) not null,
+    entity_fk int not null,
+    contact_fk int not null,
+    status_ec bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (entity_fk) references entity(id_entity),
+    foreign key (contact_fk) references contact(id_contact)
+);
+
+create table employee(
+    id_employee int not null primary key auto_increment,
+    file_employee varchar(20) not null,
+    date_entry_employee date not null,
+    status_employee bool not null default 1,
+    entity_fk int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (entity_fk) references entity(id_entity)
+);
+
+-- TABLA PARA ALMACENAR LAS PERSONAS CON LOS DEPARTAMENTOS Y SUS ROLES EN LOS DEPARTAMENTOS
+-- CON UN BOOLEANO PARA MARCAR DISPONIBILIDAD ACTUAL Y TENER REGISTRO DE CAMBIOS
+create table entity_department_occupation(
+    id_edo int not null primary key auto_increment,
+    entity_fk int not null,
+    department_fk int not null,
+    occupation_fk int not null,
+    status_edo bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (entity_fk) references entity(id_entity),
+    foreign key (department_fk) references department(id_department),
+    foreign key (occupation_fk) references occupation(id_occupation)
+);
+
+-- TABLA PARA ALMACENAR LOS DISTINTOS TIPOS DE DOCUMENTOS DE UNA PERSONA
+-- SE PUEDE AGREGAR CAMPO DE RENOVACION, CONSULTAR SI EN ESTA TABLA O EN LA DE DOCUMENT 
+create table entity_document(
+    id_ed int not null primary key auto_increment,
+    entity_fk int not null,
+    document_fk int not null,
+    value_ed varchar(50) not null,
+    status_ed bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (entity_fk) references entity(id_entity),
+    foreign key (document_fk) references document(id_document)
+);
+
+-- TABLA PARA ALMACENAR LOS CUESTIONARIOS DE DESEMPENO
+create table evaluation_performance(
+    id_ep int not null primary key auto_increment,
+    name_ep varchar(30) not null,
+    start_ep datetime not null,
+    end_ep datetime not null,
+    status_ep bool not null default 1,
+    author_fk int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (author_fk) references user(id_user)
+);
+
+-- TABLA PARA ALMACENAR LAS PREGUNTAS, Y RELACIONAR CON LOS CUESTIONARIOS
+create table evaluation_performance_question(
+    id_epq int not null primary key auto_increment,
+    question_epq text not null,
+    ep_fk int not null,
+    is_obligatory bool,
+    description_epq text,
+    status_epq bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (ep_fk) references evaluation_performance(id_ep)
+);
+
+-- TABLA PARA ALMACENAR LAS RESPUESTAS DE LOS CUESTIONARIOS
+create table answer_performance (
+    id_ap int not null primary key auto_increment,
+    author_fk int not null,
+    ep_fk int not null,
+    evaluated_fk int not null,
+    is_complete bool not null default 1,
+    date_complete date not null,
+    status_ap bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (author_fk) references user(id_user),
+    foreign key (evaluated_fk) references user(id_user),
+    foreign key (ep_fk) references evaluation_performance(id_ep)
+);
+
+create table detail_evaluation_performance(
+    id_dep int not null primary key auto_increment,
+    epq_fk int not null,
+    ap_fk int not null,
+    score_dep int not null,
+    description_dep text,
+    status_dep bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (epq_fk) references evaluation_performance_question(id_epq),
+    foreign key (ap_fk) references answer_performance(id_ap)
+);
+
+-- TABLA PARA ALMACENAR LOS MENSAJES
+create table subject_message(
+    id_sm int not null primary key auto_increment,
+    name_sm varchar(50) not null,
+    status_sm bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table message(
+    id_message int not null primary key auto_increment,
+    sm_fk int not null,
+    text_message text not null,
+    url_file text,
+    autor_fk int not null,
+    receptor_fk int not null,
+    status_message bool not null default 1,
+    has_seen bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (sm_fk) references subject_message(id_sm),
+    foreign key (autor_fk) references user(id_user),
+    foreign key (receptor_fk) references user(id_user)
+);
+
+create table request_capacitation(
+    id_rc int not null primary key auto_increment,
+    title_rc varchar(50) not null,
+    description_rc text not null,
+    user_fk int not null,
+    status_rc bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (user_fk) references user(id_user)
+);
+
+create table status_request(
+    id_sr int not null primary key auto_increment,
+    name_sr varchar(20) not null,
+    status_sr bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table response_request_capacitation(
+    id_rrc int not null primary key auto_increment,
+    sr_fk int not null,
+    description_rrc text,
+    user_fk int not null,
+    rc_fk int not null,
+    status_rqc bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (sr_fk) references status_request(id_sr),
+    foreign key (user_fk) references user(id_user),
+    foreign key (rc_fk) references request_capacitation(id_rc)
+);
+
+create table type_of_leave(
+    id_tol int not null primary key auto_increment,
+    name_tol varchar(40) not null,
+    status_tol bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table leave_request(
+    id_lr int not null primary key auto_increment,
+    tol_fk int not null,
+    reason_lr text not null,
+    start_lr date,
+    end_lr date,
+    user_fk int not null,
+    status_lr bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (tol_fk) references type_of_leave(id_tol),
+    foreign key (user_fk) references user(id_user)
+);
+
+create table type_attachment (
+    id_ta int not null primary key auto_increment,
+    name_ta varchar(30) not null,
+    status_ta bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table entity_type_attachment(
+    id_eta int not null primary key auto_increment,
+    entity_fk int not null,
+    ta_fk int not null,
+    status_eta bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (entity_fk) references entity(id_entity),
+    foreign key (ta_fk) references type_attachment(id_ta)
+);
+
+create table leave_response_request(
+    id_lrr int not null primary key auto_increment,
+    user_fk int not null,
+    sr_fk int not null,
+    lr_fk int not null,
+    description_lrr text not null,
+    created_at datetime not null default now(),
+    status_lrq bool not null default 1,
+    updated_at datetime not null default now(),
+    
+    foreign key (user_fk) references user(id_user),
+    foreign key (sr_fk) references status_request(id_sr),
+    foreign key (lr_fk) references leave_request(id_lr)
+);
+
+CREATE TABLE module (
+    id_module int NOT NULL PRIMARY KEY auto_increment,
+    name_module varchar(50) not null,
+    url_module text NOT NULL,
+    status_module bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+CREATE TABLE profile_module(
+    id_pm int NOT NULL PRIMARY KEY auto_increment,
+    profile_fk int NOT NULL,
+    module_fk int NOT NULL,
+    status_pm bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    FOREIGN KEY (profile_fk) REFERENCES profile(id_profile),
+    FOREIGN KEY (module_fk) REFERENCES module(id_module)
+);
+
+create table parent_menu(
+    id_pm int not null primary key auto_increment,
+    name_pm varchar(40) not null,
+    nm_fk int not null,
+    status_pm bool not null default 1,
+    order_pm int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (nm_fk) references navigation_menu(id_nm)
+);
+
+create table module_parent(
+    id_mp int not null primary key auto_increment,
+    pm_fk int not null,
+    module_fk int not null,
+    status_mp bool not null default 1,
+    order_mp int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (pm_fk) references parent_menu(id_pm),
+    foreign key (module_fk) references module(id_module)
+);
+
+create table country (
+    id_country int not null primary key auto_increment,
+    name_country varchar(60) not null,
+    abbreviation_country varchar(10) not null,
+    status_country bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table state(
+    id_state int not null primary key auto_increment,
+    name_state varchar(50) not null,
+    country_fk int not null,
+    status_state bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    foreign key (country_fk) references country(id_country)
+);
+
+create table city(
+    id_city int not null primary key auto_increment,
+    name_city varchar(50) not null,
+    state_fk int not null,
+    status_city bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    foreign key (state_fk) references state(id_state)
+);
+
+create table address(
+    id_address int not null primary key auto_increment,
+    description_address text not null,
+    city_fk int not null,
+    entity_fk int not null,
+    status_address bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (city_fk) references city(id_city),
+    foreign key (entity_fk) references entity(id_entity)
+);
+
+create table type_of_termination (
+    id_tot int not null primary key auto_increment,
+    description_tot varchar(50) not null,
+    status_tot bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now()
+);
+
+create table termitation_entity (
+    id_te int not null primary key auto_increment,
+    tot_fk int not null,
+    entity_fk int not null,
+    date_te date not null,
+    status_tot bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (tot_fk) references type_of_termination(id_tot),
+    foreign key (entity_fk) references entity(id_entity)
+);
+
+create table satisfaction_questionnaire(
+    id_sq int not null primary key auto_increment,
+    name_sq varchar(50) not null,
+    start_sq date not null,
+    end_sq date not null,
+    status_sq bool default 1,
+    author_fk int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (author_fk) references user(id_user)
+);
+
+create table question_satisfaction_questionnaire(
+    id_qsq int not null primary key auto_increment,
+    description_qsq text not null,
+    is_obligatory bool not null default 1,
+    status_qsq bool not null default 1,
+    sq_fk int not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (sq_fk) references satisfaction_questionnaire(id_sq)
+);
+
+create table answer_satisfaction_questionnaire(
+    id_asq int not null primary key auto_increment,
+    user_fk int not null,
+    sq_fk int not null,
+    status_asq bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (user_fk) references user(id_user),
+    foreign key (sq_fk) references satisfaction_questionnaire(id_sq)
+);
+
+create table detail_satisfaction_questionnaire(
+    id_dsq int not null primary key auto_increment,
+    asq_fk int not null,
+    qsq_fk int not null,
+    score_dsq int not null,
+    description_dsq text,
+    status_dsq bool not null default 1,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now(),
+    
+    foreign key (asq_fk) references answer_satisfaction_questionnaire(id_asq),
+    foreign key (qsq_fk) references question_satisfaction_questionnaire(id_qsq)
+);
+
+
+-- 
+insert into contact(name_contact, status_contact, created_at, updated_at) values
+('Telefono fijo', 1, NOW(), NOW()),
+('Celular', 0, NOW(), NOW()),
+('Email', 1, NOW(), NOW()),
+('Discord', 0, NOW(), NOW());
+
+insert into nacionality(name_nacionality, abbreviation_nacionality, status_nacionality, created_at, updated_at) values 
+('Argentino/a', 'ARG', 1, NOW(), NOW()),
+('Brasileño/a', 'BRA', 0, NOW(), NOW()),
+('Paraguayo/a', 'PAR', 1, NOW(), NOW()),
+('Chileno/a', 'CHI', 0, NOW(), NOW());
+
+insert into type_of_leave(name_tol, status_tol, created_at, updated_at) values
+('Licencia por Enfermedad', 1, NOW(), NOW()),
+('Licencia por Maternidad', 0, NOW(), NOW()),
+('Vacaciones', 1, NOW(), NOW()),
+('Licencia no Remunerada', 0, NOW(), NOW());
+
+insert into status_request(name_sr, status_sr, created_at, updated_at) values
+('Pendiente', 1, NOW(), NOW()),
+('Aprobado', 0, NOW(), NOW()),
+('Rechazado', 1, NOW(), NOW()),
+('En Progreso', 0, NOW(), NOW());
+
+insert into sex(name_sex, status_sex, created_at, updated_at)
+values('Hombre', 1, now(), now());
+
+insert into document(name_document, status_document, created_at, updated_at) values
+('Pasaporte', 1, NOW(), NOW()),
+('Licencia de Conducir', 0, NOW(), NOW()),
+('Documento de Identidad', 1, NOW(), NOW()),
+('Certificado de Nacimiento', 0, NOW(), NOW());
+
+insert into department(name_department, status_department, created_at, updated_at) values
+("Contabilidad", 1, now(), now()),
+('Recursos Humanos', 1, NOW(), NOW()),
+('Finanzas', 0, NOW(), NOW()),
+('Tecnología de la Información', 1, NOW(), NOW()),
+('Marketing', 0, NOW(), NOW());
+
+insert into occupation(name_occupation, salary_occupation, status_occupation, created_at, updated_at) VALUES
+("Contador", 12000, 1, now(), now()),
+('Ingeniero de Software', 60000.00, 1, NOW(), NOW()),
+('Contador', 45000.00, 0, NOW(), NOW()),
+('Gerente de Proyecto', 75000.00, 1, NOW(), NOW()),
+('Asociado de Ventas', 35000.00, 0, NOW(), NOW());
+
+
+INSERT INTO country (name_country, abbreviation_country, status_country, created_at, updated_at) VALUES
+('Argentina', 'ARG', 1, NOW(), NOW()),
+('Brasil', 'BRA', 1, NOW(), NOW()),
+('Paraguay', 'PAR', 1, NOW(), NOW());
+
+INSERT INTO type_of_termination (description_tot, status_tot, created_at, updated_at) VALUES
+('Despido con causa', 1, NOW(), NOW()),
+('Renuncia voluntaria', 1, NOW(), NOW()),
+('Finalización de contrato', 1, NOW(), NOW()),
+('Despido sin causa', 0, NOW(), NOW());
+
+
+INSERT INTO state (name_state, country_fk, status_state, created_at, updated_at) VALUES
+('Buenos Aires', 1, 1, NOW(), NOW()),
+('Córdoba', 1, 1, NOW(), NOW()),
+('São Paulo', 2, 1, NOW(), NOW()),
+('Rio de Janeiro', 2, 1, NOW(), NOW()),
+('Asunción', 3, 1, NOW(), NOW()),
+('Ciudad del Este', 3, 1, NOW(), NOW());
+
+INSERT INTO city (name_city, state_fk, status_city, created_at, updated_at) VALUES
+('La Plata', 1, 1, NOW(), NOW()),
+('Mar del Plata', 1, 1, NOW(), NOW()),
+('Bahía Blanca', 1, 1, NOW(), NOW()),
+('Villa Carlos Paz', 2, 1, NOW(), NOW()),
+('Río Cuarto', 2, 1, NOW(), NOW()),
+('San Francisco', 2, 1, NOW(), NOW()),
+('Campinas', 3, 1, NOW(), NOW()),
+('Santos', 3, 1, NOW(), NOW()),
+('São Bernardo do Campo', 3, 1, NOW(), NOW()),
+('Niterói', 4, 1, NOW(), NOW()),
+('Petrópolis', 4, 1, NOW(), NOW()),
+('Volta Redonda', 4, 1, NOW(), NOW()),
+('Lambaré', 5, 1, NOW(), NOW()),
+('Luque', 5, 1, NOW(), NOW()),
+('Fernando de la Mora', 5, 1, NOW(), NOW()),
+('Presidente Franco', 6, 1, NOW(), NOW()),
+('Hernandarias', 6, 1, NOW(), NOW()),
+('Minga Guazú', 6, 1, NOW(), NOW());
+
+
+
+insert into entity(name_entity, lastname_entity, date_birth_entity, sex_fk, nacionality_fk, status_entity, created_at, updated_at)
+values('Mauro','Lezcano', '1999/09/20',1,1,1,now(),now());
+
+
+insert into entity_department_occupation(entity_fk, department_fk, occupation_fk, status_edo, created_at, updated_at)
+values(1,1,1,1,now(),now());
+
+
+insert into navigation_menu(name_nm, status_nm, created_at, updated_at) values
+("Administrador", 1, now(), now()),
+("RRHH", 1, now(), now()),
+("Personal", 1, now(), now()),
+("Psicologo", 1, now(),now());
+
+
+insert into profile(name_profile, status_profile, nm_fk, created_at, updated_at) values
+("Administrador", 1, 1, now(), now()),
+("RRHH", 1,2, now(), now()),
+("Personal", 1,3, now(), now()),
+("Psicologo", 1,4, now(),now());
+
+-- MENU PARA ADMINISTRADOR 
+insert into parent_menu(name_pm, nm_fk, status_pm, order_pm, created_at, updated_at) values
+("Estadisticas", 1, 1, 1, now(), now()),
+("Personal", 1, 1, 2, now(), now()),
+("Departamentos", 1,1, 3, now(),now()),
+("Licencias", 1,1, 4, now(),now()),
+("Encuestas", 1, 1, 5, now(), now()),
+("Ajustes del Sistema",1,1, 6, now(),now());
+
+
+select * from parent_menu pm ;
+-- MENU PARA RRHH
+insert into parent_menu(name_pm, nm_fk, status_pm, order_pm, created_at, updated_at) values
+("Estadisticas", 2, 1, 1, now(), now()),
+("Personal", 2, 1, 2, now(), now()),
+("Departamentos", 2,1, 3, now(),now()),
+("Licencias", 2,1, 4, now(),now()),
+("Encuestas", 2, 1, 5, now(), now()),
+("Ajustes del Sistema",2,1, 6, now(),now());
+
+-- MENU PARA PERSONAL 
+insert into parent_menu(name_pm, nm_fk, status_pm, order_pm, created_at, updated_at) values
+("Licencias", 2,1, 1, now(),now()),
+("Encuestas", 2, 1, 2, now(), now()),
+("Ajustes del Sistema",2,1, 3, now(),now());
+
+-- RRHH MODULES
+insert into module(name_module, url_module, status_module, created_at, updated_at) values
+("Inicio","/rrhh/inicio", 1, now(), now()), /* 1 */
+("Estadisticas","/rrhh/estadisticas", 1, now(), now()),
+("Crear Personal","/rrhh/personal/crear", 1, now(), now()),
+("Ver Personal","/rrhh/personal/ver", 1, now(), now()),
+("Ver Departamentos","/rrhh/departamento/ver", 1, now(), now()), /* 5 */
+("Asignacion de Departamentos","/rrhh/departamento/asignar", 1, now(), now()),
+("Solicitudes de licencia","/rrhh/solicitud/licencia", 1, now(), now()),
+("Solicitudes de Capacitacion","/rrhh/solicitud/capacitacion", 1, now(), now()),
+("Encuestas de Rendimiento","/rrhh/encuesta/rendimiento", 1, now(), now()),
+("Encuestas de Satisfaccion","/rrhh/encuesta/satisfaccion", 1, now(), now()), /* 10 */
+("Ajustes de Datos","/rrhh/ajustes", 1, now(), now()),
+("Ocupacion","/rrhh/ajustes/ocupacion", 1, now(), now()),
+("Sexo","/rrhh/ajustes/sexo", 1, now(), now()),
+("Contacto","/rrhh/ajustes/contacto", 1, now(), now()),
+("Pais","/rrhh/ajustes/pais", 1, now(), now()), /* 15 */
+("Nacionalidad","/rrhh/ajustes/nacionalidad", 1, now(), now()),
+("Tipo de Estado de solicitud","/rrhh/ajustes/tipo_estado_solicitud", 1, now(), now()),
+("Modulo","/rrhh/ajustes/modulo", 1, now(), now()),
+("Tipo de Renuncia","/rrhh/ajustes/tipo_renuncia", 1, now(), now()),
+("Tipo de Documento","/rrhh/ajustes/documento", 1, now(), now()), /* 20 */
+("Departamento","/rrhh/ajustes/departamento", 1, now(), now()),
+("Tipo de Asunto de Mensaje","/rrhh/ajustes/tipo_asunto_mensaje", 1, now(), now()),
+("Tipo de Anexo","/rrhh/ajustes/tipo_anexo", 1, now(), now());
+
+-- ADMIN MODULES
+insert into module(name_module, url_module, status_module, created_at, updated_at) values
+("Inicio","/admin/inicio", 1, now(), now()),
+("Asignacion de Modulos", "/admin/perfiles", 1, now(),now()), /* 25 */
+("Menu de navegacion","/admin/navegacion", 1, now(), now()),
+("Asignacion de Menu de navegacion","/admin/navegacion/asignacion", 1, now(), now());
+
+-- EMPLEADO MODULES
+insert into module(name_module, url_module, status_module, created_at, updated_at) values
+("Inicio","/personal/inicio", 1, now(), now()),
+("Solicitudes de licencia","/personal/solicitud/licencia", 1, now(), now()),
+("Solicitudes de Capacitacion","/personal/solicitud/capacitacion", 1, now(), now()), /* 30 */
+("Mis Encuestas","/personal/encuesta", 1, now(), now()),
+("Encuesta de Rendimiento","/personal/encuesta/rendimiento", 1, now(), now()),
+("Encuesta de Satisfaccion","/personal/encuesta/satisfaccion", 1, now(), now()),
+("Ajustes de cuenta", "/personal/ajustes", 1, now(), now()), /* 34 */
+-- MODULO DE PERFIL
+('Perfil', "/profile", 1, now(),now());
+
+
+-- CONTRASEÑA
+insert into module(name_module, url_module, status_module, created_at, updated_at) values
+('Cambiar contraseña rrhh', "/rrhh/contraseña/cambiar", 1, now(),now()),
+('Cambiar contraseña empleado', "/personal/contraseña/cambiar", 1, now(),now());
+
+-- ADMINISTRADOR
+insert into module_parent(pm_fk, module_fk, status_mp, order_mp, created_at, updated_at) values
+(2,3,1, 1,now(), now()),
+(2,4,1,2,now(), now()),
+(3,5,1,1,now(), now()),
+(3,6,1,2,now(), now()),
+(4,7,1,1,now(), now()),
+(4,8,1,2,now(), now()),
+(5,9,1,1,now(), now()),
+(5,10,1,2,now(), now()),
+-- AJUSTES PARA ADMINISTRADOR
+(6,11,1,1,now(), now()),
+(6,25,1,2,now(), now());
+
+-- RECURSOS HUMANOS
+insert into module_parent(pm_fk, module_fk, status_mp, order_mp, created_at, updated_at) values
+(7,2,1,1,now(), now()),
+(8,3,1, 1,now(), now()),
+(8,4,1,2,now(), now()),
+(9,5,1,1,now(), now()),
+(9,6,1,2,now(), now()),
+(10,7,1,1,now(), now()),
+(10,8,1,2,now(), now()),
+(11,9,1,1,now(), now()),
+(11,10,1,2,now(), now()),
+-- AJUSTES PARA RRHH
+(12,11,1,1,now(), now());
+
+-- PERSONAL
+insert into module_parent(pm_fk, module_fk, status_mp, order_mp, created_at, updated_at) values
+(4,28,1, 1,now(), now()),
+(4,29,1, 2,now(), now()),
+(5,31,1,2,now(), now()),
+(5,32,1,2,now(), now()),
+(6,33,1,1,now(), now());
+
+-- MODULOS ADMINISTRADOR
+insert into profile_module(profile_fk, module_fk, status_pm, created_at, updated_at) values 
+(1,2,1,now(),now()),
+(1,3,1,now(),now()),
+(1,4,1,now(),now()),
+(1,5,1,now(),now()),
+(1,6,1,now(),now()),
+(1,7,1,now(),now()),
+(1,8,1,now(),now()),
+(1,9,1,now(),now()),
+(1,10,1,now(),now()),
+(1,11,1,now(),now()),
+(1,12,1,now(),now()),
+(1,13,1,now(),now()),
+(1,14,1,now(),now()),
+(1,15,1,now(),now()),
+(1,16,1,now(),now()),
+(1,17,1,now(),now()),
+(1,18,1,now(),now()),
+(1,19,1,now(),now()),
+(1,20,1,now(),now()),
+(1,21,1,now(),now()),
+(1,22,1,now(),now()),
+(1,23,1,now(),now()),
+(1,24,1,now(),now()),
+(1,25,1,now(),now()),
+(1,26,1,now(),now()),
+(1,27,1,now(),now()),
+(1,35,1,now(),now());
+
+-- MODULOS RRHH
+insert into profile_module(profile_fk, module_fk, status_pm, created_at, updated_at) values 
+(2,1,1,now(),now()),
+(2,2,1,now(),now()),
+(2,3,1,now(),now()),
+(2,4,1,now(),now()),
+(2,5,1,now(),now()),
+(2,6,1,now(),now()),
+(2,7,1,now(),now()),
+(2,8,1,now(),now()),
+(2,9,1,now(),now()),
+(2,10,1,now(),now()),
+(2,11,1,now(),now()),
+(2,12,1,now(),now()),
+(2,13,1,now(),now()),
+(2,14,1,now(),now()),
+(2,15,1,now(),now()),
+(2,16,1,now(),now()),
+(2,17,1,now(),now()),
+(2,18,1,now(),now()),
+(2,19,1,now(),now()),
+(2,20,1,now(),now()),
+(2,21,1,now(),now()),
+(2,22,1,now(),now()),
+(2,23,1,now(),now()),
+(2,35,1,now(),now());
+
+-- MODULOS PERSONAL
+insert into profile_module(profile_fk, module_fk, status_pm, created_at, updated_at) values 
+(3,28,1,now(),now()),
+(3,29,1,now(),now()),
+(3,30,1,now(),now()),
+(3,31,1,now(),now()),
+(3,32,1,now(),now()),
+(3,33,1,now(),now()),
+(3,34,1,now(),now()),
+(3,35,1,now(),now());
+
+select * from module;
+
+insert into entity(name_entity, lastname_entity, date_birth_entity, sex_fk, nacionality_fk, status_entity, created_at, updated_at)
+values('Mauro','Recurso', '1999/09/20',1,1,1,now(),now());
+
+
+insert into entity_department_occupation(entity_fk, department_fk, occupation_fk, status_edo, created_at, updated_at)
+values(2,2,4,1,now(),now());
+
+
+insert into user(username_user, pwd_user, avatar_user, haspwdchanged_user ,status_user, created_at, updated_at, entity_fk, profile_fk)
+values('maurolezcano81', 'mauroAdmin', 'uploads/avatars/admin.jpg', 1, 1, now(), now(),1, 1);
+
+insert into user(username_user, pwd_user, avatar_user, haspwdchanged_user ,status_user, created_at, updated_at, entity_fk, profile_fk)
+values('maurolezcano82', 'mauroEmpleado', 'uploads/avatars/rrhh.jfif', 1, 1, now(), now(),2, 2);
+
+
+select name_module, url_module, id_pm  from profile_module pm
+join module m on pm.module_fk = m.id_module 
+join profile p on pm.profile_fk = p.id_profile 
+join user u on p.id_profile = u.profile_fk
+where u.id_user = 1;
+
+SELECT m.name_module, m.id_module
+FROM module m
+LEFT JOIN profile_module pm 
+    ON m.id_module = pm.module_fk
+    AND pm.profile_fk = 4
+WHERE pm.module_fk IS NULL;
+
+
+SELECT url_module 
+FROM profile_module pm
+JOIN module m ON pm.module_fk = m.id_module 
+JOIN profile p ON pm.profile_fk = p.id_profile 
+JOIN user u ON p.id_profile = u.profile_fk
+WHERE u.id_user = 1 AND url_module LIKE '%/inicio%';
+
+
+select * from module;
+
+SELECT id_user, username_user, avatar_user, status_user, name_entity, lastname_entity, name_profile, url_module as "home_page", u.profile_fk, name_occupation 
+FROM user u 
+JOIN entity e on u.entity_fk = e.id_entity 
+join profile p on u.profile_fk = p.id_profile
+join profile_module pm on pm.profile_fk = p.id_profile 
+JOIN module m ON pm.module_fk = m.id_module 
+join entity_department_occupation edo on e.id_entity = edo.entity_fk 
+join occupation o on edo.occupation_fk = o.id_occupation 
+WHERE username_user="maurolezcano82"
+AND url_module LIKE '%/inicio%'
+;
+
+
+select * from user;
+select * from entity_contact ec ;
+select * from entity_department_occupation edo;
+select * from entity_document ed ;
+select * from employee e ;
+
+SELECT * FROM USER where id_user = 1 and haspwdchanged_user = 0;
+
+-- OBTENER LOS PADRES
+select pa_me.id_pm, name_pm from module_parent mp 
+join module m on mp.module_fk = m.id_module 
+join profile_module pm on m.id_module = pm.module_fk 
+join profile p on pm.profile_fk = p.id_profile 
+join parent_menu pa_me on mp.pm_fk = pa_me.id_pm 
+where id_profile = 1 group by name_pm order by pa_me.order_pm asc;
+
+-- OBTENER LOS HIJOS
+select id_module, name_module, url_module  from module_parent mp 
+join module m on mp.module_fk = m.id_module 
+join profile_module pm on m.id_module = pm.module_fk 
+join profile p on pm.profile_fk = p.id_profile 
+join parent_menu pa_me on mp.pm_fk = pa_me.id_pm 
+where id_profile = 1 and pa_me.id_pm = 2 order by mp.order_mp asc;
+
+select * from module_parent;
+
+select * from type_attachment;
+select * from contact;
+
+select * from entity_department_occupation edo join
+department d on edo.department_fk = d.id_department 
+where edo.entity_fk = 1;
+
+insert into subject_message(name_sm, status_sm, created_at, updated_at) values("Tecnico", 1, now(), now());
+insert into subject_message(name_sm, status_sm, created_at, updated_at) values("Tecnica", 1, now(), now());
+insert into subject_message(name_sm, status_sm, created_at, updated_at) values("Tecnics", 1, now(), now());
+
+select * from subject_message order by id_sm desc;
+select * from profile;
+
+select * from user;
+
+select * from entity_document ed;
+select * from state where country_fk = 1;
+select name_document, value_ed from entity_document ed join document d on ed.document_fk = d.id_document join entity e on ed.entity_fk = e.id_entity where e.id_entity = 1;
+
+SELECT name_entity, lastname_entity, name_nacionality, name_sex, TIMESTAMPDIFF(YEAR, date_birth_entity, CURDATE()) as edad, date_birth_entity from entity e join nacionality n on e.nacionality_fk = n.id_nacionality join sex s on e.sex_fk = s.id_sex where e.id_entity = 1;
+
+select * from entity_contact ec ;
+
+select * from employee e ;
+
+insert into entity_document(entity_fk, document_fk, value_ed) values (4, 1, "11111111");
+
+SELECT name_profile from user u join profile p on u.profile_fk = p.id_profile where id_user = 4;
