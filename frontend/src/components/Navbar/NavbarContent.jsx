@@ -7,14 +7,10 @@ const NavbarContent = () => {
   const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_MENUPARENTS}`;
 
   const { authData } = useAuth();
-  console.log(authData.profile_fk);
   const { navbarRefresh } = useNav()
   const [parentList, setParentList] = useState([]);
 
   const token = JSON.parse(localStorage.getItem('token'))
-
-  console.log('Navbarcontent');
-  console.log('refresh?')
 
   useEffect(() => {
     if (token) {

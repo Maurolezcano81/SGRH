@@ -1,6 +1,7 @@
 import Address from "../Edit/Fields/Employee/Address";
 
-const AddressData = ({ addressData, updateProfile }) => {
+const AddressData = ({ addressData, updateProfile, permissionsData,
+    isEditMode }) => {
     const address = addressData?.["0"];
 
     if (!address) {
@@ -13,11 +14,13 @@ const AddressData = ({ addressData, updateProfile }) => {
                 <h2>Domicilio</h2>
             </div>
 
-        <Address 
-            address={address}
-            title_modal={"Editar dirección"}
-            updateProfile={updateProfile}
-        />
+            <Address
+                address={address}
+                title_modal={"Editar dirección"}
+                updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
+            />
 
             <div className="input__form__div">
                 <p className="input__form__div__label">Ciudad: </p>

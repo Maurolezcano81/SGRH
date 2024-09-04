@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import ModalLabelInput from "../../../../../../components/Modals/Updates/ModalLabelInput";
 import EditButton from "../../../../../../components/Buttons/EditButton";
 
-const DateBirth = ({ entity, updateProfile }) => {
+const DateBirth = ({ entity, updateProfile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
 
 
-    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT}`
     const update = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITY_DATE}`
 
     const handleSingleEditClick = () => {
@@ -40,9 +40,9 @@ const DateBirth = ({ entity, updateProfile }) => {
 
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Fecha de nacimiento: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
 
                 <p className="input__form__div__input">{formatDateYear(entity.date_birth_entity)}</p>

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import ModalLabelInput from "../../../../../../components/Modals/Updates/ModalLabelInput";
 import EditButton from "../../../../../../components/Buttons/EditButton";
 
-const Username = ({ user, updateProfile, profile }) => {
+const Username = ({ user, updateProfile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
@@ -29,9 +30,9 @@ const Username = ({ user, updateProfile, profile }) => {
             <div className="input__form__div">
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Nombre de usuario: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
                 <p className="input__form__div__input">{user.username_user}</p>
             </div>

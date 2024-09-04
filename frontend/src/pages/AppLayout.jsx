@@ -151,7 +151,7 @@ const AppLayout = () => {
   };
 
   const goToChangePwd = () => {
-    navigate('profile', { state: { value_user: authData.id_user } });
+    navigate('/profile', { state: { value_user: authData.id_user, isRedirectToChangePwd: true } });
     setShowPwdChangedModal(false);
   };
 

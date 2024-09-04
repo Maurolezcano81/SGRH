@@ -7,7 +7,8 @@ import Nacionality from '../Edit/Fields/Personal/Nacionality';
 import Sex from '../Edit/Fields/Personal/Sex';
 
 
-const PersonalData = ({ personalData, updateProfile }) => {
+const PersonalData = ({ personalData, updateProfile, permissionsData,
+    isEditMode }) => {
     const entity = personalData?.entity?.["0"];
     const documents = Object.values(personalData?.documents || {});
 
@@ -24,27 +25,37 @@ const PersonalData = ({ personalData, updateProfile }) => {
             <NameEntity
                 entity={entity}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <LastNameEntity
                 entity={entity}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <DocumentsEdit
                 documents={documents}
                 entity={entity}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <Nacionality
                 entity={entity}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <Sex
                 entity={entity}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <div className="input__form__div">
@@ -55,6 +66,8 @@ const PersonalData = ({ personalData, updateProfile }) => {
             <DateBirth
                 entity={entity}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
         </div>

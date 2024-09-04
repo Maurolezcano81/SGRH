@@ -131,6 +131,16 @@ button:hover {
   background-color: var(--blue-3);
 }
 
+.button__editable {
+  padding: 0.5rem;
+  color: var(--white-1);
+  box-shadow: var(--shadow-a-25-b-02);
+}
+
+.button__editable.white {
+  color: var(--black-0);
+}
+
 .button__black {
   padding: 0.5rem;
   background-color: var(--blue-1);
@@ -630,7 +640,11 @@ input {
   font-size: var(--size-preferences-row);
 }
 
-.table__preference__head tr th {
+.table__search__buttons__container {
+  width: 100%;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .input__form__div__container {
@@ -1131,8 +1145,7 @@ input {
   flex-direction: column;
 }
 
-
-.container__content{
+.container__content {
   width: 80%;
 }
 
@@ -1170,16 +1183,19 @@ input {
   min-width: 100%;
 }
 
-.table__primary__pagination{
+.table__primary__pagination {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: space-between;
+  gap: 5px;
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
-.table__primary__pagination button{
+.table__primary__pagination button {
   margin: 2rem 0;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   text-align: center;
   vertical-align: middle;
   background-color: var(--blue-0);
@@ -1187,8 +1203,8 @@ input {
   box-shadow: var(--shadow-a-25-b-02);
 }
 
-.table__primary__img{
-  border: .2rem solid var(--blue-0);
+.table__primary__img {
+  border: 0.2rem solid var(--blue-0);
   border-radius: 100%;
   max-height: 6rem;
   max-width: 6rem;
@@ -1222,56 +1238,70 @@ input {
   cursor: pointer;
 }
 
-.table__primary__pagination__info{
+.table__primary__pagination__info {
   padding: 1rem 2rem;
   background-color: var(--blue-0);
   color: var(--white-2);
   box-shadow: var(--shadow-a-25-b-02);
 }
 
-.table__primary__pagination__buttons{
+.table__primary__pagination__buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 3rem;
 }
 
-.table__primary__body__col{
+.table__primary__body__col {
 }
 
-.blue{
+.blue {
   background-color: var(--blue-0);
 }
 
-.red{
+.white {
+  background-color: var(--white-2);
+  box-shadow: var(--shadow-a-25-b-02);
+}
+
+.black {
+  background-color: var(--black-0);
+}
+
+.red {
   background-color: var(--red-1);
 }
 
-.table__primary__actions__container{
+.table__primary__actions__container {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
 }
 
-.button__img__text{
+.button__img__text {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
   justify-content: center;
   align-items: center;
   border: none;
   outline: none;
   background: none;
+  padding: 0.5rem;
 }
 
-.button__img__text img{
-  width: 3rem;
-  height: 3rem;
+.button__img__text img {
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
-  padding: .5rem;
+  padding: 0.5rem;
+}
+
+.button__img__text p {
+  width: max-content;
 }
 
 .table__primary th {

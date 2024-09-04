@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import EditButton from "../../../../../../components/Buttons/EditButton";
 import ModalLabelSelect from "../../../../../../components/Modals/Updates/ModalLabelSelect";
 
-const OccupationUpdate = ({ occupation, updateProfile }) => {
+const OccupationUpdate = ({ occupation, updateProfile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
@@ -28,9 +29,9 @@ const OccupationUpdate = ({ occupation, updateProfile }) => {
 
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Puesto de trabajo: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
                 <p
                     className="input__form__div__input">

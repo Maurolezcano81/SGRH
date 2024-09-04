@@ -4,7 +4,8 @@ import EditButton from '../../../../../../components/Buttons/EditButton'
 import ButtonBlue from '../../../../../../components/ButtonBlue';
 import ButtonRed from '../../../../../../components/ButtonRed';
 
-const Address = ({ address, title_modal, updateProfile }) => {
+const Address = ({ address, title_modal, updateProfile, permissionsData,
+    isEditMode }) => {
     const [listCountries, setListCountries] = useState([]);
     const [listStates, setListStates] = useState([]);
     const [listCities, setListCities] = useState([]);
@@ -32,9 +33,6 @@ const Address = ({ address, title_modal, updateProfile }) => {
         });
         setSingleModalIsOpen(true);
     };
-
-    console.log(initialData)
-    console.log(address)
 
 
     const handleSingleCloseModal = () => {
@@ -191,7 +189,9 @@ const Address = ({ address, title_modal, updateProfile }) => {
             <div className="input__form__div">
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Domicilio: </p>
-                    <EditButton handleClick={handleSingleEditClick} />
+                    {(isEditMode && (permissionsData?.isTheSameUser || permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
 
                 <p className="input__form__div__input">{address.description_address}</p>
@@ -253,7 +253,7 @@ const Address = ({ address, title_modal, updateProfile }) => {
                                     </label>
                                     <select
                                         onChange={onChangeCityAddress}
-                                        value={ address.id_city || initialData.city_fk}
+                                        value={address.id_city || initialData.city_fk}
                                         className="input__form__div__input"
                                         name="city_fk"
                                         id="city_fk"

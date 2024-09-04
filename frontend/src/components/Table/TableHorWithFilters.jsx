@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PreferenceTitle from '../../pages/MasterTables/PreferenceTitle';
 import ButtonRed from '../ButtonRed';
 import ButtonImgTxt from '../ButtonImgTex';
-import Services from "../../assets/Icons/Buttons/Services.png"
+import ButtonWhiteOutlineBlack from '../Buttons/ButtonWhiteOutlineBlack';
 
 const TableHorWithFilters = ({
     url,
@@ -17,13 +17,14 @@ const TableHorWithFilters = ({
     initialSearchField = '',
     actions = {},
     showActions = {},
-    handleModalAdd,
     title_table,
     actionColumn = '',  // Nueva prop para especificar la propiedad del row
     paginationLabelInfo,
     buttonOneInfo = { img: "", color: "", title: "" },
     buttonTwoInfo = { img: "", color: "", title: "" },
-    buttonTreeInfo = { img: "", color: "", title: "" }
+    buttonTreeInfo = { img: "", color: "", title: "" },
+    addButtonTitle,
+    isStatusUpdated = false
 }) => {
     // Estados
     const [data, setData] = useState([]);
@@ -82,7 +83,7 @@ const TableHorWithFilters = ({
 
     useEffect(() => {
         fetchData();
-    }, [filters, sortField, sortOrder, pagination.offset, pagination.limit, searchTerm, searchField]);
+    }, [filters, sortField, sortOrder, pagination.offset, pagination.limit, searchTerm, searchField, isStatusUpdated]);
 
     // Funciones para manejar el orden
     const handleSort = (field) => {
@@ -139,7 +140,7 @@ const TableHorWithFilters = ({
             <div className='container__content'>
                 <PreferenceTitle
                     title={title_table}
-                    onClick={handleModalAdd}
+                    addButtonTitle={addButtonTitle}
                 />
                 <div className='table__filters__container'>
                     <div className='table__search__container'>
@@ -160,9 +161,9 @@ const TableHorWithFilters = ({
 
                         <div className='table__search__buttons__container'>
                             {hiddenFilterSection ? (
-                                <ButtonImgTxt title={"Mostrar filtros"} onClick={toggleFiltersSection} img={Services} color={"red"}  />
+                            <ButtonWhiteOutlineBlack title={"Ocultar filtros avanzados"} onClick={toggleFiltersSection}  />
                             ) : (
-                                <ButtonImgTxt title={"Ocultar filtros"} onClick={toggleFiltersSection} img={Services} color={"red"}  />
+                            <ButtonWhiteOutlineBlack title={"Mostrar filtros avanzados"} onClick={toggleFiltersSection}  />
                             )}
                         </div>
                     </div>

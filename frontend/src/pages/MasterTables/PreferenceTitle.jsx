@@ -1,12 +1,12 @@
 import ButtonBlue from "../../components/ButtonBlue"
 
-const PreferenceTitle = (props) =>{
+const PreferenceTitle = ({title, addButtonTitle}) =>{
     return(
         <div className="preference-title">
-        <h4>{props.title}</h4>
+        <h4>{title}</h4>
         <ButtonBlue
             title={"Agregar Nuevo"}
-            onClick={props.handleModalAdd}
+            onClick={addButtonTitle}
         />
       </div>
     )

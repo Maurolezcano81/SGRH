@@ -4,7 +4,8 @@ import EditButton from "../../../../../../components/Buttons/EditButton";
 import ModalLabelSelect from "../../../../../../components/Modals/Updates/ModalLabelSelect";
 import useAuth from "../../../../../../hooks/useAuth";
 import useNav from '../../../../../../hooks/useNav';
-const ProfileUserUpdate = ({ user, updateProfile, profile }) => {
+const ProfileUserUpdate = ({ user, updateProfile, profile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
@@ -31,9 +32,9 @@ const ProfileUserUpdate = ({ user, updateProfile, profile }) => {
 
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Tipo de Permiso: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
                 <p
                     className="input__form__div__input">

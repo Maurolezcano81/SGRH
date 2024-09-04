@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import EditButton from "../../../../../../components/Buttons/EditButton";
 import ModalLabelSelect from "../../../../../../components/Modals/Updates/ModalLabelSelect";
 
-const Nacionality = ({ entity, updateProfile }) => {
+const Nacionality = ({ entity, updateProfile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
@@ -29,9 +30,9 @@ const Nacionality = ({ entity, updateProfile }) => {
 
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Nacionalidad: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
                 <p
                     className="input__form__div__input">

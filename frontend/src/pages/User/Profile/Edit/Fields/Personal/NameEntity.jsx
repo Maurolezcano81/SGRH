@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import ModalLabelInput from "../../../../../../components/Modals/Updates/ModalLabelInput";
 import EditButton from "../../../../../../components/Buttons/EditButton";
 
-const NameEntity = ({ entity, updateProfile }) => {
+const NameEntity = ({ entity, updateProfile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
@@ -31,9 +32,9 @@ const NameEntity = ({ entity, updateProfile }) => {
 
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Nombre: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isTheSameUser || permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
 
                 <p className="input__form__div__input">{entity.name_entity}</p>

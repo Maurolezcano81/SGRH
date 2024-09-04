@@ -15,7 +15,7 @@ const UserDataSection = ({
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [fileUrl, setFileUrl] = useState('');
   const [listProfiles, setListProfiles] = useState([]);
-  const getProfiles = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/profiles`;
+  const getProfiles = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_PROFILE}`;
 
   const { authData } = useAuth();
 

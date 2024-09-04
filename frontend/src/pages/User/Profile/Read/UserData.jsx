@@ -1,7 +1,8 @@
 import ProfileUserUpdate from "../Edit/Fields/User/ProfileUserUpdate";
 import Username from "../Edit/Fields/User/Username";
 
-const UserData = ({ userData, updateProfile }) => {
+const UserData = ({ userData, updateProfile, permissionsData,
+    isEditMode }) => {
     const user = userData?.user?.["0"];
     const contacts = Object.values(userData?.contacts || {});
     const profile = userData?.profile?.["0"];
@@ -27,6 +28,8 @@ const UserData = ({ userData, updateProfile }) => {
             <Username
                 user={user}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             {contacts.map((contact, index) => (
@@ -40,6 +43,8 @@ const UserData = ({ userData, updateProfile }) => {
                 user={user}
                 profile={profile}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <div className="input__form__div">

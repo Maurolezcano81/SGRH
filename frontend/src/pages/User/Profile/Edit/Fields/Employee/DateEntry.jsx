@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import ModalLabelInput from "../../../../../../components/Modals/Updates/ModalLabelInput";
 import EditButton from "../../../../../../components/Buttons/EditButton";
 
-const DateEntry = ({ employee, updateProfile }) => {
+const DateEntry = ({ employee, updateProfile, permissionsData,
+    isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
@@ -18,7 +19,6 @@ const DateEntry = ({ employee, updateProfile }) => {
             date_entry_employee: formatDateYear(employee.date_entry_employee)
         });
 
-        console.log(initialData);
         setSingleModalIsOpen(true);
     };
 
@@ -40,9 +40,9 @@ const DateEntry = ({ employee, updateProfile }) => {
 
                 <div className="input__form__div__container">
                     <p className="input__form__div__label">Fecha de ingreso: </p>
-                    <EditButton
-                        handleClick={() => handleSingleEditClick()}
-                    />
+                    {(isEditMode && (permissionsData?.isRrhh || permissionsData?.isAdmin)) ?(
+                        <EditButton handleClick={handleSingleEditClick} />
+                    ): null}
                 </div>
 
                 <p className="input__form__div__input">{formatDateYear(employee.date_entry_employee)}</p>

@@ -31,108 +31,165 @@ class UserController {
   }
 
 
+  async toggleStatusUser(req, res) {
+    const { id_user, status_user } = req.body;
+    try {
+
+      const checkUser = await this.user.getOne(id_user, this.nameFieldId);
+
+      if (checkUser.length < 1) {
+        return res.status(403).json({
+          message: "Este usuario no existe"
+        })
+      }
+
+      if (status_user != 1 && status_user != 0) {
+        return res.status(403).json({
+          message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
+        })
+      }
+
+
+      const update = await this.user.updateOne({ status_user: status_user }, ['id_user', id_user])
+
+      if (update.affectedRows < 1) {
+        return res.status(403).json({
+          message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Estado actualizado correctamente"
+      })
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getUsers(req, res) {
     const { limit, offset, order, orderBy, filters } = req.body;
 
-    const list = await this.user.getUsersInformation(limit, offset, orderBy, order, filters);
+    try {
+      const list = await this.user.getUsersInformation(limit, offset, orderBy, order, filters);
 
-    if (!list) {
-      return res.status(403).json({
-        message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
+      if (!list) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Lista de usuarios obtenida con exito",
+        list: list,
+        total: list.length
       })
+
+    } catch (error) {
+      console.log(error);
     }
 
-    return res.status(200).json({
-      message: "Lista de usuarios obtenida con exito",
-      list: list,
-      total: list.length
-    })
 
   }
 
   async checkToken(req, res) {
     const { id_user } = req;
 
-    const userDataLogin = await this.user.getUserDataLogin(id_user);
+    try {
+      const userDataLogin = await this.user.getUserDataLogin(id_user);
 
-    const dataToToken = {
-      userId: userDataLogin.id_user,
-      profile_fk: userDataLogin.profile_fk,
-    };
+      const dataToToken = {
+        userId: userDataLogin.id_user,
+        profile_fk: userDataLogin.profile_fk,
+      };
 
-    const queryResponse = {
-      ...userDataLogin,
-      token: createToken(dataToToken),
-    };
+      const queryResponse = {
+        ...userDataLogin,
+        token: createToken(dataToToken),
+      };
 
-    return res.status(200).json({
-      message: "Sesion verificada",
-      queryResponse
-    })
+      return res.status(200).json({
+        message: "Sesion verificada",
+        queryResponse
+      })
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   async updateProfile(req, res) {
     const { id_user, profile_fk } = req.body;
 
-    if (isNotNumber(profile_fk)) {
-      return res.status(403).json({
-        message: "Los datos del tipo de permiso son incorrectos, intente nuevamente actualizando la pagina"
+    try {
+      if (isNotNumber(profile_fk)) {
+        return res.status(403).json({
+          message: "Los datos del tipo de permiso son incorrectos, intente nuevamente actualizando la pagina"
+        })
+      }
+
+      if (isNotNumber(id_user)) {
+        return res.status(403).json({
+          message: "Los datos de la persona a actualizar son incorrectos, intente nuevamente actualizando la pagina"
+        })
+      }
+
+      const update = await this.user.updateOne({ id_user: id_user, profile_fk: profile_fk }, [this.nameFieldId, id_user]);
+
+      if (update.affectedRows < 1) {
+        return res.status(403).json({
+          message: "No se ha podido actualizar"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Nombre actualizado correctamente"
       })
+    } catch (error) {
+      console.log(error);
     }
 
-    if (isNotNumber(id_user)) {
-      return res.status(403).json({
-        message: "Los datos de la persona a actualizar son incorrectos, intente nuevamente actualizando la pagina"
-      })
-    }
 
-    const update = await this.user.updateOne({ id_user: id_user, profile_fk: profile_fk }, [this.nameFieldId, id_user]);
-
-    if (update.affectedRows < 1) {
-      return res.status(403).json({
-        message: "No se ha podido actualizar"
-      })
-    }
-
-    return res.status(200).json({
-      message: "Nombre actualizado correctamente"
-    })
   }
 
   async updateUsername(req, res) {
     const { id_user, username_user } = req.body;
 
-    if (isNotNumber(id_user)) {
-      return res.status(403).json({
-        message: "Los datos de la persona a actualizar son incorrectos, intente nuevamente actualizando la pagina"
+    try {
+      if (isNotNumber(id_user)) {
+        return res.status(403).json({
+          message: "Los datos de la persona a actualizar son incorrectos, intente nuevamente actualizando la pagina"
+        })
+      }
+
+      if (isInputEmpty(username_user)) {
+        return res.status(403).json({
+          message: "Debe completar todos los campos"
+        })
+      }
+
+      const checkExistsUsername = await this.user.getOne(username_user, this.nameFieldToSearch);
+
+      if (checkExistsUsername.length >= 1) {
+        return res.status(403).json({
+          message: "Este nombre de usuario ya existe"
+        })
+      }
+
+      const update = await this.user.updateOne({ username_user: username_user }, [this.nameFieldId, id_user]);
+
+      if (update.affectedRows < 1) {
+        return res.status(403).json({
+          message: "No se ha podido actualizar"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Nombre actualizado correctamente"
       })
+    } catch (error) {
+      console.log(error);
     }
-
-    if (isInputEmpty(username_user)) {
-      return res.status(403).json({
-        message: "Debe completar todos los campos"
-      })
-    }
-
-    const checkExistsUsername = await this.user.getOne(username_user, this.nameFieldToSearch);
-
-    if (checkExistsUsername.length >= 1) {
-      return res.status(403).json({
-        message: "Este nombre de usuario ya existe"
-      })
-    }
-
-    const update = await this.user.updateOne({ username_user: username_user }, [this.nameFieldId, id_user]);
-
-    if (update.affectedRows < 1) {
-      return res.status(403).json({
-        message: "No se ha podido actualizar"
-      })
-    }
-
-    return res.status(200).json({
-      message: "Nombre actualizado correctamente"
-    })
   }
 
   async getProfileUserData(req, res) {
@@ -216,23 +273,22 @@ class UserController {
 
       const canChangePwdRrhh = await this.user.canViewModule(id_user, '/rrhh/contraseña/cambiar');
 
-
       const canChangePwdEmployee = await this.user.canViewModule(id_user, '/personal/contraseña/cambiar');
 
-      let isRrhh;
-      let isEmployee;
+      const isAdminView = await this.user.canViewModule(id_user, '/admin/perfiles');
 
-      if (canChangePwdRrhh.length > 0) {
-        isRrhh = 1;
-      }
+      let isRrhh = canChangePwdRrhh.length > 0 ? 1 : 0;
 
-      if (canChangePwdEmployee.length > 0) {
-        isEmployee = 1;
-      }
+      let isEmployee = canChangePwdEmployee.length > 0 ? 1 : 0;
 
-      const canEdit = isRrhh === 1 || isEmployee === 1 ? true : false;
+      let isAdmin = isAdminView.length > 0 ? 1 : 0;
+
+      const canEdit = isRrhh === 1 || isEmployee === 1 || isAdmin === 1 ? true : false;
 
       const permissions__data = {
+        isAdmin: isAdmin,
+        isRrhh: isRrhh,
+        isEmployee: isEmployee,
         isTheSameUser: isTheSameUser,
         canEdit: canEdit,
       };
@@ -274,6 +330,14 @@ class UserController {
       }
     };
 
+    const formatDateYear = (dateString) => {
+      const date = new Date(dateString);
+      const day = date.getUTCDate().toString().padStart(2, '0');
+      const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+      const year = date.getUTCFullYear();
+      return `${year}-${month}-${day}`;
+    };
+
     try {
       const {
         entity_data,
@@ -296,17 +360,18 @@ class UserController {
       const entity_department_occupationInJson = JSON.parse(entity_department_occupation_data);
 
       const { name_entity, lastname_entity, date_birth_entity, sex_fk, nacionality_fk } = entity_dataInJson;
+      console.log(date_birth_entity);
       const { document_fk, value_ed } = entity_document_dataInJson;
       const { file_employee, date_entry_employee } = employee_dataInJson;
+      console.log(date_entry_employee);
       const { value_ec, contact_fk } = entity_contact_dataInJson;
       const { description_address, city_fk } = address_dataInJson;
       const { department_fk, occupation_fk } = entity_department_occupationInJson;
       const { username_user, pwd_user } = user_dataInJson;
 
-      const formatDate = (date) => date.split('-').join('/');
 
-      const date_birth_entity_formatted = formatDate(date_birth_entity);
-      const date_entry_employee_formatted = formatDate(date_entry_employee);
+      const date_birth_entity_formatted = formatDateYear(date_birth_entity);
+      const date_entry_employee_formatted = formatDateYear(date_entry_employee);
 
       // VALIDACIONES ENTIDAD
       if (
@@ -546,44 +611,45 @@ class UserController {
 
   async changePwdEmployee(req, res) {
     const { id_user, pwd_new, pwd_actual } = req.body;
+
+    console.log(req.body);
     try {
       if (isInputEmpty(id_user) || isInputEmpty(pwd_new) || isInputEmpty(pwd_actual)) {
         throw new Error('Debes completar todos los campos');
       }
 
+      // Verificar si el usuario existe en la base de datos
       const checkPwdInDb = await this.user.getOne(id_user, "id_user");
 
-      if (checkPwdInDb.length < 1) {
-        throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
+      if (!checkPwdInDb || checkPwdInDb.length < 1) {
+        throw new Error('Los datos para cambiar la contraseña son erróneos, intente reiniciando el sitio o más tarde');
       }
 
+      // Comparar la contraseña actual con la que está en la base de datos
       const isPwdCorrect = await comparePwd(pwd_actual, checkPwdInDb[0].pwd_user);
+
+      // Si la contraseña actual es incorrecta, devolver un error
+      if (!isPwdCorrect) {
+        return res.status(401).json({
+          message: 'La contraseña actual es incorrecta',
+        });
+      }
+
+      // Encriptar la nueva contraseña
       const hashPwd = await encryptPwd(pwd_new);
 
-      if (!isPwdCorrect) {
-        if (id_user === checkPwdInDb[0].id_user && pwd_actual === checkPwdInDb[0].pwd_user) {
-          const changePwdEmployee = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
+      // Actualizar la contraseña en la base de datos
+      const changePwdEmployee = await this.user.changePwdEmployee(id_user, hashPwd);
 
-          return res.status(200).json({
-            message: 'Cambio de contraseña finalizado de manera exitosa',
-            changePwdEmployee,
-          });
-        } else {
-          return res.status(401).json({
-            message: 'La contraseña actual es incorrecta',
-          });
-        }
-      }
-
-      const changePwdEmployee = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
-
+      // Respuesta de éxito
       return res.status(200).json({
         message: 'Cambio de contraseña finalizado de manera exitosa',
         changePwdEmployee,
       });
+
     } catch (error) {
-      console.error('Ha ocurrido un error en controlador de ' + error);
-      res.status(401).json({
+      console.error('Ha ocurrido un error en el controlador: ' + error.message);
+      return res.status(401).json({
         message: error.message,
       });
     }
@@ -592,21 +658,17 @@ class UserController {
 
   async changePwdAdmin(req, res) {
     const { id_user, pwd_user } = req.body;
+    console.log(req.body);
+
     try {
 
       if (isInputEmpty(id_user) || isInputEmpty(pwd_user)) {
         throw new Error('Debes completar todos los campos');
       }
 
-      const checkPwdInDb = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
-
-      if (checkPwdInDb.length < 1) {
-        throw new Error('Los datos para cambiar la contraseña son errones, intente reiniciando el sitio o mas tarde');
-      }
-
       const hashPwd = await encryptPwd(pwd_user);
 
-      const changePwdAdmin = await this.user.updateOne({ pwd_user: hashPwd }, ["id_user", id_user]);
+      const changePwdAdmin = await this.user.changePwdAdmin(id_user, pwd_user);
 
       return res.status(200).json({
         message: 'Cambio de contraseña finalizado de manera exitosa',
@@ -635,12 +697,12 @@ class UserController {
 
       if (results[0].haspwdchanged_user === 0) {
         return res.status(200).json({
-          haspwdchanged: true,
+          haspwdchanged: false,
         });
       }
 
       return res.status(200).json({
-        haspwdchanged: false,
+        haspwdchanged: true,
       });
     } catch (error) {
       console.error('Error al comprobar el cambio de contraseña del usuario:', error);

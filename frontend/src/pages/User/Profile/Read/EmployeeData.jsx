@@ -3,7 +3,8 @@ import FileEmp from "../Edit/Fields/Employee/FileEmp";
 import OccupationUpdate from "../Edit/Fields/Employee/OccupationUpdate.jsx";
 import DepartmentUpdate from "../Edit/Fields/Employee/DepartmentUpdate.jsx";
 
-const EmployeeData = ({ employeeData, updateProfile }) => {
+const EmployeeData = ({ employeeData, updateProfile, permissionsData,
+    isEditMode }) => {
     const occupation = employeeData?.occupation?.["0"];
     const department = employeeData?.department?.["0"];
     const employee = employeeData?.employee?.["0"];
@@ -21,11 +22,15 @@ const EmployeeData = ({ employeeData, updateProfile }) => {
             <FileEmp
                 employee={employee}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <DateEntry
                 employee={employee}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <div className="input__form__div">
@@ -36,12 +41,16 @@ const EmployeeData = ({ employeeData, updateProfile }) => {
             <OccupationUpdate
                 occupation={occupation}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
 
             <DepartmentUpdate
                 department={department}
                 updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
             />
 
             <div className="input__form__div">

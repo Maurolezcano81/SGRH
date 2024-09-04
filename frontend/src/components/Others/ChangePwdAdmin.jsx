@@ -42,39 +42,43 @@ const ChangePwdAdmin = ({ handleChangePwd, idUserToChange }) => {
   };
 
   return (
-    <form onSubmit={handleSubmitAdmin} className="change__pwd__container container__section">
-      <div className="input__form__div">
-        <label className="input__form__div__label" htmlFor="new_pwd">
-          Contraseña nueva
-        </label>
-        <input
-          type="password"
-          className="input__form__div__input"
-          name="new_pwd"
-          onChange={(e) => setNewPwd(e.target.value)}
-        />
-      </div>
 
-      <div className="input__form__div">
-        <label className="input__form__div__label" htmlFor="repeat_new_pwd">
-          Repetir contraseña nueva
-        </label>
-        <input
-          type="password"
-          className="input__form__div__input"
-          name="repeat_new_pwd"
-          onChange={(e) => setRepeatPwd(e.target.value)}
-        />
-      </div>
+    <div className='profile__header__container'>
+      <form onSubmit={handleSubmitAdmin} className="change__pwd__container container__section">
+        <div className="input__form__div">
+          <label className="input__form__div__label" htmlFor="new_pwd">
+            Contraseña nueva
+          </label>
+          <input
+            type="password"
+            className="input__form__div__input"
+            name="new_pwd"
+            onChange={(e) => setNewPwd(e.target.value)}
+          />
+        </div>
 
-      <div className="preferences__modal__error change__pwd ">
-        {message && <p className="error__validation__form-p">{message}</p>}
-      </div>
-      <div className="form__button__container">
-        <ButtonRed title={'Salir'} onClick={handleChangePwd} />
-        <ButtonBlue title="Guardar Cambios" onClick={handleSubmitAdmin} />
-      </div>
-    </form>
+        <div className="input__form__div">
+          <label className="input__form__div__label" htmlFor="repeat_new_pwd">
+            Repetir contraseña nueva
+          </label>
+          <input
+            type="password"
+            className="input__form__div__input"
+            name="repeat_new_pwd"
+            onChange={(e) => setRepeatPwd(e.target.value)}
+          />
+        </div>
+
+        <div className="preferences__modal__error change__pwd ">
+          {message && <p className="error__validation__form-p">{message}</p>}
+        </div>
+        <div className="form__button__container">
+          <ButtonRed title={'Salir'} onClick={handleChangePwd} />
+          <ButtonBlue title="Guardar Cambios" onClick={handleSubmitAdmin} />
+        </div>
+      </form>
+    </div>
+
   );
 };
 

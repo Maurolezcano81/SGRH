@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TableHorWithFilters from '../../../components/Table/TableHorWithFilters'; // Ajusta la ruta según sea necesario
 import useAuth from '../../../hooks/useAuth';
 import ButtonRed from '../../../components/ButtonRed';
 import User from "../../../assets/Icons/Buttons/User.png"
-import Trash from "../../../assets/Icons/Preferences/Trash.png"
+import UserDown from "../../../assets/Icons/Buttons/UserDown.png"
 import { useNavigate } from 'react-router-dom';
+import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
+import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 const ListUsers = () => {
+
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+
+    const urlToUpdateStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_USER_STATUS}`
+
     const { authData } = useAuth();
     const navigate = useNavigate();
 
     const columns = [
-        {field: 'avatar_user', label: ''},
+        { field: 'avatar_user', label: '' },
         { field: 'username_user', label: 'Nombre de usuario' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
@@ -52,13 +61,44 @@ const ListUsers = () => {
     ];
 
 
-    const viewAction = (row) => {
-        navigate("/profile", { state: {value_user: row.id_user}})
+    const navigateProfile = (row) => {
+        navigate("/profile", { state: { value_user: row.id_user } })
         console.log(row.id_user)
     };
 
-    const editAction = (row) => {
-        alert(`Editar: ${row.name}`);
+    const updateStatus = async (row) => {
+        const updatedStatus = row.status_user === 1 ? 0 : 1;
+        try {
+            const fetchResponse = await fetch(urlToUpdateStatus, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authData.token}`,
+                },
+                body: JSON.stringify(
+                    {
+                        id_user: row.id_user,
+                        status_user: updatedStatus
+                    }
+                ),
+            });
+
+            const data = await fetchResponse.json();
+
+            if (!fetchResponse.ok) {
+                setErrorMessage(data.message);
+                return;
+            }
+
+            setSuccessMessage(data.message);
+            setIsStatusUpdated(!isStatusUpdated)
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 800);
+        } catch (error) {
+            console.log('Error al actualizar el estado', error);
+            setErrorMessage('Error al actualizar el estado');
+        }
     };
 
     const deleteAction = (row) => {
@@ -67,38 +107,48 @@ const ListUsers = () => {
         }
     };
 
-    const handleModalAdd = () => {
-        console.log('add');
+    const addButtonTitle = () => {
+        navigate('/rrhh/personal/crear');
+        console.log('hola')
     }
 
-    return (
-        <TableHorWithFilters
-            url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
-            authToken={authData.token}
-            columns={columns}
-            filterConfigs={filterConfigs}
-            searchOptions={searchOptions}
-            initialSearchField={'name_entity'}
-            initialSearchTerm={''}
-            initialSort={{ field: 'name_entity', order: 'ASC' }}
-            actions={{
-                view: viewAction,
-                edit: (row) => console.log("Editar", row),
-                delete: (row) => console.log("Eliminar", row.id_user),
-            }}
-            showActions={{
-                view: true,
-                edit: false,
-                delete: true
-            }}
-            actionColumn='id_user'
-            handleModalAdd={handleModalAdd}
-            title_table={"Personal"}
-            paginationLabelInfo={"Usuarios"}
-            buttonOneInfo={{img: User, color: "blue", title: "Ver"}}
-            buttonTreeInfo={{img: Trash, color: "red", title: "Eliminar"}}
-            />
-    );
-};
 
+    return (
+        <>
+            {successMessage && <AlertSuccesfully message={successMessage} />}
+            {errorMessage && <ErrorMessage message={errorMessage} />}
+
+            <TableHorWithFilters
+                addButtonTitle={addButtonTitle}
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
+                authToken={authData.token}
+                columns={columns}
+                filterConfigs={filterConfigs}
+                searchOptions={searchOptions}
+                initialSearchField={'name_entity'}
+                initialSearchTerm={''}
+                initialSort={{ field: 'name_entity', order: 'ASC' }}
+                actions={{
+                    view: navigateProfile,
+                    edit: (row) => console.log("Editar", row),
+                    delete: updateStatus,
+                }}
+                showActions={{
+                    view: true,
+                    edit: false,
+                    delete: true
+                }}
+                actionColumn='id_user'
+                title_table={"Personal"}
+                paginationLabelInfo={"Usuarios"}
+                buttonOneInfo={{ img: User, color: "blue", title: "Ver" }}
+                buttonTreeInfo={{ img: UserDown, color: "black", title: "Dar de baja" }}
+                isStatusUpdated={isStatusUpdated}
+            />
+
+
+        </>
+
+    );
+}
 export default ListUsers;
