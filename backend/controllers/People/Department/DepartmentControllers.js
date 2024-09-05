@@ -6,6 +6,7 @@ class DepartmentController {
     this.model = new DepartmentModel()
     this.nameFieldId = 'id_department';
     this.nameFieldToSearch = 'name_department';
+    this.edo = new BaseModel('entity_department_occupation', 'id_edo');
   }
 
   async getDepartmentsInfo(req, res) {
@@ -60,6 +61,75 @@ class DepartmentController {
 
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async getEmployeesInOtherDepartment(req, res) {
+    const { id_department } = req.params;
+    const { limit, offset, order, typeOrder, filters } = req.body;
+
+    try {
+      const list = await this.model.getEmployeesInOtherDepartment(id_department, limit, offset, typeOrder, order, filters);
+
+
+      if (!list) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Lista de usuarios obtenida con exito",
+        list: list,
+        total: list.length
+      })
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async AddEmployeeToDepartment(req, res) {
+    const { id_edo, department_fk, entity_fk, occupation_fk } = req.body;
+
+
+
+    try {
+      if (isInputEmpty(department_fk) || isInputEmpty(entity_fk) || isInputEmpty(occupation_fk)) {
+        return res.status(403).json({
+          message: "Los datos para agregar un empleado son incorrectos"
+        })
+      }
+
+      const createEdo = await this.edo.createOne({
+        entity_fk: entity_fk,
+        department_fk: department_fk,
+        occupation_fk: occupation_fk
+      })
+
+      if (createEdo.affectedRows < 1) {
+        return res.status(403).json({
+          message: "Ha ocurrido un problema al agregar al empleado"
+        });
+      }
+
+      const updateOldEdo = await this.model.rotationPersonalOnDepartment(id_edo, department_fk)
+
+      if (updateOldEdo.affectedRows < 1) {
+        return res.status(403).json({
+          message: "Ha ocurrido un problema al agregar al empleado"
+        });
+      }
+
+      return res.status(200).json({
+        message: "Personal agregado correctamente",
+        createEdo
+      })
+    } catch (error) {
+      console.error('Error en controlador de departamento - getDepartments: ' + error.message);
+      return res.status(403).json({
+        message: error.message,
+      });
     }
 
   }

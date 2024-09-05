@@ -15,6 +15,12 @@
   --blue-2: #4682dd;
   --blue-3: #01101b;
 
+
+  --blue-0: #0c8ce9;
+  --red-5: #bb5f5f;
+  --green-5: #3daf71;
+
+
   --green-0: #9ae296;
   --green-1: #30ec26;
 
@@ -839,6 +845,46 @@ input {
   text-align: center;
 }
 
+.bg__red-5{
+  background-color: var(--red-5) !important;
+}
+
+.bg__green-5{
+  background-color: var(--green-5) !important;
+  color: var(--white-2);
+}
+
+.radius__top__both{
+  border-radius: 4rem 4rem 0 0 !important;
+}
+
+.modal__table__container {
+  padding: 2rem;
+  width: 90%;
+  height: auto;
+  background-color: var(--white-text-0);
+  box-shadow: var(--shadow-a-25-b-02);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 80;
+}
+
+.modal__table__exit__container{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0;
+
+}
+
+.modal__table__container{
+  width: 80%;
+}
+
+
 /* START MODAL PREFERENCE LAYOUT */
 
 /* END MODAL PREFERENCE LAYOUT */
@@ -1255,7 +1301,8 @@ input {
 }
 
 .blue {
-  background-color: var(--blue-0);
+  background-color: var(--blue-0) !important;
+  color: var(--white-2) !important; 
 }
 
 .white {

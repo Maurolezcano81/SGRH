@@ -6,13 +6,20 @@ import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 import TableSecondaryNotTitleAndWhereOnUrl from '../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl';
 import PreferenceTitle from '../../MasterTables/PreferenceTitle';
+import ModalTableWFilters from '../../../components/Modals/Updates/ModalTableWFilters';
+
+import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png';
+import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png';
+
+
+
 const DepartmentView = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
 
-    const urlToUpdateStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_INFO}`
+    const [isModalRotationOpen, setModalRotationOpen] = useState(false);
 
     const { authData } = useAuth();
     const location = useLocation();
@@ -20,6 +27,13 @@ const DepartmentView = () => {
     const navigate = useNavigate();
 
     const { id_department, name_department } = location.state || {};
+
+
+    const urlToUpdateStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_INFO}`
+
+    const urlToGetEmployeesOutDepartment = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.R_DEPARTMENT_EMPLOYEES_OUT}/${id_department}`
+    const urlToRotateEmployee = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.R_DEPARTMENT_INSERT_EMPLOYEE}`
+
 
     const columns = [
         { field: 'avatar_user', label: '' },
@@ -86,16 +100,41 @@ const DepartmentView = () => {
         }
     };
 
-    const deleteAction = (row) => {
-        if (window.confirm(`¿Estás seguro de que deseas eliminar a ${row.name}?`)) {
-            alert(`Eliminado: ${row.name}`);
-        }
-    };
 
-    const addButtonTitle = () => {
-        navigate('/rrhh/personal/crear');
-        console.log('hola')
+    const toggleModalRotationPersonal = () => {
+        setModalRotationOpen(!isModalRotationOpen);
     }
+
+
+    const columsToModal = [
+        { field: 'avatar_user', label: '' },
+        { field: 'file_employee', label: 'Legajo' },
+        { field: 'name_entity', label: 'Nombre' },
+        { field: 'lastname_entity', label: 'Apellido' },
+        { field: 'name_occupation', label: 'Puesto actual' },
+        { field: 'name_department', label: 'Departamento actual' }
+    ]
+
+
+    const filtersToModal = [
+        {
+            key: 'name_occupation',
+            label: 'Ocupación',
+            name_field: 'name_occupation',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+        },
+        {
+            key: 'name_department',
+            label: 'Departamento',
+            name_field: 'name_department',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}`
+        },
+    ];
+
+    const searchOptionsToModal = [
+        { value: 'name_entity', label: 'Nombre' },
+        { value: 'lastname_entity', label: 'Apellido' },
+    ]
 
     return (
         <div className='container__page'>
@@ -103,8 +142,39 @@ const DepartmentView = () => {
                 <PreferenceTitle
                     title={name_department}
                     titleButton={"Agregar Personal"}
+                    onClick={toggleModalRotationPersonal}
                 />
             </div>
+
+            {isModalRotationOpen && (
+                <ModalTableWFilters
+                    url={urlToGetEmployeesOutDepartment}
+                    authToken={authData.token}
+                    columns={columsToModal}
+                    filterConfigs={filtersToModal}
+                    searchOptions={searchOptionsToModal}
+                    initialSearchField={'name_entity'}
+                    initialSearchTerm={''}
+                    initialSort={{ field: 'name_entity', order: 'ASC' }}
+                    actions={{
+                        view: toggleModalRotationPersonal,
+                        edit: (row) => console.log('Editar', row),
+                        delete: updateStatus,
+                    }}
+                    showActions={{
+                        view: true,
+                        edit: false,
+                        delete: false
+                    }}
+                    actionColumn='id_entity'
+                    paginationLabelInfo={'Empleados'}
+                    buttonOneInfo={{ img: AddEmployee, color: 'blue', title: 'Agregar Personal' }}
+                    isStatusUpdated={isStatusUpdated}
+                    handleCloseModal={toggleModalRotationPersonal}
+                    title_table={"Lista de Empleados"}
+                    colorTable={'bg__green-5'}
+                />
+            )}
 
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
@@ -125,12 +195,13 @@ const DepartmentView = () => {
                 }}
                 showActions={{
                     view: true,
-                    edit: false,
+                    edit: true,
                     delete: false
                 }}
                 actionColumn='id_entity'
                 paginationLabelInfo={'Empleados'}
                 buttonOneInfo={{ img: User, color: 'blue', title: 'Ver Perfil' }}
+                buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
             />
 
