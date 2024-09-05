@@ -1,11 +1,11 @@
 import ButtonBlue from "../../components/ButtonBlue"
 
-const PreferenceTitle = ({title, addButtonTitle}) =>{
+const PreferenceTitle = ({title, addButtonTitle, titleButton}) =>{
     return(
         <div className="preference-title">
         <h4>{title}</h4>
         <ButtonBlue
-            title={"Agregar Nuevo"}
+            title={titleButton || "Agregar Nuevo"}
             onClick={addButtonTitle}
         />
       </div>

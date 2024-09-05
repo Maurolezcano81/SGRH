@@ -24,6 +24,8 @@ import HomePersonal from './pages/Homes/HomePersonal';
 import Profile from './pages/User/Profile/Profile';
 import { NavbarProvider } from './contexts/NavbarProvider';
 import ListUsers from './pages/User/ListUsers/ListUsers';
+import ListDepartments from './pages/Departments/ListDepartments';
+import DepartmentView from './pages/Departments/Department/DepartmentView';
 
 
 function App() {
@@ -43,8 +45,16 @@ function App() {
               {/* Ruta para RRHH */}
               <Route path="rrhh/*">
                 <Route path="inicio" element={<HomeRRHH />} />
-                <Route path="personal/crear" element={<CreateUser />} />
-                <Route path="personal/ver" element={<ListUsers />} />
+                <Route path='personal/*'>
+                  <Route path="crear" element={<CreateUser />} />
+                  <Route path="ver" element={<ListUsers />} />
+                </Route>
+                <Route path='departamentos/*'>
+                  <Route path="ver/*">
+                    <Route path="" element={<ListDepartments />} />
+                    <Route path="departamento" element={<DepartmentView />} />
+                  </Route>
+                </Route>
                 <Route path="ajustes/*" element={<Preferences />}>
                   <Route path="ocupacion" element={<Occupation />} />
                   <Route path="sexo" element={<Sex />} />
@@ -65,7 +75,7 @@ function App() {
                 <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
               </Route>
 
-                  
+
               <Route path="profile/" element={<Profile />} />
 
             </Route>

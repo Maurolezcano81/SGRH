@@ -1,35 +1,34 @@
 import React, { useState } from 'react';
-import TableHorWithFilters from '../../../components/Table/TableHorWithFilters'; // Ajusta la ruta según sea necesario
 import useAuth from '../../../hooks/useAuth';
-import ButtonRed from '../../../components/ButtonRed';
-import User from "../../../assets/Icons/Buttons/User.png"
-import UserDown from "../../../assets/Icons/Buttons/UserDown.png"
-import { useNavigate } from 'react-router-dom';
+import User from '../../../assets/Icons/Buttons/User.png'
+import { useLocation, useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
-const ListUsers = () => {
+import TableSecondaryNotTitleAndWhereOnUrl from '../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl';
+import PreferenceTitle from '../../MasterTables/PreferenceTitle';
+const DepartmentView = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
 
-    const urlToUpdateStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_USER_STATUS}`
+    const urlToUpdateStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_INFO}`
 
     const { authData } = useAuth();
+    const location = useLocation();
+
     const navigate = useNavigate();
+
+    const { id_department, name_department } = location.state || {};
 
     const columns = [
         { field: 'avatar_user', label: '' },
-        { field: 'username_user', label: 'Nombre de usuario' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
-        { field: 'value_ed', label: 'Nro. Documento' },
-        { field: 'value_ec', label: 'Contacto' },
+        { field: 'name_occupation', label: 'Puesto' },
         { field: 'file_employee', label: 'Legajo' },
-        { field: 'name_occupation', label: 'Ocupación' },
+        { field: 'status_employee', label: 'Estado del Empleado' },
         { field: 'salary_occupation', label: 'Salario' },
-        { field: 'name_department', label: 'Departamento' },
-        { field: 'status_user', label: 'Estado' },
     ];
 
     const filterConfigs = [
@@ -37,32 +36,18 @@ const ListUsers = () => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}` // URL para obtener las opciones de ocupación 
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
         },
-        {
-            key: 'name_department',
-            label: 'Departamento',
-            name_field: 'name_department',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}` // URL para obtener las opciones de departamento
-        }
     ];
 
     const searchOptions = [
-        { value: 'username_user', label: 'Nombre de usuario' },
         { value: 'name_entity', label: 'Nombre' },
         { value: 'lastname_entity', label: 'Apellido' },
-        { value: 'value_ed', label: 'Nro. Documento' },
-        { value: 'value_ec', label: 'Contacto' },
-        { value: 'file_employee', label: 'Legajo' },
-        { value: 'name_occupation', label: 'Ocupación' },
-        { value: 'salary_occupation', label: 'Salario' },
-        { value: 'name_department', label: 'Departamento' },
-        { value: 'status_user', label: 'Estado' },
     ];
 
 
     const navigateProfile = (row) => {
-        navigate("/profile", { state: { value_user: row.id_user } })
+        navigate('/profile', { state: { value_user: row.id_user } })
         console.log(row.id_user)
     };
 
@@ -112,15 +97,20 @@ const ListUsers = () => {
         console.log('hola')
     }
 
-
     return (
-        <>
+        <div className='container__page'>
+            <div className='container__content'>
+                <PreferenceTitle
+                    title={name_department}
+                    titleButton={"Agregar Personal"}
+                />
+            </div>
+
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableHorWithFilters
-                addButtonTitle={addButtonTitle}
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
+            <TableSecondaryNotTitleAndWhereOnUrl
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_INFO}/${id_department}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
@@ -130,25 +120,23 @@ const ListUsers = () => {
                 initialSort={{ field: 'name_entity', order: 'ASC' }}
                 actions={{
                     view: navigateProfile,
-                    edit: (row) => console.log("Editar", row),
+                    edit: (row) => console.log('Editar', row),
                     delete: updateStatus,
                 }}
                 showActions={{
                     view: true,
                     edit: false,
-                    delete: true
+                    delete: false
                 }}
-                actionColumn='id_user'
-                title_table={"Listado de Personal"}
-                paginationLabelInfo={"Usuarios"}
-                buttonOneInfo={{ img: User, color: "blue", title: "Ver" }}
-                buttonTreeInfo={{ img: UserDown, color: "black", title: "Dar de baja" }}
+                actionColumn='id_entity'
+                paginationLabelInfo={'Empleados'}
+                buttonOneInfo={{ img: User, color: 'blue', title: 'Ver Perfil' }}
                 isStatusUpdated={isStatusUpdated}
             />
 
 
-        </>
+        </div>
 
     );
 }
-export default ListUsers;
+export default DepartmentView;

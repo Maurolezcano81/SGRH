@@ -7,9 +7,13 @@ const department = new DepartmentController();
 router.post('/department/create', department.createDepartment.bind(department));
 router.get('/departments', department.getDepartments.bind(department));
 router.post('/department', department.getDepartment.bind(department));
-router.patch('/department', department.updateDepartment);
+router.patch('/department', department.updateDepartment.bind(department));
 router.patch('/department/status', department.toggleStatusDepartment.bind(department));
 router.delete('/department', department.deleteDepartment.bind(department));
+
+router.post('/departments/info', department.getDepartmentsInfo.bind(department));
+router.post('/departments/department/:id_department', department.getDepartmentInfo.bind(department));
+
 
 const DepartmentRoutes = {
   router,

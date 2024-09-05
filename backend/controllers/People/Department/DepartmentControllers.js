@@ -1,11 +1,67 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Validations.js';
-
+import DepartmentModel from '../../../models/Department/Deparment.js';
 class DepartmentController {
   constructor() {
-    this.model = new BaseModel('department', 'name_department'); // Asegúrate de que 'department' y 'name_department' coincidan con tu modelo
+    this.model = new DepartmentModel()
     this.nameFieldId = 'id_department';
     this.nameFieldToSearch = 'name_department';
+  }
+
+  async getDepartmentsInfo(req, res) {
+    const { limit, offset, order, orderBy, filters } = req.body;
+
+    try {
+      const list = await this.model.getDepartmentsInformation(limit, offset, orderBy, order, filters);
+
+      if (!list) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Lista de usuarios obtenida con exito",
+        list: list,
+        total: list.length
+      })
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+
+  async getDepartmentInfo(req, res) {
+    const { id_department } = req.params;
+    const { limit, offset, order, orderBy, filters } = req.body;
+
+
+    const newFilters = {
+      ...filters,
+      id_department: id_department
+    }
+
+    try {
+      const list = await this.model.getDepartmentInformation(limit, offset, orderBy, order, newFilters);
+
+      if (!list) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Lista de usuarios obtenida con exito",
+        list: list,
+        total: list.length
+      })
+
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   async getDepartments(req, res) {
@@ -91,6 +147,7 @@ class DepartmentController {
 
   async updateDepartment(req, res) {
     const { id_department, name_department, status_department } = req.body;
+
     try {
       if (isInputEmpty(name_department) || isInputEmpty(status_department)) {
         throw new Error('Debes completar todos los campos');
@@ -115,6 +172,7 @@ class DepartmentController {
       }
 
       const queryResponse = await this.model.updateOne({ name_department, status_department }, [this.nameFieldId, id_department]);
+
 
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al actualizar el departamento');
