@@ -14,18 +14,18 @@ class DepartmentModel extends BaseModel {
             const { whereClause, values } = this.whereForOutDepartment(filters);
             const query = `
                 SELECT 
-                d.id_department, 
-                d.name_department, 
-                COUNT(edo.entity_fk) AS "quantity_department", 
-                SUM(o.salary_occupation) AS "salary_total_department"
-            FROM entity_department_occupation edo
-             left JOIN department d  ON d.id_department = edo.department_fk
-             JOIN occupation o ON edo.occupation_fk = o.id_occupation 
-             JOIN entity e ON edo.entity_fk = e.id_entity
-             JOIN user u ON u.entity_fk = e.id_entity 
+                    d.id_department,
+                    d.name_department,
+                    COALESCE(COUNT(edo.entity_fk), 0) AS "quantity_department",
+                    COALESCE(SUM(o.salary_occupation), 0) AS "salary_total_department"
+                FROM
+                    department d
+                LEFT JOIN entity_department_occupation edo ON d.id_department = edo.department_fk AND edo.status_edo = 1
+                LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation
+                LEFT JOIN entity e ON edo.entity_fk = e.id_entity
+                LEFT JOIN user u ON u.entity_fk = e.id_entity
                 ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
-                and edo.status_edo = 1
                 GROUP BY id_department, name_department
                 ORDER BY ${orderBy} ${order} 
                 LIMIT ? OFFSET ?`;
