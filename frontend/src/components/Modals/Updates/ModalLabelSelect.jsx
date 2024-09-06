@@ -74,7 +74,7 @@ const ModalLabelSelect = ({ initialData, handleCloseModal, urlForSelect, selectF
     };
 
     return (
-        <div className="alert__background__black" onClick={handleCloseModal}>
+        <div className="alert__background__black__index__top" onClick={handleCloseModal}>
             <div className="preferences__modal__container" onClick={(e) => e.stopPropagation()}>
                 <div className="preferences__modal__content">
                     <form onSubmit={handleSubmit}>

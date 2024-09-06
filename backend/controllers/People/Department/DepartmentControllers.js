@@ -7,6 +7,7 @@ class DepartmentController {
     this.nameFieldId = 'id_department';
     this.nameFieldToSearch = 'name_department';
     this.edo = new BaseModel('entity_department_occupation', 'id_edo');
+    this.occupation = new BaseModel("occupation", "name_occupation")
   }
 
   async getDepartmentsInfo(req, res) {
@@ -92,9 +93,8 @@ class DepartmentController {
   async AddEmployeeToDepartment(req, res) {
     const { id_edo, department_fk, entity_fk, occupation_fk } = req.body;
 
-
-
     try {
+
       if (isInputEmpty(department_fk) || isInputEmpty(entity_fk) || isInputEmpty(occupation_fk)) {
         return res.status(403).json({
           message: "Los datos para agregar un empleado son incorrectos"
@@ -107,19 +107,25 @@ class DepartmentController {
         occupation_fk: occupation_fk
       })
 
-      if (createEdo.affectedRows < 1) {
+      if (!createEdo) {
         return res.status(403).json({
           message: "Ha ocurrido un problema al agregar al empleado"
         });
       }
 
+
       const updateOldEdo = await this.model.rotationPersonalOnDepartment(id_edo, department_fk)
+
+
+      console.log("asd")
 
       if (updateOldEdo.affectedRows < 1) {
         return res.status(403).json({
           message: "Ha ocurrido un problema al agregar al empleado"
         });
       }
+
+      console.log("asd2")
 
       return res.status(200).json({
         message: "Personal agregado correctamente",

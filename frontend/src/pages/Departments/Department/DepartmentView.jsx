@@ -10,6 +10,7 @@ import ModalTableWFilters from '../../../components/Modals/Updates/ModalTableWFi
 
 import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png';
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png';
+import ModalLabelSelect from '../../../components/Modals/Updates/ModalLabelSelect';
 
 
 
@@ -20,6 +21,14 @@ const DepartmentView = () => {
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
 
     const [isModalRotationOpen, setModalRotationOpen] = useState(false);
+    const [isModalAddEdoIsOpen, setIsModalAddEdoIsOpen] = useState(false);
+    const [employeeData, setEmployeeData] = useState({})
+
+    const [dataToUpdate, setDataToUpdate] = useState({
+        id_edo: "",
+        department_fk: "",
+        occupation_fk: ""
+    })
 
     const { authData } = useAuth();
     const location = useLocation();
@@ -33,6 +42,7 @@ const DepartmentView = () => {
 
     const urlToGetEmployeesOutDepartment = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.R_DEPARTMENT_EMPLOYEES_OUT}/${id_department}`
     const urlToRotateEmployee = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.R_DEPARTMENT_INSERT_EMPLOYEE}`
+
 
 
     const columns = [
@@ -136,6 +146,24 @@ const DepartmentView = () => {
         { value: 'lastname_entity', label: 'Apellido' },
     ]
 
+
+    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+    const urlUpdate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_DEPARTMENT_INSERT_EMPLOYEE}`
+
+
+    const toggleAddModal = (row) => {
+        setIsModalAddEdoIsOpen(!isModalAddEdoIsOpen)
+        console.log(row)
+        setDataToUpdate(
+            {
+                id_edo: row.id_edo,
+                entity_fk: row.id_entity,
+                occupation_fk: row.occupation_fk,
+                department_fk: id_department
+            }
+        )
+    }
+
     return (
         <div className='container__page'>
             <div className='container__content'>
@@ -146,34 +174,56 @@ const DepartmentView = () => {
                 />
             </div>
 
+
             {isModalRotationOpen && (
-                <ModalTableWFilters
-                    url={urlToGetEmployeesOutDepartment}
-                    authToken={authData.token}
-                    columns={columsToModal}
-                    filterConfigs={filtersToModal}
-                    searchOptions={searchOptionsToModal}
-                    initialSearchField={'name_entity'}
-                    initialSearchTerm={''}
-                    initialSort={{ field: 'name_entity', order: 'ASC' }}
-                    actions={{
-                        view: toggleModalRotationPersonal,
-                        edit: (row) => console.log('Editar', row),
-                        delete: updateStatus,
-                    }}
-                    showActions={{
-                        view: true,
-                        edit: false,
-                        delete: false
-                    }}
-                    actionColumn='id_entity'
-                    paginationLabelInfo={'Empleados'}
-                    buttonOneInfo={{ img: AddEmployee, color: 'blue', title: 'Agregar Personal' }}
-                    isStatusUpdated={isStatusUpdated}
-                    handleCloseModal={toggleModalRotationPersonal}
-                    title_table={"Lista de Empleados"}
-                    colorTable={'bg__green-5'}
-                />
+                <>
+                    {isModalAddEdoIsOpen && (
+                        <ModalLabelSelect
+                            initialData={dataToUpdate}
+                            handleCloseModal={toggleAddModal}
+                            urlForSelect={urlSelect}
+                            urlUpdate={urlUpdate}
+                            updateProfile={isStatusUpdated}
+                            selectField={{
+                                name: 'occupation_fk',
+                                placeholder: 'Puesto de trabajo',
+                                optionKey: 'id_occupation',
+                                optionValue: 'id_occupation',
+                                optionLabel: 'name_occupation'
+                            }}
+                            labelText={"Puesto de Trabajo: "}
+                        />
+                    )}
+
+                    <ModalTableWFilters
+                        url={urlToGetEmployeesOutDepartment}
+                        authToken={authData.token}
+                        columns={columsToModal}
+                        filterConfigs={filtersToModal}
+                        searchOptions={searchOptionsToModal}
+                        initialSearchField={'name_entity'}
+                        initialSearchTerm={''}
+                        initialSort={{ field: 'name_entity', order: 'ASC' }}
+                        actions={{
+                            view: toggleAddModal,
+                            edit: (row) => console.log('Editar', row),
+                            delete: updateStatus,
+                        }}
+                        showActions={{
+                            view: true,
+                            edit: false,
+                            delete: false
+                        }}
+                        actionColumn='id_entity'
+                        paginationLabelInfo={'Empleados'}
+                        buttonOneInfo={{ img: AddEmployee, color: 'blue', title: 'Agregar Personal' }}
+                        isStatusUpdated={isStatusUpdated}
+                        handleCloseModal={toggleModalRotationPersonal}
+                        title_table={"Lista de Empleados"}
+                        colorTable={'bg__green-5'}
+                    />
+                </>
+
             )}
 
             {successMessage && <AlertSuccesfully message={successMessage} />}
