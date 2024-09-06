@@ -47,6 +47,7 @@ class DepartmentModel extends BaseModel {
                     id_department,
                     id_user,
                     id_entity,
+                    occupation_fk,
                     avatar_user, 
                     name_entity,
                     lastname_entity,

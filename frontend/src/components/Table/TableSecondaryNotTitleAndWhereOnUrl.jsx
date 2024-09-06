@@ -33,7 +33,7 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     const [pagination, setPagination] = useState(initialPagination);
     const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
     const [searchField, setSearchField] = useState(initialSearchField || (searchOptions[0]?.value || ''));
-    const [searchPlaceholder, setSearchPlaceholder] = useState(initialSearchField || (searchOptions[0]?.label || ''));
+    const [searchPlaceholder, setSearchPlaceholder] = useState(searchOptions[0]?.label || '');
     const [filterOptions, setFilterOptions] = useState({});
     const [hiddenFilterSection, setHiddenFilterSection] = useState(false);
 
@@ -99,7 +99,7 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
         setFilters({});
         setSearchTerm(initialSearchTerm);
         setSearchField(initialSearchField || (searchOptions[0]?.value || ''));
-        setSearchPlaceholder(initialSearchField || (searchOptions[0]?.label || ''));
+        setSearchPlaceholder(searchOptions[0]?.label || '');
         setSortField(initialSort.field);
         setSortOrder('ASC');
     };

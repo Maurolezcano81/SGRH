@@ -26,6 +26,7 @@ import { NavbarProvider } from './contexts/NavbarProvider';
 import ListUsers from './pages/User/ListUsers/ListUsers';
 import ListDepartments from './pages/Departments/ListDepartments';
 import DepartmentView from './pages/Departments/Department/DepartmentView';
+import CreateSatisfaction from './pages/Questionnaire/Satisfaction/CreateSatisfaction';
 
 
 function App() {
@@ -55,30 +56,33 @@ function App() {
                     <Route path="departamento" element={<DepartmentView />} />
                   </Route>
                 </Route>
-                <Route path="ajustes/*" element={<Preferences />}>
-                  <Route path="ocupacion" element={<Occupation />} />
-                  <Route path="sexo" element={<Sex />} />
-                  <Route path="contacto" element={<Contact />} />
-                  <Route path="pais" element={<Country />} />
-                  <Route path="nacionalidad" element={<Nacionality />} />
-                  <Route path="tipo_estado_solicitud" element={<StatusRequest />} />
-                  <Route path="modulo" element={<Module />} />
-                  <Route path="tipo_renuncia" element={<TypeTermination />} />
-                  <Route path="documento" element={<Document />} />
-                  <Route path="departamento" element={<Department />} />
-                  <Route path="tipo_asunto_mensaje" element={<Subject />} />
-                  <Route path="tipo_anexo" element={<Attachment />} />
+                <Route path='satisfaccion/*'>
+                  <Route path='crear' element={<CreateSatisfaction />} />
+                  </Route>
+                  <Route path="ajustes/*" element={<Preferences />}>
+                    <Route path="ocupacion" element={<Occupation />} />
+                    <Route path="sexo" element={<Sex />} />
+                    <Route path="contacto" element={<Contact />} />
+                    <Route path="pais" element={<Country />} />
+                    <Route path="nacionalidad" element={<Nacionality />} />
+                    <Route path="tipo_estado_solicitud" element={<StatusRequest />} />
+                    <Route path="modulo" element={<Module />} />
+                    <Route path="tipo_renuncia" element={<TypeTermination />} />
+                    <Route path="documento" element={<Document />} />
+                    <Route path="departamento" element={<Department />} />
+                    <Route path="tipo_asunto_mensaje" element={<Subject />} />
+                    <Route path="tipo_anexo" element={<Attachment />} />
+                  </Route>
                 </Route>
+
+                <Route path="personal/*">
+                  <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
+                </Route>
+
+
+                <Route path="profile/" element={<Profile />} />
+
               </Route>
-
-              <Route path="personal/*">
-                <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
-              </Route>
-
-
-              <Route path="profile/" element={<Profile />} />
-
-            </Route>
           </Routes>
         </NavbarProvider>
       </AuthProvider>

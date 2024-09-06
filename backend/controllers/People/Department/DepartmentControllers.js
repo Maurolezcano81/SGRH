@@ -93,6 +93,8 @@ class DepartmentController {
   async AddEmployeeToDepartment(req, res) {
     const { id_edo, department_fk, entity_fk, occupation_fk } = req.body;
 
+    console.log(req.body);
+
     try {
 
       if (isInputEmpty(department_fk) || isInputEmpty(entity_fk) || isInputEmpty(occupation_fk)) {
@@ -113,20 +115,13 @@ class DepartmentController {
         });
       }
 
-
       const updateOldEdo = await this.model.rotationPersonalOnDepartment(id_edo, department_fk)
-
-
-      console.log("asd")
 
       if (updateOldEdo.affectedRows < 1) {
         return res.status(403).json({
           message: "Ha ocurrido un problema al agregar al empleado"
         });
       }
-
-      console.log("asd2")
-
       return res.status(200).json({
         message: "Personal agregado correctamente",
         createEdo

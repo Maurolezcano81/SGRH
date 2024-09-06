@@ -11,6 +11,7 @@ import ModalTableWFilters from '../../../components/Modals/Updates/ModalTableWFi
 import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png';
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png';
 import ModalLabelSelect from '../../../components/Modals/Updates/ModalLabelSelect';
+import MoveOtherDepartment from './MoveOtherDepartment';
 
 
 
@@ -22,13 +23,21 @@ const DepartmentView = () => {
 
     const [isModalRotationOpen, setModalRotationOpen] = useState(false);
     const [isModalAddEdoIsOpen, setIsModalAddEdoIsOpen] = useState(false);
+
+    const [isModalMoveOtherDepartmentActive, setIsModalMoveOtherDepartmentActive] = useState(false);
+
+
     const [employeeData, setEmployeeData] = useState({})
+
+
+    const [isModalRotationUpdated, setIsModalRotationUpdated] = useState(false);
 
     const [dataToUpdate, setDataToUpdate] = useState({
         id_edo: "",
         department_fk: "",
         occupation_fk: ""
     })
+
 
     const { authData } = useAuth();
     const location = useLocation();
@@ -38,6 +47,13 @@ const DepartmentView = () => {
     const { id_department, name_department } = location.state || {};
 
 
+    
+    const [dataToMoveOtherDepartment, setDataToMoveOtherDepartment] = useState({
+        id_edo: "",
+        department: id_department,
+        entity_fk: "",
+        occupation_fk: "",
+    })
     const urlToUpdateStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_INFO}`
 
     const urlToGetEmployeesOutDepartment = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.R_DEPARTMENT_EMPLOYEES_OUT}/${id_department}`
@@ -111,8 +127,28 @@ const DepartmentView = () => {
     };
 
 
-    const toggleModalRotationPersonal = () => {
+    const toggleModalRotationPersonal = (row) => {
         setModalRotationOpen(!isModalRotationOpen);
+    }
+
+    const updateModalRotationPersonal = () =>{
+        setIsModalRotationUpdated(!isModalRotationUpdated)
+
+        setIsStatusUpdated(!isStatusUpdated);
+    }
+
+    const toggleModalMoveOtherDepartment = (row) =>{
+        setIsModalMoveOtherDepartmentActive(!isModalMoveOtherDepartmentActive);
+        setDataToMoveOtherDepartment({
+            id_edo: row.id_edo,
+            department_fk: id_department,
+            entity_fk: row.id_entity,
+            occupation_fk: row.occupation_fk
+        })
+    }
+
+    const updateMoveOtherDepartment = ()=>{
+        setIsStatusUpdated(!isStatusUpdated);
     }
 
 
@@ -148,12 +184,10 @@ const DepartmentView = () => {
 
 
     const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
-    const urlUpdate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_DEPARTMENT_INSERT_EMPLOYEE}`
 
 
     const toggleAddModal = (row) => {
         setIsModalAddEdoIsOpen(!isModalAddEdoIsOpen)
-        console.log(row)
         setDataToUpdate(
             {
                 id_edo: row.id_edo,
@@ -175,6 +209,15 @@ const DepartmentView = () => {
             </div>
 
 
+            {isModalMoveOtherDepartmentActive && (
+                <MoveOtherDepartment 
+                personal={dataToMoveOtherDepartment}
+                department={id_department}
+                updateProfile={updateMoveOtherDepartment}
+                handleSingleCloseModal={toggleModalMoveOtherDepartment}
+                />
+            )}
+
             {isModalRotationOpen && (
                 <>
                     {isModalAddEdoIsOpen && (
@@ -182,8 +225,8 @@ const DepartmentView = () => {
                             initialData={dataToUpdate}
                             handleCloseModal={toggleAddModal}
                             urlForSelect={urlSelect}
-                            urlUpdate={urlUpdate}
-                            updateProfile={isStatusUpdated}
+                            urlUpdate={urlToRotateEmployee}
+                            updateProfile={updateModalRotationPersonal}
                             selectField={{
                                 name: 'occupation_fk',
                                 placeholder: 'Puesto de trabajo',
@@ -217,7 +260,7 @@ const DepartmentView = () => {
                         actionColumn='id_entity'
                         paginationLabelInfo={'Empleados'}
                         buttonOneInfo={{ img: AddEmployee, color: 'blue', title: 'Agregar Personal' }}
-                        isStatusUpdated={isStatusUpdated}
+                        isStatusUpdated={isModalRotationUpdated}
                         handleCloseModal={toggleModalRotationPersonal}
                         title_table={"Lista de Empleados"}
                         colorTable={'bg__green-5'}
@@ -240,8 +283,8 @@ const DepartmentView = () => {
                 initialSort={{ field: 'name_entity', order: 'ASC' }}
                 actions={{
                     view: navigateProfile,
-                    edit: (row) => console.log('Editar', row),
-                    delete: updateStatus,
+                    edit: toggleModalMoveOtherDepartment,
+                    delete: (row) => console.log('Editar', row),
                 }}
                 showActions={{
                     view: true,

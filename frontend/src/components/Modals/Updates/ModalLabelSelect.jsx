@@ -59,14 +59,11 @@ const ModalLabelSelect = ({ initialData, handleCloseModal, urlForSelect, selectF
                 body: JSON.stringify(dataToUpdate),
             });
             const dataFormatted = await response.json();
-
-            console.log(dataFormatted);
-
             if (response.status === 403) {
                 setErrorMessage(dataFormatted.message);
             } else {
-                handleCloseModal();
-                updateProfile();
+            updateProfile();
+            handleCloseModal();
             }
         } catch (error) {
             console.error('Error:', error);
