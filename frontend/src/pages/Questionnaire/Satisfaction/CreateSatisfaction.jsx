@@ -14,7 +14,10 @@ const CreateSatisfaction = () => {
     const [questionStructure, setQuestionStructure] = useState({
         description_qsq: "",
         is_obligatory: "",
+        bad_parameter_qsq: "",
+        best_parameter_qsq: ""
     })
+
 
     return (
         <div className="container__page">
@@ -28,7 +31,7 @@ const CreateSatisfaction = () => {
 
                 <BodyCreate 
                     questionStructure={questionStructure}
-                    questionData={{input_name: "description_qsq", radius_name: "is_obligatory"}}
+                    questionData={{input_name: "description_qsq", radius_name: "is_obligatory", bad_parameter_qsq: 'bad_parameter_qsq', best_parameter_qsq: 'best_parameter_qsq' }}
                 />
 
             </div>

@@ -1699,6 +1699,46 @@ input {
   cursor: pointer;
 }
 
+.quiz__example__container{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.quiz__example__container label{
+  color: var(--gray-1);
+  width: 30%;
+  text-align: center;
+}
+
+.quiz__example__container input{
+  border-bottom: solid var(--gray-1) .1rem;
+  width: 100%;
+  box-shadow: none;
+}
+
+.quiz__example__radio__container{
+  display: flex;
+  gap: 1rem;
+}
+
+.quiz__example__label__radio{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.quiz__example__label__radio input{
+  width: 2rem;
+  outline: none;
+  background: none;
+  box-shadow: none;
+}
+
 @media (width >= 468px) {
   .table__preference__head tr th {
     padding: 1rem 2rem;
