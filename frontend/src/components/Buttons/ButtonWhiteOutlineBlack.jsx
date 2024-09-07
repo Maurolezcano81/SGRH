@@ -1,6 +1,7 @@
-const ButtonWhiteOutlineBlack = ({ title, onClick }) => {
+const ButtonWhiteOutlineBlack = ({ title, onClick, full=false }) => {
     return (
-      <button className="button__white__outline" onClick={onClick}>
+
+      <button className={`button__white__outline ${full === true ? "button__container__full" : ""}`} onClick={onClick}>
         {title}
       </button>
     );
