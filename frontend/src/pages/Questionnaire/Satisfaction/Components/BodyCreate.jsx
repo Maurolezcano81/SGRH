@@ -1,119 +1,135 @@
-import { useState } from "react"
+import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';  // Asegúrate de tener instalada la biblioteca uuid
-import ButtonWhiteOutlineBlack from "../../../../components/Buttons/ButtonWhiteOutlineBlack"
+import ButtonWhiteOutlineBlack from "../../../../components/Buttons/ButtonWhiteOutlineBlack";
 
-const BodyCreate = ({ questionStructure, questionData }) => {
-    const [listQuestions, setListQuestions] = useState([])
+const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
+    const [listQuestions, setListQuestions] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
+    // Función para validar que todos los campos de una pregunta estén completos
+    const validateQuestions = () => {
+        for (const question of listQuestions) {
+            if (!question[questionData.input_name] ||
+                !question[questionData.radius_name] ||
+                !question[questionData.bad_parameter_qsq] ||
+                !question[questionData.best_parameter_qsq]) {
+                return false;  // Si algún campo está vacío, retorna false
+            }
+        }
+        return true;  // Todos los campos están completos
+    };
 
     const addQuestion = () => {
-        const newQuestion = { ...questionStructure, id: uuidv4() }
-        setListQuestions([...listQuestions, newQuestion])
-    }
+        if (validateQuestions()) {
+            const newQuestion = { ...questionStructure, id: uuidv4() };
+            setListQuestions([...listQuestions, newQuestion]);
+            setErrorMessage('');
+        } else {
+            setErrorMessage('Por favor, completa todos los campos antes de agregar una nueva pregunta.');
+        }
+    };
 
     const deleteQuestion = (idToDelete) => {
-        const newData = listQuestions.filter(question => question.id !== idToDelete)
-        setListQuestions(newData)
-    }
+        const newData = listQuestions.filter(question => question.id !== idToDelete);
+        setListQuestions(newData);
+    };
 
     const handleChange = (id, e) => {
-        const data = [...listQuestions]
-        const index = data.findIndex(question => question.id === id)
+        const data = [...listQuestions];
+        const index = data.findIndex(question => question.id === id);
         if (index !== -1) {
-            data[index][e.target.name] = e.target.value
-            setListQuestions(data)
+            data[index][e.target.name] = e.target.value;
+            setListQuestions(data);
+            setBodyQuiz(data);
         }
-        console.log(listQuestions)
-    }
+    };
 
     return (
-        <div className="quiz__body__section">
+        <div className="quiz__header__section">
             <h4>Cuerpo del Cuestionario</h4>
-            {listQuestions.map((question, index) => (
-                <div key={question.id} className="quiz__body__question__container">
-                    <div className="question__title__container">
-                        <label htmlFor={`question_${question.id}`}>Pregunta {index + 1}</label>
-                        <button
-                            onClick={() => deleteQuestion(question.id)}
-                            className="quiz__question__delete"
-                        >
-                            Eliminar pregunta
-                        </button>
-                    </div>
-                    <input
-                        onChange={(e) => handleChange(question.id, e)}
-                        name={questionData.input_name}
-                        type="text"
-                    />
 
-                    <div className="quiz__question__check__container">
-                        <p>Marcar como obligatoria</p>
-                        <div className="quiz__radio__obligatory">
-                            <label htmlFor={question.radius_name}>Si
-                                <input
-                                    onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.radius_name}
-                                    value="1"
-                                    type="radio"
-                                />
-                            </label>
-                            <label htmlFor={question.radius_name}>
-                                No
-                                <input
-                                    onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.radius_name}
-                                    value="0"
-                                    type="radio"
-                                />
-                            </label>
+
+
+            <div className="quiz__body__section">
+                {listQuestions.map((question, index) => (
+                    <div key={question.id} className="quiz__body__question__container">
+                        <div className="question__title__container">
+                            <label htmlFor={`question_${question.id}`}>Pregunta {index + 1}</label>
+                            <button
+                                onClick={() => deleteQuestion(question.id)}
+                                className="quiz__question__delete"
+                            >
+                                Eliminar pregunta
+                            </button>
                         </div>
-                    </div>
-                    <div className="quiz__example__container">
-                        <label clas htmlFor={question.bad_parameter_qsq}>
-                            Texto de parametro minimo
-                            <input
-                                onChange={(e) => handleChange(question.id, e)}
-                                name={questionData.bad_parameter_qsq}
-                                type="input"
-                            />
-                        </label>
+                        <input
+                            onChange={(e) => handleChange(question.id, e)}
+                            name={questionData.input_name}
+                            type="text"
+                            placeholder="Escribe la pregunta"
+                        />
 
-                        <div className="quiz__example__radio__container">
-                            <label className="quiz__example__label__radio">
-                                1
-                                <input disabled={true} type="radio" />
-                            </label>
-
-                            <label className="quiz__example__label__radio">
-                                2
-                                <input disabled={true} type="radio" />
-                            </label>
-
-                            <label className="quiz__example__label__radio">
-                                3
-                                <input disabled={true} type="radio" />
-                            </label>
+                        <div className="quiz__question__check__container">
+                            <p>Marcar como obligatoria</p>
+                            <div className="quiz__radio__obligatory">
+                                <label>
+                                    Si
+                                    <input
+                                        onChange={(e) => handleChange(question.id, e)}
+                                        name={questionData.radius_name}
+                                        value="1"
+                                        type="radio"
+                                    />
+                                </label>
+                                <label>
+                                    No
+                                    <input
+                                        onChange={(e) => handleChange(question.id, e)}
+                                        name={questionData.radius_name}
+                                        value="0"
+                                        type="radio"
+                                    />
+                                </label>
+                            </div>
                         </div>
 
-                            <label htmlFor={question.best_parameter_qsq}>
-                                Texto de parametro maximo
+                        <div className="quiz__example__container">
+                            <label>
+                                Texto de parámetro mínimo
+                                <input
+                                    onChange={(e) => handleChange(question.id, e)}
+                                    name={questionData.bad_parameter_qsq}
+                                    type="text"
+                                />
+                            </label>
+
+                            <label>
+                                Texto de parámetro máximo
                                 <input
                                     onChange={(e) => handleChange(question.id, e)}
                                     name={questionData.best_parameter_qsq}
-                                    type="input"
+                                    type="text"
                                 />
                             </label>
+                        </div>
                     </div>
+                ))}
 
-                </div>
-            ))}
+<div className="quiz__error">
+                {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
+                {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
+</div>
 
-            <ButtonWhiteOutlineBlack
-                title={"+ Agregar Pregunta"}
-                onClick={addQuestion}
-                full={true}
-            />
+
+                <ButtonWhiteOutlineBlack
+                    title={"+ Agregar Pregunta"}
+                    onClick={addQuestion}
+                    full={true}
+                />
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default BodyCreate
+export default BodyCreate;

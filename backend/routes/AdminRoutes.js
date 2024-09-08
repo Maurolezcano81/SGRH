@@ -18,6 +18,8 @@ import LeavesRoutes from "./Leaves/LeavesRoutes.js";
 import UserRoutes from "./People/UserRoutes.js";
 import ProfileRoutes from "./System/Profile/ProfileRoutes.js";
 import ModuleRoutes from "./System/Profile/ModuleRoutes.js";
+import SatisfactionRoutes from "./Quiz/Satisfaction.js";
+
 
 app.use(SubjectRoutes.router)
 app.use(AttachmentRoutes.router)
@@ -33,6 +35,8 @@ app.use(LeavesRoutes.router);
 app.use(NavigationMenuRoutes.router);
 app.use(TypeOfTerminationRoutes.router);
 app.use(UserRoutes.router);
+
+app.use(SatisfactionRoutes.router);
 
 // REEMPLAZAR ESTAS RUTAS TAMBIEN
 app.use(ProfileRoutes.router);
