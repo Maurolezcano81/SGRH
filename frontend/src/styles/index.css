@@ -1577,6 +1577,19 @@ input {
   gap: .1rem;
 }
 
+.quiz__buttons__container{
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  align-items: center;
+}
+
+.question__information{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .quiz__header__section h4{
   margin: 2rem 0;
   width: 100%;
@@ -1694,7 +1707,26 @@ input {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  
+}
+
+.question__title{
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.question__title p{
+  height: auto;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--gray-1);
+}
+
+.question__title h2{
+  height: auto;
+  font-weight: 600;
+  font-size: 2rem;
 }
 
 .quiz__question__delete{

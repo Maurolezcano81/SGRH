@@ -144,7 +144,7 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Sexo" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Sexo" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Sexo'}

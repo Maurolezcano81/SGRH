@@ -70,13 +70,27 @@ const ModalAdd = ({
             {labels.map((label, index) => (
               <div key={index} className="preferences__modal__field">
                 <label>{label}</label>
-                <input
-                  type="text"
-                  name={fetchData[index]}
-                  placeholder={placeholders[index]}
-                  value={inputValues[fetchData[index]] || ''}
-                  onChange={(e) => handleInputChange(e, index)}
-                />
+                {fetchData[index] === 'is_obligatory' ? (
+                  <select
+                    name="is_obligatory"
+                    value={inputValues.is_obligatory || ''}
+                    onChange={(e) => handleInputChange(e, index)}
+                  >
+                    <option disabled value="">
+                      Seleccione una opción
+                    </option>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    name={fetchData[index]}
+                    placeholder={placeholders[index]}
+                    value={inputValues[fetchData[index]] || ''}
+                    onChange={(e) => handleInputChange(e, index)}
+                  />
+                )}
               </div>
             ))}
           </form>

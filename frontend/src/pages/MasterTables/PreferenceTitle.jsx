@@ -9,6 +9,7 @@ const PreferenceTitle = ({ title, onClick, titleButton, color = "blue" }) => {
                     color={color}
                     title={titleButton || "Agregar Nuevo"}
                     onClick={onClick}
+                    addButtonTitle={onClick}
                 />
             )}
         </div>

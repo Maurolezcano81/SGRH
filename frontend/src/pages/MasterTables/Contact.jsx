@@ -145,7 +145,7 @@ const Contact = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Contacto" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Contacto" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Contacto'}

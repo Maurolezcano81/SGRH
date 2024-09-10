@@ -143,7 +143,7 @@ const Department = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Departamento" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Departamento" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Departamento'}

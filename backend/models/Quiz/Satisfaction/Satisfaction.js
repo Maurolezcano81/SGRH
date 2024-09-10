@@ -12,12 +12,13 @@ class SatisfactionModel extends BaseModel {
 
     async getQuestionnairesInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
-            const { whereClause, values } = this.whereForOutDepartment(filters);
+            const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
-                select id_sq, name_sq, start_sq, end_sq, status_sq, name_entity, lastname_entity, sq.created_at, sq.updated_at, count(id_qsq) from satisfaction_questionnaire sq 
+                select id_sq, name_sq, start_sq, end_sq, status_sq, concat(name_entity," ",lastname_entity) as "author", sq.created_at, sq.updated_at, count(id_qsq) as "quantity_questions" from satisfaction_questionnaire sq 
                     join question_satisfaction_questionnaire qsq on sq.id_sq = qsq.sq_fk 
                     join user u on sq.author_fk = u.id_user
-                        join entity e on u.entity_fk = e.id_entity  
+                    join entity e on u.entity_fk = e.id_entity  
+                    left join entity_department_occupation edo on edo.entity_fk = e.id_entity
                 ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                     group by sq.name_sq, sq.id_sq 
@@ -32,6 +33,21 @@ class SatisfactionModel extends BaseModel {
         }
     }
 
+    async getQuizHeader(id_sq){
+        try {
+            const query = `
+                select id_sq, name_sq, start_sq, end_sq, concat(name_entity," ",lastname_entity) as "author" from satisfaction_questionnaire sq
+                join user u on sq.author_fk = u.id_user 
+                join entity e on u.entity_fk = e.id_entity
+                where id_sq = ?
+                `
+            const [results] = await this.conn.promise().query(query, [id_sq])
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
 
     async getQuiz(id_sq) {
         try {
@@ -39,8 +55,7 @@ class SatisfactionModel extends BaseModel {
                 select id_qsq, description_qsq, is_obligatory, bad_parameter_qsq, best_parameter_qsq from question_satisfaction_questionnaire qsq 
                 where sq_fk = ?
                 `
-
-            const [results] = this.conn.promise().query(query, [id_sq])
+            const [results] = await this.conn.promise().query(query, [id_sq])
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Satisfaction:", error.message);

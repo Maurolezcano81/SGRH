@@ -145,7 +145,7 @@ const StatusRequest = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Estado" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Estado" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Estado de Solicitud'}

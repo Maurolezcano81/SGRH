@@ -153,7 +153,7 @@ const Occupation = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Ocupación" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Ocupación" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nueva Ocupacion'}

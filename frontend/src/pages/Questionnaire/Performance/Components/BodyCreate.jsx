@@ -9,10 +9,11 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
 
     const validateQuestions = () => {
         for (const question of listQuestions) {
-            if (!question[questionData.input_name] ||
+            if (!question[questionData.input_name_question] ||
+                !question[questionData.input_name_description] ||
                 !question[questionData.radius_name] ||
-                !question[questionData.bad_parameter_qsq] ||
-                !question[questionData.best_parameter_qsq]) {
+                !question[questionData.bad_parameter_epq] ||
+                !question[questionData.best_parameter_epq]) {
                 return false;
             }
         }
@@ -62,11 +63,25 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
                                 Eliminar pregunta
                             </button>
                         </div>
+
+                        <label htmlFor={questionData.input_name_question}>
+                            Titulo de la pregunta:
+                        </label>
                         <input
                             onChange={(e) => handleChange(question.id, e)}
-                            name={questionData.input_name}
+                            name={questionData.input_name_question}
                             type="text"
                             placeholder="Escribe la pregunta"
+                        />
+
+                        <label htmlFor={questionData.input_name_description}>
+                            Descripcion de la pregunta:
+                        </label>
+                        <input
+                            onChange={(e) => handleChange(question.id, e)}
+                            name={questionData.input_name_description}
+                            type="text"
+                            placeholder="Escribe una descripcion para ampliar la pregunta"
                         />
 
                         <div className="quiz__question__check__container">
@@ -98,7 +113,7 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
                                 Texto de parámetro mínimo
                                 <input
                                     onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.bad_parameter_qsq}
+                                    name={questionData.bad_parameter_epq}
                                     type="text"
                                 />
                             </label>
@@ -107,7 +122,7 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
                                 Texto de parámetro máximo
                                 <input
                                     onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.best_parameter_qsq}
+                                    name={questionData.best_parameter_epq}
                                     type="text"
                                 />
                             </label>
@@ -115,10 +130,10 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
                     </div>
                 ))}
 
-<div className="quiz__error">
-                {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
-                {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
-</div>
+                <div className="quiz__error">
+                    {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
+                    {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
+                </div>
 
 
                 <ButtonWhiteOutlineBlack

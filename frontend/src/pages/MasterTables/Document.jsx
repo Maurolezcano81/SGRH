@@ -143,7 +143,7 @@ const Document = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Tipo de Documento" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Tipo de Documento" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Documento'}

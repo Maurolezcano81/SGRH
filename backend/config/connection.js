@@ -13,7 +13,7 @@ class Connection {
     }
 
     createCon() {
-        return mysql.createConnection({
+        return mysql.createPool({
             host: this.host,
             user: this.username,
             database: this.db,

@@ -54,7 +54,6 @@ const ModalUpdate = ({
     fetchOccupation();
   }, [authData.token, getOneUrl, idToUpdate]);
 
-  // Método para manejar el envío del formulario
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {

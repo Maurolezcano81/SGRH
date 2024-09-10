@@ -140,7 +140,7 @@ const TableHorWithFilters = ({
             <div className='container__content'>
                 <PreferenceTitle
                     title={title_table}
-                    addButtonTitle={addButtonTitle}
+                    onClick={addButtonTitle}
                 />
                 <div className='table__filters__container'>
                     <div className='table__search__container'>

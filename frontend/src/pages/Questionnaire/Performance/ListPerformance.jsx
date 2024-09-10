@@ -9,7 +9,7 @@ import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 import Quizz from '../../../assets/Icons/Buttons/Quizz.png';
 
-const ListSatisfaction = () => {
+const ListPerformance = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -21,14 +21,14 @@ const ListSatisfaction = () => {
 
     
     const columns = [
-        { field: 'name_sq', label: 'Nombre del cuestionario' },
-        { field: 'start_sq', label: 'Fecha de inicio' },
-        { field: 'end_sq', label: 'Fecha de Cierre' },
+        { field: 'name_ep', label: 'Nombre del cuestionario' },
+        { field: 'start_ep', label: 'Fecha de inicio' },
+        { field: 'end_ep', label: 'Fecha de Cierre' },
         { field: 'quantity_questions', label: 'Cantidad de preguntas' },
         { field: 'author', label: 'Autor' },
         { field: 'created_at', label: 'Creado' },
         { field: 'updated_at', label: 'Ultima Actualizacion' },
-        { field: 'status_sq', label: 'Estado del cuestionario' },
+        { field: 'status_ep', label: 'Estado del cuestionario' },
     ];
 
 
@@ -39,18 +39,18 @@ const ListSatisfaction = () => {
     const searchOptions = [
         { value: 'name_entity', label: 'Nombre' },
         { value: 'lastname_entity', label: 'Apellido' },
-        { value: 'name_sq', label: 'Nombre de cuestionario' },
+        { value: 'name_ep', label: 'Nombre de cuestionario' },
     ];
 
     const seeQuiz = (row) => {
         console.log(row);
-        navigate("/rrhh/satisfaccion/ampliar", { state: { value_quiz: row.id_sq } })
-        console.log(row.id_sq)
+        navigate("/rrhh/rendimiento/ampliar", { state: { value_quiz: row.id_ep } })
+        console.log(row.id_ep)
     };
 
 
     const addButtonTitle = () => {
-        navigate("/rrhh/satisfaccion/crear");
+        navigate("/rrhh/rendimiento/crear");
     }
 
     return (
@@ -60,14 +60,14 @@ const ListSatisfaction = () => {
 
             <TableHorWithFilters
                 addButtonTitle={addButtonTitle}
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTION}`}
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
                 searchOptions={searchOptions}
-                initialSearchField={'name_sq'}
+                initialSearchField={'name_ep'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'name_sq', order: 'ASC' }}
+                initialSort={{ field: 'name_ep', order: 'ASC' }}
                 actions={{
                     view: seeQuiz,
                     edit: (row) => console.log("Editar", row),
@@ -78,9 +78,9 @@ const ListSatisfaction = () => {
                     edit: false,
                     delete: false
                 }}
-                actionColumn='id_sq'
+                actionColumn='id_ep'
                 title_table={"Listado de cuestionarios"}
-                paginationLabelInfo={"Cuestionarios de satisfaccion"}
+                paginationLabelInfo={"Cuestionarios de rendimiento"}
                 buttonOneInfo={{ img: Quizz, color: "blue", title: "Ver" }}
                 isStatusUpdated={isStatusUpdated}
             />
@@ -90,4 +90,4 @@ const ListSatisfaction = () => {
 
     );
 }
-export default ListSatisfaction;
+export default ListPerformance;

@@ -143,7 +143,7 @@ const Subject = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Tipo de mensaje" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Tipo de mensaje" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nuevo Tipo de Asunto de Mensaje'}

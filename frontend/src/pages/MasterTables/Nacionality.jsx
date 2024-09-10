@@ -142,7 +142,7 @@ const Nacionality = () => {
 
   return (
     <div className="preference__container">
-      <PreferenceTitle title="Nacionalidad" handleModalAdd={handleModalAdd} />
+      <PreferenceTitle title="Nacionalidad" onClick={handleModalAdd} />
       {toggleModalAdd && (
         <ModalAdd
           title_modal={'Nueva Nacionalidad'}

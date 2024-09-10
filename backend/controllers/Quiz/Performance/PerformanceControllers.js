@@ -1,32 +1,31 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isInputEmpty, isNotNumber, isNotDate, formatDateTime, formatDateYear, formatYearMonth } from '../../../middlewares/Validations.js';
-import SatisfactionModel from '../../../models/Quiz/Satisfaction/Satisfaction.js';
+import PerformanceModel from '../../../models/Quiz/Performance/Performance.js';
 
 
-class SatisfactionControllers {
+class PerformanceControllers {
     constructor() {
-        this.model = new SatisfactionModel();
-        this.questionTable = new BaseModel('question_satisfaction_questionnaire', 'id_qsq');
+        this.model = new PerformanceModel();
+        this.questionTable = new BaseModel('evaluation_performance_question', 'id_epq');
 
-        this.searchFieldId = 'id_sq';
-        this.nameSearchField = 'name_sq';
+        this.searchFieldId = 'id_ep';
+        this.nameSearchField = 'name_ep';
     }
 
 
     async createQuiz(req, res) {
         const { headerQuiz, questionQuiz } = req.body;
-        console.log(headerQuiz);
         const { id_user } = req;
 
         try {
-            if (isInputEmpty(headerQuiz.name_sq) || isInputEmpty(headerQuiz.start_sq) || isInputEmpty(headerQuiz.end_sq)) {
+            if (isInputEmpty(headerQuiz.name_ep) || isInputEmpty(headerQuiz.start_ep) || isInputEmpty(headerQuiz.end_ep)) {
                 return res.status(403).json({
                     message: "Debes completar todos los campos del titulo",
                     group: "title"
                 })
             }
 
-            if (isNotDate(headerQuiz.start_sq) || isNotDate(headerQuiz.end_sq)) {
+            if (isNotDate(headerQuiz.start_ep) || isNotDate(headerQuiz.end_ep)) {
                 return res.status(403).json({
                     message: "Las fechas deben ser validas",
                     group: "date"
@@ -41,14 +40,14 @@ class SatisfactionControllers {
             }
 
             const dataToCreateQuiz = {
-                name_sq: headerQuiz.name_sq,
-                start_sq: headerQuiz.start_sq,
-                end_sq: headerQuiz.end_sq,
+                name_ep: headerQuiz.name_ep,
+                start_ep: headerQuiz.start_ep,
+                end_ep: headerQuiz.end_ep,
                 author_fk: id_user
             }
 
             for (const question of questionQuiz) {
-                if (isInputEmpty(question.description_qsq) || isInputEmpty(question.bad_parameter_qsq) || isInputEmpty(question.best_parameter_qsq)) {
+                if (isInputEmpty(question.question_epq) || isInputEmpty(question.description_epq) || isInputEmpty(question.bad_parameter_epq) || isInputEmpty(question.best_parameter_epq)) {
                     return res.status(403).json({
                         message: "Debes completar todos los campos de las preguntas",
                         group: "questions"
@@ -67,11 +66,12 @@ class SatisfactionControllers {
 
             for (const question of questionQuiz) {
                 const dataToQuestion = {
-                    description_qsq: question.description_qsq,
+                    question_epq: question.question_epq,
+                    description_epq: question.description_epq,
                     is_obligatory: question.is_obligatory,
-                    bad_parameter_qsq: question.bad_parameter_qsq,
-                    best_parameter_qsq: question.best_parameter_qsq,
-                    sq_fk: createQuiz.lastId
+                    bad_parameter_epq: question.bad_parameter_epq,
+                    best_parameter_epq: question.best_parameter_epq,
+                    ep_fk: createQuiz.lastId
                 }
 
                 const insertQuestionToQuiz = await this.questionTable.createOne(dataToQuestion);
@@ -111,8 +111,8 @@ class SatisfactionControllers {
             const formattedList = list.map(item => {
                 return {
                     ...item,
-                    start_sq: formatDateYear(item.start_sq),
-                    end_sq: formatDateYear(item.end_sq),
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
                     created_at: formatDateTime(item.created_at),
                     updated_at: formatDateTime(item.updated_at),
                 };
@@ -133,15 +133,15 @@ class SatisfactionControllers {
     }
 
     async getQuizHeader(req, res) {
-        const { id_sq } = req.params
+        const { id_ep } = req.params
         try {
-            if (isNotNumber(id_sq)) {
+            if (isNotNumber(id_ep)) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
     
-            const list = await this.model.getQuizHeader(id_sq);
+            const list = await this.model.getQuizHeader(id_ep);
     
             if (!list || list.length === 0) {
                 return res.status(403).json({
@@ -151,11 +151,10 @@ class SatisfactionControllers {
     
             const queryResponse = {
                 ...list[0],
-                start_sq: list[0].start_sq ? formatYearMonth(list[0].start_sq) : null,
-                end_sq: list[0].end_sq ? formatYearMonth(list[0].end_sq) : null
+                start_ep: list[0].start_ep ? formatYearMonth(list[0].start_ep) : null,
+                end_ep: list[0].end_ep ? formatYearMonth(list[0].end_ep) : null
             };
     
-            console.log(queryResponse);
             return res.status(200).json({
                 message: "Cuestionario obtenido con éxito",
                 queryResponse
@@ -170,10 +169,10 @@ class SatisfactionControllers {
     }
 
     async updateQuizHeader(req, res) {
-        const { id_sq, name_sq, start_sq, end_sq } = req.body;
+        const { id_ep, name_ep, start_ep, end_ep } = req.body;
 
         try {
-            if (isInputEmpty(id_sq) || isInputEmpty(start_sq) || isInputEmpty(name_sq) || isInputEmpty(end_sq)) {
+            if (isInputEmpty(id_ep) || isInputEmpty(start_ep) || isInputEmpty(name_ep) || isInputEmpty(end_ep)) {
                 console.error("Debe completar todos los campos");
                 return res.status(403).json({
                     message: "Debe completar todos los campos"
@@ -181,10 +180,10 @@ class SatisfactionControllers {
             }
 
             const update = await this.model.updateOne({
-                name_sq: name_sq,
-                start_sq: start_sq,
-                end_sq: end_sq
-            }, ['id_sq', id_sq])
+                name_ep: name_ep,
+                start_ep: start_ep,
+                end_ep: end_ep
+            }, ['id_ep', id_ep])
 
 
             if (update.affectedRows < 1) {
@@ -208,17 +207,17 @@ class SatisfactionControllers {
 
 
     async deleteAllQuiz(req, res) {
-        const { id_sq } = req.body;
+        const { id_ep } = req.body;
 
         try {
-            if (isInputEmpty(id_sq)) {
+            if (isInputEmpty(id_ep)) {
                 console.error("Ha ocurrido un error en el cuestionario");
                 return res.status(403).json({
                     message: "Error al Eliminar el Cuestionario"
                 })
             }
 
-            const deleteQuiz = await this.model.deleteOne(id_sq, 'id_sq');
+            const deleteQuiz = await this.model.deleteOne(id_ep, 'id_ep');
 
             if (!deleteQuiz) {
                 return res.status(403).json({
@@ -240,16 +239,16 @@ class SatisfactionControllers {
     }
 
     async getQuizInformation(req, res) {
-        const { sq_fk } = req.params
+        const { ep_fk } = req.params
 
         try {
-            if (isNotNumber(sq_fk)) {
+            if (isNotNumber(ep_fk)) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 })
             }
 
-            const queryResponse = await this.model.getQuiz(sq_fk);
+            const queryResponse = await this.model.getQuiz(ep_fk);
 
             if (!queryResponse) {
                 return res.status(403).json({
@@ -271,22 +270,23 @@ class SatisfactionControllers {
     }
 
     async addQuestion(req, res) {
-        const { description_qsq, is_obligatory, bad_parameter_qsq, best_parameter_qsq } = req.body;
-        const { id_sq } = req.params;
+        const {question_epq, description_epq, is_obligatory, bad_parameter_epq, best_parameter_epq } = req.body;
+        const { id_ep } = req.params;
 
         try {
-            if (isInputEmpty(description_qsq) || isInputEmpty(is_obligatory) || isInputEmpty(bad_parameter_qsq) || isInputEmpty(best_parameter_qsq)) {
+            if (isInputEmpty(question_epq) || isInputEmpty(description_epq) || isInputEmpty(is_obligatory) || isInputEmpty(bad_parameter_epq) || isInputEmpty(best_parameter_epq)) {
                 return res.status(403).json({
                     message: "Todos los campos deben estar completos"
                 })
             };
 
             const newQuestion = {
-                description_qsq,
+                question_epq,
+                description_epq,
                 is_obligatory,
-                bad_parameter_qsq,
-                best_parameter_qsq,
-                sq_fk: id_sq
+                bad_parameter_epq,
+                best_parameter_epq,
+                ep_fk: id_ep
             }
 
             const create = await this.questionTable.createOne(newQuestion);
@@ -306,7 +306,7 @@ class SatisfactionControllers {
         } catch (error) {
             console.error("Ha ocurrido un error en el cuestionario");
             return res.status(403).json({
-                message: "Error al actualizar la pregunta"
+                message: "Error al agregar la pregunta"
             })
         }
 
@@ -314,17 +314,17 @@ class SatisfactionControllers {
     }
 
     async getQuestion(req, res) {
-        const { id_qsq } = req.body;
+        const { id_epq } = req.body;
         try {
 
-            if (isInputEmpty(id_qsq)) {
+            if (isInputEmpty(id_epq)) {
                 console.error("Debe completar todos los campos");
                 return res.status(403).json({
                     message: "Debe completar todos los campos"
                 })
             }
 
-            const queryResponse = await this.questionTable.getOne(id_qsq, 'id_qsq');
+            const queryResponse = await this.questionTable.getOne(id_epq, 'id_epq');
 
             if (queryResponse.length < 1) {
                 console.error("Debe completar todos los campos");
@@ -346,12 +346,10 @@ class SatisfactionControllers {
     }
 
     async editQuestion(req, res) {
-        const { id_qsq, description_qsq, is_obligatory, bad_parameter_qsq, best_parameter_qsq } = req.body;
-
-        console.log(req.body);
+        const { id_epq, question_epq ,description_epq, is_obligatory, bad_parameter_epq, best_parameter_epq } = req.body;
 
         try {
-            if (isInputEmpty(id_qsq) || isInputEmpty(description_qsq) || isInputEmpty(is_obligatory) || isInputEmpty(bad_parameter_qsq) || isInputEmpty(best_parameter_qsq)) {
+            if (isInputEmpty(id_epq) || isInputEmpty(question_epq) || isInputEmpty(description_epq) || isInputEmpty(is_obligatory) || isInputEmpty(bad_parameter_epq) || isInputEmpty(best_parameter_epq)) {
                 console.error("Debe completar todos los campos");
                 return res.status(403).json({
                     message: "Debe completar todos los campos"
@@ -359,11 +357,12 @@ class SatisfactionControllers {
             }
 
             const update = await this.questionTable.updateOne({
-                description_qsq: description_qsq,
+                question_epq: question_epq,
+                description_epq: description_epq,
                 is_obligatory: is_obligatory,
-                bad_parameter_qsq: bad_parameter_qsq,
-                best_parameter_qsq: best_parameter_qsq
-            }, ['id_qsq', id_qsq])
+                bad_parameter_epq: bad_parameter_epq,
+                best_parameter_epq: best_parameter_epq
+            }, ['id_epq', id_epq])
 
 
             if (update.affectedRows < 1) {
@@ -387,9 +386,9 @@ class SatisfactionControllers {
     }
 
     async deleteQuestion(req, res) {
-        const { id_qsq } = req.body;
+        const { id_epq } = req.body;
 
-        if (isInputEmpty(id_qsq)) {
+        if (isInputEmpty(id_epq)) {
             console.error("Ha ocurrido un error al eliminar la pregunta");
             return res.status(403).json({
                 message: "Error al eliminar la pregunta"
@@ -397,7 +396,7 @@ class SatisfactionControllers {
         }
 
 
-        const deleteQuestion = await this.questionTable.deleteOne(id_qsq, 'id_qsq');
+        const deleteQuestion = await this.questionTable.deleteOne(id_epq, 'id_epq');
 
         if (deleteQuestion.affectedRows < 1) {
             console.error("Ha ocurrido un error al eliminar la pregunta");
@@ -423,4 +422,4 @@ class SatisfactionControllers {
 
 }
 
-export default SatisfactionControllers;
+export default PerformanceControllers;

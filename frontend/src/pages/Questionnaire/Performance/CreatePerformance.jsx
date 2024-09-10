@@ -6,31 +6,32 @@ import useAuth from "../../../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 
 
-const CreateSatisfaction = () => {
+const CreatePerformance = () => {
 
     const [headerQuiz, setHeaderQuiz] = useState({
-        name_sq: "",
-        start_sq: "",
-        end_sq: "",
+        name_ep: "",
+        start_ep: "",
+        end_ep: "",
     })
 
     const [questionStructure, setQuestionStructure] = useState({
-        description_qsq: "",
+        question_epq: "",
+        description_epq: "",
         is_obligatory: "",
-        bad_parameter_qsq: "",
-        best_parameter_qsq: ""
+        bad_parameter_epq: "",
+        best_parameter_epq: ""
     })
 
     const fields_header = {
-        name_sq: "name_sq",
-        start_sq: "start_sq",
-        end_sq: "end_sq"
+        name_ep: "name_ep",
+        start_ep: "start_ep",
+        end_ep: "end_ep"
     }
     const [bodyQuiz, setBodyQuiz] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const apiToCreate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_QUIZ_SATISFACTION}`
+    const apiToCreate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_QUIZ_PERFORMANCE}`
     const { authData } = useAuth();
     const navigate = useNavigate();
 
@@ -62,8 +63,8 @@ const CreateSatisfaction = () => {
             setErrorMessage('');
             setSuccessMessage(data.message);
 
-            setTimeout( () =>{
-                navigate('/rrhh/satisfaccion/cuestionarios')
+            setTimeout(() => {
+                navigate('/rrhh/rendimiento/cuestionarios')
             }, 1500)
 
         } catch (error) {
@@ -77,7 +78,7 @@ const CreateSatisfaction = () => {
             <div className='container__content quiz'>
 
                 <HeaderCreate
-                    title={"Cuestionario de Satisfacción"}
+                    title={"Cuestionario de Desempeño"}
                     fields={fields_header}
                     placeholders={{ title: "Ingrese un titulo" }}
                     setHeaderQuiz={setHeaderQuiz}
@@ -85,7 +86,7 @@ const CreateSatisfaction = () => {
 
                 <BodyCreate
                     questionStructure={questionStructure}
-                    questionData={{ input_name: "description_qsq", radius_name: "is_obligatory", bad_parameter_qsq: 'bad_parameter_qsq', best_parameter_qsq: 'best_parameter_qsq' }}
+                    questionData={{ input_name_question: 'question_epq', input_name_description: "description_epq", radius_name: "is_obligatory", bad_parameter_epq: 'bad_parameter_epq', best_parameter_epq: 'best_parameter_epq' }}
                     setBodyQuiz={setBodyQuiz}
                 />
 
@@ -110,4 +111,4 @@ const CreateSatisfaction = () => {
     )
 }
 
-export default CreateSatisfaction
+export default CreatePerformance
