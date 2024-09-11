@@ -32,6 +32,7 @@ import SingleQuiz from './pages/Questionnaire/Satisfaction/SingleQuiz';
 import ListPerformance from './pages/Questionnaire/Performance/ListPerformance';
 import SingleQuizPerformance from './pages/Questionnaire/Performance/SingleQuizPerformance';
 import CreatePerformance from './pages/Questionnaire/Performance/CreatePerformance';
+import PersonalCapacitation from './pages/RequestCapacitation/Personal/PersonalCapacitation';
 
 
 function App() {
@@ -89,6 +90,11 @@ function App() {
 
               <Route path="personal/*">
                 <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
+                <Route path="solicitud/*"> 
+                <Route path="capacitacion" element={<PersonalCapacitation/>}>
+                </Route> 
+                
+                </Route> {/* Home del admin */}
               </Route>
 
 

@@ -46,7 +46,9 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
     };
 
     return (
-        <div className="quiz__header__section">
+        <div className="quiz__header__container">
+            <div className="container__content">
+
             <h4>Cuerpo del Cuestionario</h4>
 
 
@@ -141,6 +143,7 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
                     onClick={addQuestion}
                     full={true}
                 />
+            </div>
             </div>
         </div>
     );

@@ -45,88 +45,91 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
     };
 
     return (
-        <div className="quiz__header__section">
+        <div className="quiz__header__container">
+            <div className="container__content">
             <h4>Cuerpo del Cuestionario</h4>
 
 
 
-            <div className="quiz__body__section">
-                {listQuestions.map((question, index) => (
-                    <div key={question.id} className="quiz__body__question__container">
-                        <div className="question__title__container">
-                            <label htmlFor={`question_${question.id}`}>Pregunta {index + 1}</label>
-                            <button
-                                onClick={() => deleteQuestion(question.id)}
-                                className="quiz__question__delete"
-                            >
-                                Eliminar pregunta
-                            </button>
-                        </div>
+<div className="quiz__body__section">
+    {listQuestions.map((question, index) => (
+        <div key={question.id} className="quiz__body__question__container">
+            <div className="question__title__container">
+                <label htmlFor={`question_${question.id}`}>Pregunta {index + 1}</label>
+                <button
+                    onClick={() => deleteQuestion(question.id)}
+                    className="quiz__question__delete"
+                >
+                    Eliminar pregunta
+                </button>
+            </div>
+            <input
+                onChange={(e) => handleChange(question.id, e)}
+                name={questionData.input_name}
+                type="text"
+                placeholder="Escribe la pregunta"
+            />
+
+            <div className="quiz__question__check__container">
+                <p>Marcar como obligatoria</p>
+                <div className="quiz__radio__obligatory">
+                    <label>
+                        Si
                         <input
                             onChange={(e) => handleChange(question.id, e)}
-                            name={questionData.input_name}
-                            type="text"
-                            placeholder="Escribe la pregunta"
+                            name={questionData.radius_name}
+                            value="1"
+                            type="radio"
                         />
+                    </label>
+                    <label>
+                        No
+                        <input
+                            onChange={(e) => handleChange(question.id, e)}
+                            name={questionData.radius_name}
+                            value="0"
+                            type="radio"
+                        />
+                    </label>
+                </div>
+            </div>
 
-                        <div className="quiz__question__check__container">
-                            <p>Marcar como obligatoria</p>
-                            <div className="quiz__radio__obligatory">
-                                <label>
-                                    Si
-                                    <input
-                                        onChange={(e) => handleChange(question.id, e)}
-                                        name={questionData.radius_name}
-                                        value="1"
-                                        type="radio"
-                                    />
-                                </label>
-                                <label>
-                                    No
-                                    <input
-                                        onChange={(e) => handleChange(question.id, e)}
-                                        name={questionData.radius_name}
-                                        value="0"
-                                        type="radio"
-                                    />
-                                </label>
-                            </div>
-                        </div>
+            <div className="quiz__example__container">
+                <label>
+                    Texto de parámetro mínimo
+                    <input
+                        onChange={(e) => handleChange(question.id, e)}
+                        name={questionData.bad_parameter_qsq}
+                        type="text"
+                    />
+                </label>
 
-                        <div className="quiz__example__container">
-                            <label>
-                                Texto de parámetro mínimo
-                                <input
-                                    onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.bad_parameter_qsq}
-                                    type="text"
-                                />
-                            </label>
-
-                            <label>
-                                Texto de parámetro máximo
-                                <input
-                                    onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.best_parameter_qsq}
-                                    type="text"
-                                />
-                            </label>
-                        </div>
-                    </div>
-                ))}
+                <label>
+                    Texto de parámetro máximo
+                    <input
+                        onChange={(e) => handleChange(question.id, e)}
+                        name={questionData.best_parameter_qsq}
+                        type="text"
+                    />
+                </label>
+            </div>
+        </div>
+    ))}
 
 <div className="quiz__error">
-                {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
-                {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
+    {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
+    {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
 </div>
 
 
-                <ButtonWhiteOutlineBlack
-                    title={"+ Agregar Pregunta"}
-                    onClick={addQuestion}
-                    full={true}
-                />
+    <ButtonWhiteOutlineBlack
+        title={"+ Agregar Pregunta"}
+        onClick={addQuestion}
+        full={true}
+    />
+</div>
             </div>
+            
         </div>
     );
 };

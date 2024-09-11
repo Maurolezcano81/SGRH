@@ -1548,6 +1548,7 @@ input {
 .quiz__header__container{
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 
@@ -1614,6 +1615,14 @@ input {
 .quiz__body__section{
   box-shadow: var(--shadow-a-25-b-02);
   padding: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quiz__body__container__content{
+  
 }
 
 .quiz__body__section h4{
@@ -1811,6 +1820,68 @@ input {
 
 .quiz__button__submit button{
   padding: 1rem;
+}
+
+.form__request__container{
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  box-shadow: var(--shadow-a-25-b-02);
+  padding: 2rem;
+  min-width: 100%;
+}
+
+.form__request__body{
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+
+.form__request__title h2{
+  margin-bottom: .5rem;
+  font-weight: 600;
+}
+
+.form__request__title span{
+  font-weight: 200;
+  color: var(--gray-1);
+  font-size: 1.2rem;
+}
+
+.form__request__body__title{
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form__request__body__title div input{
+  min-width: 100%;
+}
+
+.form__request__body__title div textarea{
+  min-width: 100%;
+}
+
+.form__request__body__title div{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form__request__body__title span{
+  font-size: 1.2rem;
+  color: var(--gray-1);
+  text-align: right;
+
+}
+
+.form__request__buttons{
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 @media (width >= 468px) {
