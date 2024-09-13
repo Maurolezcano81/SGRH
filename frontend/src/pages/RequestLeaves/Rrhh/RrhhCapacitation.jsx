@@ -1,25 +1,22 @@
 import { useState } from "react";
 import PreferenceTitle from "../../MasterTables/PreferenceTitle";
-import FormRequest from "./FormRequest";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import useAuth from "../../../hooks/useAuth";
-
-import User from '../../../assets/Icons/Buttons/User.png'
+import Info from '../../../assets/Icons/Buttons/Info.png'
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png'
+import TableCapacitations from "./TableCapacitations";
+import SeeMore from "./SeeMore";
 
 
-const PersonalCapacitation = () => {
+const RrhhCapacitation = () => {
 
-    const [toggleFormRequest, setToggleFormRequest] = useState(false)
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+    const [initalData, setInitialData] = useState(null);
+    const [isOpenSeeMore, setIsOpenSeeMore] = useState(false);
 
     const { authData } = useAuth();
 
-    const handleOpenFormRequest = () => {
-        setToggleFormRequest(true)
-    }
-
-    const handleStatusUpdated = () =>{
+    const handleStatusUpdated = () => {
         setIsStatusUpdated(!isStatusUpdated);
     }
 
@@ -29,10 +26,11 @@ const PersonalCapacitation = () => {
 
 
     const columns = [
+        { field: 'avatar_user', label: '' },
+        { field: 'requestor_name', label: 'Nombre' },
         { field: 'title_rc', label: 'Titulo' },
         { field: 'description_rc', label: 'Descripcion' },
         { field: 'created_at', label: 'Solicitado' },
-        { field: 'updated_at', label: 'Ultima actualización' },
         { field: 'name_sr', label: 'Estado de la solicitud' }
     ];
 
@@ -41,7 +39,7 @@ const PersonalCapacitation = () => {
             key: 'name_sr',
             label: 'Estado de solicitud',
             name_field: 'name_sr',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}` // URL para obtener las opciones de ocupación 
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}`
         },
     ];
 
@@ -50,27 +48,35 @@ const PersonalCapacitation = () => {
         { value: 'description_rc', label: 'Descripcion' },
     ];
 
+
+    const openSeeMore = (initialData) => {
+        setInitialData(initialData);
+        setIsOpenSeeMore(true);
+    }
+
+    const closeSeeMore = () => {
+        setIsOpenSeeMore(false);
+    }
+
     return (
         <>
             <div className="container__page">
 
                 <PreferenceTitle
                     title={"Solicitud de Capacitacion"}
-                    titleButton={"Solicitar Capacitación"}
-                    onClick={handleOpenFormRequest}
+                    titleButton={""}
+                    onClick={''}
                 />
 
+                <TableCapacitations
+                    dependencyToRefresh={isStatusUpdated}
+                    setDependencyToRefresh={setIsStatusUpdated}
+                />
 
-                {toggleFormRequest && (
-                    <FormRequest
-                        handleCloseFormRequest={handleCloseFormRequest}
-                        handleStatusUpdated={handleStatusUpdated}
-                    />
-                )}
             </div>
 
             <TableSecondaryNotTitleAndWhereOnUrl
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_USER}`}
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_RRHH}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
@@ -79,24 +85,32 @@ const PersonalCapacitation = () => {
                 initialSearchTerm={''}
                 initialSort={{ field: 'title_rc', order: 'ASC' }}
                 actions={{
-                    view: (row) => console.log('Editar', row),
+                    view: (row) => openSeeMore(row),
                     edit: (row) => console.log('Editar', row),
                     delete: (row) => console.log('Editar', row),
                 }}
                 showActions={{
                     view: true,
-                    edit: true,
+                    edit: false,
                     delete: false
                 }}
                 actionColumn='id_rc'
                 paginationLabelInfo={'Solicitudes de capacitación'}
-                buttonOneInfo={{ img: User, color: 'blue', title: 'Ver Perfil' }}
+                buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
             />
+
+            {isOpenSeeMore && (
+                <SeeMore
+                    initialData={initalData}
+                    closeModalAnswer={closeSeeMore}
+                />
+            )}
+
         </>
     )
 }
 
 
-export default PersonalCapacitation;
+export default RrhhCapacitation;

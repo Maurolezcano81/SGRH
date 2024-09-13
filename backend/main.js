@@ -7,9 +7,12 @@ const app = express();
 
 // Definir la ruta de la carpeta donde están las imágenes
 const staticImagesAvatarsPath = path.join('uploads/avatars');
+const staticImagesRequestPath = path.join('uploads/requests');
 
 // Servir archivos estáticos desde la carpeta de imágenes
 app.use('/api/uploads/avatars/', express.static(staticImagesAvatarsPath));
+app.use('/api/uploads/requests/', express.static(staticImagesRequestPath));
+
 
 const corsOptions = {
   origin: '*',

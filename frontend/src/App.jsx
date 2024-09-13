@@ -33,6 +33,8 @@ import ListPerformance from './pages/Questionnaire/Performance/ListPerformance';
 import SingleQuizPerformance from './pages/Questionnaire/Performance/SingleQuizPerformance';
 import CreatePerformance from './pages/Questionnaire/Performance/CreatePerformance';
 import PersonalCapacitation from './pages/RequestCapacitation/Personal/PersonalCapacitation';
+import RrhhCapacitation from './pages/RequestCapacitation/Rrhh/RrhhCapacitation';
+import PersonalLeave from './pages/RequestLeaves/Personal/PersonalCapacitation';
 
 
 function App() {
@@ -86,21 +88,23 @@ function App() {
                   <Route path="tipo_asunto_mensaje" element={<Subject />} />
                   <Route path="tipo_anexo" element={<Attachment />} />
                 </Route>
+                <Route path="solicitud/*">
+                    <Route path="capacitacion" element={<RrhhCapacitation />} />
+                    <Route path="licencia" element={<RrhhCapacitation />} />
+                  </Route> {/* Home del admin */}
+                </Route>
+                <Route path="personal/*">
+                  <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
+                  <Route path="solicitud/*">
+                    <Route path="capacitacion" element={<PersonalCapacitation />} />
+                    <Route path="licencia" element={<PersonalLeave />} />
+                  </Route> {/* Home del admin */}
+                </Route>
+
+
+                <Route path="profile/" element={<Profile />} />
+
               </Route>
-
-              <Route path="personal/*">
-                <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
-                <Route path="solicitud/*"> 
-                <Route path="capacitacion" element={<PersonalCapacitation/>}>
-                </Route> 
-                
-                </Route> {/* Home del admin */}
-              </Route>
-
-
-              <Route path="profile/" element={<Profile />} />
-
-            </Route>
           </Routes>
         </NavbarProvider>
       </AuthProvider>

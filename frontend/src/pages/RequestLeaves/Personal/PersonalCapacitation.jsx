@@ -8,7 +8,7 @@ import User from '../../../assets/Icons/Buttons/User.png'
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png'
 
 
-const PersonalCapacitation = () => {
+const PersonalLeave = () => {
 
     const [toggleFormRequest, setToggleFormRequest] = useState(false)
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
@@ -19,7 +19,7 @@ const PersonalCapacitation = () => {
         setToggleFormRequest(true)
     }
 
-    const handleStatusUpdated = () =>{
+    const handleStatusUpdated = () => {
         setIsStatusUpdated(!isStatusUpdated);
     }
 
@@ -29,11 +29,13 @@ const PersonalCapacitation = () => {
 
 
     const columns = [
-        { field: 'title_rc', label: 'Titulo' },
-        { field: 'description_rc', label: 'Descripcion' },
+        { field: 'name_tol', label: 'Titulo' },
+        { field: 'reason_lr', label: 'Descripcion' },
         { field: 'created_at', label: 'Solicitado' },
-        { field: 'updated_at', label: 'Ultima actualización' },
-        { field: 'name_sr', label: 'Estado de la solicitud' }
+        { field: 'name_sr', label: 'Estado de la solicitud' },
+        { field: 'start_lr', label: 'Fecha de inicio' },
+        { field: 'end_lr', label: 'Fecha de fin' },
+        { field: 'answered_at', label: 'Respondido por' },
     ];
 
     const filterConfigs = [
@@ -41,13 +43,13 @@ const PersonalCapacitation = () => {
             key: 'name_sr',
             label: 'Estado de solicitud',
             name_field: 'name_sr',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}` // URL para obtener las opciones de ocupación 
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}`
         },
     ];
 
     const searchOptions = [
-        { value: 'title_rc', label: 'Titulo' },
-        { value: 'description_rc', label: 'Descripcion' },
+        { value: 'name_tol', label: 'Titulo' },
+        { value: 'reason_lr', label: 'Descripcion' },
     ];
 
     return (
@@ -55,8 +57,8 @@ const PersonalCapacitation = () => {
             <div className="container__page">
 
                 <PreferenceTitle
-                    title={"Solicitud de Capacitacion"}
-                    titleButton={"Solicitar Capacitación"}
+                    title={"Solicitud de Licencia"}
+                    titleButton={"Solicitar Licencia"}
                     onClick={handleOpenFormRequest}
                 />
 
@@ -70,14 +72,14 @@ const PersonalCapacitation = () => {
             </div>
 
             <TableSecondaryNotTitleAndWhereOnUrl
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_USER}`}
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_LEAVE_USER}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
                 searchOptions={searchOptions}
-                initialSearchField={'title_rc'}
+                initialSearchField={'name_tol'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'title_rc', order: 'ASC' }}
+                initialSort={{ field: 'name_tol', order: 'ASC' }}
                 actions={{
                     view: (row) => console.log('Editar', row),
                     edit: (row) => console.log('Editar', row),
@@ -88,8 +90,8 @@ const PersonalCapacitation = () => {
                     edit: true,
                     delete: false
                 }}
-                actionColumn='id_rc'
-                paginationLabelInfo={'Solicitudes de capacitación'}
+                actionColumn='id_lr'
+                paginationLabelInfo={'Solicitudes de Licencia'}
                 buttonOneInfo={{ img: User, color: 'blue', title: 'Ver Perfil' }}
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
@@ -99,4 +101,4 @@ const PersonalCapacitation = () => {
 }
 
 
-export default PersonalCapacitation;
+export default PersonalLeave;

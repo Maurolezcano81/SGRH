@@ -2,17 +2,72 @@ import { useState } from "react"
 import ButtonRed from "../../../components/ButtonRed"
 import ButtonBlue from "../../../components/ButtonBlue"
 import ButtonEditable from "../../../components/Buttons/ButtonEditable"
+import useAuth from "../../../hooks/useAuth"
 
 const FormRequest = ({
     handleCloseFormRequest,
+    handleStatusUpdated
 }) => {
     const [errorMessage, setErrorMessage] = useState('');
-    const [dataForm, setDataForm] = useState({})
+    const [successMessage, setSuccesMessage] = useState('');
+    
+    
+    const { authData } = useAuth();
+    const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_CAPACITATION_USER}`
+
+    const [dataForm, setDataForm] = useState({
+        title_rc: "",
+        description_rc: ""
+    })
 
 
-    const handleSubmit = (e) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        const data = {
+            ...dataForm,
+            [name]: value
+        }
+
+        setDataForm(data);
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log("Asd")
+
+        try {
+            const fetchCreateRequest = async () => {
+
+                const response = await fetch(createOne, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authData.token}`
+                    },
+                    body: JSON.stringify({
+                        dataForm
+                    })
+                })
+
+                const dataFormatted = await response.json();
+
+                if (response.status === 403) {
+                    setErrorMessage(dataFormatted.message)
+                }
+
+                setErrorMessage('');
+                setSuccesMessage(dataFormatted.message);
+            }
+
+
+            fetchCreateRequest();
+            handleStatusUpdated();
+
+        } catch (error) {
+            console.log(error);
+        }
+
+
     }
 
     return (
@@ -25,11 +80,15 @@ const FormRequest = ({
                 <div className="form__request__body__title">
                     <div>
                         <label htmlFor="title_rc">Ingrese un asunto:</label>
-                        <input className="input__form__div__input" placeholder="Ingrese un titulo o asunto" name="title_rc" type="text" />
+                        <input
+                            onChange={(e) => handleChange(e)}
+                            className="input__form__div__input" placeholder="Ingrese un titulo o asunto" name="title_rc" type="text" />
                     </div>
                     <div>
                         <label htmlFor="description_rc">Ingrese una descripcion:</label>
-                        <textarea placeholder="Amplie la solicitud de capacitación" className="input__form__div__input" name="description_rc" />
+                        <textarea
+                            onChange={(e) => handleChange(e)}
+                            placeholder="Amplie la solicitud de capacitación" className="input__form__div__input" name="description_rc" />
                     </div>
                     <div>
                         <span>Cantidad de caracteres: </span>
@@ -45,11 +104,8 @@ const FormRequest = ({
                         onClick={handleSubmit}
                     />
                 </div>
-                {errorMessage && (
-                    <div className="preferences__modal__error">
-                        <p>{errorMessage}</p>
-                    </div>
-                )}
+                {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
+                {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
             </div>
         </form>
     )

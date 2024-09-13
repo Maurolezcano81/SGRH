@@ -1,3 +1,5 @@
+import { uploadFiles, handleFileUpload, printFileUrl, uploadArray, handleFileUploadNotObligatory } from '../middlewares/Uploads.js';
+
 // Imports
 import express from 'express';
 import TypeOfLeaveController from "../controllers/Leaves/TypeOfLeavesController.js";
@@ -16,10 +18,17 @@ import StatusRequestControllers from '../controllers/Requests/StatusRequestContr
 import EntityRoutes from './People/Public/People/EntityRoutes.js';
 import UserPublic from './People/Public/People/UserPublic.js';
 import ProfileController from '../controllers/System/Profile/Profile.js';
+import CapacitationControllers from '../controllers/Requests/CapacitationControllers.js';
+import LeavesControllers from '../controllers/Requests/LeaveControllers.js';
+import TypeOfLeaveControllers from '../controllers/Leaves/TypeOfLeavesController.js';
+
+const requestAttachmentUpload = uploadFiles('image_url', 'uploads/requests');
+
+
 // Instances
 const router = express.Router();
 
-const leave = new TypeOfLeaveController();
+const typeOfLeave = new TypeOfLeaveController();
 const subject = new SubjectType();
 const city = new CityControllers();
 const state = new StateControllers();
@@ -33,9 +42,9 @@ const document = new DocumentControllers();
 const sex = new SexControllers();
 const statusRequest = new StatusRequestControllers();
 const profile = new ProfileController();
+const capacitation = new CapacitationControllers();
+const leave = new LeavesControllers();
 // Routes
-// Type of Leave Routes
-router.get('/types_of_leave', leave.getTypesOfLeave.bind(leave));
 
 // Subject Routes
 router.get('/subjects', subject.getSubjects.bind(subject));
@@ -75,11 +84,26 @@ router.get('/statuses_request', statusRequest.getStatusesRequest.bind(statusRequ
 // Profile Routes
 router.get('/profiles', profile.getProfiles.bind(profile));
 
+// Type of leaves routes
+router.get('/types_of_leave', typeOfLeave.getTypesOfLeave.bind(typeOfLeave));
+router.post('/types_of_leave', typeOfLeave.getTypeOfLeave.bind(typeOfLeave));
 
+router.post('/request/capacitations/user', capacitation.getCapacitationsById.bind(capacitation));
+router.post('/request/capacitation/new', capacitation.createRequestCapacitation.bind(capacitation));
+
+router.post('/request/leaves/user', leave.getLeavesById.bind(leave));
+router.post('/request/leave/new',
+  uploadArray('pictures', 'uploads/requests'), // Campo 'image' y carpeta de destino
+  handleFileUploadNotObligatory('/uploads/requests'),   // Configuración del path base
+  leave.createRequestLeave.bind(leave)      // Controlador para manejar la solicitud
+);
 router.use(EntityRoutes.router);
 router.use(UserPublic.router)
 const PublicRoutes = {
   router
 }
+
+
+
 
 export default PublicRoutes
