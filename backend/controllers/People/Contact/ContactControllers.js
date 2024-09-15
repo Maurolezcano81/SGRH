@@ -116,6 +116,14 @@ class ContactController {
         throw new Error('No se puede actualizar este tipo de contacto, debido a que no existe');
       }
 
+      const checkDuplicate = await this.model.getOne(name_contact, 'name_contact');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne({ name_contact, status_contact }, [this.nameFieldId, id_contact]);
 
       if (queryResponse.affectedRows < 1) {

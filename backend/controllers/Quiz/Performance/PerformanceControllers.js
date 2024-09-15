@@ -39,6 +39,14 @@ class PerformanceControllers {
                 })
             }
 
+            const checkDuplicate = await this.model.getOne(headerQuiz.name_ep, 'name_ep');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
+              })
+            }
+
             const dataToCreateQuiz = {
                 name_ep: headerQuiz.name_ep,
                 start_ep: headerQuiz.start_ep,
@@ -179,6 +187,14 @@ class PerformanceControllers {
                 })
             }
 
+            const checkDuplicate = await this.model.getOne(name_ep, 'name_ep');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede cambiar el cuestionario con este nombre, debido a que ya hay uno existente'
+              })
+            }
+
             const update = await this.model.updateOne({
                 name_ep: name_ep,
                 start_ep: start_ep,
@@ -280,6 +296,14 @@ class PerformanceControllers {
                 })
             };
 
+            const checkDuplicate = await this.questionTable.getOne(question_epq, 'question_epq');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede agregar la pregunta al cuestionario, debido a que ya hay una igual existente'
+              })
+            }
+
             const newQuestion = {
                 question_epq,
                 description_epq,
@@ -355,6 +379,15 @@ class PerformanceControllers {
                     message: "Debe completar todos los campos"
                 })
             }
+
+            const checkDuplicate = await this.questionTable.getOne(question_epq, 'question_epq');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede agregar la pregunta al cuestionario, debido a que ya hay una igual existente'
+              })
+            }
+
 
             const update = await this.questionTable.updateOne({
                 question_epq: question_epq,

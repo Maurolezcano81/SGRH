@@ -111,8 +111,8 @@ class StatusRequestControllers {
 
       const checkExists = await this.model.getOne(id_sr, this.nameFieldId);
 
-      if (checkExists.length < 1) {
-        throw new Error('Este tipo de estado no existe');
+      if (checkExists.length > 0) {
+        throw new Error('Este tipo de estado ya existe');
       }
 
       const queryResponse = await this.model.updateOne({ name_sr, status_sr }, [this.nameFieldId, id_sr]);

@@ -116,6 +116,14 @@ class AttachmentControllers {
         throw new Error('No se puede actualizar este tipo de anexo, debido a que no existe');
       }
 
+      const checkDuplicate = await this.model.getOne(name_ta, 'name_ta');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne({ name_ta, status_ta }, [this.nameFieldId, id_ta]);
 
       if (queryResponse.affectedRows < 1) {

@@ -119,6 +119,14 @@ class OccupationControllers {
         throw new Error('No se puede actualizar el puesto de trabajo debido a que no existe');
       }
 
+      const checkDuplicate = await this.model.getOne(name_occupation, 'name_occupation');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne({ name_occupation, salary_occupation, status_occupation }, [this.nameFieldId, id_occupation]);
 
       if (queryResponse.affectedRows < 1) {

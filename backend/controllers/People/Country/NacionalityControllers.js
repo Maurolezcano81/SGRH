@@ -117,6 +117,14 @@ class NacionalityController {
         throw new Error('No se puede actualizar la nacionalidad, debido a que no existe');
       }
 
+      const checkDuplicate = await this.model.getOne(name_nacionality, 'name_nacionality');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne(id_nacionality, { name_nacionality, abbreviation_nacionality, status_nacionality });
 
       if (queryResponse.affectedRows < 1) {

@@ -240,6 +240,14 @@ class DepartmentController {
         throw new Error('Departamento no encontrado');
       }
 
+      const checkDuplicate = await this.model.getOne(name_department, 'name_department');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne({ name_department, status_department }, [this.nameFieldId, id_department]);
 
 

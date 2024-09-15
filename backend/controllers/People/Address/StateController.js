@@ -111,9 +111,18 @@ class StateControllers {
       }
 
       const checkExists = await this.model.getOne(id_state, this.nameFieldId);
+      
 
       if (!checkExists) {
         throw new Error('No se puede actualizar esta provincia, debido a que no existe');
+      }
+
+      const checkDuplicate = await this.model.getOne(name_state, 'name_state');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
       }
 
       const queryResponse = await this.model.updateOne({ name_state, status_state }, [this.nameFieldId, id_state]);

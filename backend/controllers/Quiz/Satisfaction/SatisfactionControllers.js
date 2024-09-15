@@ -15,7 +15,7 @@ class SatisfactionControllers {
 
     async createQuiz(req, res) {
         const { headerQuiz, questionQuiz } = req.body;
-        console.log(headerQuiz);
+
         const { id_user } = req;
 
         try {
@@ -38,6 +38,14 @@ class SatisfactionControllers {
                     message: "Necesitas agregar al menos una pregunta",
                     group: "questions"
                 })
+            }
+
+            const checkDuplicate = await this.model.getOne(headerQuiz.name_sq, 'name_sq');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
+              })
             }
 
             const dataToCreateQuiz = {
@@ -180,6 +188,14 @@ class SatisfactionControllers {
                 })
             }
 
+            const checkDuplicate = await this.model.getOne(name_sq, 'name_sq');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
+              })
+            }
+
             const update = await this.model.updateOne({
                 name_sq: name_sq,
                 start_sq: start_sq,
@@ -281,6 +297,14 @@ class SatisfactionControllers {
                 })
             };
 
+            const checkDuplicate = await this.questionTable.getOne(description_qsq, 'description_qsq');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede agregar la pregunta al cuestionario, debido a que ya hay una igual existente'
+              })
+            }
+
             const newQuestion = {
                 description_qsq,
                 is_obligatory,
@@ -356,6 +380,14 @@ class SatisfactionControllers {
                 return res.status(403).json({
                     message: "Debe completar todos los campos"
                 })
+            }
+
+            const checkDuplicate = await this.questionTable.getOne(description_qsq, 'description_qsq');
+
+            if (checkDuplicate.length > 0) {
+              return res.status(403).json({
+                message: 'No se puede editar la pregunta del cuestionario, debido a que ya hay una igual existente'
+              })
             }
 
             const update = await this.questionTable.updateOne({

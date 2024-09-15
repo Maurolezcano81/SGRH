@@ -101,6 +101,14 @@ class CountryController {
         throw new Error('No se puede actualizar el país, debido a que no existe');
       }
 
+      const checkDuplicate = await this.model.getOne(name_country, 'name_country');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne(id_country, { name_country, abbreviation_country, status_country });
 
       return res.status(200).json({

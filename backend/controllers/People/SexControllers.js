@@ -114,6 +114,14 @@ class SexControllers {
         throw new Error('No se puede actualizar este tipo de sexo, debido a que no existe');
       }
 
+      const checkDuplicate = await this.model.getOne(name_sex, 'name_sex');
+
+      if (checkDuplicate.length > 0) {
+        return res.status(403).json({
+          message: 'No se puede actualizar, debido a que ya es un registro existente'
+        })
+      }
+
       const queryResponse = await this.model.updateOne({ name_sex, status_sex }, [this.nameFieldId, id_sex]);
 
       if (queryResponse.affectedRows < 1) {
