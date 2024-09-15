@@ -34,7 +34,8 @@ import SingleQuizPerformance from './pages/Questionnaire/Performance/SingleQuizP
 import CreatePerformance from './pages/Questionnaire/Performance/CreatePerformance';
 import PersonalCapacitation from './pages/RequestCapacitation/Personal/PersonalCapacitation';
 import RrhhCapacitation from './pages/RequestCapacitation/Rrhh/RrhhCapacitation';
-import PersonalLeave from './pages/RequestLeaves/Personal/PersonalCapacitation';
+import PersonalLeave from './pages/RequestLeaves/Personal/PersonalLeave';
+import RrhhLeave from './pages/RequestLeaves/Rrhh/RrhhLeave';
 
 
 function App() {
@@ -90,7 +91,7 @@ function App() {
                 </Route>
                 <Route path="solicitud/*">
                     <Route path="capacitacion" element={<RrhhCapacitation />} />
-                    <Route path="licencia" element={<RrhhCapacitation />} />
+                    <Route path="licencia" element={<RrhhLeave />} />
                   </Route> {/* Home del admin */}
                 </Route>
                 <Route path="personal/*">

@@ -14,13 +14,14 @@ import DocumentRoutes from './People/Document/DocumentRoutes.js';
 import StatusRequestRoutes from './Requests/StatusRequestRoutes.js';
 import NavigationMenuRoutes from './System/Navbar/NavigationMenuRoutes.js';
 import TypeOfTerminationRoutes from './Termination/TypeOfTerminationRoutes.js';
-import LeavesRoutes from "./Leaves/LeavesRoutes.js";
+import TypeOfLeaves from "./Leaves/LeavesRoutes.js";
 import UserRoutes from "./People/UserRoutes.js";
 import ProfileRoutes from "./System/Profile/ProfileRoutes.js";
 import ModuleRoutes from "./System/Profile/ModuleRoutes.js";
 import SatisfactionRoutes from "./Quiz/Satisfaction.js";
 import PerformanceRoutes from "./Quiz/Performance.js";
 import CapacitationRoutes from "./Requests/CapacitationRoutes.js";
+import LeavesRoutes from "./Requests/LeavesRoutes.js";
 
 app.use(SubjectRoutes.router)
 app.use(AttachmentRoutes.router)
@@ -32,7 +33,7 @@ app.use(OccupationRoutes.router);
 app.use(SexRoutes.router);
 app.use(DocumentRoutes.router);
 app.use(StatusRequestRoutes.router);
-app.use(LeavesRoutes.router);
+app.use(TypeOfLeaves.router);
 app.use(NavigationMenuRoutes.router);
 app.use(TypeOfTerminationRoutes.router);
 app.use(UserRoutes.router);
@@ -41,7 +42,9 @@ app.use(SatisfactionRoutes.router);
 app.use(PerformanceRoutes.router);
 
 
-app.use(CapacitationRoutes.router)
+app.use(CapacitationRoutes.router);
+app.use(LeavesRoutes.router);
+
 // REEMPLAZAR ESTAS RUTAS TAMBIEN
 app.use(ProfileRoutes.router);
 app.use(ModuleRoutes.router);

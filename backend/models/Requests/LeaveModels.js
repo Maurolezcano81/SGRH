@@ -9,6 +9,24 @@ class LeaveModel extends BaseModel {
     }
 
 
+    async getAttachments(lr_fk) {
+
+        try {
+            const query = `
+                SELECT * from attachment_leave_request alr
+                where lr_fk = ?
+            `
+
+            const [results] = await this.con.promise().query(query, [lr_fk]);
+
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+
     async getLeavesInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
@@ -23,6 +41,8 @@ class LeaveModel extends BaseModel {
                 CONCAT(e.name_entity, ' ', e.lastname_entity) AS requestor_name, 
                 CONCAT(eaut.name_entity,' ', eaut.lastname_entity) as answered_by,
                 lrr.created_at as answered_at,
+                name_sr,
+                description_lrr,
                 lr.created_at
             FROM 
                 leave_request lr
@@ -41,7 +61,7 @@ class LeaveModel extends BaseModel {
             LEFT JOIN 
                 status_request sr ON lrr.sr_fk = sr.id_sr
             ${whereClause}
-                group by tol_name, id_lr
+                group by name_tol, id_lr
             ORDER BY ${orderBy} ${order} 
             LIMIT ? OFFSET ?`;
 
@@ -74,13 +94,13 @@ class LeaveModel extends BaseModel {
                 JOIN
                     type_of_leave tol on lr.tol_fk = tol.id_tol
                 LEFT JOIN 
-                    leave_response_request lrr ON lr.id_lr = llr.lr_fk
+                    leave_response_request lrr ON lr.id_lr = lrr.lr_fk
                 LEFT JOIN 
-                    status_request sr ON llr.sr_fk = sr.id_sr
+                    status_request sr ON lrr.sr_fk = sr.id_sr
                     WHERE
-                        llr.lr_fk is null 
+                        lrr.lr_fk is null 
                 group by tol.name_tol, lr.id_lr 
-            ORDER BY created_at asc
+            ORDER BY created_at desc
             LIMIT 5 OFFSET 0`;
 
             const [results] = await this.con.promise().query(query, []);
@@ -98,11 +118,15 @@ class LeaveModel extends BaseModel {
                     SELECT 
                         lr.id_lr,
                         tol.name_tol,
+                        CONCAT(e.name_entity, ' ', e.lastname_entity) AS requestor_name, 
+                        u.avatar_user,
                         lr.reason_lr,
                         lr.start_lr,
                         lr.end_lr,
                         lr.created_at,
+                        COALESCE(lrr.description_lrr, '-') as description_lrr,
                         COALESCE(sr.name_sr, 'No Respondido') as name_sr,
+                        COALESCE(CONCAT(eaut.name_entity,' ', eaut.lastname_entity), '-') as answered_by,
                         COALESCE(lrr.created_at, '-') as answered_at
                     FROM 
                         leave_request lr
@@ -130,6 +154,7 @@ class LeaveModel extends BaseModel {
                     LIMIT ? OFFSET ?`;
 
             const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
+
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);

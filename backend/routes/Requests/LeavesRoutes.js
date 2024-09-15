@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import LeavesControllers from '../../controllers/Requests/LeaveControllers';
+import LeavesControllers from '../../controllers/Requests/LeaveControllers.js';
 
 const leave = new LeavesControllers();
 

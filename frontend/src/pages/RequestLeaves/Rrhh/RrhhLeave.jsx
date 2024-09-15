@@ -4,11 +4,11 @@ import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/Table
 import useAuth from "../../../hooks/useAuth";
 import Info from '../../../assets/Icons/Buttons/Info.png'
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png'
-import TableCapacitations from "./TableCapacitations";
+import TableCapacitations from "./TableLeaves";
 import SeeMore from "./SeeMore";
 
 
-const RrhhCapacitation = () => {
+const RrhhLeave = () => {
 
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
     const [initalData, setInitialData] = useState(null);
@@ -27,10 +27,13 @@ const RrhhCapacitation = () => {
 
     const columns = [
         { field: 'avatar_user', label: '' },
+        { field: 'name_tol', label: 'Titulo' },
         { field: 'requestor_name', label: 'Nombre' },
-        { field: 'title_rc', label: 'Titulo' },
-        { field: 'description_rc', label: 'Descripcion' },
+        { field: 'reason_lr', label: 'Descripcion' },
+        { field: 'start_lr', label: 'Fecha de Inicio' },
+        { field: 'end_lr', label: 'Fecha de Fin' },
         { field: 'created_at', label: 'Solicitado' },
+        { field: 'answered_by', label: 'Respondido por' },
         { field: 'name_sr', label: 'Estado de la solicitud' }
     ];
 
@@ -44,8 +47,10 @@ const RrhhCapacitation = () => {
     ];
 
     const searchOptions = [
-        { value: 'title_rc', label: 'Titulo' },
-        { value: 'description_rc', label: 'Descripcion' },
+        { value: 'name_tol', label: 'Titulo' },
+        { value: 'reason_lr', label: 'Descripcion' },
+        { value: 'requestor_name', label: 'Nombre y apellido del solicitante' },
+        { value: 'requestor_name', label: 'Nombre y apellido del respondedor' }
     ];
 
 
@@ -63,7 +68,7 @@ const RrhhCapacitation = () => {
             <div className="container__page">
 
                 <PreferenceTitle
-                    title={"Solicitud de Capacitacion"}
+                    title={"Solicitud de Licencia"}
                     titleButton={""}
                     onClick={''}
                 />
@@ -76,14 +81,14 @@ const RrhhCapacitation = () => {
             </div>
 
             <TableSecondaryNotTitleAndWhereOnUrl
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_RRHH}`}
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_LEAVE_RRHH}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
                 searchOptions={searchOptions}
-                initialSearchField={'title_rc'}
+                initialSearchField={'name_tol'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'title_rc', order: 'ASC' }}
+                initialSort={{ field: 'name_tol', order: 'ASC' }}
                 actions={{
                     view: (row) => openSeeMore(row),
                     edit: (row) => console.log('Editar', row),
@@ -94,8 +99,8 @@ const RrhhCapacitation = () => {
                     edit: false,
                     delete: false
                 }}
-                actionColumn='id_rc'
-                paginationLabelInfo={'Solicitudes de capacitación'}
+                actionColumn='id_lr'
+                paginationLabelInfo={'Solicitudes de Licencia'}
                 buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
@@ -113,4 +118,4 @@ const RrhhCapacitation = () => {
 }
 
 
-export default RrhhCapacitation;
+export default RrhhLeave;

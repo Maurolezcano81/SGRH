@@ -1,4 +1,4 @@
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces, formatDateTime, isNotDate } from '../../middlewares/Validations.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces, formatDateTime, isNotDate, formatDateYear } from '../../middlewares/Validations.js';
 import BaseModel from '../../models/BaseModel.js';
 import LeaveModel from '../../models/Requests/LeaveModels.js';
 
@@ -25,14 +25,21 @@ class LeavesControllers {
                 });
             }
 
-            const formattedList = list.map(item => {
-                return {
-                    ...item,
-                    created_at: formatDateTime(item.created_at),
-                    updated_at: formatDateTime(item.updated_at),
-                    answered_at: formatDateTime(item.answered_at),
-                };
-            });
+            const formattedList = await Promise.all(
+                list.map(async (item) => {
+                    const attachments = await this.model.getAttachments(item.id_lr);
+    
+                    return {
+                        ...item,
+                        created_at: formatDateTime(item.created_at),
+                        updated_at: formatDateTime(item.updated_at),
+                        answered_at: formatDateTime(item.answered_at),
+                        start_lr: formatDateYear(item.start_lr),
+                        end_lr: formatDateYear(item.end_lr),
+                        attachments: attachments 
+                    };
+                })
+            );
 
             return res.status(200).json({
                 message: "Lista de solicitudes de Licencia obtenida con éxito",
@@ -60,17 +67,24 @@ class LeavesControllers {
                 });
             }
 
-            const formattedList = list.map(item => {
-                return {
-                    ...item,
-                    created_at: formatDateTime(item.created_at),
-                    updated_at: formatDateTime(item.updated_at),
-                    start_lr: formatDateTime(item.start_lr),
-                    end_lr: formatDateTime(item.end_lr),
-                    answered_at: formatDateTime(item.answered_at),
-                };
-            });
+            const formattedList = await Promise.all(
+                list.map(async (item) => {
+                    const attachments = await this.model.getAttachments(item.id_lr);
+    
+                    return {
+                        ...item,
+                        created_at: formatDateTime(item.created_at),
+                        updated_at: formatDateTime(item.updated_at),
+                        answered_at: formatDateTime(item.answered_at),
+                        start_lr: formatDateYear(item.start_lr),
+                        end_lr: formatDateYear(item.end_lr),
+                        attachments: attachments 
+                    };
+                })
+            );
 
+
+            console.log(formattedList)
             return res.status(200).json({
                 message: "Lista de solicitudes de Licencia obtenida con éxito",
                 list: formattedList,
@@ -86,7 +100,6 @@ class LeavesControllers {
     }
 
     async getLeavesNotAnswer(req, res) {
-
         try {
             const list = await this.model.getLeavesNotAnswered();
 
@@ -96,13 +109,21 @@ class LeavesControllers {
                 });
             }
 
-            const formattedList = list.map(item => {
-                return {
-                    ...item,
-                    created_at: formatDateTime(item.created_at),
-                    updated_at: formatDateTime(item.updated_at),
-                };
-            });
+
+            const formattedList = await Promise.all(
+                list.map(async (item) => {
+                    const attachments = await this.model.getAttachments(item.id_lr);
+                    return {
+                        ...item,
+                        created_at: formatDateTime(item.created_at),
+                        updated_at: formatDateTime(item.updated_at),
+                        answered_at: formatDateTime(item.answered_at),
+                        start_lr: formatDateYear(item.start_lr),
+                        end_lr: formatDateYear(item.end_lr),
+                        attachments: attachments 
+                    };
+                })
+            );
 
             return res.status(200).json({
                 message: "Lista de solicitudes de Licencia obtenida con éxito",
@@ -123,19 +144,19 @@ class LeavesControllers {
 
         const imgsArray = req.files || [];
         const { id_user } = req;
-    
+
         if (isInputEmpty(tol_fk) || isInputEmpty(reason_lr) || isInputEmpty(start_lr) || isInputEmpty(end_lr)) {
             return res.status(403).json({
                 message: "Debes completar todos los campos"
             });
         }
-    
+
         if (isNotDate(start_lr) || isNotDate(end_lr)) {
             return res.status(403).json({
                 message: "Las fechas introducidas deben ser válidas"
             });
         }
-    
+
         try {
             const create = await this.model.createOne({
                 tol_fk,
@@ -144,7 +165,7 @@ class LeavesControllers {
                 end_lr,
                 user_fk: id_user
             });
-    
+
             if (create.affectedRows < 1) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
@@ -162,28 +183,28 @@ class LeavesControllers {
                     }
                 }));
             }
-    
+
             return res.status(200).json({
                 message: "La solicitud se ha registrado exitosamente",
                 create
             });
-    
+
         } catch (error) {
             console.log(error);
             return res.status(403).json({
                 message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
             });
         }
-    }   
+    }
 
     async responseRequestLeave(req, res) {
         const { id_user } = req;
-        const { sr_fk, lr_fk, description_llr } = req.body;
+        const { sr_fk, lr_fk, description_lrr } = req.body;
 
         try {
-            const create = await this.responseCapacitation.createOne({
+            const create = await this.responseLeaves.createOne({
                 sr_fk: sr_fk,
-                description_llr: description_llr,
+                description_lrr: description_lrr,
                 user_fk: id_user,
                 lr_fk: lr_fk
             })

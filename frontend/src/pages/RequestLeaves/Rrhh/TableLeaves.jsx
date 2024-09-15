@@ -12,7 +12,7 @@ const TableCapacitations = ({
     const [initialDataToAnswer, setInitialDataToAnswer] = useState(null);
     const [isModalAnswerOpen, setIsModalAnswerOpen] = useState(false);
 
-    const urlGetData = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_NOT_ANSWER_RRHH}`
+    const urlGetData = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_LEAVE_NOT_ANSWER_RRHH}`
     const { authData } = useAuth()
 
 
@@ -70,7 +70,7 @@ const TableCapacitations = ({
                         </div>
 
                         <div className="not__answer__body__description">
-                            <p>{`${request.description_rc}`}</p>
+                            <p>{`${request.name_tol}`}</p>
 
                         </div>
 

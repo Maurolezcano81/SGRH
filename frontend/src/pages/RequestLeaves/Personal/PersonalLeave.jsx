@@ -4,14 +4,18 @@ import FormRequest from "./FormRequest";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import useAuth from "../../../hooks/useAuth";
 
-import User from '../../../assets/Icons/Buttons/User.png'
+import Info from '../../../assets/Icons/Buttons/Info.png'
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png'
+import SeeMore from "../Rrhh/SeeMore";
 
 
 const PersonalLeave = () => {
 
     const [toggleFormRequest, setToggleFormRequest] = useState(false)
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+
+    const [initalData, setInitialData] = useState(null);
+    const [isOpenSeeMore, setIsOpenSeeMore] = useState(false);
 
     const { authData } = useAuth();
 
@@ -28,6 +32,17 @@ const PersonalLeave = () => {
     }
 
 
+    
+    const openSeeMore = (initialData) => {
+        setInitialData(initialData);
+        setIsOpenSeeMore(true);
+    }
+
+    const closeSeeMore = () => {
+        setIsOpenSeeMore(false);
+    }
+
+
     const columns = [
         { field: 'name_tol', label: 'Titulo' },
         { field: 'reason_lr', label: 'Descripcion' },
@@ -35,7 +50,7 @@ const PersonalLeave = () => {
         { field: 'name_sr', label: 'Estado de la solicitud' },
         { field: 'start_lr', label: 'Fecha de inicio' },
         { field: 'end_lr', label: 'Fecha de fin' },
-        { field: 'answered_at', label: 'Respondido por' },
+        { field: 'answered_by', label: 'Respondido por' },
     ];
 
     const filterConfigs = [
@@ -79,23 +94,30 @@ const PersonalLeave = () => {
                 searchOptions={searchOptions}
                 initialSearchField={'name_tol'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'name_tol', order: 'ASC' }}
+                initialSort={{ field: 'created_at', order: 'desc' }}
                 actions={{
-                    view: (row) => console.log('Editar', row),
+                    view: (row) => openSeeMore(row),
                     edit: (row) => console.log('Editar', row),
                     delete: (row) => console.log('Editar', row),
                 }}
                 showActions={{
                     view: true,
-                    edit: true,
+                    edit: false,
                     delete: false
                 }}
                 actionColumn='id_lr'
                 paginationLabelInfo={'Solicitudes de Licencia'}
-                buttonOneInfo={{ img: User, color: 'blue', title: 'Ver Perfil' }}
+                buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Perfil' }}
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
             />
+
+            {isOpenSeeMore && (
+                <SeeMore
+                    initialData={initalData}
+                    closeModalAnswer={closeSeeMore}
+                />
+            )}
         </>
     )
 }

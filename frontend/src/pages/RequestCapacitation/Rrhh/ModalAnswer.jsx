@@ -137,7 +137,7 @@ const ModalAnswer = ({
                         </div>
 
                         <div>
-                            <label htmlFor="description_rrc" className="input__form__div__label">Inserte una description:</label>
+                            <label htmlFor="description_rrc" className="input__form__div__label">Inserte una descripción:</label>
                             <input placeholder="Inserte una description" onChange={(e) => handleChange(e)} name="description_rrc" className="input__form__div__input" />
 
                         </div>

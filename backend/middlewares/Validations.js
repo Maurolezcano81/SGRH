@@ -38,7 +38,7 @@ export const formatDateTime = (dateString) => {
     const hours = date.getUTCHours().toString().padStart(2, '0');
     const minutes = date.getUTCMinutes().toString().padStart(2, '0');
 
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
+    return `${day}/${month}/${year} ${hours}:${minutes}` || `-`;
 };
 
 export const isInputWithWhiteSpaces = (input) => {
