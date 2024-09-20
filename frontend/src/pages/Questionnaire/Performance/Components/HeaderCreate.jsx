@@ -42,7 +42,7 @@ const HeaderCreate = ({
                             </div>
 
                             <div className="quiz__header__date">
-                                <label className="quiz__label" htmlFor={fields.end_ep}>Fecha de inicio:</label>
+                                <label className="quiz__label" htmlFor={fields.end_ep}>Fecha de Finalizacion:</label>
                                 <input onChange={handleChange} className="quiz__input" name={fields.end_ep} type="date" />
                             </div>
                         </div>

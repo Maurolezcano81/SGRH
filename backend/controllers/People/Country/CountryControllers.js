@@ -12,7 +12,7 @@ class CountryController {
     const { limit, offset, order, typeOrder, filters } = req.body;
 
     try {
-      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
+      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
 
       if (queryResponse.length < 1) {
         return res.status(200).json({ message: 'No hay países disponibles' });

@@ -36,6 +36,8 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     const [searchPlaceholder, setSearchPlaceholder] = useState(searchOptions[0]?.label || '');
     const [filterOptions, setFilterOptions] = useState({});
     const [hiddenFilterSection, setHiddenFilterSection] = useState(false);
+    const [totalResults, setTotalResults] = useState(0);
+
 
     // Función para obtener las opciones de los filtros
     const fetchFilterOptions = async () => {
@@ -71,7 +73,9 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
             })
         });
         const data = await response.json();
+        console.log(data);
         setData(data.list);
+        setTotalResults(data.total)
         setPagination(prev => ({ ...prev, total: data.total }));
     };
 
@@ -135,7 +139,6 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
 
     return (
 
-        <div className='container__page'>
             <div className='container__content'>
                 <div className='table__filters__container'>
                     <div className='table__search__container'>
@@ -242,7 +245,7 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
 
                 <div className='table__primary__pagination'>
                     <div className='table__primary__pagination__info'>
-                        <p>{`Cantidad total de ${paginationLabelInfo}: ${pagination.total}`}</p>
+                        <p>{`Cantidad total de ${paginationLabelInfo}: ${totalResults}`}</p>
                     </div>
 
                     <div className='table__primary__pagination__buttons'>
@@ -272,7 +275,6 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
                 </div>
             </div>
 
-        </div>
 
     );
 };

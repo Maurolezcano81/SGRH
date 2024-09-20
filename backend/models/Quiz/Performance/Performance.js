@@ -14,7 +14,17 @@ class PerformanceModel extends BaseModel {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
-                select id_ep, name_ep, start_ep, end_ep, status_ep, concat(name_entity," ",lastname_entity) as "author", ep.created_at, ep.updated_at, count(id_epq) as "quantity_questions" from evaluation_performance ep 
+                select id_ep, 
+                name_ep, start_ep, 
+                end_ep, status_ep, 
+                concat(name_entity," ",lastname_entity) as "author", 
+                ep.created_at, ep.updated_at, count(id_epq) as "quantity_questions",
+                (
+                    select count(id_epq) 
+                    from evaluation_performance_question epq 
+                    where epq.ep_fk = ep.id_ep
+                ) as "quantity_questions"
+                from evaluation_performance ep 
                     join evaluation_performance_question epq on ep.id_ep = epq.ep_fk 
                     join user u on ep.author_fk = u.id_user
                     join entity e on u.entity_fk = e.id_entity  

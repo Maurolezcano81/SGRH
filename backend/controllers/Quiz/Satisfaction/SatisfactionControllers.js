@@ -33,6 +33,29 @@ class SatisfactionControllers {
                 })
             }
 
+            const startDate = new Date(headerQuiz.start_sq);
+            const endDate = new Date(headerQuiz.end_sq);
+            const currentDate = new Date();
+
+            if (startDate <= currentDate) {
+                return res.status(403).json({
+                    message: "La fecha de inicio debe ser posterior a la fecha actual."
+                });
+            }
+
+            if (endDate < startDate) {
+                return res.status(403).json({
+                    message: "La fecha de fin no debe ser anterior a la fecha de inicio."
+                });
+            }
+
+            const now = new Date();
+            if (now >= startDate && now <= endDate) {
+                return res.status(403).json({
+                    message: "No se pudo editar debido a que el cuestionario está en proceso."
+                });
+            }
+
             if (questionQuiz.length < 1) {
                 return res.status(403).json({
                     message: "Necesitas agregar al menos una pregunta",
@@ -43,9 +66,9 @@ class SatisfactionControllers {
             const checkDuplicate = await this.model.getOne(headerQuiz.name_sq, 'name_sq');
 
             if (checkDuplicate.length > 0) {
-              return res.status(403).json({
-                message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
-              })
+                return res.status(403).json({
+                    message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
+                })
             }
 
             const dataToCreateQuiz = {
@@ -148,27 +171,27 @@ class SatisfactionControllers {
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
-    
+
             const list = await this.model.getQuizHeader(id_sq);
-    
+
             if (!list || list.length === 0) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
-    
+
             const queryResponse = {
                 ...list[0],
                 start_sq: list[0].start_sq ? formatYearMonth(list[0].start_sq) : null,
                 end_sq: list[0].end_sq ? formatYearMonth(list[0].end_sq) : null
             };
-    
+
             console.log(queryResponse);
             return res.status(200).json({
                 message: "Cuestionario obtenido con éxito",
                 queryResponse
             });
-    
+
         } catch (error) {
             console.error("Error al obtener el cuestionario:", error);
             return res.status(500).json({
@@ -188,12 +211,35 @@ class SatisfactionControllers {
                 })
             }
 
+            const startDate = new Date(start_sq);
+            const endDate = new Date(end_sq);
+            const currentDate = new Date();
+
+            if (startDate <= currentDate) {
+                return res.status(403).json({
+                    message: "La fecha de inicio debe ser posterior a la fecha actual."
+                });
+            }
+
+            if (endDate < startDate) {
+                return res.status(403).json({
+                    message: "La fecha de fin no debe ser anterior a la fecha de inicio."
+                });
+            }
+
+            const now = new Date();
+            if (now >= startDate && now <= endDate) {
+                return res.status(403).json({
+                    message: "No se pudo editar debido a que el cuestionario está en proceso."
+                });
+            }
+
             const checkDuplicate = await this.model.getOne(name_sq, 'name_sq');
 
-            if (checkDuplicate.length > 0) {
-              return res.status(403).json({
-                message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
-              })
+            if (checkDuplicate.length > 0 && checkDuplicate[0].name_sq != name_sq) {
+                return res.status(403).json({
+                    message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
+                })
             }
 
             const update = await this.model.updateOne({
@@ -300,9 +346,9 @@ class SatisfactionControllers {
             const checkDuplicate = await this.questionTable.getOne(description_qsq, 'description_qsq');
 
             if (checkDuplicate.length > 0) {
-              return res.status(403).json({
-                message: 'No se puede agregar la pregunta al cuestionario, debido a que ya hay una igual existente'
-              })
+                return res.status(403).json({
+                    message: 'No se puede agregar la pregunta al cuestionario, debido a que ya hay una igual existente'
+                })
             }
 
             const newQuestion = {
@@ -385,9 +431,9 @@ class SatisfactionControllers {
             const checkDuplicate = await this.questionTable.getOne(description_qsq, 'description_qsq');
 
             if (checkDuplicate.length > 0) {
-              return res.status(403).json({
-                message: 'No se puede editar la pregunta del cuestionario, debido a que ya hay una igual existente'
-              })
+                return res.status(403).json({
+                    message: 'No se puede editar la pregunta del cuestionario, debido a que ya hay una igual existente'
+                })
             }
 
             const update = await this.questionTable.updateOne({

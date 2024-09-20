@@ -29,7 +29,7 @@ const ListUsers = () => {
         { field: 'name_occupation', label: 'Ocupación' },
         { field: 'salary_occupation', label: 'Salario' },
         { field: 'name_department', label: 'Departamento' },
-        { field: 'status_user', label: 'Estado' },
+        { field: 'status', label: 'Estado' },
     ];
 
     const filterConfigs = [
@@ -67,7 +67,7 @@ const ListUsers = () => {
     };
 
     const updateStatus = async (row) => {
-        const updatedStatus = row.status_user === 1 ? 0 : 1;
+        const updatedStatus = row.status === 1 ? 0 : 1;
         try {
             const fetchResponse = await fetch(urlToUpdateStatus, {
                 method: 'PATCH',
@@ -78,7 +78,7 @@ const ListUsers = () => {
                 body: JSON.stringify(
                     {
                         id_user: row.id_user,
-                        status_user: updatedStatus
+                        status: updatedStatus
                     }
                 ),
             });

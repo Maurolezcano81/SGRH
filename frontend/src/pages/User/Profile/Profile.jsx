@@ -31,8 +31,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (isRedirectToChangePwd && !redirectedToChangePwd) {
-      setToggleChangePwd(true); // Activa el cambio de contraseña
-      setRedirectedToChangePwd(true); // Evita que se active nuevamente si ya se redirigió
+      setToggleChangePwd(true); 
+      setRedirectedToChangePwd(true); 
     }
   }, [isRedirectToChangePwd, redirectedToChangePwd]);
 

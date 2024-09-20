@@ -84,9 +84,8 @@ const PersonalLeave = () => {
                         handleStatusUpdated={handleStatusUpdated}
                     />
                 )}
-            </div>
 
-            <TableSecondaryNotTitleAndWhereOnUrl
+<TableSecondaryNotTitleAndWhereOnUrl
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_LEAVE_USER}`}
                 authToken={authData.token}
                 columns={columns}
@@ -118,6 +117,9 @@ const PersonalLeave = () => {
                     closeModalAnswer={closeSeeMore}
                 />
             )}
+            </div>
+
+            
         </>
     )
 }

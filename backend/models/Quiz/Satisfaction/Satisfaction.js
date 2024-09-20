@@ -14,7 +14,20 @@ class SatisfactionModel extends BaseModel {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
-                select id_sq, name_sq, start_sq, end_sq, status_sq, concat(name_entity," ",lastname_entity) as "author", sq.created_at, sq.updated_at, count(id_qsq) as "quantity_questions" from satisfaction_questionnaire sq 
+                select id_sq,
+                        name_sq,
+                        start_sq,
+                        end_sq,
+                        status_sq,
+                        concat(name_entity," ",lastname_entity) as "author",
+                        sq.created_at,
+                        sq.updated_at,
+                        (
+                        select count(id_qsq) 
+                        from question_satisfaction_questionnaire qsq 
+                        where qsq.sq_fk = sq.id_sq
+                        ) as "quantity_questions"
+                        from satisfaction_questionnaire sq 
                     join question_satisfaction_questionnaire qsq on sq.id_sq = qsq.sq_fk 
                     join user u on sq.author_fk = u.id_user
                     join entity e on u.entity_fk = e.id_entity  
@@ -33,7 +46,7 @@ class SatisfactionModel extends BaseModel {
         }
     }
 
-    async getQuizHeader(id_sq){
+    async getQuizHeader(id_sq) {
         try {
             const query = `
                 select id_sq, name_sq, start_sq, end_sq, concat(name_entity," ",lastname_entity) as "author" from satisfaction_questionnaire sq

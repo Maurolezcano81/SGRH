@@ -211,7 +211,7 @@ class EntityController {
 
         try {
 
-            if(isInputEmpty(description_address)){
+            if (isInputEmpty(description_address)) {
                 return res.status(403).json({
                     message: "Debe completar todos los campos"
                 })
@@ -255,6 +255,7 @@ class EntityController {
             });
         }
     }
+
 }
 
 export default EntityController

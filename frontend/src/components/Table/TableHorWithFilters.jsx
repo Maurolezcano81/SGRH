@@ -37,8 +37,8 @@ const TableHorWithFilters = ({
     const [searchPlaceholder, setSearchPlaceholder] = useState(searchOptions[0]?.label || '');
     const [filterOptions, setFilterOptions] = useState({});
     const [hiddenFilterSection, setHiddenFilterSection] = useState(false);
+    const [totalResults, setTotalResults] = useState(0);
 
-    // Función para obtener las opciones de los filtros
     const fetchFilterOptions = async () => {
         const fetchPromises = filterConfigs.map(async (filter) => {
             const response = await fetch(filter.url, {
@@ -55,7 +55,6 @@ const TableHorWithFilters = ({
         setFilterOptions(Object.assign({}, ...filterOptionsArray));
     };
 
-    // Función para obtener los datos
     const fetchData = async () => {
         const response = await fetch(url, {
             method: 'POST',
@@ -73,10 +72,11 @@ const TableHorWithFilters = ({
         });
         const data = await response.json();
         setData(data.list);
+        setTotalResults(data.total)
         setPagination(prev => ({ ...prev, total: data.total }));
     };
 
-    // Efectos
+    
     useEffect(() => {
         fetchFilterOptions();
     }, [filterConfigs, authToken]);
@@ -85,7 +85,6 @@ const TableHorWithFilters = ({
         fetchData();
     }, [filters, sortField, sortOrder, pagination.offset, pagination.limit, searchTerm, searchField, isStatusUpdated]);
 
-    // Funciones para manejar el orden
     const handleSort = (field) => {
         if (sortField === field) {
             setSortOrder(prev => prev === 'ASC' ? 'DESC' : 'ASC');
@@ -95,7 +94,6 @@ const TableHorWithFilters = ({
         }
     };
 
-    // Función para manejar la eliminación de filtros
     const clearFilters = () => {
         setFilters({});
         setSearchTerm(initialSearchTerm);
@@ -105,24 +103,20 @@ const TableHorWithFilters = ({
         setSortOrder('ASC');
     };
 
-    // Función para manejar la paginación
     const handlePagination = (newOffset) => {
         if (newOffset >= 0 && newOffset < pagination.total) {
             setPagination(prev => ({ ...prev, offset: newOffset }));
         }
     };
 
-    // Función para agregar filtros
     const addFilter = (filterKey, value) => {
         setFilters(prev => ({ ...prev, [filterKey]: value }));
     };
 
-    // Función para manejar el cambio en el campo de búsqueda
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Función para manejar el cambio en el select de búsqueda
     const handleSearchFieldChange = (e) => {
         setSearchField(e.target.value);
     };
@@ -218,6 +212,8 @@ const TableHorWithFilters = ({
                                             <td className='table__primary__body__col' key={column.field}>
                                                 {column.field === 'avatar_user' ? (
                                                     <img className='table__primary__img' src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`} alt="Avatar" />
+                                                ) : column.field === 'status' ? (
+                                                    row[column.field] === 1 ? 'Activo' : 'Inactivo'
                                                 ) : (
                                                     row[column.field]
                                                 )}
@@ -247,7 +243,7 @@ const TableHorWithFilters = ({
 
                 <div className='table__primary__pagination'>
                     <div className='table__primary__pagination__info'>
-                        <p>{`Cantidad total de ${paginationLabelInfo}: ${pagination.total}`}</p>
+                        <p>{`Cantidad total de ${paginationLabelInfo}: ${totalResults}`}</p>
                     </div>
 
                     <div className='table__primary__pagination__buttons'>

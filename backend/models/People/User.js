@@ -25,7 +25,7 @@ class UserModel extends BaseModel {
               MAX(o.name_occupation) AS name_occupation, 
               MAX(o.salary_occupation) AS salary_occupation, 
               MAX(d.name_department) AS name_department, 
-              u.status_user, 
+              u.status_user as status, 
               p.name_profile
               FROM user u
               JOIN profile p ON u.profile_fk = p.id_profile 

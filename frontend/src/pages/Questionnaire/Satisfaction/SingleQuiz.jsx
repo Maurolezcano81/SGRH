@@ -147,8 +147,6 @@ const SingleQuiz = () => {
             fetchQuizData();
         }
 
-        console.log(headerData)
-
     }, [value_quiz, authData.token, isAddedQuestion])
 
     console.log(headerData)

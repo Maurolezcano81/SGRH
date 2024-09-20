@@ -32,7 +32,7 @@ class UserController {
 
 
   async toggleStatusUser(req, res) {
-    const { id_user, status_user } = req.body;
+    const { id_user, status } = req.body;
     try {
 
       const checkUser = await this.user.getOne(id_user, this.nameFieldId);
@@ -43,14 +43,14 @@ class UserController {
         })
       }
 
-      if (status_user != 1 && status_user != 0) {
+      if (status != 1 && status != 0) {
         return res.status(403).json({
           message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
         })
       }
 
 
-      const update = await this.user.updateOne({ status_user: status_user }, ['id_user', id_user])
+      const update = await this.user.updateOne({ status_user: status }, ['id_user', id_user])
 
       if (update.affectedRows < 1) {
         return res.status(403).json({
@@ -71,6 +71,9 @@ class UserController {
     const { limit, offset, order, orderBy, filters } = req.body;
 
     try {
+
+      const getTotalResults = await this.user.getTotalResults('id_user');
+
       const list = await this.user.getUsersInformation(limit, offset, orderBy, order, filters);
 
       if (!list) {
@@ -82,7 +85,7 @@ class UserController {
       return res.status(200).json({
         message: "Lista de usuarios obtenida con exito",
         list: list,
-        total: list.length
+        total: getTotalResults[0].total
       })
 
     } catch (error) {
@@ -360,10 +363,8 @@ class UserController {
       const entity_department_occupationInJson = JSON.parse(entity_department_occupation_data);
 
       const { name_entity, lastname_entity, date_birth_entity, sex_fk, nacionality_fk } = entity_dataInJson;
-      console.log(date_birth_entity);
       const { document_fk, value_ed } = entity_document_dataInJson;
       const { file_employee, date_entry_employee } = employee_dataInJson;
-      console.log(date_entry_employee);
       const { value_ec, contact_fk } = entity_contact_dataInJson;
       const { description_address, city_fk } = address_dataInJson;
       const { department_fk, occupation_fk } = entity_department_occupationInJson;
@@ -390,6 +391,21 @@ class UserController {
         return res.status(422).json({ message: 'La fecha de nacimiento debe ser una fecha valida', group: 'entity' });
       }
 
+            // Calcular la edad
+      const birthDate = new Date(date_birth_entity_formatted);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+      }
+
+      if (age < 18 || age > 100) {
+          deleteImage();
+          return res.status(403).json({ message: 'La edad debe estar entre 18 y 100 años.', group: 'entity' });
+      }
+
       // VALIDACIONES ENTITY DOCUMENT
       if (isInputEmpty(document_fk) || isInputEmpty(value_ed)) {
         deleteImage();
@@ -405,6 +421,16 @@ class UserController {
       if (isNotDate(date_entry_employee_formatted)) {
         deleteImage();
         return res.status(422).json({ message: 'La fecha de ingreso del empleado debe ser valida', group: 'employee' });
+      }
+
+      // Calcular la edad
+      const entryDate = new Date(date_entry_employee_formatted);
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < entryDate.getDate())) {
+          age--;
+      }
+
+      if (age > 80) {
+          return res.status(403).json({ message: 'La fecha de ingreso no puede ser mayor a 80 años.', group: 'employee' });
       }
 
       // VALIDACIONES USUARIO

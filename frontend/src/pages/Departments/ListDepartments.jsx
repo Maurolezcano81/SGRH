@@ -8,6 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../components/Alerts/ErrorMessage';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalAdd from '../../components/Modals/ModalAdd';
+
+
 const LisDepartment = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
@@ -15,12 +18,19 @@ const LisDepartment = () => {
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
     const [departmentToEdit, setDepartmentToEdit] = useState(null);
     const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
     const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_DEPARTMENT}`
     const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_DEPARTMENT}`
+    const createDepartment = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_DEPARTMENT}`
+
 
     const { authData } = useAuth();
     const navigate = useNavigate();
+
+    const handleOpenModalAdd = () => {
+        setIsModalAddOpen(!isModalAddOpen);
+    }
 
     const columns = [
         { field: 'name_department', label: "Departamento" },
@@ -46,21 +56,10 @@ const LisDepartment = () => {
     };
 
 
-    const onSubmitUpdate = () =>{
+    const onSubmitUpdate = () => {
         setIsStatusUpdated(!isStatusUpdated);
         setToggleModalUpdate(!toggleModalUpdate);
     }
-
-    const deleteAction = (row) => {
-        if (window.confirm(`¿Estás seguro de que deseas eliminar a ${row.name}?`)) {
-            alert(`Eliminado: ${row.name}`);
-        }
-    };
-
-    const addButtonTitle = () => {
-        navigate('/rrhh/personal/crear');
-    }
-
 
     return (
         <>
@@ -70,25 +69,37 @@ const LisDepartment = () => {
 
             {toggleModalUpdate && departmentToEdit != null && (
                 <ModalUpdate
-                title_modal={'Editar Departamento'}
-                labels={['Nombre']}
-                placeholders={['Ingrese nombre']}
-                methodGetOne={'POST'}
-                methodUpdateOne={'PATCH'}
-                fetchData={['name_department', 'status_department']}
-                getOneUrl={getSingleUrl}
-                idFetchData="id_department"
-                idToUpdate={departmentToEdit}
-                updateOneUrl={updateOneUrl}
-                onSubmitUpdate={onSubmitUpdate}
-                handleModalUpdate={handleModalUpdate}
-                fetchData_select={"status_department"}
-              />
+                    title_modal={'Editar Departamento'}
+                    labels={['Nombre']}
+                    placeholders={['Ingrese nombre']}
+                    methodGetOne={'POST'}
+                    methodUpdateOne={'PATCH'}
+                    fetchData={['name_department', 'status_department']}
+                    getOneUrl={getSingleUrl}
+                    idFetchData="id_department"
+                    idToUpdate={departmentToEdit}
+                    updateOneUrl={updateOneUrl}
+                    onSubmitUpdate={onSubmitUpdate}
+                    handleModalUpdate={handleModalUpdate}
+                    fetchData_select={"status_department"}
+                />
             )}
 
+            {isModalAddOpen && (
+                <ModalAdd
+                    title_modal={'Nuevo Departamento'}
+                    labels={['Nombre']}
+                    placeholders={['Ingrese nombre']}
+                    method={'POST'}
+                    fetchData={['name_department']}
+                    createOne={createDepartment}
+                    handleDependencyAdd={handleOpenModalAdd}
+                    handleModalAdd={handleOpenModalAdd}
+                />
+            )}
 
             <TableHorWithFilters
-                addButtonTitle={addButtonTitle}
+                addButtonTitle={handleOpenModalAdd}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENTS_INFO}`}
                 authToken={authData.token}
                 columns={columns}

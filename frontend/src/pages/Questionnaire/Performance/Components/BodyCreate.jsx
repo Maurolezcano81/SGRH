@@ -11,7 +11,7 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
         for (const question of listQuestions) {
             if (!question[questionData.input_name_question] ||
                 !question[questionData.input_name_description] ||
-                !question[questionData.radius_name] ||
+                question[questionData.radius_name] === undefined ||  // Ajustado para manejar checkbox
                 !question[questionData.bad_parameter_epq] ||
                 !question[questionData.best_parameter_epq]) {
                 return false;
@@ -39,7 +39,8 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
         const data = [...listQuestions];
         const index = data.findIndex(question => question.id === id);
         if (index !== -1) {
-            data[index][e.target.name] = e.target.value;
+            const { name, type, checked, value } = e.target;
+            data[index][name] = type === 'checkbox' ? checked : value;
             setListQuestions(data);
             setBodyQuiz(data);
         }
@@ -49,101 +50,90 @@ const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
         <div className="quiz__header__container">
             <div className="container__content">
 
-            <h4>Cuerpo del Cuestionario</h4>
+                <h4>Cuerpo del Cuestionario</h4>
+
+                <div className="quiz__body__section">
+                    {listQuestions.map((question, index) => (
+                        <div key={question.id} className="quiz__body__question__container">
+                            <div className="question__title__container">
+                                <label htmlFor={`question_${question.id}`}>Pregunta {index + 1}</label>
+                                <button
+                                    onClick={() => deleteQuestion(question.id)}
+                                    className="quiz__question__delete"
+                                >
+                                    Eliminar pregunta
+                                </button>
+                            </div>
+
+                            <label htmlFor={questionData.input_name_question}>
+                                Titulo de la pregunta:
+                            </label>
+                            <input
+                                onChange={(e) => handleChange(question.id, e)}
+                                name={questionData.input_name_question}
+                                type="text"
+                                placeholder="Escribe la pregunta"
+                            />
+
+                            <label htmlFor={questionData.input_name_description}>
+                                Descripción de la pregunta:
+                            </label>
+                            <input
+                                onChange={(e) => handleChange(question.id, e)}
+                                name={questionData.input_name_description}
+                                type="text"
+                                placeholder="Escribe una descripción para ampliar la pregunta"
+                            />
 
 
+                            <div className="quiz__question__check__container">
+                                <p>Marcar como obligatoria</p>
+                                <div className="quiz__checkbox__obligatory">
+                                    <label>
+                                        <input
+                                            onChange={(e) => handleChange(question.id, e)}
+                                            name={questionData.radius_name}
+                                            type="checkbox"
+                                            checked={!!question[questionData.radius_name]} 
+                                        />
+                                        Es obligatoria
+                                    </label>
+                                </div>
+                            </div>
 
-            <div className="quiz__body__section">
-                {listQuestions.map((question, index) => (
-                    <div key={question.id} className="quiz__body__question__container">
-                        <div className="question__title__container">
-                            <label htmlFor={`question_${question.id}`}>Pregunta {index + 1}</label>
-                            <button
-                                onClick={() => deleteQuestion(question.id)}
-                                className="quiz__question__delete"
-                            >
-                                Eliminar pregunta
-                            </button>
-                        </div>
-
-                        <label htmlFor={questionData.input_name_question}>
-                            Titulo de la pregunta:
-                        </label>
-                        <input
-                            onChange={(e) => handleChange(question.id, e)}
-                            name={questionData.input_name_question}
-                            type="text"
-                            placeholder="Escribe la pregunta"
-                        />
-
-                        <label htmlFor={questionData.input_name_description}>
-                            Descripcion de la pregunta:
-                        </label>
-                        <input
-                            onChange={(e) => handleChange(question.id, e)}
-                            name={questionData.input_name_description}
-                            type="text"
-                            placeholder="Escribe una descripcion para ampliar la pregunta"
-                        />
-
-                        <div className="quiz__question__check__container">
-                            <p>Marcar como obligatoria</p>
-                            <div className="quiz__radio__obligatory">
+                            <div className="quiz__example__container">
                                 <label>
-                                    Si
+                                    Texto de parámetro mínimo
                                     <input
                                         onChange={(e) => handleChange(question.id, e)}
-                                        name={questionData.radius_name}
-                                        value="1"
-                                        type="radio"
+                                        name={questionData.bad_parameter_epq}
+                                        type="text"
                                     />
                                 </label>
+
                                 <label>
-                                    No
+                                    Texto de parámetro máximo
                                     <input
                                         onChange={(e) => handleChange(question.id, e)}
-                                        name={questionData.radius_name}
-                                        value="0"
-                                        type="radio"
+                                        name={questionData.best_parameter_epq}
+                                        type="text"
                                     />
                                 </label>
                             </div>
                         </div>
+                    ))}
 
-                        <div className="quiz__example__container">
-                            <label>
-                                Texto de parámetro mínimo
-                                <input
-                                    onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.bad_parameter_epq}
-                                    type="text"
-                                />
-                            </label>
-
-                            <label>
-                                Texto de parámetro máximo
-                                <input
-                                    onChange={(e) => handleChange(question.id, e)}
-                                    name={questionData.best_parameter_epq}
-                                    type="text"
-                                />
-                            </label>
-                        </div>
+                    <div className="quiz__error">
+                        {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
+                        {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
                     </div>
-                ))}
 
-                <div className="quiz__error">
-                    {errorMessage.length > 0 && <p className="error-message">{errorMessage}</p>}
-                    {successMessage.length > 0 && <p className="success-message">{successMessage}</p>}
+                    <ButtonWhiteOutlineBlack
+                        title={"+ Agregar Pregunta"}
+                        onClick={addQuestion}
+                        full={true}
+                    />
                 </div>
-
-
-                <ButtonWhiteOutlineBlack
-                    title={"+ Agregar Pregunta"}
-                    onClick={addQuestion}
-                    full={true}
-                />
-            </div>
             </div>
         </div>
     );

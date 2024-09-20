@@ -40,6 +40,7 @@ const ModalTableWFilters = ({
     const [searchPlaceholder, setSearchPlaceholder] = useState(searchOptions[0]?.label || '');
     const [filterOptions, setFilterOptions] = useState({});
     const [hiddenFilterSection, setHiddenFilterSection] = useState(false);
+    const [totalResults, setTotalResults] = useState(0);
 
     // Función para obtener las opciones de los filtros
     const fetchFilterOptions = async () => {
@@ -76,6 +77,7 @@ const ModalTableWFilters = ({
         });
         const data = await response.json();
         setData(data.list);
+        setTotalResults(data.total)
         setPagination(prev => ({ ...prev, total: data.total }));
     };
 
@@ -250,7 +252,7 @@ const ModalTableWFilters = ({
 
                     <div className='table__primary__pagination'>
                         <div className={` table__primary__pagination__info ${colorTable}`}>
-                            <p>{`Cantidad total de ${paginationLabelInfo}: ${pagination.total}`}</p>
+                            <p>{`Cantidad total de ${paginationLabelInfo}: ${totalResults}`}</p>
                         </div>
 
                         <div className={`table__primary__pagination__buttons`}>

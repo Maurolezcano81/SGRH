@@ -11,7 +11,7 @@ class DepartmentModel extends BaseModel {
 
     async getDepartmentsInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
-            const { whereClause, values } = this.whereForOutDepartment(filters);
+            const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
                 SELECT 
                     d.id_department,
@@ -24,13 +24,16 @@ class DepartmentModel extends BaseModel {
                 LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation
                 LEFT JOIN entity e ON edo.entity_fk = e.id_entity
                 LEFT JOIN user u ON u.entity_fk = e.id_entity
-                ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                 GROUP BY id_department, name_department
                 ORDER BY ${orderBy} ${order} 
                 LIMIT ? OFFSET ?`;
 
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+
+            console.log(filters)
+            console.log(values)
+
             return results;
         } catch (error) {
             console.error("Error en Users Model:", error.message);
@@ -109,7 +112,8 @@ class DepartmentModel extends BaseModel {
                         status_employee,
                         status_edo,
                         file_employee,
-                        name_department
+                        name_department,
+                        count(id_user) as total
                     FROM department d
                     RIGHT JOIN entity_department_occupation edo ON d.id_department = edo.department_fk 
                     LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
@@ -123,6 +127,28 @@ class DepartmentModel extends BaseModel {
                 LIMIT ? OFFSET ?`;
 
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Model:", error.message);
+            throw new Error("Error en Users Model: " + error.message);
+        }
+    }
+
+    async totalResultsInOtherDepartment(id_department) {
+        try {
+            const query = `
+            SELECT
+                count(id_user) as total
+                FROM department d
+                RIGHT JOIN entity_department_occupation edo ON d.id_department = edo.department_fk 
+                LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
+                JOIN entity e ON edo.entity_fk = e.id_entity
+                LEFT JOIN employee emp ON e.id_entity = emp.entity_fk
+                JOIN user u ON u.entity_fk = e.id_entity 
+            WHERE edo.department_fk != ? and edo.status_edo = 1 
+            `;
+
+            const [results] = await this.con.promise().query(query, [id_department]);
             return results;
         } catch (error) {
             console.error("Error en Users Model:", error.message);

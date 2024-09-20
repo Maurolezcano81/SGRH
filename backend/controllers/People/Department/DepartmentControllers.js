@@ -22,10 +22,12 @@ class DepartmentController {
         })
       }
 
+      const getTotalResults = await this.model.getTotalResults('id_department');
+
       return res.status(200).json({
         message: "Lista de usuarios obtenida con exito",
         list: list,
-        total: list.length
+        total: getTotalResults[0].total
       })
 
     } catch (error) {
@@ -54,10 +56,13 @@ class DepartmentController {
         })
       }
 
+      const getTotalResults = await this.model.getTotalResults('id_department');
+
+
       return res.status(200).json({
         message: "Lista de usuarios obtenida con exito",
         list: list,
-        total: list.length
+        total: getTotalResults[0].total
       })
 
     } catch (error) {
@@ -72,17 +77,19 @@ class DepartmentController {
     try {
       const list = await this.model.getEmployeesInOtherDepartment(id_department, limit, offset, typeOrder, order, filters);
 
-
       if (!list) {
         return res.status(403).json({
           message: "Ha ocurrido un error al obtener los usuarios, intentalo de nuevo"
         })
       }
 
+      const getTotalResults = await this.model.totalResultsInOtherDepartment(id_department);
+
+      console.log(getTotalResults)
       return res.status(200).json({
         message: "Lista de usuarios obtenida con exito",
         list: list,
-        total: list.length
+        total: getTotalResults[0].total
       })
 
     } catch (error) {
@@ -134,9 +141,9 @@ class DepartmentController {
   }
 
   async getDepartments(req, res) {
-    const { limit, offset, order, typeOrder, filters } = req.body;
+    const { offset, order, typeOrder, filters } = req.body;
     try {
-      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
+      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
 
       if (queryResponse.length < 1) {
         return res.status(200).json({
@@ -145,9 +152,9 @@ class DepartmentController {
       }
 
       return res.status(200).json({
-        message: 'Departamentos obtenidos correctamente',
-        queryResponse,
-      });
+        message: "Lista de usuarios obtenida con exito",
+        queryResponse: queryResponse,
+      })
     } catch (error) {
       console.error('Error en controlador de departamento - getDepartments: ' + error.message);
       return res.status(403).json({

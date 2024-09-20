@@ -67,9 +67,8 @@ const PersonalCapacitation = () => {
                         handleStatusUpdated={handleStatusUpdated}
                     />
                 )}
-            </div>
 
-            <TableSecondaryNotTitleAndWhereOnUrl
+<TableSecondaryNotTitleAndWhereOnUrl
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_USER}`}
                 authToken={authData.token}
                 columns={columns}
@@ -94,6 +93,9 @@ const PersonalCapacitation = () => {
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
             />
+            </div>
+
+
         </>
     )
 }

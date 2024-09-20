@@ -37,6 +37,7 @@ app.use(TypeOfLeaves.router);
 app.use(NavigationMenuRoutes.router);
 app.use(TypeOfTerminationRoutes.router);
 app.use(UserRoutes.router);
+app.use(DepartmentRoutes.router);
 
 app.use(SatisfactionRoutes.router);
 app.use(PerformanceRoutes.router);

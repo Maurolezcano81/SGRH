@@ -82,9 +82,6 @@ class LeavesControllers {
                     };
                 })
             );
-
-
-            console.log(formattedList)
             return res.status(200).json({
                 message: "Lista de solicitudes de Licencia obtenida con éxito",
                 list: formattedList,
@@ -156,6 +153,23 @@ class LeavesControllers {
                 message: "Las fechas introducidas deben ser válidas"
             });
         }
+
+        const startDate = new Date(start_lr);
+        const endDate = new Date(end_lr);
+        const currentDate = new Date();
+
+        if (startDate < currentDate) {
+            return res.status(403).json({
+                message: "La fecha de inicio no puede ser anterior que la fecha actual"
+            });
+        }
+
+        if (endDate < startDate) {
+            return res.status(403).json({
+                message: "La fecha de fin no puede ser anterior que la fecha de inicio"
+            });
+        }
+
 
         try {
             const create = await this.model.createOne({

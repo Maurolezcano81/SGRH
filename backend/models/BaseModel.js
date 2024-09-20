@@ -11,6 +11,18 @@ class BaseModel {
         this.defaultOrderBy = defaultOrderBy
     }
 
+    async getTotalResults(field) {
+        try {
+            const query = `SELECT COUNT(${field}) as total FROM ${this.model}`;
+            const [results] = await this.con.promise().query(query);
+            console.log(results);
+            return results;
+        } catch (error) {
+            console.error("Error en getAll:", error.message);
+            throw new Error("Error en getAll: " + error.message);
+        }
+    }
+
     async getAll() {
         try {
             const query = `SELECT * FROM ${this.model}`;
@@ -118,7 +130,7 @@ class BaseModel {
     buildWhereClause(filters) {
         const whereClauses = [];
         const values = [];
-    
+
         for (const [key, value] of Object.entries(filters)) {
             if (value) {
                 if (typeof value === 'string') {
@@ -130,20 +142,20 @@ class BaseModel {
                 }
             }
         }
-    
+
         const whereClause = whereClauses.length ? 'WHERE ' + whereClauses.join(' AND ') : '';
         return { whereClause, values };
     }
 
     async testConnection() {
         try {
-          await this.con.promise().query('SELECT 1');
-          console.log('Conexión a la base de datos exitosa');
+            await this.con.promise().query('SELECT 1');
+            console.log('Conexión a la base de datos exitosa');
         } catch (error) {
-          console.error('Error en la conexión a la base de datos:', error.message);
-          throw new Error('Error en la conexión a la base de datos: ' + error.message);
+            console.error('Error en la conexión a la base de datos:', error.message);
+            throw new Error('Error en la conexión a la base de datos: ' + error.message);
         }
-      }
+    }
 }
 
 export default BaseModel;
