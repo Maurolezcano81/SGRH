@@ -1,6 +1,5 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Validations.js';
-import DocumentModel from '../../../models/People/Document/DocumentModel.js';
 class DocumentControllers {
   constructor() {
     this.model = new BaseModel('document', 'name_document');
@@ -201,6 +200,7 @@ class DocumentControllers {
   async updateEntityDocument(req, res) {
     const { id_ed, entity_fk, value_ed, document_fk } = req.body;
 
+      console.log(req.body);
     try {
       const queryResponse = await this.entityDocument.updateOne({ value_ed, document_fk }, ['id_ed', id_ed]);
 
@@ -222,20 +222,44 @@ class DocumentControllers {
     }
   }
 
-  async createEntityDocument(req, res){
-    const {value_ed, document_fk } = req.body;
+  async deleteEntityDocument(req, res) {
+    const { id_ed } = req.body;
 
     try {
-      const queryResponse = await this.entityDocument.createOne({ value_ed, document_fk });
+      const queryResponse = await this.entityDocument.deleteOne(id_ed, 'id_ed');
 
-      if (queryResponse.affectedRows > 1) {
+      if (queryResponse.affectedRows < 1) {
         return res.status(403).json({
-          message: "Estos datos ya estan asociados a un registro"
+          message: "No se ha podido eliminar"
         })
       }
 
       return res.status(200).json({
-        message: "Actualizado correctamente",
+        message: "Eliminado correctamente",
+        queryResponse
+      })
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async createEntityDocument(req, res){
+    const { entity_fk, value_ed, document_fk } = req.body;
+
+    try {
+      const queryResponse = await this.entityDocument.createOne({ entity_fk, value_ed, document_fk });
+
+      if (queryResponse.affectedRows > 1) {
+        return res.status(403).json({
+          message: "Estos datos ya estan asociados a un empleado"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Creado correctamente",
         queryResponse
       })
     } catch (error) {

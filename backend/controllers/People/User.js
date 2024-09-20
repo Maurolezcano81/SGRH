@@ -222,16 +222,19 @@ class UserController {
 
       const getDocuments = await this.entity.getEntityDocuments(entity_fk);
 
+      const getContacts = await this.entity.getEntityContacts(entity_fk);
       const personalData = {
         entity: {
           ...getEntity
         },
         documents: {
           ...getDocuments
-        }
+        },
+        contact: {
+          ...getContacts
+        },
       }
 
-      const getContacts = await this.entity.getEntityContacts(entity_fk);
 
       const getProfile = await this.user.getUserProfile(id_user);
 
@@ -239,9 +242,6 @@ class UserController {
       const userData = {
         user: {
           ...getUser,
-        },
-        contact: {
-          ...getContacts
         },
         profile: {
           ...getProfile
@@ -391,19 +391,19 @@ class UserController {
         return res.status(422).json({ message: 'La fecha de nacimiento debe ser una fecha valida', group: 'entity' });
       }
 
-            // Calcular la edad
+      // Calcular la edad
       const birthDate = new Date(date_birth_entity_formatted);
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
 
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
+        age--;
       }
 
       if (age < 18 || age > 100) {
-          deleteImage();
-          return res.status(403).json({ message: 'La edad debe estar entre 18 y 100 años.', group: 'entity' });
+        deleteImage();
+        return res.status(403).json({ message: 'La edad debe estar entre 18 y 100 años.', group: 'entity' });
       }
 
       // VALIDACIONES ENTITY DOCUMENT
@@ -426,11 +426,11 @@ class UserController {
       // Calcular la edad
       const entryDate = new Date(date_entry_employee_formatted);
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < entryDate.getDate())) {
-          age--;
+        age--;
       }
 
       if (age > 80) {
-          return res.status(403).json({ message: 'La fecha de ingreso no puede ser mayor a 80 años.', group: 'employee' });
+        return res.status(403).json({ message: 'La fecha de ingreso no puede ser mayor a 80 años.', group: 'employee' });
       }
 
       // VALIDACIONES USUARIO

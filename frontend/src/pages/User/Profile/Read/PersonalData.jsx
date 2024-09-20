@@ -5,16 +5,18 @@ import LastNameEntity from '../Edit/Fields/Personal/LastNameEntity';
 import DateBirth from '../Edit/Fields/Personal/DateBirth';
 import Nacionality from '../Edit/Fields/Personal/Nacionality';
 import Sex from '../Edit/Fields/Personal/Sex';
+import ContactsEdit from '../Edit/Fields/Personal/ContactsEdit';
 
 
 const PersonalData = ({ personalData, updateProfile, permissionsData,
     isEditMode }) => {
     const entity = personalData?.entity?.["0"];
     const documents = Object.values(personalData?.documents || {});
-
+    const contacts = Object.values(personalData?.contact || {});
     if (!entity) {
-        return <div>Error: No hay datos personales disponibles.</div>;
+        return <div>No se han podido recuperar estos datos.</div>;
     }
+
 
     return (
         <div className="section__container">
@@ -52,6 +54,14 @@ const PersonalData = ({ personalData, updateProfile, permissionsData,
             />
 
             <Sex
+                entity={entity}
+                updateProfile={updateProfile}
+                permissionsData={permissionsData}
+                isEditMode={isEditMode}
+            />
+
+            <ContactsEdit
+                contacts={contacts}
                 entity={entity}
                 updateProfile={updateProfile}
                 permissionsData={permissionsData}

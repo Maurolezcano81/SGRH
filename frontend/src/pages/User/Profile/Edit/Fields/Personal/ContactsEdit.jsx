@@ -5,22 +5,22 @@ import EditButton from "../../../../../../components/Buttons/EditButton";
 import ButtonWhiteOutlineBlack from "../../../../../../components/Buttons/ButtonWhiteOutlineBlack";
 import ModalAdd from "../../../../../../components/Modals/ModalAdd";
 
-const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
+const ContactsEdit = ({ contacts, entity, updateProfile, permissionsData,
     isEditMode }) => {
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
     const [isModalCreateDocumentOpen, setIsModalCreateDocumentOpen] = useState(false);
 
-    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT}`
-    const updateDocument = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITYDOCUMENT}`
+    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT}`
+    const updateDocument = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITYCONTACT}`
 
-    const handleSingleEditClick = (document) => {
+    const handleSingleEditClick = (contact) => {
         setInitialData({
-            id_ed: document.id_ed,
+            id_ec: contact.id_ec,
             entity_fk: entity.id_entity,
-            value_ed: document.value_ed,
-            document_fk: document.id_document
+            value_ec: contact.value_ec,
+            contact_fk: contact.id_contact
         });
         setSingleModalIsOpen(true);
     };
@@ -35,20 +35,20 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
 
     return (
         <>
-            {documents.map((document) => (
-                <div key={document.id_ed} className="input__form__div">
+            {contacts.map((contact) => (
+                <div key={contact.id_ec} className="input__form__div">
 
                     <div className="input__form__div__container">
-                        <p className="input__form__div__label">{document.name_document}: </p>
+                        <p className="input__form__div__label">{contact.name_contact}: </p>
                         {(isEditMode && (permissionsData.isTheSameUser || permissionsData?.isRrhh || permissionsData?.isAdmin)) ? (
                             <>
-                                <EditButton handleClick={() => handleSingleEditClick(document)} />
+                                <EditButton handleClick={() => handleSingleEditClick(contact)} />
                             </>
                         ) : null}
                     </div>
                     <p
                         className="input__form__div__input">
-                        {document.value_ed}
+                        {contact.value_ec}
                     </p>
 
                     {singleModalIsOpen && (
@@ -59,15 +59,15 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
                             urlUpdate={updateDocument}
                             updateProfile={updateProfile}
                             selectField={{
-                                name: 'document_fk',
-                                placeholder: 'Seleccione un documento',
-                                optionKey: 'id_document',
-                                optionValue: 'id_document',
-                                optionLabel: 'name_document'
+                                name: 'contact_fk',
+                                placeholder: 'Seleccione un contacto',
+                                optionKey: 'id_contact',
+                                optionValue: 'id_contact',
+                                optionLabel: 'name_contact'
                             }}
                             inputField={{
-                                name: 'value_ed',
-                                placeholder: 'Ingrese el documento'
+                                name: 'value_ec',
+                                placeholder: 'Ingrese el contacto'
                             }}
                         />
                     )}
@@ -77,7 +77,7 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
             {(isEditMode && (permissionsData.isTheSameUser || permissionsData?.isRrhh || permissionsData?.isAdmin)) ? (
                 <>
                     <ButtonWhiteOutlineBlack
-                        title={"Agregar documento"}
+                        title={"Agregar contacto"}
                         full={true}
                         onClick={() => handleOpenModalAdd()}
                     />
@@ -90,4 +90,4 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
 }
 
 
-export default DocumentsEdit
+export default ContactsEdit

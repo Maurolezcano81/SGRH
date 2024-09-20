@@ -6,6 +6,7 @@ class ContactController {
     this.model = new BaseModel('contact', 'name_contact');
     this.nameFieldId = 'id_contact';
     this.nameFieldToSearch = 'name_contact';
+    this.entityContact = new BaseModel('entity_contact', 'id_ec')
   }
 
   async getContacts(req, res) {
@@ -194,6 +195,54 @@ class ContactController {
       });
     } catch (error) {
       console.error('Error en controlador de Contact: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async deleteEntityContact(req, res) {
+    const { id_ec } = req.body;
+
+    try {
+      const queryResponse = await this.entityContact.deleteOne(id_ec, 'id_ec');
+
+      if (queryResponse.affectedRows < 1) {
+        return res.status(403).json({
+          message: "No se ha podido eliminar"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Eliminado correctamente",
+        queryResponse
+      })
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async createEntityContact(req, res) {
+    const { entity_fk, value_ec, contact_fk } = req.body;
+
+    try {
+      const queryResponse = await this.entityContact.createOne({ entity_fk, value_ec, contact_fk });
+
+      if (queryResponse.affectedRows > 1) {
+        return res.status(403).json({
+          message: "Estos datos ya estan asociados a un empleado"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Creado correctamente",
+        queryResponse
+      })
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
       return res.status(403).json({
         message: error.message,
       });

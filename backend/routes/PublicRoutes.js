@@ -91,6 +91,13 @@ router.post('/types_of_leave', typeOfLeave.getTypeOfLeave.bind(typeOfLeave));
 router.post('/request/capacitations/user', capacitation.getCapacitationsById.bind(capacitation));
 router.post('/request/capacitation/new', capacitation.createRequestCapacitation.bind(capacitation));
 
+router.post('/document/entity/new', document.createEntityDocument.bind(document));
+router.delete('/document/entity/delete', document.deleteEntityDocument.bind(document));
+
+router.post('/contact/entity/new', contact.createEntityContact.bind(contact));
+router.delete('/contact/entity/delete', contact.deleteEntityContact.bind(contact));
+
+
 router.post('/request/leaves/user', leave.getLeavesById.bind(leave));
 router.post('/request/leave/new',
   uploadArray('pictures', 'uploads/requests'), // Campo 'image' y carpeta de destino

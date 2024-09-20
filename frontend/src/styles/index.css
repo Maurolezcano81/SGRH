@@ -1426,8 +1426,7 @@ input {
 }
 
 .profile__img__container img{
-  height: 20rem;
-  width: 20rem;
+  max-height: 20rem;
   background-color: var(--white-2);
   mask-image: linear-gradient(black 90%, transparent);
 }
@@ -2093,7 +2092,7 @@ input {
   }
 
   .navbar__container {
-    width: auto;
+    max-width: 20%;
   }
 
   .navbar__collapsed-button {
