@@ -24,6 +24,7 @@ class NavigationMenu extends BaseModel{
 
   async getMenuChildrensByIdProfileAndIdParent(id_profile, id_pm) {
     try {
+      console.log(id_profile, id_pm)
       const query =
         'select id_module, name_module, url_module  from module_parent mp join module m on mp.module_fk = m.id_module join profile_module pm on m.id_module = pm.module_fk join profile p on pm.profile_fk = p.id_profile join parent_menu pa_me on mp.pm_fk = pa_me.id_pm where id_profile = ? and pa_me.id_pm = ? order by mp.order_mp asc';
 

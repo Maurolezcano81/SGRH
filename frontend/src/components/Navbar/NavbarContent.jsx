@@ -28,6 +28,7 @@ const NavbarContent = () => {
       };
 
       parentsFetch();
+      console.log(authData);
     }
   }, [authData, navbarRefresh]);
 

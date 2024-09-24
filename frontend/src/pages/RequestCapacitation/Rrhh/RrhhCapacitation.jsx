@@ -73,33 +73,34 @@ const RrhhCapacitation = () => {
                     setDependencyToRefresh={setIsStatusUpdated}
                 />
 
+
+                <TableSecondaryNotTitleAndWhereOnUrl
+                    url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_RRHH}`}
+                    authToken={authData.token}
+                    columns={columns}
+                    filterConfigs={filterConfigs}
+                    searchOptions={searchOptions}
+                    initialSearchField={'title_rc'}
+                    initialSearchTerm={''}
+                    initialSort={{ field: 'title_rc', order: 'ASC' }}
+                    actions={{
+                        view: (row) => openSeeMore(row),
+                        edit: (row) => console.log('Editar', row),
+                        delete: (row) => console.log('Editar', row),
+                    }}
+                    showActions={{
+                        view: true,
+                        edit: false,
+                        delete: false
+                    }}
+                    actionColumn='id_rc'
+                    paginationLabelInfo={'Solicitudes de capacitación'}
+                    buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
+                    buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
+                    isStatusUpdated={isStatusUpdated}
+                />
             </div>
 
-            <TableSecondaryNotTitleAndWhereOnUrl
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_RRHH}`}
-                authToken={authData.token}
-                columns={columns}
-                filterConfigs={filterConfigs}
-                searchOptions={searchOptions}
-                initialSearchField={'title_rc'}
-                initialSearchTerm={''}
-                initialSort={{ field: 'title_rc', order: 'ASC' }}
-                actions={{
-                    view: (row) => openSeeMore(row),
-                    edit: (row) => console.log('Editar', row),
-                    delete: (row) => console.log('Editar', row),
-                }}
-                showActions={{
-                    view: true,
-                    edit: false,
-                    delete: false
-                }}
-                actionColumn='id_rc'
-                paginationLabelInfo={'Solicitudes de capacitación'}
-                buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
-                buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
-                isStatusUpdated={isStatusUpdated}
-            />
 
             {isOpenSeeMore && (
                 <SeeMore
