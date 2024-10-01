@@ -8,6 +8,9 @@ class SatisfactionControllers {
         this.model = new SatisfactionModel();
         this.questionTable = new BaseModel('question_satisfaction_questionnaire', 'id_qsq');
 
+        this.answerTable = new BaseModel('answer_satisfaction_questionnaire', 'id_asq');
+        this.answerDetailTable = new BaseModel('detail_satisfaction_questionnaire', 'id_dsq');
+
         this.searchFieldId = 'id_sq';
         this.nameSearchField = 'name_sq';
     }
@@ -186,7 +189,6 @@ class SatisfactionControllers {
                 end_sq: list[0].end_sq ? formatYearMonth(list[0].end_sq) : null
             };
 
-            console.log(queryResponse);
             return res.status(200).json({
                 message: "Cuestionario obtenido con éxito",
                 queryResponse
@@ -418,8 +420,6 @@ class SatisfactionControllers {
     async editQuestion(req, res) {
         const { id_qsq, description_qsq, is_obligatory, bad_parameter_qsq, best_parameter_qsq } = req.body;
 
-        console.log(req.body);
-
         try {
             if (isInputEmpty(id_qsq) || isInputEmpty(description_qsq) || isInputEmpty(is_obligatory) || isInputEmpty(bad_parameter_qsq) || isInputEmpty(best_parameter_qsq)) {
                 console.error("Debe completar todos los campos");
@@ -498,6 +498,173 @@ class SatisfactionControllers {
             })
         }
     }
+
+
+    async getLastFiveQuizzes(req, res) {
+        const { id_user } = req;
+
+        try {
+            const list = await this.model.getLastFive(id_user);
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios"
+                })
+            }
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_sq: formatDateYear(item.start_sq),
+                    end_sq: formatDateYear(item.end_sq),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                };
+            });
+            
+            return res.status(200).json({
+                list: formattedList
+            });
+
+        } catch (error) {
+            console.error(error)
+            console.error("Ha ocurrido un error al obtener los cuestionarios");
+            return res.status(500).json({
+                message: "Error al obtener los cuestionarios"
+            })
+        }
+    }
+
+    async getQuizForAnswer(req, res) {
+        const { id } = req.params;
+
+        try {
+
+            if (isNotNumber(id)) {
+                return res.status(500).json({
+                    message: "Ha ocurrido un error al obtener el cuestionario"
+                });
+            };
+
+            const list = await this.questionTable.getOne(id, 'sq_fk')
+
+            if (!list) {
+                return res.status(500).json({
+                    message: "Ha ocurrido un error al obtener el cuestionario"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Preguntas obtenidas correctamente",
+                list: list
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error al obtener las preguntas");
+            return res.status(500).json({
+                message: "Error al obtener las preguntas"
+            })
+        }
+    }
+
+    async getQuizAnsweredByEmployee(req, res) {
+        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { id_user } = req;
+
+        try {
+            const list = await this.model.getQuestionnairesInformationByEmployee(id_user, limit, offset, typeOrder, order, filters);
+            const getTotalResults = await this.answerTable.getTotalResults('id_asq');
+
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_sq: formatDateYear(item.start_sq),
+                    end_sq: formatDateYear(item.end_sq),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                };
+            });
+
+            return res.status(200).json({
+                message: "Lista de cuestionarios obtenida con éxito",
+                list: formattedList,
+                total: getTotalResults[0].total
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
+    async createAnswerSatisfaction(req, res) {
+        const { answerData, answersArray } = req.body;
+        const { id_user } = req;
+
+        try {
+            const dataToCreateAnswer = {
+                user_fk: id_user,
+                is_complete: 1,
+                sq_fk: answerData.sq_fk,
+                date_complete: new Date(),
+            };
+
+            for (const answer of answersArray) {
+                if (isInputEmpty(answer.qsq_fk)) {
+                    return res.status(403).json({
+                        message: "Error al enviar las respuestas del cuestionario",
+                        group: "questions"
+                    });
+                }
+            }
+
+            const createAnswer = await this.answerDetailTable.createOne(dataToCreateAnswer);
+
+            if (!createAnswer) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al crear el cuestionario, intente reiniciando el sitio"
+                });
+            }
+
+            for (const detailAnswer of answersArray) {
+                const answer = {
+                    asq_fk: createAnswer.lastId,
+                    qsq_fk: detailAnswer.qsq_fk,
+                    score_dsc: detailAnswer.score_dsc,
+                    description_dsc: detailAnswer.description_dsc
+                };
+
+                const insertQuestionToQuiz = await this.answerDetailTable.createOne(answer);
+
+                if (!insertQuestionToQuiz) {
+                    return res.status(403).json({
+                        message: "Ha ocurrido un error al agregar la pregunta al formulario"
+                    });
+                }
+            }
+
+
+            return res.status(200).json({
+                message: "Cuestionario creado exitosamente",
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al insertar las preguntas al cuestionario"
+            });
+        }
+    }
+
 
 }
 

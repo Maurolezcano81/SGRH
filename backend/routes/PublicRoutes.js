@@ -21,6 +21,7 @@ import ProfileController from '../controllers/System/Profile/Profile.js';
 import CapacitationControllers from '../controllers/Requests/CapacitationControllers.js';
 import LeavesControllers from '../controllers/Requests/LeaveControllers.js';
 import TypeOfLeaveControllers from '../controllers/Leaves/TypeOfLeavesController.js';
+import PublicQuizRoutes from './Quiz/PublicQuizRoutes.js';
 
 const requestAttachmentUpload = uploadFiles('image_url', 'uploads/requests');
 
@@ -104,8 +105,11 @@ router.post('/request/leave/new',
   handleFileUploadNotObligatory('/uploads/requests'),   // Configuración del path base
   leave.createRequestLeave.bind(leave)      // Controlador para manejar la solicitud
 );
+
+
 router.use(EntityRoutes.router);
 router.use(UserPublic.router)
+
 const PublicRoutes = {
   router
 }

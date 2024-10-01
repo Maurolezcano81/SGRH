@@ -36,6 +36,8 @@ import PersonalCapacitation from './pages/RequestCapacitation/Personal/PersonalC
 import RrhhCapacitation from './pages/RequestCapacitation/Rrhh/RrhhCapacitation';
 import PersonalLeave from './pages/RequestLeaves/Personal/PersonalLeave';
 import RrhhLeave from './pages/RequestLeaves/Rrhh/RrhhLeave';
+import HomeQuizSatisfaction from './pages/Questionnaire/Satisfaction/Personal/HomeQuizSatisfaction';
+import AnswerPage from './pages/Questionnaire/Satisfaction/Personal/AnswerPage';
 
 
 function App() {
@@ -90,22 +92,26 @@ function App() {
                   <Route path="tipo_anexo" element={<Attachment />} />
                 </Route>
                 <Route path="solicitud/*">
-                    <Route path="capacitacion" element={<RrhhCapacitation />} />
-                    <Route path="licencia" element={<RrhhLeave />} />
-                  </Route> {/* Home del admin */}
-                </Route>
-                <Route path="personal/*">
-                  <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
-                  <Route path="solicitud/*">
-                    <Route path="capacitacion" element={<PersonalCapacitation />} />
-                    <Route path="licencia" element={<PersonalLeave />} />
-                  </Route> {/* Home del admin */}
-                </Route>
-
-
-                <Route path="profile/" element={<Profile />} />
-
+                  <Route path="capacitacion" element={<RrhhCapacitation />} />
+                  <Route path="licencia" element={<RrhhLeave />} />
+                </Route> {/* Home del admin */}
               </Route>
+              <Route path="personal/*">
+                <Route path="inicio" element={<HomePersonal />} /> {/* Home del admin */}
+                <Route path="solicitud/*">
+                  <Route path="capacitacion" element={<PersonalCapacitation />} />
+                  <Route path="licencia" element={<PersonalLeave />} />
+                </Route> {/* Home del admin */}
+                <Route path='satisfaccion/*'>
+                  <Route path='ver' element={<HomeQuizSatisfaction />} />
+                  <Route path='responder' element={<AnswerPage />} />
+                </Route>
+              </Route>
+
+
+              <Route path="profile/" element={<Profile />} />
+
+            </Route>
           </Routes>
         </NavbarProvider>
       </AuthProvider>

@@ -231,6 +231,63 @@ input {
   background-color: var(--red-0);
 }
 
+.color-red{
+  color: var(--red-1) !important;
+}
+
+.bold{
+  font-weight: 600 !important;
+}
+
+.flex{
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+.is__obligatory__message{
+  width: 100%;
+  color: var(--gray-1);
+  font-style: italic;
+}
+
+
+.justify-start{
+  justify-content: flex-start !important;
+}
+
+.flex-col{
+  flex-direction: column !important;
+}
+
+.justify-between{
+  justify-content: space-between;
+}
+
+.gap-2{
+  gap: 2rem;
+}
+
+.button__check__score{
+  background-color: var(--white-2);
+  border: .1rem solid var(--blue-0);
+  padding: 1rem;
+  min-width: 4rem;
+  min-height: 4rem;
+}
+
+.button__check__score__selected{
+  background-color: var(--blue-0);
+  color: var(--white-2);
+}
+
+.color-black{
+  color: var(--blue-3) !important;
+}
+
+.w-full{
+  width: 100% !important;
+}
+
 .success {
   color: var(--blue-3);
   border: 0.1rem solid var(--green-1);
@@ -1939,6 +1996,7 @@ input {
 
 .not__answer__body__description p {
   color: var(--gray-1);
+  margin: 1rem 0;
 }
 
 .not__answer__footer {

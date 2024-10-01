@@ -195,11 +195,9 @@ class NavigationMenuControllers {
   async getMenuParentsByIdProfile(req, res) {
     const { profile_fk } = req.user;
 
-    console.log(profile_fk);
     try {
       const queryResponse = await this.navMenuModel.getMenuParentsByIdProfile(profile_fk)
 
-      console.log(queryResponse)
       if (queryResponse.length < 1) {
         return res.status(200).json({
           message: 'No hay menús de navegación disponibles para el perfil',
@@ -226,7 +224,6 @@ class NavigationMenuControllers {
     try {
       const queryResponse = await this.navMenuModel.getMenuChildrensByIdProfileAndIdParent(profile_fk, id_pm);
 
-      console.log(queryResponse);
       if (queryResponse.length < 1) {
         return res.status(200).json({
           message: 'No hay menús de navegación disponibles para el perfil y padre especificado',

@@ -15,7 +15,6 @@ class BaseModel {
         try {
             const query = `SELECT COUNT(${field}) as total FROM ${this.model}`;
             const [results] = await this.con.promise().query(query);
-            console.log(results);
             return results;
         } catch (error) {
             console.error("Error en getAll:", error.message);
@@ -144,6 +143,26 @@ class BaseModel {
         }
 
         const whereClause = whereClauses.length ? 'WHERE ' + whereClauses.join(' AND ') : '';
+        return { whereClause, values };
+    }
+
+    buildWhereClauseNotStarting(filters) {
+        const whereClauses = [];
+        const values = [];
+
+        for (const [key, value] of Object.entries(filters)) {
+            if (value) {
+                if (typeof value === 'string') {
+                    whereClauses.push(`${key} LIKE ?`);
+                    values.push(`%${value}%`);
+                } else {
+                    whereClauses.push(`${key} = ?`);
+                    values.push(value);
+                }
+            }
+        }
+
+        const whereClause = whereClauses.length ? whereClauses.join(' AND ') : '';
         return { whereClause, values };
     }
 
