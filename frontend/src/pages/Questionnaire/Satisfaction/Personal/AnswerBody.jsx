@@ -3,33 +3,42 @@ import ButtonWhiteOutlineBlack from "../../../../components/Buttons/ButtonWhiteO
 import useAuth from "../../../../hooks/useAuth";
 import ButtonBlue from "../../../../components/ButtonBlue";
 import Confirm from "../../../../components/Alerts/Confirm";
+import AlertSuccesfully from "../../../../components/Alerts/AlertSuccesfully";
+import AlertError from "../../../../components/Alerts/AlertError";
+import { useNavigate } from "react-router-dom";
 
 const AnswerBody = ({ sq }) => {
+
     const [errorMessage, setErrorMessage] = useState("");
+
+    const [isCriticalErrorOpen, setIsCriticalErrorOpen] = useState(false);
+    const [criticalErrorMessage, setCriticalErrorMessage] = useState("");
+
+    const [isSuccesOpen, setIsSuccesOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+
     const [listQuestions, setListQuestions] = useState([]);
     const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false);
     const [errors, setErrors] = useState([]); // Estado para manejar errores de descripciones obligatorias
-    const { authData } = useAuth();
     const urlGetQuestions = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_QUIZ_SATISFACTION_EMPLOYEE}/${sq.id_sq}`
 
     const [answerArray, setAnswerArray] = useState([]);
 
+    const { authData } = useAuth();
+    const navigate = useNavigate()
+
     const handleOpenModalConfirm = () => {
-        // Verificar si hay preguntas obligatorias sin descripción
         const missingDescriptions = listQuestions
             .filter(question => question.is_obligatory === 1)
-            .filter(question => !answerArray.find(answer => answer.qsq_fk === question.id_qsq)?.description_dsc);
+            .filter(question => !answerArray.find(answer => answer.qsq_fk === question.id_qsq)?.description_dsq);
 
         if (missingDescriptions.length > 0) {
-            // Si hay preguntas obligatorias sin descripción, agregarlas a los errores
             const errorList = missingDescriptions.map(question => ({
                 questionId: question.id_qsq,
                 message: `La descripción de la pregunta "${question.description_qsq}" es obligatoria.`
             }));
             setErrors(errorList);
         } else {
-            // Si no hay errores, abrir el modal de confirmación
             setIsOpenModalConfirm(!isOpenModalConfirm);
         }
     }
@@ -42,7 +51,7 @@ const AnswerBody = ({ sq }) => {
                 const updatedArray = [...prevArray];
                 updatedArray[existingAnswerIndex] = {
                     ...updatedArray[existingAnswerIndex],
-                    score_dsc: score
+                    score_dsq: score
                 };
                 return updatedArray;
             }
@@ -51,8 +60,8 @@ const AnswerBody = ({ sq }) => {
                 ...prevArray,
                 {
                     qsq_fk: questionId,
-                    score_dsc: score,
-                    description_dsc: ""
+                    score_dsq: score,
+                    description_dsq: ""
                 }
             ];
         });
@@ -66,7 +75,7 @@ const AnswerBody = ({ sq }) => {
                 const updatedArray = [...prevArray];
                 updatedArray[existingAnswerIndex] = {
                     ...updatedArray[existingAnswerIndex],
-                    description_dsc: description
+                    description_dsq: description
                 };
                 return updatedArray;
             }
@@ -75,8 +84,8 @@ const AnswerBody = ({ sq }) => {
                 ...prevArray,
                 {
                     qsq_fk: questionId,
-                    score_dsc: "",
-                    description_dsc: description
+                    score_dsq: "",
+                    description_dsq: description
                 }
             ];
         });
@@ -104,6 +113,62 @@ const AnswerBody = ({ sq }) => {
         fetchQuestions();
     }, [authData.token, urlGetQuestions]);
 
+
+    const urlSubmitAnswer = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_QUIZ_SATISFACTION_ANSWER}`
+
+    const handleSubmit = async () => {
+
+        const response = await fetch(urlSubmitAnswer, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${authData.token}`
+            },
+            body: JSON.stringify({
+                answerData: sq,
+                answersArray: answerArray
+            })
+        })
+
+        const data = await response.json();
+
+        console.log(data)
+
+        if (response.status === 403) {
+            setErrorMessage(data.message)
+            setSuccessMessage("")
+            setCriticalErrorMessage("Ha ocurrido un error en las respuestas del cuestionario, revise la informacion e intentelo de nuevo")
+            setIsOpenModalConfirm(false);
+            setIsCriticalErrorOpen(true);
+
+            setTimeout(() => {
+                setCriticalErrorMessage(false);
+            }, 1500)
+            return
+        } else if (response.status === 500) {
+            setErrorMessage("")
+            setSuccessMessage("")
+            setCriticalErrorMessage(data.message)
+            setIsOpenModalConfirm(false);
+            setIsCriticalErrorOpen(true);
+            setTimeout(() => {
+                setCriticalErrorMessage(false);
+            }, 1500)
+        }
+
+        setErrorMessage("");
+        setCriticalErrorMessage("")
+        setSuccessMessage(data.message);
+        setIsOpenModalConfirm(false)
+        setIsSuccesOpen(true);
+
+        setTimeout(() => {
+            isSuccesOpen(false);
+            navigate("/personal/satisfaccion/ver")
+        }, 1500)
+
+    }
+
     return (
         <div className="container__content">
             {listQuestions && listQuestions.map((question) => (
@@ -122,7 +187,7 @@ const AnswerBody = ({ sq }) => {
                                         <button
                                             type="button"
                                             key={index}
-                                            className={` button__check__score ${answerArray.find(answer => answer.qsq_fk === question.id_qsq)?.score_dsc === index + 1 ? 'button__check__score__selected' : ''}`}
+                                            className={` button__check__score ${answerArray.find(answer => answer.qsq_fk === question.id_qsq)?.score_dsq === index + 1 ? 'button__check__score__selected' : ''}`}
                                             onClick={() => handleScoreChange(question.id_qsq, index + 1)}
                                         >
                                             {index + 1}
@@ -148,7 +213,7 @@ const AnswerBody = ({ sq }) => {
                                 className={`w-full ${errors.find(error => error.questionId === question.id_qsq) ? 'input-error' : ''}`}
                                 type="text"
                                 name="description_dsq"
-                                value={answerArray.find(answer => answer.qsq_fk === question.id_qsq)?.description_dsc || ''}
+                                value={answerArray.find(answer => answer.qsq_fk === question.id_qsq)?.description_dsq || ''}
                                 onChange={(e) => handleDescriptionChange(question.id_qsq, e.target.value)}
                             />
                             {errors.find(error => error.questionId === question.id_qsq) && (
@@ -159,7 +224,6 @@ const AnswerBody = ({ sq }) => {
 
                     <div className="quiz__error">
                         {errorMessage.length > 0 && <p className="error-message bold">{errorMessage}</p>}
-                        {successMessage.length > 0 && <p className="success-message bold">{successMessage}</p>}
                     </div>
                 </form>
             ))}
@@ -174,12 +238,25 @@ const AnswerBody = ({ sq }) => {
             {isOpenModalConfirm && (
                 <Confirm
                     message="Al confirmar el envío del formulario, este no podrá modificarse, verifique la información dos veces."
-                    redirectFunction={() => console.log(answerArray)}
+                    redirectFunction={() => handleSubmit()}
                     skipFunction={() => handleOpenModalConfirm()}
                     buttonActionTitle="Enviar Respuestas"
                     buttonSkipTitle="Volver a las preguntas"
                 />
             )}
+
+            {isSuccesOpen && successMessage.length > 0 && (
+                <AlertSuccesfully
+                message={successMessage}
+                />
+            )}
+
+            {isCriticalErrorOpen && criticalErrorMessage.length > 0 (
+                <AlertError 
+                errorMessage={criticalErrorMessage}
+                />
+            )}
+
         </div>
     )
 }

@@ -113,39 +113,58 @@ class SatisfactionModel extends BaseModel {
         try {
             const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
             const query = `
-                select id_sq,
-                        name_sq,
-                        start_sq,
-                        end_sq,
-                        status_sq,
-                        sq.created_at,
-                        sq.updated_at,
-                        (
-                        select count(id_qsq) 
-                        from question_satisfaction_questionnaire qsq 
-                        where qsq.sq_fk = sq.id_sq
-                        ) as "quantity_questions",
-                        avg(score_dsq) as "average"
-                        from satisfaction_questionnaire sq 
-                    join question_satisfaction_questionnaire qsq on sq.id_sq = qsq.sq_fk 
-                    join user u on sq.author_fk = u.id_user
-                    join entity e on u.entity_fk = e.id_entity
-                    join answer_satisfaction_questionnaire asq on asq.sq_fk = sq.id_sq
-                    join detail_satisfaction_questionnaire dsq on asq.id_asq = dsq.asq_fk  
-                    left join entity_department_occupation edo on edo.entity_fk = e.id_entity
-                    where u.id_user = ?
-                ${whereClause.length > 0 ? 'AND' : ''}
-                ${whereClause}
-                    group by sq.name_sq, sq.id_sq 
+                SELECT 
+                    author.avatar_user,
+                    concat(authentity.name_entity,+" ",authentity.lastname_entity) as author,
+                    sq.id_sq, 
+                    asq2.id_asq, 
+                    sq.name_sq, 
+                    sq.start_sq, 
+                    sq.end_sq, 
+                    sq.created_at,
+                    (
+                        SELECT COUNT(qsq.id_qsq) 
+                        FROM question_satisfaction_questionnaire qsq 
+                        WHERE qsq.sq_fk = sq.id_sq
+                    ) AS quantity_questions,
+                    (
+                        SELECT AVG(dsq.score_dsq) 
+                        FROM detail_satisfaction_questionnaire dsq
+                        JOIN answer_satisfaction_questionnaire asq 
+                            ON dsq.asq_fk = asq.id_asq
+                        WHERE asq.sq_fk = sq.id_sq
+                        AND asq.user_fk = ?
+                    ) AS average
+                FROM satisfaction_questionnaire sq
+                JOIN answer_satisfaction_questionnaire asq2 
+                    ON asq2.sq_fk = sq.id_sq
+                JOIN user author on sq.author_fk = author.id_user
+                join entity authentity on authentity.id_entity = author.entity_fk
+                WHERE asq2.user_fk = ?
+                                ${whereClause.length > 0 ? 'AND' : ''}
+                                ${whereClause}
+                GROUP BY sq.id_sq, sq.name_sq
                 ORDER BY ${orderBy} ${order} 
                 LIMIT ? OFFSET ?`;
-            const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
+            const [results] = await this.con.promise().query(query, [id_user, id_user, ...values, limit, offset]);
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Satisfaction:", error.message);
             throw new Error("Error en Users Quiz Satisfaction: " + error.message);
         }
     }
+
+    async getTotalResultsQuizAnsweredByEmployee() {
+        try {
+            const query = `SELECT COUNT(id_asq) as total FROM answer_satisfaction_questionnaire group by sq_fk`;
+            const [results] = await this.con.promise().query(query);
+            return results;
+        } catch (error) {
+            console.error("Error en getAll:", error.message);
+            throw new Error("Error en getAll: " + error.message);
+        }
+    }
+
 }
 
 export default SatisfactionModel;

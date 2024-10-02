@@ -573,8 +573,8 @@ class SatisfactionControllers {
 
         try {
             const list = await this.model.getQuestionnairesInformationByEmployee(id_user, limit, offset, typeOrder, order, filters);
-            const getTotalResults = await this.answerTable.getTotalResults('id_asq');
 
+            const getTotalResults = await this.model.getTotalResultsQuizAnsweredByEmployee();
 
             if (!list) {
                 return res.status(403).json({
@@ -595,7 +595,7 @@ class SatisfactionControllers {
             return res.status(200).json({
                 message: "Lista de cuestionarios obtenida con éxito",
                 list: formattedList,
-                total: getTotalResults[0].total
+                total: getTotalResults.total  || 0
             });
 
         } catch (error) {
@@ -614,7 +614,7 @@ class SatisfactionControllers {
             const dataToCreateAnswer = {
                 user_fk: id_user,
                 is_complete: 1,
-                sq_fk: answerData.sq_fk,
+                sq_fk: answerData.id_sq,
                 date_complete: new Date(),
             };
 
@@ -627,11 +627,11 @@ class SatisfactionControllers {
                 }
             }
 
-            const createAnswer = await this.answerDetailTable.createOne(dataToCreateAnswer);
+            const createAnswer = await this.answerTable.createOne(dataToCreateAnswer);
 
             if (!createAnswer) {
                 return res.status(403).json({
-                    message: "Ha ocurrido un error al crear el cuestionario, intente reiniciando el sitio"
+                    message: "Ha ocurrido un error al enviar las respuestas del cuestionario, intente reiniciando el sitio"
                 });
             }
 
@@ -639,8 +639,8 @@ class SatisfactionControllers {
                 const answer = {
                     asq_fk: createAnswer.lastId,
                     qsq_fk: detailAnswer.qsq_fk,
-                    score_dsc: detailAnswer.score_dsc,
-                    description_dsc: detailAnswer.description_dsc
+                    score_dsq: detailAnswer.score_dsq,
+                    description_dsq: detailAnswer.description_dsq
                 };
 
                 const insertQuestionToQuiz = await this.answerDetailTable.createOne(answer);
@@ -651,16 +651,14 @@ class SatisfactionControllers {
                     });
                 }
             }
-
-
             return res.status(200).json({
-                message: "Cuestionario creado exitosamente",
+                message: "Cuestionario respondido exitosamente",
             });
 
         } catch (error) {
             console.error("Ha ocurrido un error en el cuestionario", error);
-            return res.status(403).json({
-                message: "Error al insertar las preguntas al cuestionario"
+            return res.status(500).json({
+                message: "Error al insertar las preguntas al cuestionario, intente reiniciando el sitio"
             });
         }
     }
