@@ -1,5 +1,6 @@
 import BaseModel from "../../models/BaseModel.js";
 import { isNotAToZ, isNotDate, isNotNumber, isInputEmpty, isInputWithWhiteSpaces } from "../../middlewares/Validations.js";
+import EntityModel from "../../models/People/People/Entity.js";
 
 
 class EmployeeControllers {
@@ -8,6 +9,7 @@ class EmployeeControllers {
         this.entityDepartmentOccupation = new BaseModel('entity_department_occupation', 'id_edo');
         this.occupation = new BaseModel('occupation', 'name_occupation');
         this.department = new BaseModel('department', 'name_department');
+        this.entity = new EntityModel();
 
         this.nameFieldId = 'id_employee';
         this.nameFieldToSearch = 'file_employee';

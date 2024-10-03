@@ -28,7 +28,6 @@ const ListSatisfaction = () => {
         { field: 'author', label: 'Autor' },
         { field: 'created_at', label: 'Creado' },
         { field: 'updated_at', label: 'Ultima Actualizacion' },
-        { field: 'status_sq', label: 'Estado del cuestionario' },
     ];
 
 

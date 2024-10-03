@@ -8,16 +8,18 @@ import Edit from "../../../assets/Icons/Preferences/Edit.png";
 import ButtonWhiteOutlineBlack from "../../../components/Buttons/ButtonWhiteOutlineBlack";
 import ModalUpdate from "../../../components/Modals/ModalUpdate";
 import ModalUpdateQuiz from "./Components/ModalUpdateSQ";
-
+import PreferenceTitle from "../../MasterTables/PreferenceTitle";
+import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
+import SeeProfile from '../../../assets/Icons/Buttons/Quizz.png'
+import ModalInfoQuizAnswered from "./ModalInfoQuizAnswered";
 
 const SingleQuiz = () => {
+
 
     const [messageDataQuiz, setMessageDataQuiz] = useState("");
     const [quizData, setQuizData] = useState([]);
     const [headerData, setHeaderData] = useState({});
     const [isAddedQuestion, setIsAddedQuestion] = useState(false);
-
-
 
 
     const location = useLocation();
@@ -149,7 +151,40 @@ const SingleQuiz = () => {
 
     }, [value_quiz, authData.token, isAddedQuestion])
 
-    console.log(headerData)
+
+    const columns = [
+        { field: 'avatar_user', label: '' },
+        { field: 'author', label: 'Apellido y Nombre' },
+        { field: 'average', label: 'Puntuación Promedio' },
+        { field: 'date_complete', label: 'Fecha de Finalización' },
+        { field: 'name_department', label: 'Departamento' },
+        { field: 'name_occupation', label: 'Puesto de Trabajo' },
+
+    ];
+
+
+    const filterConfigs = [
+
+    ];
+
+    const searchOptions = [
+        { value: 'author', label: 'Nombre' },
+        { value: 'name_sq', label: 'Nombre de cuestionario' },
+
+    ];
+
+    const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+    const [initialDataForSeeInfo, setInitialDataForSeeInfo] = useState([]);
+    const [isModalSeeInfoOpen, setIsModalSeeInfoOpen] = useState(false);
+
+    const handleIsModalSeeInfoOpen = (row) => {
+        setInitialDataForSeeInfo(row)
+        setIsModalSeeInfoOpen(true)
+    }
+
+    const handleCloseIsModalSeeInfoOpen = () => {
+        setIsModalSeeInfoOpen(false);
+    }
 
     return (
         <div className="container__page">
@@ -172,7 +207,7 @@ const SingleQuiz = () => {
                     </div>
 
                     <div className="quiz__header__section">
-                        <h4>Información del cuestionario</h4>
+                        <h4 className="margin-y-1">Información del cuestionario</h4>
                         <div className="quiz__header__dates">
                             <div className="quiz__header__date">
                                 <h4>Fecha de inicio:</h4>
@@ -191,19 +226,14 @@ const SingleQuiz = () => {
 
                             <div className="quiz__header__date">
                                 <h4>Cantidad de preguntas:</h4>
-                                <h4 className="quiz__input">Fecha Fin</h4>
-                            </div>
-
-                            <div className="quiz__header__date">
-                                <h4>Cantidad de respuestas:</h4>
-                                <h4 className="quiz__input">3</h4>
+                                <h4 className="quiz__input">{headerData.quantity_questions}</h4>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="quiz__header__section">
-                    <h4>Cuerpo del Cuestionario</h4>
+                    <h4 className="margin-y-1">Cuerpo del Cuestionario</h4>
 
 
                     <div className="quiz__body__question__container">
@@ -309,6 +339,45 @@ const SingleQuiz = () => {
                 />
             )}
 
+
+            <div className="container__content">
+                <PreferenceTitle
+                    title={"Respuestas"}
+                />
+
+                <TableSecondaryNotTitleAndWhereOnUrl
+                    url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTION_ANSWERED}/${value_quiz}`}
+                    authToken={authData.token}
+                    columns={columns}
+                    filterConfigs={filterConfigs}
+                    searchOptions={searchOptions}
+                    initialSearchField={'author'}
+                    initialSearchTerm={''}
+                    initialSort={{ field: 'author', order: 'ASC' }}
+                    actions={{
+                        view: (row) => handleIsModalSeeInfoOpen(row),
+                        edit: () => console.log('asd'),
+                        delete: (row) => console.log('Editar', row),
+                    }}
+                    showActions={{
+                        view: true,
+                        edit: false,
+                        delete: true
+                    }}
+                    actionColumn='id_asq'
+                    paginationLabelInfo={'Cuestionarios Desarrollados'}
+                    buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
+                    buttonTreeInfo={{ img: Trash, color: 'red', title: 'Eliminar' }}
+                    isStatusUpdated={isStatusUpdated}
+                />
+
+                {isModalSeeInfoOpen && (
+                    <ModalInfoQuizAnswered
+                        initialData={initialDataForSeeInfo}
+                        closeModalAnswer={handleCloseIsModalSeeInfoOpen}
+                    />
+                )}
+            </div>
         </div>
 
     )

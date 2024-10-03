@@ -163,7 +163,7 @@ const AnswerBody = ({ sq }) => {
         setIsSuccesOpen(true);
 
         setTimeout(() => {
-            isSuccesOpen(false);
+            setIsSuccesOpen(false);
             navigate("/personal/satisfaccion/ver")
         }, 1500)
 
@@ -217,7 +217,7 @@ const AnswerBody = ({ sq }) => {
                                 onChange={(e) => handleDescriptionChange(question.id_qsq, e.target.value)}
                             />
                             {errors.find(error => error.questionId === question.id_qsq) && (
-                                <span className="error-message bold">La descripción es obligatoria.</span>
+                                <span className="error-message bold">La observación es obligatoria.</span>
                             )}
                         </div>
                     </div>

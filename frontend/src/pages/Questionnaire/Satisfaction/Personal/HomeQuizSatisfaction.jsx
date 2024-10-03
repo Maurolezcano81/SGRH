@@ -5,11 +5,13 @@ import Info from '../../../../assets/Icons/Buttons/Info.png'
 import MoveEmployee from '../../../../assets/Icons/Buttons/MoveEmployee.png'
 import LastFive from "./LastFive";
 import useAuth from "../../../../hooks/useAuth";
+import ModalInfoQuizAnswered from "../ModalInfoQuizAnswered";
 
 const HomeQuizSatisfaction = () => {
 
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
-    const [initalData, setInitialData] = useState(null);
+    const [initialData, setInitialData] = useState(null);
+    const [isModalInfoOpen, setIsModalInfoOpen] = useState(false);
 
     const { authData } = useAuth();
 
@@ -38,15 +40,16 @@ const HomeQuizSatisfaction = () => {
         { value: 'name_sq', label: 'Nombre del cuestionario' },
         { value: 'author', label: 'Autor del cuestionario' },
         { value: 'quantity_questions', label: 'Cantidad de preguntas' },
-        { value: 'average', label: 'Puntaje Promedio' }
     ];
 
 
     const openSeeMore = (initialData) => {
         setInitialData(initialData);
+        setIsModalInfoOpen(true);
     }
 
     const closeSeeMore = () => {
+        setIsModalInfoOpen(false)
     }
 
 
@@ -89,6 +92,13 @@ const HomeQuizSatisfaction = () => {
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
             />
+
+            {isModalInfoOpen && (
+                <ModalInfoQuizAnswered
+                    initialData={initialData}
+                    closeModalAnswer={closeSeeMore}
+                />
+            )}
 
         </div>
 

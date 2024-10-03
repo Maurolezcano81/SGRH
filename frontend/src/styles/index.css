@@ -147,6 +147,16 @@ button:hover {
   color: var(--white-1);
 }
 
+.button__disabled{
+  padding: 0.5rem;
+  background-color: var(--gray-1);
+  color: var(--white-1);
+}
+
+.button__disabled:hover{
+  cursor: not-allowed;
+}
+
 .button__red:hover {
   background-color: var(--red-0);
 }
@@ -250,6 +260,9 @@ input {
   font-style: italic;
 }
 
+.margin-y-1{
+  margin: 1rem 0 !important;
+}
 
 .justify-start{
   justify-content: flex-start !important;
@@ -273,6 +286,9 @@ input {
   padding: 1rem;
   min-width: 4rem;
   min-height: 4rem;
+  flex-grow: 1;
+  flex-basis: 1rem;
+  margin: .5rem;
 }
 
 .button__check__score__selected{
@@ -830,6 +846,8 @@ input {
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 200;
+  max-height: 90vh;
+  overflow: scroll;
 }
 
 .preferences__modal__content h2 {
@@ -1357,6 +1375,7 @@ input {
 .table__primary th {
   padding: .5rem 2rem;
   vertical-align: middle;
+  min-width: 15rem;
 }
 
 .table__primary tbody tr:nth-child(even) {
@@ -1672,14 +1691,15 @@ input {
 }
 
 .quiz__header__section h4 {
-  margin: 2rem 0;
+  margin: 0;
   width: 100%;
 }
+
 
 .quiz__header__dates {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
   justify-content: center;
   padding: 2rem;
   box-shadow: var(--shadow-a-25-b-02);
@@ -1992,11 +2012,13 @@ input {
   border: 0.2rem solid var(--blue-0);
   border-radius: 100%;
   aspect-ratio: 4/3;
+  object-fit: contain;
 }
 
 .not__answer__body__description p {
   color: var(--gray-1);
   margin: 1rem 0;
+  min-width: 18rem;
 }
 
 .not__answer__footer {

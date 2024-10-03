@@ -56,7 +56,6 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
         setFilterOptions(Object.assign({}, ...filterOptionsArray));
     };
 
-    // Función para obtener los datos
     const fetchData = async () => {
         const response = await fetch(url, {
             method: 'POST',
@@ -137,6 +136,7 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     const totalPages = Math.ceil(pagination.total / pagination.limit);
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
+    console.log(data);
     return (
 
             <div className='container__content'>

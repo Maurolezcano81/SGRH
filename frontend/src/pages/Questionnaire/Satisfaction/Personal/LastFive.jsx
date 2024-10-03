@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import useAuth from "../../../../hooks/useAuth";
 import ButtonBlue from "../../../../components/ButtonBlue";
 import { Navigate, useNavigate } from "react-router-dom";
+import ButtonDisabled from "../../../../components/Buttons/ButtonDisabled";
 
 const LastFive = () => {
     const [data, setData] = useState([]);
@@ -62,10 +63,29 @@ const LastFive = () => {
                         </div>
 
                         <div className="not__answer__footer">
-                            <ButtonBlue
-                                onClick={() => redirectToAnswerPage(item)}
-                                title={"Responder"}
-                            />
+
+                            {item.status_date_expire === 'actual' && (
+                                <ButtonBlue
+                                    onClick={() => redirectToAnswerPage(item)}
+                                    title={"Responder"}
+                                />
+                            )}
+
+                            {item.status_date_expire === 'old' && (
+
+                                <ButtonDisabled
+                                    onClick={() => console.log('hola')}
+                                    title="Expirado"
+                                />
+                            )}
+
+                            {item.status_date_expire === 'next' && (
+                                <ButtonDisabled
+                                    onClick={() => console.log('hola')}
+                                    title="Aún no disponible"
+                                />
+                            )}
+
                         </div>
                     </div>
                 ))}

@@ -98,6 +98,31 @@ class EntityModel extends BaseModel {
         }
     }
 
+    async getDataBasicEmployeeByIdUser(id_user){
+        try {
+            const query = `
+                SELECT 
+                    name_entity,
+                    lastname_entity,
+                    name_department,
+                    name_occupation,
+                    avatar_user
+                    from user u
+                join entity e on u.entity_fk = e.id_entity 
+                join entity_department_occupation edo on edo.entity_fk = e.id_entity 
+                join department d on edo.department_fk = d.id_department 
+                join occupation o on edo.occupation_fk = o.id_occupation 
+                    where id_user = ?
+                group by name_entity, lastname_entity, avatar_user;
+        `;
+
+            const [results] = await this.con.promise().query(query, [id_user]);
+            return results;
+        } catch (error) {
+            console.error("Error en getAll:", error.message);
+            throw new Error("Error en getAll: " + error.message);
+        }
+    }
 }
 
 export default EntityModel;

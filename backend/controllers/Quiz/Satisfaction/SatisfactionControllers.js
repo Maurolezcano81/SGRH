@@ -1,6 +1,7 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isInputEmpty, isNotNumber, isNotDate, formatDateTime, formatDateYear, formatYearMonth } from '../../../middlewares/Validations.js';
 import SatisfactionModel from '../../../models/Quiz/Satisfaction/Satisfaction.js';
+import EntityModel from '../../../models/People/People/Entity.js';
 
 
 class SatisfactionControllers {
@@ -10,6 +11,7 @@ class SatisfactionControllers {
 
         this.answerTable = new BaseModel('answer_satisfaction_questionnaire', 'id_asq');
         this.answerDetailTable = new BaseModel('detail_satisfaction_questionnaire', 'id_dsq');
+        this.entity = new EntityModel();
 
         this.searchFieldId = 'id_sq';
         this.nameSearchField = 'name_sq';
@@ -49,13 +51,6 @@ class SatisfactionControllers {
             if (endDate < startDate) {
                 return res.status(403).json({
                     message: "La fecha de fin no debe ser anterior a la fecha de inicio."
-                });
-            }
-
-            const now = new Date();
-            if (now >= startDate && now <= endDate) {
-                return res.status(403).json({
-                    message: "No se pudo editar debido a que el cuestionario está en proceso."
                 });
             }
 
@@ -168,6 +163,7 @@ class SatisfactionControllers {
 
     async getQuizHeader(req, res) {
         const { id_sq } = req.params
+
         try {
             if (isNotNumber(id_sq)) {
                 return res.status(403).json({
@@ -387,6 +383,7 @@ class SatisfactionControllers {
 
     async getQuestion(req, res) {
         const { id_qsq } = req.body;
+
         try {
 
             if (isInputEmpty(id_qsq)) {
@@ -509,31 +506,50 @@ class SatisfactionControllers {
             if (!list) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener los cuestionarios"
-                })
+                });
             }
 
+            const currentDate = new Date(); // Obtener la fecha actual
+
             const formattedList = list.map(item => {
+                let status_date_expire;
+
+                // Convertir las fechas a objetos Date para realizar comparaciones
+                const startDate = new Date(item.start_sq);
+                const endDate = new Date(item.end_sq);
+
+                // Comparar fechas para determinar si es 'old', 'actual' o 'next'
+                if (endDate < currentDate) {
+                    status_date_expire = 'old';
+                } else if (startDate <= currentDate && endDate >= currentDate) {
+                    status_date_expire = 'actual';
+                } else if (startDate > currentDate) {
+                    status_date_expire = 'next';
+                }
+
                 return {
                     ...item,
                     start_sq: formatDateYear(item.start_sq),
                     end_sq: formatDateYear(item.end_sq),
                     created_at: formatDateTime(item.created_at),
                     updated_at: formatDateTime(item.updated_at),
+                    status_date_expire // Agregamos el nuevo estado
                 };
             });
-            
+
             return res.status(200).json({
                 list: formattedList
             });
 
         } catch (error) {
-            console.error(error)
+            console.error(error);
             console.error("Ha ocurrido un error al obtener los cuestionarios");
             return res.status(500).json({
                 message: "Error al obtener los cuestionarios"
-            })
+            });
         }
     }
+
 
     async getQuizForAnswer(req, res) {
         const { id } = req.params;
@@ -595,7 +611,7 @@ class SatisfactionControllers {
             return res.status(200).json({
                 message: "Lista de cuestionarios obtenida con éxito",
                 list: formattedList,
-                total: getTotalResults.total  || 0
+                total: getTotalResults[0].total || 0
             });
 
         } catch (error) {
@@ -663,7 +679,111 @@ class SatisfactionControllers {
         }
     }
 
+    async getQuizInformationAnsweredForModal(req, res) {
+        const { id_sq, id_user } = req.body
 
+        try {
+
+            const listAnswers = await this.model.getBodySqAnswerByIdQuizAndUser(id_sq, id_user);
+
+            if (!listAnswers) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+
+            const headerQuiz = await this.model.getCompleteHeaderQuiz(id_sq);
+
+            if (!headerQuiz) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+
+            const dataEmployee = await this.entity.getDataBasicEmployeeByIdUser(id_user);
+
+            if (!dataEmployee) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+            
+
+            const formattedHeader = headerQuiz.map(item => {
+                return {
+                    ...item,
+                    start_sq: formatDateYear(item.start_sq),
+                    end_sq: formatDateYear(item.end_sq),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                };
+            });
+
+            const list = {
+                header: formattedHeader[0],
+                answers: [...listAnswers],
+                answered: dataEmployee[0]
+            }
+
+            return res.status(200).json({
+                message: "Cuestionario obtenido exitosamente",
+                list: list
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(500).json({
+                message: "Error al obtener las respuestas del cuestionario, intente reiniciando el sitio"
+            });
+        }
+    }
+
+    async getAnswersForQuizById(req, res) {
+        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { id_sq } = req.params;
+
+        try {
+            const list = await this.model.getAnswersForQuiz(id_sq, limit, offset, typeOrder, order, filters);
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const getTotalResults = await this.model.getTotalResultsQuizAnsweredByEmployeeAndSq(id_sq);
+
+
+            if (!getTotalResults) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_sq: formatDateYear(item.start_sq),
+                    end_sq: formatDateYear(item.end_sq),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                    date_complete: formatDateTime(item.date_complete)
+                };
+            });
+
+            return res.status(200).json({
+                message: "Lista de cuestionarios obtenida con éxito",
+                list: formattedList,
+                total: getTotalResults[0].total
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
 }
 
 export default SatisfactionControllers;

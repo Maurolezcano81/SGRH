@@ -17,8 +17,9 @@ router.post('/address/states/by-country', state.getStatesByCountry.bind(state));
 router.post('/address/cities/by-state', city.getCitiesByState.bind(city));
 
 
-router.use(PublicQuizRoutes.router);
 router.use(PublicRoutes.router)
+router.use(PublicQuizRoutes.router);
+
 
 const EmployeeRoutes = {
     router,
