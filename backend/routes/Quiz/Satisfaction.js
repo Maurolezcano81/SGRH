@@ -13,6 +13,9 @@ router.delete('/quiz/satisfaction/delete/question', satisfaction.deleteQuestion.
 router.patch('/quiz/satisfaction/edit/header', satisfaction.updateQuizHeader.bind(satisfaction));
 router.delete('/quiz/satisfaction/delete/all', satisfaction.deleteAllQuiz.bind(satisfaction));
 
+
+router.delete("/quiz/satisfaction/answered/delete", satisfaction.deleteQuizAnswered.bind(satisfaction))
+
 router.post('/quiz/satisfaction/add/question/:id_sq', satisfaction.addQuestion.bind(satisfaction));
 router.post('/quiz/satisfaction/one/:sq_fk', satisfaction.getQuizInformation.bind(satisfaction));
 router.post('/quiz/satisfaction/one/header/:id_sq', satisfaction.getQuizHeader.bind(satisfaction));

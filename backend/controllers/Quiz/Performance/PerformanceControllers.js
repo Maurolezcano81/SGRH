@@ -7,6 +7,7 @@ class PerformanceControllers {
     constructor() {
         this.model = new PerformanceModel();
         this.questionTable = new BaseModel('evaluation_performance_question', 'id_epq');
+        this.supervisorTable = new BaseModel("supervisor_performance_questionnaire", "id_spq")
 
         this.searchFieldId = 'id_ep';
         this.nameSearchField = 'name_ep';
@@ -14,7 +15,7 @@ class PerformanceControllers {
 
 
     async createQuiz(req, res) {
-        const { headerQuiz, questionQuiz } = req.body;
+        const { headerQuiz, questionQuiz, supervisors } = req.body;
         const { id_user } = req;
 
         try {
@@ -29,6 +30,13 @@ class PerformanceControllers {
                 return res.status(403).json({
                     message: "Las fechas deben ser validas",
                     group: "date"
+                })
+            }
+
+            if (supervisors.length <= 0) {
+                return res.status(403).json({
+                    message: "Debe seleccionar al menos a un supervisor",
+                    group: "supervisor"
                 })
             }
 
@@ -94,6 +102,22 @@ class PerformanceControllers {
                 })
             }
 
+
+            for (const supervisor of supervisors) {
+                const dataToSupervisor = {
+                    user_fk: supervisor.id_user,
+                    ep_fk: supervisor.id_ep
+                }
+
+
+                const insertSupervisorTable = await this.supervisorTable.createOne(dataToSupervisor);
+
+                if (!insertSupervisorTable) {
+                    return res.status(403).json({
+                        message: "Ha ocurrido un error al agregar la pregunta al formulario"
+                    })
+                }
+            }
 
             for (const question of questionQuiz) {
                 const dataToQuestion = {

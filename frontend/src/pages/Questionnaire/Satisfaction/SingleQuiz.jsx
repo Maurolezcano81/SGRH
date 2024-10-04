@@ -176,6 +176,10 @@ const SingleQuiz = () => {
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
     const [initialDataForSeeInfo, setInitialDataForSeeInfo] = useState([]);
     const [isModalSeeInfoOpen, setIsModalSeeInfoOpen] = useState(false);
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [idQuizAnsweredToDelete, setIdQuizAnsweredToDelete] = useState("")
+
+    const urlDeleteQuizAnswered = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_ANSWERED}`
 
     const handleIsModalSeeInfoOpen = (row) => {
         setInitialDataForSeeInfo(row)
@@ -186,6 +190,18 @@ const SingleQuiz = () => {
         setIsModalSeeInfoOpen(false);
     }
 
+    const handleIsModalDeleteOpen = (row) => {
+        setIdQuizAnsweredToDelete(row.id_asq)
+        setIsModalDeleteOpen(true)
+    }
+
+    const handleCloseIsModalDeleteClose = () => {
+        setIsModalDeleteOpen(false)
+        setIsStatusUpdated(!isStatusUpdated)
+    }
+
+    console.log(headerData)
+
     return (
         <div className="container__page">
             <div className="container__content quiz">
@@ -194,14 +210,16 @@ const SingleQuiz = () => {
                     <div className="quiz__header__section">
                         <div className="question__title">
                             <h1 className="quiz__label quiz__title">{headerData.name_sq}</h1>
-                            <div className="quiz__buttons__container">
-                                <button className="preference__edit" onClick={() => handleOpenUpdateHeader(headerData)}>
-                                    <img src={Edit} alt="Edit" />
-                                </button>
-                                <button className="preference__delete" onClick={() => handleOpenDeleteHeader(value_quiz)}>
-                                    <img src={Trash} alt="Delete" />
-                                </button>
-                            </div>
+                            {headerData && headerData.canEdit && (
+                                <div className="quiz__buttons__container">
+                                    <button className="preference__edit" onClick={() => handleOpenUpdateHeader(headerData)}>
+                                        <img src={Edit} alt="Edit" />
+                                    </button>
+                                    <button className="preference__delete" onClick={() => handleOpenDeleteHeader(value_quiz)}>
+                                        <img src={Trash} alt="Delete" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                     </div>
@@ -242,14 +260,17 @@ const SingleQuiz = () => {
 
                                 <div className="question__title">
                                     <p>Pregunta {index + 1}</p>
-                                    <div key={question.id_qsq} className="quiz__buttons__container">
-                                        <button className="preference__edit" onClick={() => handleOpenUpdate(question)}>
-                                            <img src={Edit} alt="Edit" />
-                                        </button>
-                                        <button className="preference__delete" onClick={() => handleOpenDelete(question)}>
-                                            <img src={Trash} alt="Delete" />
-                                        </button>
-                                    </div>
+                                    {headerData && headerData.canEdit && (
+
+                                        <div key={question.id_qsq} className="quiz__buttons__container">
+                                            <button className="preference__edit" onClick={() => handleOpenUpdate(question)}>
+                                                <img src={Edit} alt="Edit" />
+                                            </button>
+                                            <button className="preference__delete" onClick={() => handleOpenDelete(question)}>
+                                                <img src={Trash} alt="Delete" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="question__title">
                                     <h2>{question.description_qsq}</h2>
@@ -357,7 +378,7 @@ const SingleQuiz = () => {
                     actions={{
                         view: (row) => handleIsModalSeeInfoOpen(row),
                         edit: () => console.log('asd'),
-                        delete: (row) => console.log('Editar', row),
+                        delete: (row) => handleIsModalDeleteOpen(row),
                     }}
                     showActions={{
                         view: true,
@@ -375,6 +396,16 @@ const SingleQuiz = () => {
                     <ModalInfoQuizAnswered
                         initialData={initialDataForSeeInfo}
                         closeModalAnswer={handleCloseIsModalSeeInfoOpen}
+                    />
+                )}
+
+                {isModalDeleteOpen && (
+                    <ModalDelete
+                        handleModalDelete={handleCloseIsModalDeleteClose}
+                        deleteOne={urlDeleteQuizAnswered}
+                        field_name={"id_asq"}
+                        idToDelete={idQuizAnsweredToDelete}
+                        onSubmitDelete={handleCloseIsModalDeleteClose}
                     />
                 )}
             </div>

@@ -179,10 +179,24 @@ class SatisfactionControllers {
                 });
             }
 
+
+            const currentDate = new Date();
+            let canEdit;
+
+            const startDate = new Date(list[0]?.start_sq);
+
+            if (currentDate < startDate) {
+                canEdit = true;
+            } else {
+                canEdit = false;
+            }
+
+
             const queryResponse = {
                 ...list[0],
                 start_sq: list[0].start_sq ? formatYearMonth(list[0].start_sq) : null,
-                end_sq: list[0].end_sq ? formatYearMonth(list[0].end_sq) : null
+                end_sq: list[0].end_sq ? formatYearMonth(list[0].end_sq) : null,
+                canEdit: canEdit || false
             };
 
             return res.status(200).json({
@@ -707,7 +721,7 @@ class SatisfactionControllers {
                     message: "No se ha podido obtener la informacion del cuestionario"
                 })
             }
-            
+
 
             const formattedHeader = headerQuiz.map(item => {
                 return {
@@ -753,6 +767,7 @@ class SatisfactionControllers {
 
             const getTotalResults = await this.model.getTotalResultsQuizAnsweredByEmployeeAndSq(id_sq);
 
+            console.log(getTotalResults)
 
             if (!getTotalResults) {
                 return res.status(403).json({
@@ -774,8 +789,32 @@ class SatisfactionControllers {
             return res.status(200).json({
                 message: "Lista de cuestionarios obtenida con éxito",
                 list: formattedList,
-                total: getTotalResults[0].total
+                total: getTotalResults[0]?.total || 0
             });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
+    async deleteQuizAnswered(req, res) {
+        const { id_asq } = req.body;
+        try {
+
+            const deleteAnswers = await this.answerTable.deleteOne(id_asq, "id_asq");
+
+            if (deleteAnswers.affectedRows < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al eliminar este cuestionario"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Cuestionario eliminado exitomasamente"
+            })
 
         } catch (error) {
             console.error("Ha ocurrido un error en el cuestionario", error);

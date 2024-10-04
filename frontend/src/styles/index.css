@@ -2018,7 +2018,7 @@ input {
 .not__answer__body__description p {
   color: var(--gray-1);
   margin: 1rem 0;
-  min-width: 18rem;
+  min-width: max-content;
 }
 
 .not__answer__footer {
