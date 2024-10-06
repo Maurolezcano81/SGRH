@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
 import DropDownButton from './DropDownButton';
 import useNav from '../../hooks/useNav';
+import { Link } from 'react-router-dom';
 
 const NavbarContent = () => {
   const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_MENUPARENTS}`;
@@ -9,6 +10,7 @@ const NavbarContent = () => {
   const { authData } = useAuth();
   const { navbarRefresh } = useNav()
   const [parentList, setParentList] = useState([]);
+  const [isSupervisor, setIsSupervisor] = useState(false);
 
   const token = JSON.parse(localStorage.getItem('token'))
 
@@ -25,13 +27,17 @@ const NavbarContent = () => {
 
         const parentData = await fetchResponse.json();
         setParentList(parentData.queryResponse);
+        setIsSupervisor(parentData.isSupervisorEp)
       };
 
       parentsFetch();
-      console.log(authData);
     }
   }, [authData, navbarRefresh]);
 
+  const [isDropdown, setIsDropdown] = useState(false);
+  const handleDropdownToggle = () => {
+    setIsDropdown((prevState) => !prevState);
+  };
   return (
     <div className="navbar__content">
       {parentList.length > 0 ? (
@@ -45,6 +51,21 @@ const NavbarContent = () => {
         ))
       ) : (
         <p>No data available</p>
+      )}
+
+      {isSupervisor && (
+        <div onClick={handleDropdownToggle} className={`navbar__dropdown ${isDropdown ? 'navbar__background-active' : ''}`}>
+          <div className="navbar__content-redirect">
+            <p className={isDropdown ? 'navbar__dropdown-active' : ''}>Supervisor de Cuestionarios</p>
+          </div>
+          {isDropdown && (
+            <div className="navbar__content-dropdown">
+              <Link to='/supervisor/rendimiento'>
+                Responder Cuestionarios
+              </Link>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

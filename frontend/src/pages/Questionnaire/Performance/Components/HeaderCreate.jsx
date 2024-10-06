@@ -34,7 +34,7 @@ const HeaderCreate = ({
                     </div>
 
                     <div className="quiz__header__section">
-                        <h4>Configuracion de Fechas</h4>
+                        <h4 className="margin-y-1">Configuracion de Fechas</h4>
                         <div className="quiz__header__dates">
                             <div className="quiz__header__date">
                                 <label className="quiz__label" htmlFor={fields.start_ep}>Fecha de inicio:</label>

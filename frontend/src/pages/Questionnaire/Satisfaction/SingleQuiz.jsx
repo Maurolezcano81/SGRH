@@ -276,7 +276,7 @@ const SingleQuiz = () => {
                                     <h2>{question.description_qsq}</h2>
                                 </div>
                                 <div className="question__information">
-                                    <p>Es obligatorio: <span>
+                                    <p>Descripción obligatoria: <span>
                                         {question && question.is_obligatory === 1 ? "Si" : "No"}
                                     </span></p>
                                     <p>Parametro minimo: <span>{question.bad_parameter_qsq}</span></p>

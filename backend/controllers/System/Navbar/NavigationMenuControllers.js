@@ -1,13 +1,14 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Validations.js';
 import NavigationMenu from '../../../models/System/Navbar/NavigationMenu.js';
-
+import PerformanceModel from '../../../models/Quiz/Performance/Performance.js';
 // Asumiendo que los modelos `NavigationMenu` y `Profile` utilizan la clase BaseModel
 class NavigationMenuControllers {
   constructor() {
     this.model = new BaseModel('navigation_menu', 'name_nm');
     this.navMenuModel = new NavigationMenu();
     this.profileModel = new BaseModel('profile', 'name_profile');
+    this.performance = new PerformanceModel();
     this.nameFieldId = 'id_nm';
     this.nameFieldToSearch = 'name_nm';
   }
@@ -194,6 +195,7 @@ class NavigationMenuControllers {
 
   async getMenuParentsByIdProfile(req, res) {
     const { profile_fk } = req.user;
+    const { id_user } = req;
 
     try {
       const queryResponse = await this.navMenuModel.getMenuParentsByIdProfile(profile_fk)
@@ -204,9 +206,20 @@ class NavigationMenuControllers {
         });
       }
 
+      let isSupervisorEp;
+
+      const CheckIfIsSupervisor = await this.performance.isSupervisorInSomeQuiz(id_user);
+
+      if (CheckIfIsSupervisor.length < 1) {
+        isSupervisorEp = false;
+      } else {
+        isSupervisorEp = true;
+      }
+
       return res.status(200).json({
         message: 'Menús de navegación obtenidos correctamente',
         queryResponse,
+        isSupervisorEp
       });
     } catch (error) {
       console.error('Error en controlador de menú de navegación por perfil: ' + error);

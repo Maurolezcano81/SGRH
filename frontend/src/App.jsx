@@ -38,6 +38,8 @@ import PersonalLeave from './pages/RequestLeaves/Personal/PersonalLeave';
 import RrhhLeave from './pages/RequestLeaves/Rrhh/RrhhLeave';
 import HomeQuizSatisfaction from './pages/Questionnaire/Satisfaction/Personal/HomeQuizSatisfaction';
 import AnswerPage from './pages/Questionnaire/Satisfaction/Personal/AnswerPage';
+import HomeQuizPerformanceSupervisor from './pages/Questionnaire/Performance/Supervisor/HomeQuizPerformanceSupervisor';
+import AnswerPagePerformance from './pages/Questionnaire/Performance/Supervisor/AnswerPagePerformance AnswerPagePerformance';
 
 
 function App() {
@@ -108,6 +110,12 @@ function App() {
                 </Route>
               </Route>
 
+              <Route path="supervisor/*">
+                <Route path="rendimiento/*">
+                  <Route path="" element={<HomeQuizPerformanceSupervisor />} />
+                  <Route path="responder" element={<AnswerPagePerformance />} />
+                </Route>
+              </Route>
 
               <Route path="profile/" element={<Profile />} />
 

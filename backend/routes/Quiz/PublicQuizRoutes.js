@@ -16,6 +16,15 @@ router.post('/quiz/satisfaction/modal', satisfaction.getQuizInformationAnsweredF
 
 router.post('/quiz/satisfaction/:id', satisfaction.getQuizForAnswer.bind(satisfaction));
 
+// PERFORMANCE
+router.get('/quiz/performance/last_five', performance.getLastFiveQuizzes.bind(performance));
+
+router.post('/quiz/performance/get/employees_to_evaluate', performance.getEmployeesToEvaluate.bind(performance))
+
+
+router.post('/quiz/performance/:id', performance.getQuizForAnswer.bind(performance));
+
+
 
 
 const PublicQuizRoutes = {

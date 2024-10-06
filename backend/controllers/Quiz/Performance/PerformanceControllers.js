@@ -8,6 +8,9 @@ class PerformanceControllers {
         this.model = new PerformanceModel();
         this.questionTable = new BaseModel('evaluation_performance_question', 'id_epq');
         this.supervisorTable = new BaseModel("supervisor_performance_questionnaire", "id_spq")
+        this.answerTable = new BaseModel("answer_performance", 'id_ap');
+        this.answerDetailTable = new BaseModel('detail_evaluation_performance', 'id_dep')
+        this.user = new BaseModel('user', 'id_user');
 
         this.searchFieldId = 'id_ep';
         this.nameSearchField = 'name_ep';
@@ -15,7 +18,7 @@ class PerformanceControllers {
 
 
     async createQuiz(req, res) {
-        const { headerQuiz, questionQuiz, supervisors } = req.body;
+        const { headerQuiz, questionQuiz, supervisorBody } = req.body;
         const { id_user } = req;
 
         try {
@@ -33,7 +36,7 @@ class PerformanceControllers {
                 })
             }
 
-            if (supervisors.length <= 0) {
+            if (supervisorBody.length <= 0) {
                 return res.status(403).json({
                     message: "Debe seleccionar al menos a un supervisor",
                     group: "supervisor"
@@ -53,13 +56,6 @@ class PerformanceControllers {
             if (endDate < startDate) {
                 return res.status(403).json({
                     message: "La fecha de fin no debe ser anterior a la fecha de inicio."
-                });
-            }
-
-            const now = new Date();
-            if (now >= startDate && now <= endDate) {
-                return res.status(403).json({
-                    message: "No se pudo editar debido a que el cuestionario está en proceso."
                 });
             }
 
@@ -102,11 +98,10 @@ class PerformanceControllers {
                 })
             }
 
-
-            for (const supervisor of supervisors) {
+            for (const supervisor of supervisorBody) {
                 const dataToSupervisor = {
-                    user_fk: supervisor.id_user,
-                    ep_fk: supervisor.id_ep
+                    user_fk: supervisor,
+                    ep_fk: createQuiz.lastId
                 }
 
 
@@ -198,16 +193,31 @@ class PerformanceControllers {
 
             const list = await this.model.getQuizHeader(id_ep);
 
+            const supervisors = await this.model.getSupervisorsQuiz(id_ep)
             if (!list || list.length === 0) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
 
+            const currentDate = new Date();
+            let canEdit;
+
+            const startDate = new Date(list[0]?.start_ep);
+
+            if (currentDate < startDate) {
+                canEdit = true;
+            } else {
+                canEdit = false;
+            }
+
+
             const queryResponse = {
                 ...list[0],
                 start_ep: list[0].start_ep ? formatYearMonth(list[0].start_ep) : null,
-                end_ep: list[0].end_ep ? formatYearMonth(list[0].end_ep) : null
+                end_ep: list[0].end_ep ? formatYearMonth(list[0].end_ep) : null,
+                supervisors,
+                canEdit
             };
 
             return res.status(200).json({
@@ -491,34 +501,298 @@ class PerformanceControllers {
     async deleteQuestion(req, res) {
         const { id_epq } = req.body;
 
-        if (isInputEmpty(id_epq)) {
-            console.error("Ha ocurrido un error al eliminar la pregunta");
-            return res.status(403).json({
-                message: "Error al eliminar la pregunta"
-            })
-        }
-
-
-        const deleteQuestion = await this.questionTable.deleteOne(id_epq, 'id_epq');
-
-        if (deleteQuestion.affectedRows < 1) {
-            console.error("Ha ocurrido un error al eliminar la pregunta");
-            return res.status(403).json({
-                message: "Error al eliminar la pregunta"
-            })
-        }
-
-        res.status(200).json({
-            message: "La pregunta ha sido eliminada correctamente"
-        })
-
-
         try {
+
+            if (isInputEmpty(id_epq)) {
+                console.error("Ha ocurrido un error al eliminar la pregunta");
+                return res.status(403).json({
+                    message: "Error al eliminar la pregunta"
+                })
+            }
+
+
+            const deleteQuestion = await this.questionTable.deleteOne(id_epq, 'id_epq');
+
+            if (deleteQuestion.affectedRows < 1) {
+                console.error("Ha ocurrido un error al eliminar la pregunta");
+                return res.status(403).json({
+                    message: "Error al eliminar la pregunta"
+                })
+            }
+
+            res.status(200).json({
+                message: "La pregunta ha sido eliminada correctamente"
+            })
 
         } catch (error) {
             console.error("Ha ocurrido un error al eliminar la pregunta");
             return res.status(403).json({
                 message: "Error al eliminar la pregunta"
+            })
+        }
+    }
+
+    async getPeopleForSupervisor(req, res) {
+        const { limit, offset, orderBy, typeOrder, filters, arrayToExclude } = req.body;
+
+        try {
+            const list = await this.model.getPeopleForSupervisor(limit, offset, orderBy, typeOrder, filters, arrayToExclude);
+
+            const getTotalResults = await this.model.getTotalResultsExclude(limit, offset, orderBy, typeOrder, filters, arrayToExclude);
+
+            if (list.length < 1) {
+                console.log("No se encontraron usuarios.");
+                return res.status(403).json({
+                    message: "No se encontraron usuarios",
+                    list: [],
+                    total: 0
+                });
+            }
+
+            res.status(200).json({
+                message: "Usuarios obtenidos correctamente",
+                list: list,
+                total: getTotalResults[0]?.total
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error al obtener los usuarios");
+            return res.status(403).json({
+                message: "Error al obtener los usuarios"
+            })
+        }
+    }
+
+    async addSupervisor(req, res) {
+        const { id_ep, id_user } = req.body;
+        try {
+
+            const add = await this.supervisorTable.createOne({
+                user_fk: id_user,
+                ep_fk: id_ep
+            })
+
+            if (!add) {
+                console.error("Ha ocurrido un error al obtener los usuarios");
+                return res.status(500).json({
+                    message: "Error al obtener los usuarios"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Supervisor agregado correctamente",
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error al obtener los usuarios");
+            return res.status(500).json({
+                message: "Error al obtener los usuarios"
+            })
+        }
+    }
+
+    async deleteSupervisor(req, res) {
+        const { id_spq } = req.body;
+        try {
+
+            const deleteSupervisor = await this.supervisorTable.deleteOne(id_spq, 'id_spq');
+
+            if (deleteSupervisor.affectedRows < 1) {
+                console.error("Ha ocurrido un error al obtener los usuarios");
+                return res.status(500).json({
+                    message: "Error al obtener los usuarios"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Supervisor eliminado correctamente",
+            })
+        } catch (error) {
+            console.error("Ha ocurrido un error al obtener los usuarios");
+            return res.status(500).json({
+                message: "Error al obtener los usuarios"
+            })
+        }
+    }
+
+    async getLastFiveQuizzes(req, res) {
+        const { id_user } = req;
+
+        try {
+            const list = await this.model.getLastFive(id_user);
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios"
+                });
+            }
+
+            const currentDate = new Date(); // Obtener la fecha actual
+
+            const formattedList = list.map(item => {
+                let status_date_expire;
+
+                // Convertir las fechas a objetos Date para realizar comparaciones
+                const startDate = new Date(item.start_ep);
+                const endDate = new Date(item.end_ep);
+
+                // Comparar fechas para determinar si es 'old', 'actual' o 'next'
+                if (endDate < currentDate) {
+                    status_date_expire = 'old';
+                } else if (startDate <= currentDate && endDate >= currentDate) {
+                    status_date_expire = 'actual';
+                } else if (startDate > currentDate) {
+                    status_date_expire = 'next';
+                }
+
+                return {
+                    ...item,
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                    status_date_expire // Agregamos el nuevo estado
+                };
+            });
+
+            return res.status(200).json({
+                list: formattedList
+            });
+
+        } catch (error) {
+            console.error(error);
+            console.error("Ha ocurrido un error al obtener los cuestionarios");
+            return res.status(500).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
+    async getQuizForAnswer(req, res) {
+        const { id } = req.params;
+
+        try {
+
+            if (isNotNumber(id)) {
+                return res.status(500).json({
+                    message: "Ha ocurrido un error al obtener el cuestionario"
+                });
+            };
+
+            const list = await this.questionTable.getOne(id, 'ep_fk')
+
+            if (!list) {
+                return res.status(500).json({
+                    message: "Ha ocurrido un error al obtener el cuestionario"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Preguntas obtenidas correctamente",
+                list: list
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error al obtener las preguntas");
+            return res.status(500).json({
+                message: "Error al obtener las preguntas"
+            })
+        }
+    }
+
+    async createAnswerSatisfaction(req, res) {
+        const { answerData, answersArray } = req.body;
+        const { id_user } = req;
+
+        try {
+            const dataToCreateAnswer = {
+                author_fk: id_user,
+                is_complete: 1,
+                ep_fk: answerData.id_ep,
+                evaluated_fk: answerData.evaluated_fk,
+                date_complete: new Date(),
+            };
+
+            for (const answer of answersArray) {
+                if (isInputEmpty(answer.epq_fk)) {
+                    return res.status(403).json({
+                        message: "Error al enviar las respuestas del cuestionario",
+                        group: "questions"
+                    });
+                }
+            }
+
+            const createAnswer = await this.answerTable.createOne(dataToCreateAnswer);
+
+            if (!createAnswer) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al enviar las respuestas del cuestionario, intente reiniciando el sitio"
+                });
+            }
+
+            for (const detailAnswer of answersArray) {
+                const answer = {
+                    epq_fk: detailAnswer.epq_fk,
+                    ap_fk: createAnswer.lastId,
+                    score_dsq: detailAnswer.score_dep,
+                    description_dsq: detailAnswer.description_dep
+                };
+
+                const insertQuestionToQuiz = await this.answerDetailTable.createOne(answer);
+
+                if (!insertQuestionToQuiz) {
+                    return res.status(403).json({
+                        message: "Ha ocurrido un error al agregar la pregunta al formulario"
+                    });
+                }
+            }
+            return res.status(200).json({
+                message: "Cuestionario respondido exitosamente",
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(500).json({
+                message: "Error al insertar las preguntas al cuestionario, intente reiniciando el sitio"
+            });
+        }
+    }
+
+    async getEmployeesToEvaluate(req, res) {
+        const { limit, offset, orderBy, typeOrder, filters, arrayToExclude } = req.body;
+
+        const { id_user } = req;
+        try {
+
+            const department_supervisor = await this.model.getDepartmentForSupervisor(id_user)
+
+            const department_supervisor_id = department_supervisor.id_department;
+
+            const updatedArrayToExclude = [...arrayToExclude, id_user];
+
+            const list = await this.model.getEmployeesToEvaluate(department_supervisor_id, limit, offset, orderBy, typeOrder, filters, updatedArrayToExclude);
+
+            if (list.length < 1) {
+                console.log("No se encontraron usuarios.");
+                return res.status(403).json({
+                    message: "No se encontraron usuarios",
+                    list: [],
+                    total: 0
+                });
+            }
+
+            const getTotalResults = await this.model.getTotalEmployeesToEvaluate(department_supervisor_id, limit, offset, orderBy, typeOrder, filters, updatedArrayToExclude)
+
+            res.status(200).json({
+                message: "Usuarios obtenidos correctamente",
+                list: list,
+                total: getTotalResults[0]?.total
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error al obtener los usuarios");
+            return res.status(403).json({
+                message: "Error al obtener los usuarios"
             })
         }
     }

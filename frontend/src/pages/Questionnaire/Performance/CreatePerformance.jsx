@@ -4,6 +4,7 @@ import BodyCreate from "./Components/BodyCreate"
 import ButtonBlue from "../../../components/ButtonBlue"
 import useAuth from "../../../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
+import SupervisorAdd from "./SupervisorAdd"
 
 
 const CreatePerformance = () => {
@@ -21,6 +22,8 @@ const CreatePerformance = () => {
         bad_parameter_epq: "",
         best_parameter_epq: ""
     })
+
+    const [supervisorBody, setSupervisorBody] = useState([]);
 
     const fields_header = {
         name_ep: "name_ep",
@@ -48,7 +51,8 @@ const CreatePerformance = () => {
                 },
                 body: JSON.stringify({
                     headerQuiz: headerQuiz,
-                    questionQuiz: bodyQuiz
+                    questionQuiz: bodyQuiz,
+                    supervisorBody, supervisorBody
                 })
             })
 
@@ -82,6 +86,11 @@ const CreatePerformance = () => {
                     fields={fields_header}
                     placeholders={{ title: "Ingrese un titulo" }}
                     setHeaderQuiz={setHeaderQuiz}
+                />
+
+                <SupervisorAdd
+                    setSupervisorBody={setSupervisorBody}
+                    supervisorBody={supervisorBody}
                 />
 
                 <BodyCreate

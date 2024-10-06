@@ -1373,9 +1373,8 @@ input {
 
 .table__primary td,
 .table__primary th {
-  padding: .5rem 2rem;
+  padding: .5rem;
   vertical-align: middle;
-  min-width: 15rem;
 }
 
 .table__primary tbody tr:nth-child(even) {
@@ -1649,6 +1648,30 @@ input {
 
 .quiz__header__container {
 
+}
+
+.quiz__supervisors__container{
+  display: flex;
+  gap: 1rem;
+  box-shadow: var(--shadow-a-25-b-02);
+  padding: 1rem ;
+  flex-wrap: wrap;
+}
+
+.quiz__supervisor__container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  justify-content: center;
+  gap: 1rem;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-b-25);
+  padding: .5rem 2rem;
+  width: max-content;
+  flex-basis: 10rem;
+  flex-grow: 1;
+  text-align: center;
 }
 
 .quiz__label.quiz__title {
@@ -2141,7 +2164,11 @@ input {
   max-height: 100vh;
 }
 
-
+.info__message{
+  font-size: var(--size-table-text);
+  font-weight: 200;
+  color: var(--gray-1);
+}
 
 
 

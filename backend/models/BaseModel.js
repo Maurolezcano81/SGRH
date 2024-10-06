@@ -22,6 +22,22 @@ class BaseModel {
         }
     }
 
+    async getTotalResultsExcludes(field, excludeArray) {
+        try {
+            const excludeClause = excludeArray.length > 0
+                ? `WHERE ${field} NOT IN (${excludeArray.map(() => '?').join(', ')})`
+                : '';
+    
+            const query = `SELECT COUNT(${field}) as total FROM ${this.model} ${excludeClause};`;
+            
+            const [results] = await this.con.promise().query(query, excludeArray);
+            return results;
+        } catch (error) {
+            console.error("Error en getTotalResultsExcludes:", error.message);
+            throw new Error("Error en getTotalResultsExcludes: " + error.message);
+        }
+    }
+
     async getAll() {
         try {
             const query = `SELECT * FROM ${this.model}`;

@@ -8,7 +8,9 @@ import Edit from "../../../assets/Icons/Preferences/Edit.png";
 import ButtonWhiteOutlineBlack from "../../../components/Buttons/ButtonWhiteOutlineBlack";
 import ModalUpdate from "../../../components/Modals/ModalUpdate";
 import ModalUpdateQuiz from "./Components/ModalUpdateSQ";
-
+import ButtonImgTxt from "../../../components/ButtonImgTex";
+import ModalTableWFilters from "../../../components/Modals/Updates/ModalTableWFilters";
+import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png'
 
 const SingleQuizPerformance = () => {
 
@@ -16,7 +18,7 @@ const SingleQuizPerformance = () => {
     const [quizData, setQuizData] = useState([]);
     const [headerData, setHeaderData] = useState({});
     const [isAddedQuestion, setIsAddedQuestion] = useState(false);
-
+    const [isStatusUpdate, setIsStatusUpdate] = useState(false);
 
 
 
@@ -101,8 +103,12 @@ const SingleQuizPerformance = () => {
         setIsAddedQuestion(!isAddedQuestion);
     };
 
+
     useEffect(() => {
         if (value_quiz) {
+
+
+
 
             const fetchQuizData = async () => {
 
@@ -142,15 +148,111 @@ const SingleQuizPerformance = () => {
                 setHeaderData(data.queryResponse);
             }
 
+            const checkExcludeSupervisors = () => {
+                const newArray = headerData.supervisors?.map((supervisor) => supervisor.id_user);
+
+                setArrayToExclude(newArray);
+            };
+
             fetchTitleQuiz();
             fetchQuizData();
+            checkExcludeSupervisors()
         }
 
-        console.log(headerData)
+    }, [value_quiz, authData.token, isAddedQuestion, headerData?.supervisors])
 
-    }, [value_quiz, authData.token, isAddedQuestion])
+    const columsToModal = [
+        { field: 'avatar_user', label: '' },
+        { field: 'name_entity', label: 'Nombre' },
+        { field: 'lastname_entity', label: 'Apellido' },
+        { field: 'name_department', label: 'Departamento' },
+        { field: 'name_occupation', label: 'Puesto de Trabajo' },
+    ]
 
-    console.log(headerData)
+
+    const filtersToModal = [
+        {
+            key: 'name_occupation',
+            label: 'Ocupación',
+            name_field: 'name_occupation',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+        },
+        {
+            key: 'name_department',
+            label: 'Departamento',
+            name_field: 'name_department',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}`
+        },
+    ];
+
+    const searchOptionsToModal = [
+        { value: 'name_entity', label: 'Nombre' },
+        { value: 'lastname_entity', label: 'Apellido' },
+
+    ]
+
+
+    const [isAddSupervisorModalOpen, setIsAddSupervisorModalOpen] = useState(false);
+    const [arrayToExclude, setArrayToExclude] = useState([]);
+
+    const getNotSupervisorUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_NOT_SUPERVISOR}`
+
+    const handleOpenModalAddSupervisor = () => {
+        setIsAddSupervisorModalOpen(true)
+    }
+
+    const handleCloseModalAddSupervisor = () => {
+        setIsAddSupervisorModalOpen(false)
+    }
+
+    const addSupervisorUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_ONE_QUIZ_PERFORMANCE_SUPERVISOR}`
+    const deleteSupervisorUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_PERFORMANCE_SUPERVISOR}`
+
+    const addSupervisor = async (row) => {
+        try {
+
+            const response = await fetch(addSupervisorUrl, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authData.token}`
+                },
+                body: JSON.stringify({
+                    id_ep: value_quiz,
+                    id_user: row.id_user
+                })
+            })
+
+            setIsAddedQuestion(!isAddedQuestion);
+            setIsStatusUpdate(!isStatusUpdate);
+            handleCloseModalAddSupervisor()
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
+    const deleteSupervisor = async (row) => {
+        try {
+
+            const response = await fetch(deleteSupervisorUrl, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authData.token}`
+                },
+                body: JSON.stringify({
+                    id_spq: row.id_spq
+                })
+            })
+
+            setIsAddedQuestion(!isAddedQuestion);
+            setIsStatusUpdate(!isStatusUpdate);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 
     return (
         <div className="container__page">
@@ -160,20 +262,23 @@ const SingleQuizPerformance = () => {
                     <div className="quiz__header__section">
                         <div className="question__title">
                             <h1 className="quiz__label quiz__title">{headerData.name_ep}</h1>
-                            <div className="quiz__buttons__container">
-                                <button className="preference__edit" onClick={() => handleOpenUpdateHeader(headerData)}>
-                                    <img src={Edit} alt="Edit" />
-                                </button>
-                                <button className="preference__delete" onClick={() => handleOpenDeleteHeader(value_quiz)}>
-                                    <img src={Trash} alt="Delete" />
-                                </button>
-                            </div>
-                        </div>
 
+                            {headerData && headerData.canEdit && (
+
+                                <div className="quiz__buttons__container">
+                                    <button className="preference__edit" onClick={() => handleOpenUpdateHeader(headerData)}>
+                                        <img src={Edit} alt="Edit" />
+                                    </button>
+                                    <button className="preference__delete" onClick={() => handleOpenDeleteHeader(value_quiz)}>
+                                        <img src={Trash} alt="Delete" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="quiz__header__section">
-                        <h4>Información del cuestionario</h4>
+                        <h4 className="margin-y-1">Información del cuestionario</h4>
                         <div className="quiz__header__dates">
                             <div className="quiz__header__date">
                                 <h4>Fecha de inicio:</h4>
@@ -203,8 +308,80 @@ const SingleQuizPerformance = () => {
                     </div>
                 </div>
 
+                <div className="quiz__header__container">
+                    <div className="container__content">
+
+                        <h4>Selección de supervisores</h4>
+                        <div className="quiz__supervisors__container">
+
+                            {headerData.supervisors && headerData.supervisors.length > 0 && headerData.supervisors.map((supervisor) => (
+                                <div className="quiz__supervisor__container" key={supervisor.id_user}>
+                                    <div className="not__answer__header__profile">
+                                        <img src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${supervisor.avatar_user}`} alt="" />
+                                    </div>
+
+                                    <div>
+                                        <h4>{`${supervisor.name_entity} ${supervisor.lastname_entity}`}</h4>
+                                        <p className="info__message">{supervisor.name_department}</p>
+                                    </div>
+
+                                    <div>
+                                        <ButtonImgTxt
+                                            img={Trash}
+                                            title={"Quitar"}
+                                            color={"red"}
+                                            onClick={() => deleteSupervisor(supervisor)}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+
+
+
+                            <ButtonWhiteOutlineBlack
+                                title={"+ Agregar Supervisor"}
+                                onClick={handleOpenModalAddSupervisor}
+                            />
+
+                        </div>
+
+                    </div>
+
+                    {isAddSupervisorModalOpen && (
+                        <ModalTableWFilters
+                            url={getNotSupervisorUrl}
+                            authToken={authData.token}
+                            columns={columsToModal}
+                            filterConfigs={filtersToModal}
+                            searchOptions={searchOptionsToModal}
+                            initialSearchField={'name_entity'}
+                            initialSearchTerm={''}
+                            initialSort={{ field: 'name_entity', order: 'ASC' }}
+                            actions={{
+                                view: (row) => addSupervisor(row),
+                                edit: (row) => console.log('Editar', row),
+                                delete: (row) => console.log('Editar', row),
+                            }}
+                            showActions={{
+                                view: true,
+                                edit: false,
+                                delete: false
+                            }}
+                            actionColumn='id_entity'
+                            paginationLabelInfo={'Personas'}
+                            buttonOneInfo={{ img: AddEmployee, color: 'blue', title: 'Agregar Personal' }}
+                            isStatusUpdated={setIsStatusUpdate}
+                            handleCloseModal={handleCloseModalAddSupervisor}
+                            title_table={"Lista de Personas"}
+                            colorTable={'bg__green-5'}
+                            arrayToExclude={arrayToExclude}
+                        />
+                    )}
+
+                </div>
+
                 <div className="quiz__header__section">
-                    <h4>Cuerpo del Cuestionario</h4>
+                    <h4 className="margin-y-1">Cuerpo del Cuestionario</h4>
 
 
                     <div className="quiz__body__question__container">
@@ -213,21 +390,24 @@ const SingleQuizPerformance = () => {
 
                                 <div className="question__title">
                                     <p>Pregunta {index + 1}</p>
-                                    <div key={question.id_epq} className="quiz__buttons__container">
-                                        <button className="preference__edit" onClick={() => handleOpenUpdate(question)}>
-                                            <img src={Edit} alt="Edit" />
-                                        </button>
-                                        <button className="preference__delete" onClick={() => handleOpenDelete(question)}>
-                                            <img src={Trash} alt="Delete" />
-                                        </button>
-                                    </div>
+                                    {headerData && headerData.canEdit && (
+
+                                        <div key={question.id_epq} className="quiz__buttons__container">
+                                            <button className="preference__edit" onClick={() => handleOpenUpdate(question)}>
+                                                <img src={Edit} alt="Edit" />
+                                            </button>
+                                            <button className="preference__delete" onClick={() => handleOpenDelete(question)}>
+                                                <img src={Trash} alt="Delete" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="question__title">
                                     <h2>{question.question_epq}</h2>
                                 </div>
                                 <div className="question__information">
                                     <p>Descripcion: <span>{question.description_epq}</span></p>
-                                    <p>Es obligatorio: <span>
+                                    <p>Descripción obligatoria: <span>
                                         {question && question.is_obligatory === 1 ? "Si" : "No"}
                                     </span></p>
                                     <p>Parametro minimo: <span>{question.bad_parameter_epq}</span></p>
