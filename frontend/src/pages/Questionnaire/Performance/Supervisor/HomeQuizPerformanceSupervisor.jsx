@@ -6,14 +6,20 @@ import MoveEmployee from '../../../../assets/Icons/Buttons/MoveEmployee.png'
 import LastFive from "./LastFive";
 import useAuth from "../../../../hooks/useAuth";
 import ModalInfoQuizAnswered from "../ModalInfoQuizAnswered";
+import TableHorWithFilters from "../../../../components/Table/TableHorWithFilters";
+import AlertSuccesfully from "../../../../components/Alerts/AlertSuccesfully";
+import ErrorMessage from "../../../../components/Alerts/ErrorMessage";
+import Quizz from '../../../../assets/Icons/Buttons/Quizz.png'
+import { useNavigate } from "react-router-dom";
 
 const HomeQuizPerformanceSupervisor = () => {
 
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
-    const [initialData, setInitialData] = useState(null);
-    const [isModalInfoOpen, setIsModalInfoOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const { authData } = useAuth();
+    const navigate = useNavigate();
 
     const handleStatusUpdated = () => {
         setIsStatusUpdated(!isStatusUpdated);
@@ -28,8 +34,7 @@ const HomeQuizPerformanceSupervisor = () => {
         { field: 'name_ep', label: 'Cuestionario' },
         { field: 'start_ep', label: 'Fecha de Inicio' },
         { field: 'end_ep', label: 'Fecha de Fin' },
-        { field: 'evaluated', label: 'Persona Evaluada'},
-        { field: 'average', label: 'Puntaje Promedio' },
+        { field: 'author', label: 'Autor' },
         { field: 'quantity_questions', label: 'Cantidad de Preguntas' },
     ];
 
@@ -39,72 +44,54 @@ const HomeQuizPerformanceSupervisor = () => {
 
     const searchOptions = [
         { value: 'name_ep', label: 'Nombre del cuestionario' },
-        { value: 'evaluated', label: 'Persona Evaluada' },
-        { value: 'quantity_questions', label: 'Cantidad de preguntas' },
     ];
 
 
-    const openSeeMore = (initialData) => {
-        setInitialData(initialData);
-        setIsModalInfoOpen(true);
-    }
+    const seeQuiz = (row) => {
+        navigate("/supervisor/rendimiento/ampliar", { state: { value_quiz: row.id_ep } })
+    };
 
-    const closeSeeMore = () => {
-        setIsModalInfoOpen(false)
-    }
 
+    const addButtonTitle = () => {
+        console.log('No disponible')
+    }
 
     return (
-        <div className="container__page">
+        <>
+            {successMessage && <AlertSuccesfully message={successMessage} />}
+            {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <PreferenceTitle
-                title={"Portal de Cuestionarios de Rendimiento"}
-                titleButton={""}
-                onClick={''}
-            />
-
-            <LastFive
-                dependencyToRefresh={isStatusUpdated}
-                setDependencyToRefresh={setIsStatusUpdated}
-            />
-
-            <TableSecondaryNotTitleAndWhereOnUrl
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTIONS_EMPLOYEE_ANSWERED}`}
+            <TableHorWithFilters
+                addButtonTitle={addButtonTitle}
+                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_SUPERVISOR}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
                 searchOptions={searchOptions}
-                initialSearchField={'name_ep'}
+                initialSearchField={'name_sq'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'name_ep', order: 'ASC' }}
+                initialSort={{ field: 'name_sq', order: 'ASC' }}
                 actions={{
-                    view: (row) => openSeeMore(row),
-                    edit: (row) => console.log('Editar', row),
-                    delete: (row) => console.log('Editar', row),
+                    view: seeQuiz,
+                    edit: (row) => console.log("Editar", row),
+                    delete: (row) => console.log("Editar", row)
                 }}
                 showActions={{
                     view: true,
                     edit: false,
                     delete: false
                 }}
-                actionColumn='id_ep'
-                paginationLabelInfo={'Cuestionarios Contestados'}
-                buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
-                buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
+                actionColumn='id_sq'
+                title_table={"Listado de cuestionarios"}
+                paginationLabelInfo={"Cuestionarios de satisfaccion"}
+                buttonOneInfo={{ img: Quizz, color: "blue", title: "Ver" }}
                 isStatusUpdated={isStatusUpdated}
             />
 
-            {isModalInfoOpen && (
-                <ModalInfoQuizAnswered
-                    initialData={initialData}
-                    closeModalAnswer={closeSeeMore}
-                />
-            )}
 
-        </div>
+        </>
 
-
-    )
+    );
 
 }
 

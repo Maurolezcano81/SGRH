@@ -39,7 +39,8 @@ import RrhhLeave from './pages/RequestLeaves/Rrhh/RrhhLeave';
 import HomeQuizSatisfaction from './pages/Questionnaire/Satisfaction/Personal/HomeQuizSatisfaction';
 import AnswerPage from './pages/Questionnaire/Satisfaction/Personal/AnswerPage';
 import HomeQuizPerformanceSupervisor from './pages/Questionnaire/Performance/Supervisor/HomeQuizPerformanceSupervisor';
-import AnswerPagePerformance from './pages/Questionnaire/Performance/Supervisor/AnswerPagePerformance AnswerPagePerformance';
+import AnswerPagePerformance from './pages/Questionnaire/Performance/Supervisor/AnswerPagePerformance';
+import SingleQuizPerformanceSupervisor from './pages/Questionnaire/Performance/Supervisor/SingleQuizPerformanceSupervisor';
 
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
                 <Route path="rendimiento/*">
                   <Route path="" element={<HomeQuizPerformanceSupervisor />} />
                   <Route path="responder" element={<AnswerPagePerformance />} />
+                  <Route path='ampliar' element={<SingleQuizPerformanceSupervisor />}/>
                 </Route>
               </Route>
 

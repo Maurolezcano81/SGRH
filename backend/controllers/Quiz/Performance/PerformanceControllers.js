@@ -668,34 +668,33 @@ class PerformanceControllers {
         }
     }
 
-    async getQuizForAnswer(req, res) {
-        const { id } = req.params;
+    async getQuestionsForQuizById(req, res) {
+        const { id_ep } = req.params
 
         try {
+            if (isNotNumber(id_ep)) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
+                })
+            }
 
-            if (isNotNumber(id)) {
-                return res.status(500).json({
-                    message: "Ha ocurrido un error al obtener el cuestionario"
-                });
-            };
+            const queryResponse = await this.model.getQuiz(id_ep);
 
-            const list = await this.questionTable.getOne(id, 'ep_fk')
-
-            if (!list) {
-                return res.status(500).json({
-                    message: "Ha ocurrido un error al obtener el cuestionario"
+            if (!queryResponse) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 })
             }
 
             return res.status(200).json({
-                message: "Preguntas obtenidas correctamente",
-                list: list
+                message: "Cuestionario obtenido con exito",
+                queryResponse
             })
 
         } catch (error) {
-            console.error("Ha ocurrido un error al obtener las preguntas");
-            return res.status(500).json({
-                message: "Error al obtener las preguntas"
+            console.error("Ha ocurrido un error en el cuestionario");
+            return res.status(403).json({
+                message: "Error al obtener el cuestionario"
             })
         }
     }
@@ -734,8 +733,8 @@ class PerformanceControllers {
                 const answer = {
                     epq_fk: detailAnswer.epq_fk,
                     ap_fk: createAnswer.lastId,
-                    score_dsq: detailAnswer.score_dep,
-                    description_dsq: detailAnswer.description_dep
+                    score_dep: detailAnswer.score_dep,
+                    description_dep: detailAnswer.description_dep
                 };
 
                 const insertQuestionToQuiz = await this.answerDetailTable.createOne(answer);
@@ -794,6 +793,102 @@ class PerformanceControllers {
             return res.status(403).json({
                 message: "Error al obtener los usuarios"
             })
+        }
+    }
+
+
+    async getQuizzesInformationForSupervisor(req, res) {
+        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { id_user } = req;
+
+        try {
+            const list = await this.model.getQuizzesInformationForSupervisor(id_user, limit, offset, typeOrder, order, filters);
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+
+            const getTotalResults = await this.model.getTotalQuizzesInformationForSupervisor(id_user, limit, offset, typeOrder, order, filters)
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                };
+            });
+
+            return res.status(200).json({
+                message: "Lista de cuestionarios obtenida con éxito",
+                list: formattedList,
+                total: getTotalResults.total || 0
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
+    async getAnswersForQuizForSupervisor(req, res) {
+        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { ep_fk } = req.params;
+        const {id_user} = req
+
+        try {
+
+            const department_supervisor = await this.model.getDepartmentForSupervisor(id_user)
+
+            const department_supervisor_id = department_supervisor.id_department;
+
+            const list = await this.model.getAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, typeOrder, order, filters);
+
+            console.log(id_user)
+            console.log(ep_fk)
+            console.log(list);
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const getTotalResults = await this.model.getTotalAnswersForQuizForSupervisor(id_ep, department_supervisor_id, limit, offset, typeOrder, order, filters)
+
+            if (!getTotalResults) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                    date_complete: formatDateTime(item.date_complete)
+                };
+            });
+
+            return res.status(200).json({
+                message: "Lista de cuestionarios obtenida con éxito",
+                list: formattedList,
+                total: getTotalResults.total || 0
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
         }
     }
 

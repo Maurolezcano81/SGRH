@@ -23,7 +23,7 @@ const AnswerBody = ({ ep }) => {
     const [listQuestions, setListQuestions] = useState([]);
     const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false);
     const [errors, setErrors] = useState([]);
-    const urlGetQuestions = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_QUIZ_PERFORMANCE_SUPERVISOR}/${ep.id_ep}`
+    const urlGetQuestions = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_QUIZ_PERFORMANCE_SUPERVISOR_QUESTIONS}/${ep.id_ep}`
 
     const [answerArray, setAnswerArray] = useState([]);
 
@@ -118,7 +118,7 @@ const AnswerBody = ({ ep }) => {
     }, [authData.token, urlGetQuestions]);
 
 
-    const urlSubmitAnswer = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_QUIZ_SATISFACTION_ANSWER}`
+    const urlSubmitAnswer = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_QUIZ_PERFORMANCE_ANSWER}`
 
     const handleSubmit = async () => {
 
@@ -129,7 +129,10 @@ const AnswerBody = ({ ep }) => {
                 "Authorization": `Bearer ${authData.token}`
             },
             body: JSON.stringify({
-                answerData: ep,
+                answerData: {
+                    ...ep,
+                    evaluated_fk: employeeSelected.id_user
+                },
                 answersArray: answerArray
             })
         })
