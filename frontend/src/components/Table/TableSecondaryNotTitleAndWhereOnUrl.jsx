@@ -22,8 +22,7 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     buttonOneInfo = { img: "", color: "", title: "" },
     buttonTwoInfo = { img: "", color: "", title: "" },
     buttonTreeInfo = { img: "", color: "", title: "" },
-    isStatusUpdated = false,
-    dataOnUrlFetch 
+    isStatusUpdated = false
 }) => {
     // Estados
     const [data, setData] = useState([]);
@@ -87,6 +86,7 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
         fetchData();
     }, [filters, sortField, sortOrder, pagination.offset, pagination.limit, searchTerm, searchField, isStatusUpdated]);
 
+
     // Funciones para manejar el orden
     const handleSort = (field) => {
         if (sortField === field) {
@@ -136,7 +136,6 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     const totalPages = Math.ceil(pagination.total / pagination.limit);
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
-    console.log(data);
     return (
 
             <div className='container__content'>

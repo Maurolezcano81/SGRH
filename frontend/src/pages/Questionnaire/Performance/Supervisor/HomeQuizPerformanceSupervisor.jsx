@@ -57,11 +57,16 @@ const HomeQuizPerformanceSupervisor = () => {
     }
 
     return (
-        <>
+        <div className="container__page">
+
+            <LastFive 
+                isStatusUpdated={isStatusUpdated}
+                setIsStatusUpdated={setIsStatusUpdated}
+            />
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableHorWithFilters
+            <TableSecondaryNotTitleAndWhereOnUrl
                 addButtonTitle={addButtonTitle}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_SUPERVISOR}`}
                 authToken={authData.token}
@@ -89,7 +94,7 @@ const HomeQuizPerformanceSupervisor = () => {
             />
 
 
-        </>
+        </div>
 
     );
 

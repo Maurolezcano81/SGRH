@@ -179,7 +179,7 @@ const SingleQuiz = () => {
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [idQuizAnsweredToDelete, setIdQuizAnsweredToDelete] = useState("")
 
-    const urlDeleteQuizAnswered = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_ANSWERED}`
+    const urlDeleteQuizAnswered = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_SATISFACTION_ANSWERED}`
 
     const handleIsModalSeeInfoOpen = (row) => {
         setInitialDataForSeeInfo(row)

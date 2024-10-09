@@ -19,16 +19,17 @@ router.post('/quiz/satisfaction/:id', satisfaction.getQuizForAnswer.bind(satisfa
 // PERFORMANCE
 router.post('/quiz/performance/answer', performance.createAnswerSatisfaction.bind(performance));
 router.get('/quiz/performance/last_five', performance.getLastFiveQuizzes.bind(performance));
-router.post('/quiz/performance/one/question', performance.getQuestion.bind(performance));
+router.post('/quiz/performance/one/question', performance.getQuestionsForQuizById.bind(performance));
 
 
 router.post('/quiz/performance/get/employees_to_evaluate', performance.getEmployeesToEvaluate.bind(performance));
 
 router.post('/quiz/performances/supervisor', performance.getQuizzesInformationForSupervisor.bind(performance));
+router.post('/quiz/performance/modal', performance.getQuizInformationAnsweredForModal.bind(performance));
 
 router.post('/quiz/performance/one/header/:id_ep', performance.getQuizHeader.bind(performance));
+router.post('/quiz/performance/answered/:ep_fk', performance.getAnswersForQuizForSupervisor.bind(performance));
 router.post('/quiz/performance/:ep_fk', performance.getQuizInformation.bind(performance));
-router.post('/quiz/satisfactions/answered/:ep_fk', performance.getAnswersForQuizForSupervisor.bind(performance));
 
 
 

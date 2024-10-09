@@ -1,6 +1,7 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isInputEmpty, isNotNumber, isNotDate, formatDateTime, formatDateYear, formatYearMonth } from '../../../middlewares/Validations.js';
 import PerformanceModel from '../../../models/Quiz/Performance/Performance.js';
+import EntityModel from '../../../models/People/People/Entity.js';
 
 
 class PerformanceControllers {
@@ -11,7 +12,7 @@ class PerformanceControllers {
         this.answerTable = new BaseModel("answer_performance", 'id_ap');
         this.answerDetailTable = new BaseModel('detail_evaluation_performance', 'id_dep')
         this.user = new BaseModel('user', 'id_user');
-
+        this.entity = new EntityModel()
         this.searchFieldId = 'id_ep';
         this.nameSearchField = 'name_ep';
     }
@@ -627,16 +628,14 @@ class PerformanceControllers {
                 });
             }
 
-            const currentDate = new Date(); // Obtener la fecha actual
+            const currentDate = new Date();
 
             const formattedList = list.map(item => {
                 let status_date_expire;
 
-                // Convertir las fechas a objetos Date para realizar comparaciones
                 const startDate = new Date(item.start_ep);
                 const endDate = new Date(item.end_ep);
 
-                // Comparar fechas para determinar si es 'old', 'actual' o 'next'
                 if (endDate < currentDate) {
                     status_date_expire = 'old';
                 } else if (startDate <= currentDate && endDate >= currentDate) {
@@ -651,7 +650,7 @@ class PerformanceControllers {
                     end_ep: formatDateYear(item.end_ep),
                     created_at: formatDateTime(item.created_at),
                     updated_at: formatDateTime(item.updated_at),
-                    status_date_expire // Agregamos el nuevo estado
+                    status_date_expire 
                 };
             });
 
@@ -703,9 +702,22 @@ class PerformanceControllers {
         const { answerData, answersArray } = req.body;
         const { id_user } = req;
 
+
         try {
+
+            const insertIntoSupervisorTable = await this.supervisorTable.createOne({
+                user_fk: id_user,
+                ep_fk: answerData.id_ep
+            })
+
+             if (!insertIntoSupervisorTable) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al enviar las respuestas del cuestionario, intente reiniciando el sitio"
+                });
+            }
+
             const dataToCreateAnswer = {
-                author_fk: id_user,
+                author_fk: insertIntoSupervisorTable.lastId,
                 is_complete: 1,
                 ep_fk: answerData.id_ep,
                 evaluated_fk: answerData.evaluated_fk,
@@ -842,24 +854,21 @@ class PerformanceControllers {
         const { ep_fk } = req.params;
         const {id_user} = req
 
+
         try {
 
             const department_supervisor = await this.model.getDepartmentForSupervisor(id_user)
 
             const department_supervisor_id = department_supervisor.id_department;
-
             const list = await this.model.getAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, typeOrder, order, filters);
 
-            console.log(id_user)
-            console.log(ep_fk)
-            console.log(list);
             if (!list) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
                 });
             }
 
-            const getTotalResults = await this.model.getTotalAnswersForQuizForSupervisor(id_ep, department_supervisor_id, limit, offset, typeOrder, order, filters)
+            const getTotalResults = await this.model.getTotalAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, typeOrder, order, filters)
 
             if (!getTotalResults) {
                 return res.status(403).json({
@@ -883,6 +892,146 @@ class PerformanceControllers {
                 list: formattedList,
                 total: getTotalResults.total || 0
             });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
+
+    async getQuizInformationAnsweredForModal(req, res) {
+        const { id_ep, id_evaluated, id_supervisor } = req.body
+
+        try {
+
+            const listAnswers = await this.model.getBodySpAnswerByIdQuizAndUser(id_ep, id_evaluated);
+
+            if (!listAnswers) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+
+            const headerQuiz = await this.model.getCompleteHeaderQuiz(id_ep);
+
+            if (!headerQuiz) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+
+            const dataSupervisor = await this.entity.getDataBasicEmployeeByIdUser(id_supervisor);
+
+            if (!dataSupervisor) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+
+            
+            const dataEmployee = await this.entity.getDataBasicEmployeeByIdUser(id_evaluated);
+
+            if (!dataEmployee) {
+                return res.status(500).json({
+                    message: "No se ha podido obtener la informacion del cuestionario"
+                })
+            }
+
+            const formattedHeader = headerQuiz.map(item => {
+                return {
+                    ...item,
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                };
+            });
+
+            const list = {
+                header: formattedHeader[0],
+                answers: [...listAnswers],
+                answered: dataSupervisor[0],
+                evaluated: dataEmployee[0]
+            }
+
+            return res.status(200).json({
+                message: "Cuestionario obtenido exitosamente",
+                list: list
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(500).json({
+                message: "Error al obtener las respuestas del cuestionario, intente reiniciando el sitio"
+            });
+        }
+    }
+
+    async getQuizInformationAnsweredForRrhh(req, res) {
+        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { ep_fk } = req.params;
+
+        try {
+
+            const list = await this.model.getQuizInformationAnsweredForRrhh(ep_fk, limit, offset, typeOrder, order, filters);
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const getTotalResults = await this.model.getTotalQuizInformationAnsweredForRrhh(ep_fk, limit, offset, typeOrder, order, filters)
+
+            if (!getTotalResults) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                    date_complete: formatDateTime(item.date_complete)
+                };
+            });
+
+            return res.status(200).json({
+                message: "Lista de cuestionarios obtenida con éxito",
+                list: formattedList,
+                total: getTotalResults.total || 0
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
+    async deleteQuizAnswered(req, res) {
+        const { id_ap } = req.body;
+        try {
+
+            const deleteAnswers = await this.answerTable.deleteOne(id_ap, "id_ap");
+
+            if (deleteAnswers.affectedRows < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al eliminar este cuestionario"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Cuestionario eliminado exitomasamente"
+            })
 
         } catch (error) {
             console.error("Ha ocurrido un error en el cuestionario", error);

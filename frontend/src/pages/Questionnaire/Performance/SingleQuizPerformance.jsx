@@ -11,6 +11,10 @@ import ModalUpdateQuiz from "./Components/ModalUpdateSQ";
 import ButtonImgTxt from "../../../components/ButtonImgTex";
 import ModalTableWFilters from "../../../components/Modals/Updates/ModalTableWFilters";
 import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png'
+import PreferenceTitle from "../../MasterTables/PreferenceTitle";
+import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
+import SeeProfile from '../../../assets/Icons/Buttons/Quizz.png'
+import ModalInfoQuizAnswered from "./ModalInfoQuizAnswered";
 
 const SingleQuizPerformance = () => {
 
@@ -104,12 +108,9 @@ const SingleQuizPerformance = () => {
     };
 
 
+
     useEffect(() => {
         if (value_quiz) {
-
-
-
-
             const fetchQuizData = async () => {
 
                 const response = await fetch(urlToGetQuiz, {
@@ -253,6 +254,58 @@ const SingleQuizPerformance = () => {
         }
     };
 
+    const columns = [
+        { field: 'avatar_user', label: '' },
+        { field: 'evaluated_name', label: 'Nombre del Evaluado' },
+        { field: 'evaluated_lastname', label: 'Apellido del Evaluado' },
+        { field: 'average', label: 'Puntuación Promedio' },
+        { field: 'date_complete', label: 'Fecha de Finalización' },
+        { field: 'supervisor_name', label: 'Nombre del Supervisor' },
+        { field: 'supervisor_lastname', label: 'Apellido del Supervisor' },
+        { field: 'name_department', label: 'Departamento' },
+        { field: 'name_occupation', label: 'Puesto de Trabajo' },
+
+    ];
+
+
+    const filterConfigs = [
+
+    ];
+
+    const searchOptions = [
+        { value: 'evaluated.name_entity', label: 'Nombre del Evaluado' },
+        { value: 'evaluated.entity_lastname', label: 'Apellido del Evaluado' },
+        { value: 'esupervisor.name_entity', label: 'Nombre del Supervisor' },
+        { value: 'esupervisor.lastname_entity', label: 'Apellido del Supervisor' },
+    ];
+
+    const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+    const [initialDataForSeeInfo, setInitialDataForSeeInfo] = useState({});
+    const [isModalSeeInfoOpen, setIsModalSeeInfoOpen] = useState(false);
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [idQuizAnsweredToDelete, setIdQuizAnsweredToDelete] = useState("")
+
+    const urlDeleteQuizAnswered = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_PERFORMANCE_ANSWERED}`
+
+    const handleIsModalSeeInfoOpen = (row) => {
+        if (row.id_ap !== initialDataForSeeInfo.id_ap) {
+            setInitialDataForSeeInfo(row);
+            setIsModalSeeInfoOpen(true);
+        }
+    }
+    const handleCloseIsModalSeeInfoOpen = () => {
+        setIsModalSeeInfoOpen(false);
+    }
+
+    const handleIsModalDeleteOpen = (row) => {
+        setIdQuizAnsweredToDelete(row.id_ap)
+        setIsModalDeleteOpen(true)
+    }
+
+    const handleCloseIsModalDeleteClose = () => {
+        setIsModalDeleteOpen(false)
+        setIsStatusUpdated(!isStatusUpdated)
+    }
 
     return (
         <div className="container__page">
@@ -490,6 +543,55 @@ const SingleQuizPerformance = () => {
                     handleModalUpdate={handleOpenUpdateHeader}
                 />
             )}
+
+            <div className="container__content">
+                <PreferenceTitle
+                    title={"Respuestas"}
+                />
+
+                <TableSecondaryNotTitleAndWhereOnUrl
+                    url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_ANSWERED_FOR_RRHH}/${value_quiz}`}
+                    authToken={authData.token}
+                    columns={columns}
+                    filterConfigs={filterConfigs}
+                    searchOptions={searchOptions}
+                    initialSearchField={'evaluated.name_entity'}
+                    initialSearchTerm={''}
+                    initialSort={{ field: 'evaluated.name_entity', order: 'ASC' }}
+                    actions={{
+                        view: (row) => handleIsModalSeeInfoOpen(row),
+                        edit: () => console.log('asd'),
+                        delete: (row) => handleIsModalDeleteOpen(row),
+                    }}
+                    showActions={{
+                        view: true,
+                        edit: false,
+                        delete: true
+                    }}
+                    actionColumn='id_ap'
+                    paginationLabelInfo={'Cuestionarios Desarrollados'}
+                    buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
+                    buttonTreeInfo={{ img: Trash, color: 'red', title: 'Eliminar' }}
+                    isStatusUpdated={isStatusUpdate}
+                />
+
+                {isModalSeeInfoOpen && (
+                    <ModalInfoQuizAnswered
+                        initialData={initialDataForSeeInfo}
+                        closeModalAnswer={handleCloseIsModalSeeInfoOpen}
+                    />
+                )}
+
+                {isModalDeleteOpen && (
+                    <ModalDelete
+                        handleModalDelete={handleCloseIsModalDeleteClose}
+                        deleteOne={urlDeleteQuizAnswered}
+                        field_name={"id_ap"}
+                        idToDelete={idQuizAnsweredToDelete}
+                        onSubmitDelete={handleCloseIsModalDeleteClose}
+                    />
+                )}
+            </div>
 
         </div>
 

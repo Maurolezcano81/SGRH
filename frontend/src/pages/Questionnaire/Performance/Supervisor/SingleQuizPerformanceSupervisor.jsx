@@ -76,9 +76,12 @@ const SingleQuizPerformanceSupervisor = () => {
 
     const columns = [
         { field: 'avatar_user', label: '' },
-        { field: 'author', label: 'Apellido y Nombre' },
+        { field: 'evaluated_name', label: 'Nombre del Evaluado' },
+        { field: 'evaluated_lastname', label: 'Apellido del Evaluado' },
         { field: 'average', label: 'Puntuación Promedio' },
         { field: 'date_complete', label: 'Fecha de Finalización' },
+        { field: 'supervisor_name', label: 'Nombre del Supervisor' },
+        { field: 'supervisor_lastname', label: 'Apellido del Supervisor' },
         { field: 'name_department', label: 'Departamento' },
         { field: 'name_occupation', label: 'Puesto de Trabajo' },
 
@@ -90,7 +93,10 @@ const SingleQuizPerformanceSupervisor = () => {
     ];
 
     const searchOptions = [
-        { value: 'author', label: 'Nombre' },
+        { value: 'evaluated_name', label: 'Nombre del Evaluado' },
+        { value: 'evaluated_lastname', label: 'Apellido del Evaluado' },
+        { value: 'supervisor_name', label: 'Nombre del Supervisor' },
+        { value: 'supervisor_lastname', label: 'Apellido del Supervisor' },
         { value: 'name_ep', label: 'Nombre de cuestionario' },
 
     ];
@@ -121,8 +127,6 @@ const SingleQuizPerformanceSupervisor = () => {
         setIsModalDeleteOpen(false)
         setIsStatusUpdated(!isStatusUpdated)
     }
-
-    console.log(headerData)
 
     return (
         <div className="container__page">
@@ -216,7 +220,7 @@ const SingleQuizPerformanceSupervisor = () => {
                         edit: false,
                         delete: true
                     }}
-                    actionColumn='id_asq'
+                    actionColumn='id_ap'
                     paginationLabelInfo={'Cuestionarios Desarrollados'}
                     buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
                     isStatusUpdated={isStatusUpdated}
@@ -226,16 +230,6 @@ const SingleQuizPerformanceSupervisor = () => {
                     <ModalInfoQuizAnswered
                         initialData={initialDataForSeeInfo}
                         closeModalAnswer={handleCloseIsModalSeeInfoOpen}
-                    />
-                )}
-
-                {isModalDeleteOpen && (
-                    <ModalDelete
-                        handleModalDelete={handleCloseIsModalDeleteClose}
-                        deleteOne={urlDeleteQuizAnswered}
-                        field_name={"id_asq"}
-                        idToDelete={idQuizAnsweredToDelete}
-                        onSubmitDelete={handleCloseIsModalDeleteClose}
                     />
                 )}
             </div>
