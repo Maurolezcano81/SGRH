@@ -111,7 +111,7 @@ const AnswerBody = ({ ep }) => {
                 setErrorMessage(data.message);
             }
 
-            setListQuestions(data.list);
+            setListQuestions(data.queryResponse);
         };
 
         fetchQuestions();
