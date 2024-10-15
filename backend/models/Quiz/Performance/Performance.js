@@ -245,6 +245,7 @@ class PerformanceModel extends BaseModel {
            join supervisor_performance_questionnaire spq on ep.id_ep = spq.ep_fk 
            where spq.user_fk = ?
            group by name_ep, id_ep
+           order by start_ep desc
            limit 5 offset 0
                 `;
 
@@ -464,7 +465,7 @@ class PerformanceModel extends BaseModel {
     }
 
     async getAnswersForQuizForSupervisor(id_ep, id_department, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
-        const { whereClause, values } = this.buildWhereClause(filters);
+        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
         try {
 
             
@@ -749,6 +750,123 @@ class PerformanceModel extends BaseModel {
             throw new Error("Error en Users Quiz Satisfaction: " + error.message);
         }
     }
+
+    async getAnswersForQuizForPersonal(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+        try {
+
+            
+            const query = `
+                SELECT 
+                    uevaluated.avatar_user,
+                    evaluated.name_entity AS evaluated_name,
+                    evaluated.lastname_entity AS evaluated_lastname,
+                    uevaluated.id_user AS evaluated_id,
+                    ep.id_ep,
+                    ap2.id_ap,
+                    ep.name_ep,
+                    ep.start_ep,
+                    ep.end_ep,
+                    ep.created_at,
+                    ap2.date_complete,
+                    d.name_department,
+                    o.name_occupation,
+                    (
+                        SELECT ROUND(AVG(dep.score_dep), 2)
+                        FROM detail_evaluation_performance dep
+                        JOIN answer_performance ap ON dep.ap_fk = ap.id_ap
+                        WHERE ap.ep_fk = ep.id_ep 
+                    ) AS average,
+                    esupervisor.name_entity AS supervisor_name, 
+                    esupervisor.lastname_entity AS supervisor_lastname,
+                    usupervisor.id_user AS supervisor_id
+                FROM 
+                    evaluation_performance ep
+                JOIN 
+                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
+                JOIN 
+                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
+                JOIN 
+                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
+                JOIN 
+                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
+                JOIN 
+                    department d ON edo.department_fk = d.id_department 
+                JOIN 
+                    occupation o ON edo.occupation_fk = o.id_occupation 
+                JOIN 
+                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
+                JOIN 
+                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
+                JOIN 
+                    user usupervisor ON spq.user_fk = usupervisor.id_user
+                JOIN 
+                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+                WHERE 
+                    ap2.date_complete IS NOT NULL 
+                    AND uevaluated.id_user = ?
+                                ${whereClause.length > 0 ? 'AND' : ''}
+                                ${whereClause}
+                GROUP BY 
+                    uevaluated.id_user, evaluated.id_entity
+                ORDER BY ${orderBy} ${order} 
+                LIMIT ? OFFSET ?`;
+
+            console.log(whereClause);
+
+            const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
+
+    async getTotalAnswersForQuizForPersonal(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+        try {
+
+            const query = `
+                SELECT 
+                    count(DISTINCT ap2.id_ap) as total
+                FROM 
+                    evaluation_performance ep 
+                JOIN 
+                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
+                JOIN 
+                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
+                JOIN 
+                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
+                JOIN 
+                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
+                JOIN 
+                    department d ON edo.department_fk = d.id_department 
+                JOIN 
+                    occupation o ON edo.occupation_fk = o.id_occupation 
+                JOIN 
+                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
+                JOIN 
+                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
+                JOIN 
+                    user usupervisor ON spq.user_fk = usupervisor.id_user
+                JOIN 
+                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+                WHERE 
+                    uevaluated.id_user = ?
+                                ${whereClause.length > 0 ? 'AND' : ''}
+                                ${whereClause}
+                ORDER BY ${orderBy} ${order} 
+                LIMIT ? OFFSET ?`;
+
+
+            const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
+            return results[0];
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
+
 }
 
 export default PerformanceModel;

@@ -41,6 +41,8 @@ import AnswerPage from './pages/Questionnaire/Satisfaction/Personal/AnswerPage';
 import HomeQuizPerformanceSupervisor from './pages/Questionnaire/Performance/Supervisor/HomeQuizPerformanceSupervisor';
 import AnswerPagePerformance from './pages/Questionnaire/Performance/Supervisor/AnswerPagePerformance';
 import SingleQuizPerformanceSupervisor from './pages/Questionnaire/Performance/Supervisor/SingleQuizPerformanceSupervisor';
+import HomeQuizPerformancePersonal from './pages/Questionnaire/Performance/Personal/HomeQuizPerformancePersonal';
+import HomeNavigationMenu from './pages/NavigationMenu/HomeNavigationMenu';
 
 
 function App() {
@@ -55,6 +57,7 @@ function App() {
               <Route path="admin/*">
                 <Route path="inicio" element={<HomeAdmin />} />
                 <Route path="perfiles" element={<Profiles />} />
+                <Route path="navegacion" element={<HomeNavigationMenu />} />
               </Route>
               {/* Home del admin */}
               {/* Ruta para RRHH */}
@@ -108,6 +111,9 @@ function App() {
                 <Route path='satisfaccion/*'>
                   <Route path='ver' element={<HomeQuizSatisfaction />} />
                   <Route path='responder' element={<AnswerPage />} />
+                </Route>
+                <Route path='rendimiento/*'>
+                  <Route path='ver' element={<HomeQuizPerformancePersonal />} />
                 </Route>
               </Route>
 

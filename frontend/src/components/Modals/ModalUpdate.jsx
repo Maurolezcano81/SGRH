@@ -36,7 +36,7 @@ const ModalUpdate = ({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authData.token}`,
           },
-          body: JSON.stringify(requestBody), // Convertir el objeto a JSON
+          body: JSON.stringify(requestBody),
         });
 
         if (!fetchResponse.ok) {

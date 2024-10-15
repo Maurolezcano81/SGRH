@@ -34,10 +34,12 @@ const NavbarContent = () => {
     }
   }, [authData, navbarRefresh]);
 
+
   const [isDropdown, setIsDropdown] = useState(false);
   const handleDropdownToggle = () => {
     setIsDropdown((prevState) => !prevState);
   };
+
   return (
     <div className="navbar__content">
       {parentList.length > 0 ? (

@@ -2,6 +2,7 @@ import ErrorCircleAlert from "../../assets/Icons/errorCircleAlert.svg";
 const AlertError = (props) => {
 
     return (
+        <div className="alert__background__black">
             <div className="alert__container">
                 <div className="alert__header">
                     <img src={ErrorCircleAlert} alt="" />
@@ -10,6 +11,8 @@ const AlertError = (props) => {
                     <p>{props.errorMessage}</p>
                 </div>
             </div>
+        </div>
+
     )
 }
 

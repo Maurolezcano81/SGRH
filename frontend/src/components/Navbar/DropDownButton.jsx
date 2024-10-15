@@ -41,6 +41,8 @@ const DropDownButton = ({ id_pm, name_pm, authData }) => {
     }
   }, [isDropdown, authData.token, getChildrens, id_pm]);
 
+  console.log(childrenList)
+
   return (
     <div onClick={handleDropdownToggle} className={`navbar__dropdown ${isDropdown ? 'navbar__background-active' : ''}`}>
       <div className="navbar__content-redirect">

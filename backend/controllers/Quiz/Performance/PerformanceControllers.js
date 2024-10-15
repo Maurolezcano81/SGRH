@@ -1041,6 +1041,55 @@ class PerformanceControllers {
         }
     }
 
+    async getAnswersForQuizForPersonal(req, res) {
+        const { limit, offset, order, typeOrder, filters } = req.body;
+        const {id_user} = req
+
+
+        try {
+            console.log(req.body)
+            const list = await this.model.getAnswersForQuizForPersonal(id_user, limit, offset, typeOrder, order, filters);
+            console.log(list);
+
+            if (!list) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const getTotalResults = await this.model.getTotalAnswersForQuizForPersonal(id_user, limit, offset, typeOrder, order, filters)
+
+            if (!getTotalResults) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+            const formattedList = list.map(item => {
+                return {
+                    ...item,
+                    start_ep: formatDateYear(item.start_ep),
+                    end_ep: formatDateYear(item.end_ep),
+                    created_at: formatDateTime(item.created_at),
+                    updated_at: formatDateTime(item.updated_at),
+                    date_complete: formatDateTime(item.date_complete)
+                };
+            });
+
+            return res.status(200).json({
+                message: "Lista de cuestionarios obtenida con éxito",
+                list: formattedList,
+                total: getTotalResults.total || 0
+            });
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en el cuestionario", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
+
 }
 
 export default PerformanceControllers;

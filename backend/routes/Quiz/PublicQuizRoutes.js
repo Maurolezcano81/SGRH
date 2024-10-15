@@ -27,6 +27,7 @@ router.post('/quiz/performance/get/employees_to_evaluate', performance.getEmploy
 router.post('/quiz/performances/supervisor', performance.getQuizzesInformationForSupervisor.bind(performance));
 router.post('/quiz/performance/modal', performance.getQuizInformationAnsweredForModal.bind(performance));
 
+router.post('/quiz/performance/personal', performance.getAnswersForQuizForPersonal.bind(performance));
 router.post('/quiz/performance/one/header/:id_ep', performance.getQuizHeader.bind(performance));
 router.post('/quiz/performance/answered/:ep_fk', performance.getAnswersForQuizForSupervisor.bind(performance));
 router.post('/quiz/performance/:ep_fk', performance.getQuizInformation.bind(performance));

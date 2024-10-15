@@ -13,6 +13,7 @@ const ModalAdd = ({
   createOne,
   handleModalAdd,
   handleDependencyAdd,
+  extraData={}
 }) => {
   // Estado para almacenar los valores de los inputs de manera dinámica
   const [inputValues, setInputValues] = useState({});
@@ -24,6 +25,7 @@ const ModalAdd = ({
     setInputValues({
       ...inputValues,
       [name]: value,
+      ...extraData
     });
   };
 
@@ -33,10 +35,17 @@ const ModalAdd = ({
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const newData = fetchData.reduce((acc, key, index) => {
-      acc[key] = inputValues[key] || '';
-      return acc;
-    }, {});
+    const newData = {
+      ...extraData, 
+      ...inputValues, 
+  };
+
+
+  // ACA HICE ESTE CAMBIO: suplante newData
+  /* const newData = fetchData.reduce((acc, key, index) => {
+    acc[key] = inputValues[key] || '';
+    return acc;
+  }, {}); */
 
     try {
       const response = await fetch(createOne, {

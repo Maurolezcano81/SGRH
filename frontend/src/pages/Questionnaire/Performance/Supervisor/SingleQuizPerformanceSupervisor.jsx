@@ -89,14 +89,19 @@ const SingleQuizPerformanceSupervisor = () => {
 
 
     const filterConfigs = [
-
+        {
+            key: 'name_occupation',
+            label: 'Ocupación',
+            name_field: 'name_occupation',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}` // URL para obtener las opciones de ocupación 
+        },
     ];
 
     const searchOptions = [
-        { value: 'evaluated_name', label: 'Nombre del Evaluado' },
-        { value: 'evaluated_lastname', label: 'Apellido del Evaluado' },
-        { value: 'supervisor_name', label: 'Nombre del Supervisor' },
-        { value: 'supervisor_lastname', label: 'Apellido del Supervisor' },
+        { value: 'evaluated.name_entity', label: 'Nombre del Evaluado' },
+        { value: 'evaluated.entity_lastname', label: 'Apellido del Evaluado' },
+        { value: 'esupervisor.name_entity', label: 'Nombre del Supervisor' },
+        { value: 'esupervisor.lastname_entity', label: 'Apellido del Supervisor' },
         { value: 'name_ep', label: 'Nombre de cuestionario' },
 
     ];
@@ -119,7 +124,7 @@ const SingleQuizPerformanceSupervisor = () => {
     }
 
     const handleIsModalDeleteOpen = (row) => {
-        setIdQuizAnsweredToDelete(row.id_asq)
+        setIdQuizAnsweredToDelete(row.id_ap)
         setIsModalDeleteOpen(true)
     }
 
@@ -207,9 +212,9 @@ const SingleQuizPerformanceSupervisor = () => {
                     columns={columns}
                     filterConfigs={filterConfigs}
                     searchOptions={searchOptions}
-                    initialSearchField={'author'}
+                    initialSearchField={'evaluated.name_entity'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'author', order: 'ASC' }}
+                    initialSort={{ field: 'evaluated.name_entity', order: 'ASC' }}
                     actions={{
                         view: (row) => handleIsModalSeeInfoOpen(row),
                         edit: () => console.log('asd'),
