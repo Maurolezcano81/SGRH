@@ -275,7 +275,6 @@ class UserController {
         },
         employee: {
           ...getEmployee,
-          date_te: getEmployee[0].date_te
         }
       }
 
@@ -295,8 +294,6 @@ class UserController {
           }
         };
       }
-
-      console.log(employeeData)
 
       const isTheSameUser = id_user === getUser[0].id_user ? true : false;
 

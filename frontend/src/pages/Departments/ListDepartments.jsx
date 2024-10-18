@@ -30,6 +30,7 @@ const LisDepartment = () => {
 
     const handleOpenModalAdd = () => {
         setIsModalAddOpen(!isModalAddOpen);
+        setIsStatusUpdated(!isStatusUpdated)
     }
 
     const columns = [

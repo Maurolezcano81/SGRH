@@ -22,7 +22,7 @@ class DepartmentController {
         })
       }
 
-      const getTotalResults = await this.model.getTotalResults('id_department');
+      const getTotalResults = await this.model.getTotalDepartmentsInformation(limit, offset, order, orderBy, filters);
 
       return res.status(200).json({
         message: "Lista de usuarios obtenida con exito",

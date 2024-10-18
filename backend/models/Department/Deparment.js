@@ -41,6 +41,30 @@ class DepartmentModel extends BaseModel {
         }
     }
 
+    async getTotalDepartmentsInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClause(filters);
+            const query = `
+                SELECT 
+                    COUNT(DISTINCT d.id_department) as total
+                FROM
+                    department d
+                LEFT JOIN entity_department_occupation edo ON d.id_department = edo.department_fk AND edo.status_edo = 1
+                LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation
+                LEFT JOIN entity e ON edo.entity_fk = e.id_entity
+                LEFT JOIN user u ON u.entity_fk = e.id_entity
+                ${whereClause}
+
+                `
+            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+
+            return results;
+        } catch (error) {
+            console.error("Error en Users Model:", error.message);
+            throw new Error("Error en Users Model: " + error.message);
+        }
+    }
+
     async getDepartmentInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.whereForOutDepartment(filters);
