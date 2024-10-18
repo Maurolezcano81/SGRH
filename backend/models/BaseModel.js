@@ -131,6 +131,7 @@ class BaseModel {
             const values = Object.values(data);
             const query = `INSERT INTO ${this.model} (${fields}) VALUES (${placeholders})`;
             const [results] = await this.con.promise().query(query, values);
+
             return {
                 lastId: results.insertId,
                 affectedRows: results.affectedRows,

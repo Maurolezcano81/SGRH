@@ -138,141 +138,141 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
 
     return (
 
-            <div className='container__content'>
-                <div className='table__filters__container'>
-                    <div className='table__search__container'>
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                            placeholder={`Buscar por ${searchPlaceholder}`}
-                        />
-                        <div className='table__search__select__container'>
-                            <label>Buscar por:</label>
-                            <select onChange={handleSearchFieldChange} value={searchField}>
-                                {searchOptions.map(option => (
-                                    <option key={option.value} value={option.value}>{option.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className='table__search__buttons__container'>
-                            {hiddenFilterSection ? (
-                            <ButtonWhiteOutlineBlack title={"Ocultar filtros avanzados"} onClick={toggleFiltersSection}  />
-                            ) : (
-                            <ButtonWhiteOutlineBlack title={"Mostrar filtros avanzados"} onClick={toggleFiltersSection}  />
-                            )}
-                        </div>
+        <div className='container__content'>
+            <div className='table__filters__container'>
+                <div className='table__search__container'>
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder={`Buscar por ${searchPlaceholder}`}
+                    />
+                    <div className='table__search__select__container'>
+                        <label>Buscar por:</label>
+                        <select onChange={handleSearchFieldChange} value={searchField}>
+                            {searchOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
                     </div>
 
-                    {hiddenFilterSection && (
-                        <div className='table__filter__container'>
-                            <div className='table__filter__select'>
-                                {filterConfigs.map(config => (
-                                    <label key={config.key}>{config.label}:
-                                        <select onChange={(e) => addFilter(config.key, e.target.value)} value={filters[config.key] || ''}>
-                                            <option value="">Seleccionar</option>
-                                            {(filterOptions[config.key] || []).map(option => (
-                                                <option key={option.value} value={option.value}> {option[config.name_field]}</option>
-                                            ))}
-                                        </select>
-                                    </label>
-                                ))}
-
-                                <div className='table__filter__container__button'>
-                                    <ButtonRed
-                                        title={"Limpiar Filtros"}
-                                        onClick={clearFilters}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
+                    <div className='table__search__buttons__container'>
+                        {hiddenFilterSection ? (
+                            <ButtonWhiteOutlineBlack title={"Ocultar filtros avanzados"} onClick={toggleFiltersSection} />
+                        ) : (
+                            <ButtonWhiteOutlineBlack title={"Mostrar filtros avanzados"} onClick={toggleFiltersSection} />
+                        )}
+                    </div>
                 </div>
 
-
-                {data.length === 0 ? (
-                    <p>No hay datos disponibles</p>
-                ) : (
-                    <div className='table__primary__container'>
-                        <table className='table__primary'>
-                            <thead>
-                                <tr>
-                                    {columns.map(column => (
-                                        <th key={column.field} onClick={() => handleSort(column.field)}>
-                                            {column.label}
-                                        </th>
-                                    ))}
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {data.map(row => (
-                                    <tr key={row[actionColumn]}>
-                                        {columns.map(column => (
-                                            <td className='table__primary__body__col' key={column.field}>
-                                                {column.field === 'avatar_user' ? (
-                                                    <img className='table__primary__img' src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`} alt="Avatar" />
-                                                ) : (
-                                                    row[column.field]
-                                                )}
-                                            </td>
+                {hiddenFilterSection && (
+                    <div className='table__filter__container'>
+                        <div className='table__filter__select'>
+                            {filterConfigs.map(config => (
+                                <label key={config.key}>{config.label}:
+                                    <select onChange={(e) => addFilter(config.key, e.target.value)} value={filters[config.key] || ''}>
+                                        <option value="">Seleccionar</option>
+                                        {(filterOptions[config.key] || []).map(option => (
+                                            <option key={option.value} value={option.value}> {option[config.name_field]}</option>
                                         ))}
-                                        <td>
-                                            <div className='table__primary__actions__container'>
-                                                {showActions.view && actions.view && (
-                                                    <ButtonImgTxt onClick={() => actions.view(row)} title={buttonOneInfo.title} img={buttonOneInfo.img} color={buttonOneInfo.color} />
-                                                )}
-                                                {showActions.edit && actions.edit && (
-                                                    <ButtonImgTxt onClick={() => actions.edit(row)} title={buttonTwoInfo.title} img={buttonTwoInfo.img} color={buttonTwoInfo.color} />
-                                                )}
-                                                {showActions.delete && actions.delete && (
-                                                    <ButtonImgTxt onClick={() => actions.delete(row)} title={buttonTreeInfo.title} img={buttonTreeInfo.img} color={buttonTreeInfo.color} />
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                    </select>
+                                </label>
+                            ))}
 
-
+                            <div className='table__filter__container__button'>
+                                <ButtonRed
+                                    title={"Limpiar Filtros"}
+                                    onClick={clearFilters}
+                                />
+                            </div>
+                        </div>
                     </div>
                 )}
 
-                <div className='table__primary__pagination'>
-                    <div className='table__primary__pagination__info'>
-                        <p>{`Cantidad total de ${paginationLabelInfo}: ${totalResults}`}</p>
-                    </div>
 
-                    <div className='table__primary__pagination__buttons'>
-                        <div className='table__primary__pagination__back'>
-                            <button
-                                onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
-                                disabled={currentPage === 1}
-                            >
-                                &lt;
-                            </button>
-                        </div>
+            </div>
 
-                        <span className='table__primary__pagination__current-page'>
-                            {currentPage}
-                        </span>
 
-                        <div className='table__primary__pagination__next'>
-                            <button
-                                onClick={() => handlePagination(pagination.offset + pagination.limit)}
-                                disabled={currentPage === totalPages} // Deshabilitar si está en la última página
-                            >
-                                &gt;
-                            </button>
-                        </div>
-                    </div>
+            {data.length === 0 ? (
+                <p>No hay datos disponibles</p>
+            ) : (
+                <div className='table__primary__container'>
+                    <table className='table__primary'>
+                        <thead>
+                            <tr>
+                                {columns.map(column => (
+                                    <th key={column.field} onClick={() => handleSort(column.field)}>
+                                        {column.label}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.map(row => (
+                                <tr key={row[actionColumn]}>
+                                    {columns.map(column => (
+                                        <td className='table__primary__body__col' key={column.field}>
+                                            {column.field === 'avatar_user' ? (
+                                                <img className='table__primary__img' src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`} alt="Avatar" />
+                                            ) : (
+                                                row[column.field]
+                                            )}
+                                        </td>
+                                    ))}
+                                    <td>
+                                        <div className='table__primary__actions__container'>
+                                            {showActions.view && actions.view && (
+                                                <ButtonImgTxt onClick={() => actions.view(row)} title={buttonOneInfo.title} img={buttonOneInfo.img} color={buttonOneInfo.color} />
+                                            )}
+                                            {showActions.edit && actions.edit && (
+                                                <ButtonImgTxt onClick={() => actions.edit(row)} title={buttonTwoInfo.title} img={buttonTwoInfo.img} color={buttonTwoInfo.color} />
+                                            )}
+                                            {showActions.delete && actions.delete && (
+                                                <ButtonImgTxt onClick={() => actions.delete(row)} title={buttonTreeInfo.title} img={buttonTreeInfo.img} color={buttonTreeInfo.color} />
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
 
                 </div>
+            )}
+
+            <div className='table__primary__pagination'>
+                <div className='table__primary__pagination__info'>
+                    <p>{`Cantidad total de ${paginationLabelInfo}: ${totalResults}`}</p>
+                </div>
+
+                <div className='table__primary__pagination__buttons'>
+                    <div className='table__primary__pagination__back'>
+                        <button
+                            onClick={() => handlePagination(Math.max(0, pagination.offset - pagination.limit))}
+                            disabled={currentPage === 1}
+                        >
+                            &lt;
+                        </button>
+                    </div>
+
+                    <span className='table__primary__pagination__current-page'>
+                        {currentPage}
+                    </span>
+
+                    <div className='table__primary__pagination__next'>
+                        <button
+                            onClick={() => handlePagination(pagination.offset + pagination.limit)}
+                            disabled={currentPage === totalPages} // Deshabilitar si está en la última página
+                        >
+                            &gt;
+                        </button>
+                    </div>
+                </div>
+
             </div>
+        </div>
 
 
     );

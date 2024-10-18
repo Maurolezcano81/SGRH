@@ -88,7 +88,18 @@ class EntityModel extends BaseModel {
 
     async getEntityEmployee(fk_entity) {
         try {
-            const query = "SELECT id_entity, id_employee, file_employee, date_entry_employee, TIMESTAMPDIFF(YEAR, date_entry_employee, CURDATE()) as antiguedad ,status_employee FROM employee e join entity en on e.entity_fk = en.id_entity";
+            const query = `
+                    select id_employee, 
+                        file_employee, 
+                        date_entry_employee, 
+                        TIMESTAMPDIFF(YEAR, date_entry_employee, CURDATE()) as antiguedad,
+                        name_tse,
+                        status_employee 
+                        FROM employee e 
+                        join entity en on e.entity_fk = en.id_entity
+                        join type_status_employee tse on e.tse_fk = tse.id_tse
+                        where id_entity = ?;
+             `;
             const [results] = await this.conn.promise().query(query, [fk_entity]);
 
             return results;
@@ -98,7 +109,7 @@ class EntityModel extends BaseModel {
         }
     }
 
-    async getDataBasicEmployeeByIdUser(id_user){
+    async getDataBasicEmployeeByIdUser(id_user) {
         try {
             const query = `
                 SELECT 

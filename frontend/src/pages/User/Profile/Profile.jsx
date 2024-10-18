@@ -95,7 +95,7 @@ const Profile = () => {
 
   const occupation = employeeData?.occupation?.["0"];
   const department = employeeData?.department?.["0"];
-
+  const termination = employeeData?.termination;
   const profilePicture = `${process?.env.SV_HOST}${process?.env.SV_PORT}${process?.env.SV_ADDRESS}/${user?.avatar_user}`;
 
   const changeEditMode = () => {
@@ -214,6 +214,7 @@ const Profile = () => {
           updateProfile={updateProfile}
           permissionsData={permissionsData}
           isEditMode={isEditMode}
+          termination={termination}
         />
       </div>
 

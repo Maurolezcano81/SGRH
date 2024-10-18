@@ -12,6 +12,8 @@ class LeavesControllers {
 
         this.nameFieldId = 'id_lr';
         this.nameFieldToSearch = 'tol_fk';
+
+        this.employee = new BaseModel('employee', 'id_employee');
     }
 
     async getLeaves(req, res) {
@@ -28,7 +30,7 @@ class LeavesControllers {
             const formattedList = await Promise.all(
                 list.map(async (item) => {
                     const attachments = await this.model.getAttachments(item.id_lr);
-    
+
                     return {
                         ...item,
                         created_at: formatDateTime(item.created_at),
@@ -36,7 +38,7 @@ class LeavesControllers {
                         answered_at: formatDateTime(item.answered_at),
                         start_lr: formatDateYear(item.start_lr),
                         end_lr: formatDateYear(item.end_lr),
-                        attachments: attachments 
+                        attachments: attachments
                     };
                 })
             );
@@ -70,7 +72,7 @@ class LeavesControllers {
             const formattedList = await Promise.all(
                 list.map(async (item) => {
                     const attachments = await this.model.getAttachments(item.id_lr);
-    
+
                     return {
                         ...item,
                         created_at: formatDateTime(item.created_at),
@@ -78,7 +80,7 @@ class LeavesControllers {
                         answered_at: formatDateTime(item.answered_at),
                         start_lr: formatDateYear(item.start_lr),
                         end_lr: formatDateYear(item.end_lr),
-                        attachments: attachments 
+                        attachments: attachments
                     };
                 })
             );
@@ -117,7 +119,7 @@ class LeavesControllers {
                         answered_at: formatDateTime(item.answered_at),
                         start_lr: formatDateYear(item.start_lr),
                         end_lr: formatDateYear(item.end_lr),
-                        attachments: attachments 
+                        attachments: attachments
                     };
                 })
             );
@@ -215,7 +217,12 @@ class LeavesControllers {
         const { id_user } = req;
         const { sr_fk, lr_fk, description_lrr } = req.body;
 
+
+
         try {
+
+            const getEmployeeData = await this.model.getEmployeeData(lr_fk);
+
             const create = await this.responseLeaves.createOne({
                 sr_fk: sr_fk,
                 description_lrr: description_lrr,
@@ -227,6 +234,18 @@ class LeavesControllers {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
                 })
+            }
+
+            if (sr_fk === 6 && create.affectedRows > 0) {
+                const changeStatusEmployee = await this.employee.updateOne({
+                    tse_fk: 2,
+                }, getEmployeeData.id_employee)
+
+                if (changeStatusEmployee.affectedRows < 1 || !changeStatusEmployee) {
+                    const changeStatusEmployeeToBack = await this.employee.updateOne({
+                        tse_fk: 1,
+                    }, getEmployeeData.id_employee)
+                }
             }
 
             return res.status(200).json({

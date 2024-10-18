@@ -135,7 +135,8 @@ class NavigationMenu extends BaseModel {
       const query = `
             select 
               id_module, 
-              name_module 
+              name_module ,
+              url_module
             from module m
             ${whereClause.length > 0 || excludeClause ? 'WHERE' : ''}
             ${excludeClause} 

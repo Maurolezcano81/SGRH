@@ -3,7 +3,15 @@ import ErrorMessage from '../Alerts/ErrorMessage';
 import ButtonBlue from '../ButtonBlue';
 import ButtonRed from '../ButtonRed';
 import useAuth from '../../hooks/useAuth';
-const ModalDelete = ({ handleModalDelete, deleteOne, field_name, idToDelete, onSubmitDelete }) => {
+const ModalDelete = ({
+  handleModalDelete,
+  deleteOne,
+  field_name,
+  idToDelete,
+  onSubmitDelete,
+  messageToDelete = "¿Quieres eliminar este registro? Al aceptar no se puede recuperar la informacion",
+  textButtonRed = "Eliminar"
+}) => {
   const [message, setMessage] = useState('');
 
   const { authData } = useAuth();
@@ -40,11 +48,11 @@ const ModalDelete = ({ handleModalDelete, deleteOne, field_name, idToDelete, onS
     <div className="alert__background__black">
       <div className="alert__container">
         <div className="alert__header modal__delete">
-          <p>¿Quieres eliminar este registro? Al aceptar no se puede recuperar la informacion</p>
+          <p>{messageToDelete}</p>
         </div>
         <div className="modal__delete__message">{message}</div>
         <div className="alert__footer modal__delete">
-          <ButtonRed onClick={handleSubmit} title={'Eliminar'} />
+          <ButtonRed onClick={handleSubmit} title={textButtonRed} />
           <ButtonBlue onClick={() => handleModalDelete()} title={'Volver'} />
         </div>
       </div>

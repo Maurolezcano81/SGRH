@@ -159,6 +159,7 @@ const ChildrenParent = ({
 
     const columsToModal = [
         { field: 'name_module', label: 'Nombre de la Página' },
+        {field: 'url_module', label: 'Direccion de la página'}
     ]
 
 
@@ -168,6 +169,8 @@ const ChildrenParent = ({
 
     const searchOptionsToModal = [
         { value: 'name_module', label: 'Nombre de la Página' },
+        { value: 'url_module', label: 'Direccion de la página'},
+
     ]
 
     return (

@@ -1,10 +1,11 @@
 import BaseModel from "../../models/BaseModel.js";
 import fs from 'fs';
-import { isInputEmpty, isNotAToZ, isNotDate, isNotNumber } from '../../middlewares/Validations.js';
+import { formatDateYear, isInputEmpty, isNotAToZ, isNotDate, isNotNumber } from '../../middlewares/Validations.js';
 
 import { comparePwd, encryptPwd, createToken } from '../../middlewares/Authorization.js';
 import UserModel from "../../models/People/User.js";
 import EntityModel from "../../models/People/People/Entity.js";
+import TerminationModel from "../../models/Termination/TerminationModel.js";
 
 class UserController {
   constructor() {
@@ -20,10 +21,13 @@ class UserController {
     this.city = new BaseModel('city', 'name_city');
     this.address = new BaseModel('address', 'id_address');
 
+    this.status_employee = new BaseModel('type_status_employee', 'name_tse');
 
     this.entityContact = new BaseModel('entity_contact', 'id_ec');
     this.entityDepartmentOccupation = new BaseModel('entity_department_occupation', 'id_edc');
     this.entityDocument = new BaseModel('entity_document', 'id_ed');
+
+    this.terminationEmployee = new TerminationModel();
 
     this.nameFieldId = 'id_user';
     this.nameFieldToSearch = 'username_user';
@@ -260,7 +264,9 @@ class UserController {
 
       const getEmployee = await this.entity.getEntityEmployee(entity_fk);
 
-      const employeeData = {
+      const getLastTermination = await this.terminationEmployee.getLastTerminationsByEmployee(getEmployee[0]?.id_employee)
+
+      let employeeData = {
         occupation: {
           ...getOccupation
         },
@@ -268,9 +274,29 @@ class UserController {
           ...getDepartment
         },
         employee: {
-          ...getEmployee
+          ...getEmployee,
+          date_te: getEmployee[0].date_te
         }
       }
+
+      if (getLastTermination.length > 0 && getEmployee[0].status_employee === 0) {
+        employeeData = {
+          occupation: {
+            ...getOccupation
+          },
+          department: {
+            ...getDepartment
+          },
+          employee: {
+            ...getEmployee,
+          },
+          termination: {
+            ...getLastTermination[0]
+          }
+        };
+      }
+
+      console.log(employeeData)
 
       const isTheSameUser = id_user === getUser[0].id_user ? true : false;
 
@@ -516,6 +542,12 @@ class UserController {
         return res.status(422).json({ message: 'El tipo de permiso no existe, ingrese uno valido', group: 'permission' });
       }
 
+      const checkExistTypeStatusEmployee = await this.status_employee.getOne('Activo', 'name_tse');
+      if (checkExistTypeStatusEmployee) {
+        deleteImage();
+        return res.status(500).json({ message: 'No se ha podido realizar el registro del empleado, intente reiniciando el sitio', group: 'alert' });
+      }
+
       // INSERTS EN LA BD
 
       // PERSONA
@@ -557,6 +589,7 @@ class UserController {
         entity_fk: idEntity,
         file_employee: file_employee,
         date_entry_employee: date_entry_employee_formatted,
+        tse_fk: 1
       };
 
       const insertEmployee = await this.employee.createOne(employee_data_completed);

@@ -182,6 +182,29 @@ class LeaveModel extends BaseModel {
         return { whereClause, values };
     }
 
+    async getEmployeeData(id_lr) {
+
+        try {
+            const query = `
+                        select emp.* from leave_request lr 
+            join user u on lr.user_fk = u.id_user 
+            join entity e on u.entity_fk = e.id_entity 
+            join employee emp on e.id_entity = emp.entity_fk 
+            where id_lr = ?
+            group by emp.id_employee
+            ;
+            `
+
+
+            const [results] = await this.conn.promise().query(query, [id_lr])
+
+            return results[0]
+            
+        } catch (error) {
+            console.error("Error en Users LeaveModels:", error.message);
+            throw new Error("Error en Users LeaveModels: " + error.message);
+        }
+    }
 }
 
 export default LeaveModel
