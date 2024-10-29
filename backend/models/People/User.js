@@ -26,6 +26,7 @@ class UserModel extends BaseModel {
               MAX(o.salary_occupation) AS salary_occupation, 
               MAX(d.name_department) AS name_department, 
               u.status_user as status, 
+              tse.name_tse,
               p.name_profile
               FROM user u
               JOIN profile p ON u.profile_fk = p.id_profile 
@@ -33,6 +34,7 @@ class UserModel extends BaseModel {
               LEFT JOIN entity_document ed ON ed.entity_fk = e.id_entity 
               LEFT JOIN entity_contact ec ON ec.entity_fk = e.id_entity 
               LEFT JOIN employee emp ON emp.entity_fk = e.id_entity 
+              LEFT JOIN type_status_employee tse on emp.tse_fk = tse.id_tse
               LEFT JOIN entity_department_occupation edo ON edo.entity_fk = e.id_entity 
               LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
               LEFT JOIN department d ON edo.department_fk = d.id_department 
@@ -40,6 +42,31 @@ class UserModel extends BaseModel {
               GROUP BY u.id_user, u.username_user, e.name_entity, e.lastname_entity, u.avatar_user, u.status_user, p.name_profile
               ORDER BY ${orderBy} ${order} 
               LIMIT ? OFFSET ?`;
+      const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+      return results;
+    } catch (error) {
+      console.error("Error en Users Model:", error.message);
+      throw new Error("Error en Users Model: " + error.message);
+    }
+  }
+
+  async getTotalUsersInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    try {
+      const { whereClause, values } = this.buildWhereClause(filters);
+      const query = `SELECT 
+              COUNT (DISTINCT u.id_user) as 'total'
+              FROM user u
+              JOIN profile p ON u.profile_fk = p.id_profile 
+              JOIN entity e ON u.entity_fk = e.id_entity 
+              LEFT JOIN entity_document ed ON ed.entity_fk = e.id_entity 
+              LEFT JOIN entity_contact ec ON ec.entity_fk = e.id_entity 
+              LEFT JOIN employee emp ON emp.entity_fk = e.id_entity 
+              LEFT JOIN type_status_employee tse on emp.tse_fk = tse.id_tse
+              LEFT JOIN entity_department_occupation edo ON edo.entity_fk = e.id_entity 
+              LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
+              LEFT JOIN department d ON edo.department_fk = d.id_department 
+              ${whereClause}
+              `
       const [results] = await this.con.promise().query(query, [...values, limit, offset]);
       return results;
     } catch (error) {

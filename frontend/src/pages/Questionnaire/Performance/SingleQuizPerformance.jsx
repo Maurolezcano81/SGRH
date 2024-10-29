@@ -401,11 +401,12 @@ const SingleQuizPerformance = () => {
                             ))}
 
 
-
-                            <ButtonWhiteOutlineBlack
-                                title={"+ Agregar Supervisor"}
-                                onClick={handleOpenModalAddSupervisor}
-                            />
+                            {headerData && headerData.canEdit && (
+                                <ButtonWhiteOutlineBlack
+                                    title={"+ Agregar Supervisor"}
+                                    onClick={handleOpenModalAddSupervisor}
+                                />
+                            )}
 
                         </div>
 
@@ -484,11 +485,15 @@ const SingleQuizPerformance = () => {
 
                 </div>
 
-                <ButtonWhiteOutlineBlack
-                    title={"+ Agregar Pregunta"}
-                    onClick={handleOpenAdd}
-                    full={true}
-                />
+                {headerData && headerData.canEdit && (
+
+                    <ButtonWhiteOutlineBlack
+                        title={"+ Agregar Pregunta"}
+                        onClick={handleOpenAdd}
+                        full={true}
+                    />
+                )}
+                
             </div>
 
             {showModalAdd && (

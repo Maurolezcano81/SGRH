@@ -55,7 +55,7 @@ function App() {
             <Route path="/" element={<AppLayout />}>
               {/* Ruta para Admin */}
               <Route path="admin/*">
-                <Route path="inicio" element={<HomeAdmin />} />
+                <Route path="inicio" element={<HomeRRHH />} />
                 <Route path="perfiles" element={<Profiles />} />
                 <Route path="navegacion" element={<HomeNavigationMenu />} />
               </Route>

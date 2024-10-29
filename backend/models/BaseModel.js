@@ -11,54 +11,8 @@ class BaseModel {
         this.defaultOrderBy = defaultOrderBy
     }
 
-    async getTotalResults(field) {
-        try {
-            const query = `SELECT COUNT(${field}) as total FROM ${this.model}`;
-            const [results] = await this.con.promise().query(query);
-            return results;
-        } catch (error) {
-            console.error("Error en getAll:", error.message);
-            throw new Error("Error en getAll: " + error.message);
-        }
-    }
 
-    async getTotalResultsExcludes(field, excludeArray) {
-        try {
-            const excludeClause = excludeArray.length > 0
-                ? `WHERE ${field} NOT IN (${excludeArray.map(() => '?').join(', ')})`
-                : '';
-    
-            const query = `SELECT COUNT(${field}) as total FROM ${this.model} ${excludeClause};`;
-            
-            const [results] = await this.con.promise().query(query, excludeArray);
-            return results;
-        } catch (error) {
-            console.error("Error en getTotalResultsExcludes:", error.message);
-            throw new Error("Error en getTotalResultsExcludes: " + error.message);
-        }
-    }
 
-    async getAll() {
-        try {
-            const query = `SELECT * FROM ${this.model}`;
-            const [results] = await this.con.promise().query(query);
-            return results;
-        } catch (error) {
-            console.error("Error en getAll:", error.message);
-            throw new Error("Error en getAll: " + error.message);
-        }
-    }
-
-    async getAllPagination(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination) {
-        try {
-            const query = `SELECT * FROM ${this.model} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
-            const [results] = await this.con.promise().query(query, [limit, offset]);
-            return results;
-        } catch (error) {
-            console.error("Error en getAllPagination:", error.message);
-            throw new Error("Error en getAllPagination: " + error.message);
-        }
-    }
 
     async getAllPaginationWhere(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
@@ -72,14 +26,19 @@ class BaseModel {
         }
     }
 
-    async getBetween(field, startValue, endValue) {
+    async getTotalResultsAllPaginationWhere(field_to_count, filters = {}) {
         try {
-            const query = `SELECT * FROM ${this.model} WHERE ${field} BETWEEN ? AND ?`;
-            const [results] = await this.con.promise().query(query, [startValue, endValue]);
+            const { whereClause, values } = this.buildWhereClause(filters);
+            const query = `
+            SELECT 
+            count(DISTINCT ${field_to_count}) as 'total' 
+            FROM ${this.model} 
+            ${whereClause}`;
+            const [results] = await this.con.promise().query(query, [...values]);
             return results;
         } catch (error) {
-            console.error("Error en getBetween:", error.message);
-            throw new Error("Error en getBetween: " + error.message);
+            console.error("Error en getAllPaginationWhere:", error.message);
+            throw new Error("Error en getAllPaginationWhere: " + error.message);
         }
     }
 
@@ -192,6 +151,88 @@ class BaseModel {
             throw new Error('Error en la conexión a la base de datos: ' + error.message);
         }
     }
+
+    async getAllPaginationWhere(field_status, filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+            const query = `SELECT 
+            * 
+            FROM ${this.model} 
+            WHERE ${field_status} = 1 ${whereClause.length > 0 ? 'AND' : ''}
+            ${whereClause} 
+            where
+            `;
+            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en getAllPaginationWhere:", error.message);
+            throw new Error("Error en getAllPaginationWhere: " + error.message);
+        }
+    }
+
+    // async getAll() {
+    //     try {
+    //         const query = `SELECT * FROM ${this.model}`;
+    //         const [results] = await this.con.promise().query(query);
+    //         return results;
+    //     } catch (error) {
+    //         console.error("Error en getAll:", error.message);
+    //         throw new Error("Error en getAll: " + error.message);
+    //     }
+    // }
+
+
+    // async getTotalResults(field) {
+    //     try {
+    //         const query = `SELECT COUNT(${field}) as total FROM ${this.model}`;
+    //         const [results] = await this.con.promise().query(query);
+    //         return results;
+    //     } catch (error) {
+    //         console.error("Error en getAll:", error.message);
+    //         throw new Error("Error en getAll: " + error.message);
+    //     }
+    // }
+
+
+
+    // async getTotalResultsExcludes(field, excludeArray) {
+    //     try {
+    //         const excludeClause = excludeArray.length > 0
+    //             ? `WHERE ${field} NOT IN (${excludeArray.map(() => '?').join(', ')})`
+    //             : '';
+
+    //         const query = `SELECT COUNT(${field}) as total FROM ${this.model} ${excludeClause};`;
+
+    //         const [results] = await this.con.promise().query(query, excludeArray);
+    //         return results;
+    //     } catch (error) {
+    //         console.error("Error en getTotalResultsExcludes:", error.message);
+    //         throw new Error("Error en getTotalResultsExcludes: " + error.message);
+    //     }
+    // }
+
+    // async getAllPagination(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination) {
+    //     try {
+    //         const query = `SELECT * FROM ${this.model} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
+    //         const [results] = await this.con.promise().query(query, [limit, offset]);
+    //         return results;
+    //     } catch (error) {
+    //         console.error("Error en getAllPagination:", error.message);
+    //         throw new Error("Error en getAllPagination: " + error.message);
+    //     }
+    // }
+
+
+    // async getBetween(field, startValue, endValue) {
+    //     try {
+    //         const query = `SELECT * FROM ${this.model} WHERE ${field} BETWEEN ? AND ?`;
+    //         const [results] = await this.con.promise().query(query, [startValue, endValue]);
+    //         return results;
+    //     } catch (error) {
+    //         console.error("Error en getBetween:", error.message);
+    //         throw new Error("Error en getBetween: " + error.message);
+    //     }
+    // }
 }
 
 export default BaseModel;

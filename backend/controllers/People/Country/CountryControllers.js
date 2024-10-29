@@ -109,7 +109,7 @@ class CountryController {
         })
       }
 
-      const queryResponse = await this.model.updateOne(id_country, { name_country, abbreviation_country, status_country });
+      const queryResponse = await this.model.updateOne({ name_country, abbreviation_country, status_country }, ['id_country', id_country]);
 
       return res.status(200).json({
         message: 'País actualizado correctamente',
@@ -117,7 +117,7 @@ class CountryController {
       });
     } catch (error) {
       console.error('Error en CountryController - updateCountry:', error.message);
-      return res.status(403).json({ message: error.message });
+      return res.status(403).json({ message: "Ha ocurrido un error al modificar este registro" });
     }
   }
 

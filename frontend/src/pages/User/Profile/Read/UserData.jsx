@@ -8,7 +8,7 @@ const UserData = ({ userData, updateProfile, permissionsData,
     const profile = userData?.profile?.["0"];
 
     if (!user) {
-        return <div>Error: No hay datos de usuario disponibles.</div>;
+        return <div>No hay datos de usuario disponibles.</div>;
     }
 
     const formatDate = (dateString) => {

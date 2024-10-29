@@ -583,6 +583,7 @@ class PerformanceModel extends BaseModel {
         try {
             const query = `
             SELECT 
+                question_epq,
                 description_epq,
                 bad_parameter_epq,
                 best_parameter_epq,

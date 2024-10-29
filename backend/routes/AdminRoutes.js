@@ -23,6 +23,7 @@ import PerformanceRoutes from "./Quiz/Performance.js";
 import CapacitationRoutes from "./Requests/CapacitationRoutes.js";
 import LeavesRoutes from "./Requests/LeavesRoutes.js";
 import TerminationRoutes from "./Termination/TerminationRoutes.js";
+import DashboardRrhhRoutes from "./Dashboard/DashboardRrhhRoutes.js";
 
 app.use(SubjectRoutes.router)
 app.use(AttachmentRoutes.router)
@@ -53,6 +54,8 @@ app.use(ModuleRoutes.router);
 app.use(NavigationMenuRoutes.router);
 
 app.use(TerminationRoutes.router)
+
+app.use(DashboardRrhhRoutes.router)
 
 const AdminRoutes = {
     app

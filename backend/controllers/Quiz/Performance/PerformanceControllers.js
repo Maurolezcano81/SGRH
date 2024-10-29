@@ -44,22 +44,6 @@ class PerformanceControllers {
                 })
             }
 
-            const startDate = new Date(headerQuiz.start_ep);
-            const endDate = new Date(headerQuiz.end_ep);
-            const currentDate = new Date();
-
-            if (startDate <= currentDate) {
-                return res.status(403).json({
-                    message: "La fecha de inicio debe ser posterior a la fecha actual."
-                });
-            }
-
-            if (endDate < startDate) {
-                return res.status(403).json({
-                    message: "La fecha de fin no debe ser anterior a la fecha de inicio."
-                });
-            }
-
             if (questionQuiz.length < 1) {
                 return res.status(403).json({
                     message: "Necesitas agregar al menos una pregunta",

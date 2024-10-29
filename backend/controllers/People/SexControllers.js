@@ -1,9 +1,9 @@
-import BaseModel from '../../models/BaseModel.js'; 
+import BaseModel from '../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber } from '../../middlewares/Validations.js';
 
 class SexControllers {
   constructor() {
-    this.model = new BaseModel('sex', 'name_sex'); 
+    this.model = new BaseModel('sex', 'name_sex');
     this.nameFieldId = 'id_sex';
     this.nameFieldToSearch = 'name_sex';
   }
@@ -11,7 +11,8 @@ class SexControllers {
   async getSexs(req, res) {
     try {
       const { limit, offset, order, typeOrder, filters } = req.body;
-      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
+
+      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
 
       if (queryResponse.length < 1) {
         return res.status(200).json({
@@ -19,17 +20,64 @@ class SexControllers {
         });
       }
 
+      const getTotalResults = await this.model.getTotalResultsAllPaginationWhere(filters)
+
+      
+      if (getTotalResults.length < 1) {
+        return res.status(200).json({
+          message: 'No hay tipos de sexo disponibles',
+        });
+      }
+
+
       return res.status(200).json({
         message: 'Tipos de sexo obtenidos correctamente',
         queryResponse,
+        total: getTotalResults[0].total
       });
     } catch (error) {
       console.error('Error en controlador de sexo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de Sexo",
       });
     }
   }
+
+  async getSexs(req, res) {
+    try {
+      const { limit, offset, order, typeOrder, filters } = req.body;
+
+      const queryResponse = await this.model.getAllPaginationWhere(limit, offset, order, typeOrder, filters);
+
+      if (queryResponse.length < 1) {
+        return res.status(200).json({
+          message: 'No hay tipos de sexo disponibles',
+        });
+      }
+
+      const getTotalResults = await this.model.getTotalResultsAllPaginationWhere(filters)
+
+      
+      if (getTotalResults.length < 1) {
+        return res.status(200).json({
+          message: 'No hay tipos de sexo disponibles',
+        });
+      }
+
+
+      return res.status(200).json({
+        message: 'Tipos de sexo obtenidos correctamente',
+        queryResponse,
+        total: getTotalResults[0].total
+      });
+    } catch (error) {
+      console.error('Error en controlador de sexo: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de Sexo",
+      });
+    }
+  }
+
 
   async getSex(req, res) {
     const { value_sex } = req.body;
@@ -83,8 +131,8 @@ class SexControllers {
       });
     } catch (error) {
       console.error('Error en controlador de sexo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al crear los tipos de Sexo",
       });
     }
   }
@@ -134,8 +182,8 @@ class SexControllers {
       });
     } catch (error) {
       console.error('Error en controlador de sexo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el tipo de Sexo",
       });
     }
   }
@@ -164,8 +212,8 @@ class SexControllers {
       });
     } catch (error) {
       console.error('Error en controlador de sexo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el estado del tipo de Sexo",
       });
     }
   }
@@ -189,8 +237,8 @@ class SexControllers {
       });
     } catch (error) {
       console.error('Error en controlador de sexo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al eliminar el tipo de Sexo, debido a que esta siendo utilizado en datos importantes",
       });
     }
   }

@@ -36,16 +36,26 @@ class TerminationModel extends BaseModel {
     async getLastTerminationsByEmployee(id_employee) {
         try {
             const query = `
-            select 
-                id_te,
-                description_tot,
-                te.date_te
-            from termination_employee te
-            join type_of_termination tot on te.tot_fk = tot.id_tot 
-            where te.employee_fk = ?
-           	and te.status_tot = 1
-           	group by id_te 
-           	order by date_te asc
+                    SELECT 
+                        te.id_te,
+                        tot.description_tot,
+                        te.date_te
+                    FROM 
+                        termination_employee te
+                    JOIN 
+                        type_of_termination tot ON te.tot_fk = tot.id_tot
+                    WHERE 
+                        te.employee_fk = ?
+                        AND te.date_te = (
+                            SELECT 
+                                MAX(sub_te.date_te)
+                            FROM 
+                                termination_employee sub_te
+                            WHERE 
+                                sub_te.employee_fk = te.employee_fk
+                        )
+                    ORDER BY 
+                        te.date_te ASC;
             `
 
             const [results] = await this.conn.promise().query(query, [id_employee])

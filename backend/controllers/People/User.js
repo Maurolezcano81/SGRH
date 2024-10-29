@@ -76,7 +76,7 @@ class UserController {
 
     try {
 
-      const getTotalResults = await this.user.getTotalResults('id_user');
+      const getTotalResults = await this.user.getTotalUsersInformation(limit, offset, orderBy, order, filters);
 
       const list = await this.user.getUsersInformation(limit, offset, orderBy, order, filters);
 
@@ -539,11 +539,16 @@ class UserController {
         return res.status(422).json({ message: 'El tipo de permiso no existe, ingrese uno valido', group: 'permission' });
       }
 
+
+
       const checkExistTypeStatusEmployee = await this.status_employee.getOne('Activo', 'name_tse');
-      if (checkExistTypeStatusEmployee) {
+
+      if (checkExistTypeStatusEmployee.length < 1) {
         deleteImage();
         return res.status(500).json({ message: 'No se ha podido realizar el registro del empleado, intente reiniciando el sitio', group: 'alert' });
       }
+
+
 
       // INSERTS EN LA BD
 
