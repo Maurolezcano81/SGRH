@@ -7,6 +7,7 @@ import UserDown from "../../../assets/Icons/Buttons/UserDown.png"
 import { useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
+import TableTest from '../../../components/Table/TestTable';
 const ListUsers = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
@@ -118,7 +119,7 @@ const ListUsers = () => {
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableHorWithFilters
+            <TableTest
                 addButtonTitle={addButtonTitle}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
                 authToken={authData.token}
