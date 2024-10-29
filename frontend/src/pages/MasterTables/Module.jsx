@@ -148,9 +148,6 @@ const Module = () => {
 
   return (
     <>
-      <div className='button_container'>
-        <ButtonBlack title={'Asignar Modulos'} onClick={onClickAssignModules} />
-      </div>
 
       <div className="preference__container">
         <PreferenceTitle title="Modulo" handleModalAdd={handleModalAdd} />

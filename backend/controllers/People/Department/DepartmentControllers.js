@@ -56,7 +56,7 @@ class DepartmentController {
         })
       }
 
-      const getTotalResults = await this.model.getTotalResults('id_department');
+      const getTotalResults = await this.model.getTotalDepartmentInformation(limit, offset, orderBy, order, newFilters);
 
 
       return res.status(200).json({

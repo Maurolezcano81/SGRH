@@ -5,7 +5,7 @@ const AddressData = ({ addressData, updateProfile, permissionsData,
     const address = addressData?.["0"];
 
     if (!address) {
-        return <div>Error: No hay datos de direccion disponibles.</div>;
+        return <div>No hay datos de direccion disponibles.</div>;
     }
 
     return (

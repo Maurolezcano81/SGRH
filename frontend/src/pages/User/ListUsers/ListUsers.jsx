@@ -29,7 +29,7 @@ const ListUsers = () => {
         { field: 'name_occupation', label: 'Ocupación' },
         { field: 'salary_occupation', label: 'Salario' },
         { field: 'name_department', label: 'Departamento' },
-        { field: 'status', label: 'Estado' },
+        { field: 'name_tse', label: 'Estado' },
     ];
 
     const filterConfigs = [
@@ -57,7 +57,7 @@ const ListUsers = () => {
         { value: 'name_occupation', label: 'Ocupación' },
         { value: 'salary_occupation', label: 'Salario' },
         { value: 'name_department', label: 'Departamento' },
-        { value: 'status_user', label: 'Estado' },
+        { value: 'name_tse', label: 'Estado' },
     ];
 
 

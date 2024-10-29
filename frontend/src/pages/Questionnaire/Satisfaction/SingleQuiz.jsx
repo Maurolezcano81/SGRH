@@ -289,11 +289,14 @@ const SingleQuiz = () => {
 
                 </div>
 
-                <ButtonWhiteOutlineBlack
-                    title={"+ Agregar Pregunta"}
-                    onClick={handleOpenAdd}
-                    full={true}
-                />
+                {headerData && headerData.canEdit && (
+                    <ButtonWhiteOutlineBlack
+                        title={"+ Agregar Pregunta"}
+                        onClick={handleOpenAdd}
+                        full={true}
+                    />
+                )}
+                
             </div>
 
             {showModalAdd && (

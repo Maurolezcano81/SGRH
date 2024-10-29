@@ -182,9 +182,15 @@ const SingleQuizPerformanceSupervisor = () => {
                                 <div className="question__title">
                                     <p>Pregunta {index + 1}</p>
                                 </div>
+
                                 <div className="question__title">
-                                    <h2>{question.description_epq}</h2>
+                                    <h2>{question.question_epq}</h2>
                                 </div>
+                                <div className="quiz__question__check__container left">
+                                    <p>{question.description_epq}</p>
+                                </div>
+
+                                
                                 <div className="question__information">
                                     <p>Descripción obligatoria: <span>
                                         {question && question.is_obligatory === 1 ? "Si" : "No"}

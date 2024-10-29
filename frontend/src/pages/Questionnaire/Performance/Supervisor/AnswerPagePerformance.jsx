@@ -18,7 +18,7 @@ const AnswerPagePerformance = () => {
 
         <div className="container__page">
 
-<PreferenceTitle title={"Responder Cuestionario"} />
+            <PreferenceTitle title={"Responder Cuestionario"} />
 
             <AnswerHeader
                 ep={ep}

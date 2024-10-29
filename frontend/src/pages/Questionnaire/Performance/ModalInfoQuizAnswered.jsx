@@ -144,8 +144,14 @@ const ModalInfoQuizAnswered = ({
                                     </div>
                                     <div className="not__answer__body__item answer__body__item">
                                         <p className="div__form__input__label title__modal__answer">Pregunta</p>
+                                        <h3 className="div__form__input__input">{answer.question_epq}</h3>
+                                    </div>
+
+                                    <div className="not__answer__body__item answer__body__item">
+                                        <p className="div__form__input__label title__modal__answer">Descripción</p>
                                         <h3 className="div__form__input__input">{answer.description_epq}</h3>
                                     </div>
+                                    
                                     <div className="not__answer__body__item answer__body__item">
                                         <p className="div__form__input__label title__modal__answer">Parametro minimo</p>
                                         <h3 className="div__form__input__input">{answer.bad_parameter_epq}</h3>

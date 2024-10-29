@@ -67,7 +67,6 @@ const DepartmentView = () => {
         { field: 'lastname_entity', label: 'Apellido' },
         { field: 'name_occupation', label: 'Puesto' },
         { field: 'file_employee', label: 'Legajo' },
-        { field: 'status_employee', label: 'Estado del Empleado' },
         { field: 'salary_occupation', label: 'Salario' },
     ];
 

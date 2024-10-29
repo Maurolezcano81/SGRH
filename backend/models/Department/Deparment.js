@@ -102,6 +102,31 @@ class DepartmentModel extends BaseModel {
         }
     }
 
+    async getTotalDepartmentInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+        try {
+            const { whereClause, values } = this.whereForOutDepartment(filters);
+            const query = `
+                SELECT 
+                
+                    COUNT(DISTINCT u.id_user) as 'total'
+                   
+                FROM department d
+                JOIN entity_department_occupation edo ON d.id_department = edo.department_fk 
+                LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
+                JOIN entity e ON edo.entity_fk = e.id_entity
+                LEFT JOIN employee emp ON e.id_entity = emp.entity_fk
+                JOIN user u ON u.entity_fk = e.id_entity 
+                WHERE status_edo = 1 ${whereClause.length > 0 ? 'AND' : ''}
+                ${whereClause}
+                    `
+            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Model:", error.message);
+            throw new Error("Error en Users Model: " + error.message);
+        }
+    }
+
     async rotationPersonalOnDepartment(id_edo, department_fk) {
         try {
             const query = `UPDATE entity_department_occupation 

@@ -16,7 +16,7 @@ const EmployeeData = ({ employeeData, updateProfile, permissionsData,
     const employee = employeeData?.employee?.["0"];
 
     if (!employee) {
-        return <div>Error: No hay datos de empleado disponibles.</div>;
+        return <div>No hay datos de empleado disponibles.</div>;
     }
 
 

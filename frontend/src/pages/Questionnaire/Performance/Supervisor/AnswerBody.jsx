@@ -233,9 +233,10 @@ const AnswerBody = ({ ep }) => {
             prevArray.filter((id) => id !== row.id_user)
         );
     };
+
+
     return (
         <div className="container__content">
-
 
             {Object.keys(employeeSelected).length < 1 && (
                 <div className="margin-y-1">
@@ -310,12 +311,20 @@ const AnswerBody = ({ ep }) => {
             )}
 
             {
-                listQuestions && listQuestions.map((question) => (
+                listQuestions && listQuestions.map((question, index) => (
                     <form className="quiz__body__question__container" key={question.id_epq}>
-                        <div className="question__title__container">
-                            <p>{question.question_epq}</p>
-                        </div>
+                        
+                                <div className="question__title">
+                                    <p>Pregunta {index + 1}</p>
+                                </div>
 
+                        <div className="question__title">
+                            <h2>{question.question_epq}</h2>
+                        </div>
+                        <div className="quiz__question__check__container left">
+                            <p>{question.description_epq}</p>
+                        </div>
+                        
                         <div className="flex flex-col">
                             <h4 className="bold">Seleccione una respuesta:</h4>
                             <div className="score-buttons">
