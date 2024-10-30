@@ -152,7 +152,7 @@ class BaseModel {
         }
     }
 
-    async getAllPaginationWhere(field_status, filters = {}) {
+    async getAllPaginationWhereFilteredActives(field_status, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
             const query = `SELECT 
