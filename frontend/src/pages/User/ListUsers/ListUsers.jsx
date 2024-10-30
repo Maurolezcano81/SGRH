@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableHorWithFilters from '../../../components/Table/TableHorWithFilters'; // Ajusta la ruta según sea necesario
 import useAuth from '../../../hooks/useAuth';
 import ButtonRed from '../../../components/ButtonRed';
@@ -8,6 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 import TableTest from '../../../components/Table/TestTable';
+import TestTable from '../../../components/Table/TestTable';
+import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
+
 const ListUsers = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
@@ -18,6 +22,16 @@ const ListUsers = () => {
 
     const { authData } = useAuth();
     const navigate = useNavigate();
+
+    // Rutas para los breadcrumbs
+
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Lista de Usuarios', url: '/rrhh/personal/ver' },
+        ]);
+    }, []);
 
     const columns = [
         { field: 'avatar_user', label: '' },
@@ -119,7 +133,7 @@ const ListUsers = () => {
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableTest
+            <TestTable
                 addButtonTitle={addButtonTitle}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
                 authToken={authData.token}

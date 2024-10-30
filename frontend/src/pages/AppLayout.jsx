@@ -5,6 +5,7 @@ import Spinner from '../components/Spinner';
 import AlertErrorNoAuth from '../components/Alerts/AlertErrorNoAuth';
 import Warning from '../components/Alerts/Warning';
 import Navbar from '../components/Navbar/Navbar';
+import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs';
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -167,6 +168,7 @@ const AppLayout = () => {
         />
       )}
       <main>
+        <Breadcrumbs />
         <Outlet />
       </main>
     </Suspense>

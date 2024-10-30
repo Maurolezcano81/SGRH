@@ -92,7 +92,6 @@
 .table__responsive__container {
   width: 100%;
   margin: 0 auto;
-  padding: 1rem;
   vertical-align: middle;
 }
 
@@ -102,7 +101,6 @@
   margin: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.5rem;
   box-shadow: var(--shadow-a-25-b-02);
 }
 
@@ -111,11 +109,25 @@
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 1.5rem;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 0 1rem;
   font-size: 1.6rem;
   background-color: var(--blue-0);
   color: var(--white-2);
   text-align: center;
+}
+
+
+.responsive__table-header > .responsive__table-col:hover{
+  cursor: pointer;
+  background-color: var(--blue-1);
+}
+
+.responsive__table-header > .responsive__table-col{
+  height: 100%;
+  padding: 2rem 0 ;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .responsive__table-body {
@@ -147,6 +159,7 @@
   text-align: center;
 }
 
+
 .responsible__table-col__actions {
   display: flex;
   justify-content: flex-end;
@@ -155,6 +168,7 @@
 }
 
 .responsible__table-avatar {
+  background-color: var(--white-2);
   width: 5rem;
   height: 5rem;
   object-fit: contain;
@@ -183,15 +197,9 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    border-bottom: 0.1rem solid var(--gray-1);
-    border-radius: 0.05rem;
     padding: 1rem;
     font-size: 1.4rem;
     background-color: #fff;
-  }
-
-  .responsive__table-body__container:nth-child(odd) {
-    background-color: var(--white-2);
   }
 
   .responsible__table-col {
