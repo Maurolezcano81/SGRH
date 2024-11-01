@@ -5,8 +5,7 @@ import LinkPreference from './LinkPreference';
 
 const Preferences = () => {
   return (
-    <div className="preferences__container">
-      <div className='preferences__container-size'>
+    <div className='container__content'>
         <div className="preferences__container__links">
           <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
 
@@ -32,12 +31,12 @@ const Preferences = () => {
 
           <LinkPreference path="tipo_asunto_mensaje" name="Tipos de Asuntos de Mensajes" />
 
-        </div>
 
-        <main className="preferences__main">
-          <Outlet />
-        </main>
       </div>
+
+      <main className="">
+        <Outlet />
+      </main>
     </div>
   );
 };

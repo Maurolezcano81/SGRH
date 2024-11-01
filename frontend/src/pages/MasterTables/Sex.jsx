@@ -1,25 +1,39 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../../components/Modals/ModalAdd';
-import ModalUpdate from '../../components/Modals/ModalUpdate';
-import ModalDelete from '../../components/Modals/ModalDelete';
 import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
+import TestTable from '../../components/Table/ResponsiveTable';
+import User from '../../assets/Icons/Buttons/User.png'
+import UserDown from '../../assets/Icons/Buttons/UserDown.png';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import Edit from '../../assets/Icons/Buttons/Edit.png';
+import Trash from '../../assets/Icons/Buttons/Trash.png';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
 
 const Sex = () => {
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [sexs, setSexs] = useState([]);
-  const [sexsFormatted, setSexsFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
-
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-
-  const {storageNavbarTitle}  = useNav();
-
+  const { storageNavbarTitle } = useNav();
   const location = useLocation();
+  const { authData } = useAuth();
+
+
+  const columns = [
+    { field: 'name_sex', label: 'Nombre' },
+    { field: 'status_sex', label: 'Estado' }
+  ];
+
+  const filterConfigs = [];
+  const searchOptions = [
+
+    { value: 'name_sex', label: 'Nombre' },
+
+  ];
+
+
+  const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+  const updateStatus = () => {
+    setIsStatusUpdated(!isStatusUpdated);
+  };
 
   useEffect(() => {
     const pathParts = location.pathname.split('/');
@@ -28,137 +42,98 @@ const Sex = () => {
   }, [location.pathname, storageNavbarTitle]);
 
 
-  // MODALES
-  const [toggleModalAdd, setToggleModalAdd] = useState(false);
-  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-  const [toggleModalDelete, setToggleModalDelete] = useState(false);
-
-  // ESTADOS DE ID
-  const [idToGet, setIdToGet] = useState(null);
-  const [idToToggle, setIdToToggle] = useState(null);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  // ESTADOS PARA ACTUALIZAR EL COMPONENTE PRINCIPAL
-  const [isNewField, setIsNewField] = useState(false);
-  const [isStatusChanged, setIsStatusChanged] = useState(false);
-  const [isUpdatedField, setIsUpdatedField] = useState(false);
-  const [isDeletedField, setIsDeletedField] = useState(false);
-
-  // CONTEXTO GLOBAL
-  const { authData } = useAuth();
-
   // VARIABLES CON LAS PETICIONES FETCH
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`;
-const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_SEX}`;
-const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_SEX}`;
-const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_SEX}`;
-const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_SEX}`;
-const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_SEX}`;
+  const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_SEX}`;
+  const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_SEX}`;
+  const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_SEX}`;
+  const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_SEX}`;
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_SEX}`;
 
 
-  // ARRAY PARA MAPEAR EN LA TABLA
-  useEffect(() => {
-    const fetchSexs = async () => {
-      try {
-        const fetchResponse = await fetch(getAllUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
-        if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de sexo');
-        }
 
-        const data = await fetchResponse.json();
-        if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setSexs([]);
-          setSexsFormatted([]);
-        } else {
-          setSexs(data.queryResponse);
-          formatSexs(data.queryResponse);
-          setNoDataMessage('');
-        }
-      } catch (error) {
-        console.error('Error al obtener los tipos de sexo', error);
-      }
-    };
+  // MODAL ADD
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-    fetchSexs();
-  }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
+  const handleModalAddOpen = () => {
+    setIsModalAddOpen(true)
+  }
 
-  const formatSexs = (sexs) => {
-    const formatted = sexs.map((sex) => ({
-      ...sex,
-    }));
-    setSexsFormatted(formatted);
-  };
-  // ARRAY PARA MAPEAR EN LA TABLA
+  const handleModalAddClose = () => {
+    setIsModalAddOpen(false)
+  }
 
-  // FUNCIONES PARA MANEJAR MODALES
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
+  // MODAL ADD
 
-  const handleModalUpdate = (item) => {
-    setIdToGet(item.id_sex);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
-  // FUNCIONES PARA MANEJAR MODALES
+  // MODAL UPDATE
 
-  const handleModalDelete = () => {
-    setToggleModalDelete(!toggleModalDelete);
-  };
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [idToGet, setIdToGet] = useState("");
 
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
-  const handleDelete = (item) => {
-    setIdToDelete(item.id_sex);
-  };
+  const handleModalUpdateOpen = (row) => {
+    setIdToGet(row.id_sex)
+    setIsModalUpdateOpen(true)
+  }
 
-  const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_sex);
-  };
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
+  const handleModalUpdateClose = () => {
+    setIdToGet("")
+    setIsModalUpdateOpen(false)
+    updateStatus()
+  }
 
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
-  const onSubmitUpdate = () => {
-    setIsUpdatedField(!isUpdatedField);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
+  // MODAL UPDATE
 
-  const onSubmitDelete = () => {
-    setToggleModalDelete(false);
-    setIsDeletedField(!isDeletedField);
-  };
+  // MODAL DELETE
 
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
-  const handleDependencyToggle = () => {
-    setIsStatusChanged(!isStatusChanged);
-  };
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
+
+  const handleModalDeleteOpen = (row) => {
+    setIdToGet(row.id_sex)
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIdToGet("")
+    setIsModalDeleteOpen(false)
+    updateStatus()
+  }
+
+  // MODAL DELETE
+
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Sexo" onClick={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nuevo Tipo de Sexo'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
-          method={'POST'}
-          fetchData={['name_sex']}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
 
-      {toggleModalUpdate && (
+      <TestTable
+        addButtonTitle={handleModalAddOpen}
+        url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`}
+        authToken={authData.token}
+        columns={columns}
+        filterConfigs={filterConfigs}
+        searchOptions={searchOptions}
+        initialSearchField={'name_sex'}
+        initialSearchTerm={''}
+        initialSort={{ field: 'name_sex', order: 'ASC' }}
+        actions={{
+          view: (row) => handleModalUpdateOpen(row),
+          edit: (row) => handleModalDeleteOpen(row),
+          delete: (row) => console.log("Editar", row),
+        }}
+        showActions={{
+          view: true,
+          edit: true,
+          delete: false
+        }}
+        actionColumn='id_sex'
+        title_table={"Tipos de Sexo"}
+        paginationLabelInfo={"Tipos de Sexo"}
+        buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
+        buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        isStatusUpdated={isStatusUpdated}
+      />
+
+      {isModalUpdateOpen && (
         <ModalUpdate
           title_modal={'Editar Sexo'}
           labels={['Nombre']}
@@ -170,50 +145,39 @@ const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_
           idFetchData="value_sex"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
+          onSubmitUpdate={handleModalUpdateClose}
+          handleModalUpdate={handleModalUpdateClose}
           fetchData_select={'status_sex'}
         />
       )}
 
-      {toggleModalDelete && (
-        <ModalDelete
-          handleModalDelete={handleModalDelete}
-          deleteOne={deleteOne}
-          field_name={'id_sex'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
+      {isModalAddOpen && (
+        <ModalAdd
+          title_modal={'Nuevo Tipo de Sexo'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
+          method={'POST'}
+          fetchData={['name_sex']}
+          createOne={createOne}
+          handleDependencyAdd={updateStatus}
+          handleModalAdd={handleModalAddClose}
         />
       )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-          {sexsFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={sexsFormatted}
-              keys={['name_sex']}
-              status_name={['id_sex', 'status_sex']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
-          ) : (
-            <tr>
-              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+
+
+      {isModalDeleteOpen && (
+        <ModalDelete
+          handleModalDelete={handleModalDeleteClose}
+          deleteOne={deleteOne}
+          field_name={'id_sex'}
+          idToDelete={idToGet}
+          onSubmitDelete={handleModalDeleteClose}
+        />
+      )}
+
+    </>
+
   );
 };
 

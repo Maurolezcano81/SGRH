@@ -73,11 +73,12 @@ router.get('/departments', department.getDepartments.bind(department));
 router.get('/occupations', occupation.getOccupations.bind(occupation));
 
 // Document Routes
-router.get('/documents', document.getDocuments.bind(document));
 router.patch('/document/update', document.updateEntityDocument.bind(document));
+router.post('/documents/actives', document.getActives.bind(document));
+
 
 // Sex Routes
-router.get('/sexs', sex.getSexs.bind(sex));
+router.get('/sexs/actives', sex.getActives.bind(sex));
 
 // Status Request Routes
 router.get('/statuses_request', statusRequest.getStatusesRequest.bind(statusRequest));

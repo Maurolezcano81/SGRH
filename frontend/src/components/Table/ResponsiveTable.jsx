@@ -3,8 +3,9 @@ import PreferenceTitle from '../../pages/MasterTables/PreferenceTitle';
 import ButtonRed from '../ButtonRed';
 import ButtonImgTxt from '../ButtonImgTex';
 import ButtonWhiteOutlineBlack from '../Buttons/ButtonWhiteOutlineBlack';
+import ButtonBlue from '../ButtonBlue';
 
-const TestTable = ({
+const ResponsiveTable = ({
     url,
     authToken,
     columns,
@@ -18,7 +19,7 @@ const TestTable = ({
     actions = {},
     showActions = {},
     title_table,
-    actionColumn = '',  // Nueva prop para especificar la propiedad del row
+    actionColumn = '',
     paginationLabelInfo,
     buttonOneInfo = { img: "", color: "", title: "" },
     buttonTwoInfo = { img: "", color: "", title: "" },
@@ -26,7 +27,6 @@ const TestTable = ({
     addButtonTitle,
     isStatusUpdated = false
 }) => {
-    // Estados
     const [data, setData] = useState([]);
     const [filters, setFilters] = useState(initialFilters);
     const [sortField, setSortField] = useState(initialSort.field);
@@ -38,6 +38,8 @@ const TestTable = ({
     const [filterOptions, setFilterOptions] = useState({});
     const [hiddenFilterSection, setHiddenFilterSection] = useState(false);
     const [totalResults, setTotalResults] = useState(0);
+
+    const [openActionModal, setOpenActionModal] = useState(null);
 
     const fetchFilterOptions = async () => {
         const fetchPromises = filterConfigs.map(async (filter) => {
@@ -125,12 +127,28 @@ const TestTable = ({
         setHiddenFilterSection(!hiddenFilterSection)
     }
 
+    const openActionsModal = (rowId) => {
+        setOpenActionModal(rowId);
+    };
+
+    const closeActionsModal = () => {
+        setOpenActionModal("closed");
+        setOpenActionModal(null);
+    };
+
+
     const totalPages = Math.ceil(pagination.total / pagination.limit);
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
+    const statusFields = ['status', 'status_sex'];
+
+    const statusMap = {
+        1: 'Activo',
+        0: 'Inactivo',
+    };
+
     return (
         <div className='container__page'>
-
             <div className='container__content'>
                 <PreferenceTitle
                     title={title_table}
@@ -190,60 +208,84 @@ const TestTable = ({
             </div>
 
             <div className="table__responsive__container">
-            <ul className="ul__responsive__table">
-                <li className="responsive__table-header">
-                    {columns.map(column => (
-                        <div key={column.field} className="responsive__table-col" onClick={() => handleSort(column.field)}>
-                            {column.label}
-                        </div>
-                    ))}
-                </li>
-                {data.length === 0 ? (
-                    <li className="responsive__table-body">
-                        <p>No hay datos disponibles</p>
-                    </li>
-                ) : (
-                    data.map(row => (
-                        <div className='responsive__table-body__container'>
-                            <li className="responsive__table-body" key={row[actionColumn]}>
-                                {columns.map(column => (
-                                    <div key={column.field} className="responsible__table-col" data-label={column.label}>
-                                        {column.field === 'avatar_user' ? (
-                                            <img
-                                                src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`}
-                                                alt="Avatar"
-                                                className="responsible__table-avatar"
-                                            />
-                                        ) : (
-                                            row[column.field]
-                                        )}
-                                    </div>
-                                ))}
-
-                            </li>
-                            <div className="responsible__table-col__actions">
-                                {showActions.view && actions.view && (
-                                    <ButtonImgTxt onClick={() => actions.view(row)} title={buttonOneInfo.title} img={buttonOneInfo.img} color={buttonOneInfo.color} />
-                                )}
-                                {showActions.edit && actions.edit && (
-                                    <ButtonImgTxt onClick={() => actions.edit(row)} title={buttonTwoInfo.title} img={buttonTwoInfo.img} color={buttonTwoInfo.color} />
-                                )}
-                                {showActions.delete && actions.delete && (
-                                    <ButtonImgTxt onClick={() => actions.delete(row)} title={buttonTreeInfo.title} img={buttonTreeInfo.img} color={buttonTreeInfo.color} />
-                                )}
+                <ul className="ul__responsive__table">
+                    <li className="responsive__table-header">
+                        {columns.map(column => (
+                            <div key={column.field} className="responsive__table-col" onClick={() => handleSort(column.field)}>
+                                {column.label}
                             </div>
-                        </div>
+                        ))}
+                    </li>
+                    {data.length === 0 ? (
+                        <li className="responsive__table-body">
+                            <p>No hay datos disponibles</p>
+                        </li>
+                    ) : (
+                        data.map(row => (
+                            <div className='responsive__table-body__container'>
+                                <li key={row[actionColumn]} className="responsive__table-body">
+                                    {columns.map(column => {
+
+                                        const cellValue = statusFields.includes(column.field)
+                                            ? statusMap[row[column.field]] || 'Desconocido'
+                                            : row[column.field];
+
+                                        return (
+                                            <>
+                                                <div key={column.field} className="responsive__table-col" data-label={column.label}>
+                                                    {column.field === 'avatar_user' ? (
+                                                        <img
+                                                            src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`}
+                                                            alt="Avatar"
+                                                            className="responsive__table-avatar"
+                                                        />
+                                                    ) :
+                                                        cellValue
+                                                    }
+                                                </div>
+                                            </>
+
+                                        )
+                                    })}
+
+                                    {openActionModal != row[actionColumn] ? (
+                                        <div className='actions__modal-button'>
+                                            <ButtonBlue
+                                                title={":"}
+                                                onClick={() => openActionsModal(row[actionColumn])}
+                                            />
+                                        </div>
+                                    ) : ''}
 
 
-                    ))
+                                    {openActionModal != 'closed' && openActionModal === row[actionColumn] && (
+                                        <div className="actions__modal">
+                                            {showActions.view && actions.view && (
+                                                <ButtonImgTxt onClick={() => actions.view(row)} title={buttonOneInfo.title} img={buttonOneInfo.img} color={buttonOneInfo.color} />
+                                            )}
+                                            {showActions.edit && actions.edit && (
+                                                <ButtonImgTxt onClick={() => actions.edit(row)} title={buttonTwoInfo.title} img={buttonTwoInfo.img} color={buttonTwoInfo.color} />
+                                            )}
+                                            {showActions.delete && actions.delete && (
+                                                <ButtonImgTxt onClick={() => actions.delete(row)} title={buttonTreeInfo.title} img={buttonTreeInfo.img} color={buttonTreeInfo.color} />
+                                            )}
+                                            <div className='actions__modal-button__close__container'>
+                                                <button className='actions__modal-button__close' onClick={closeActionsModal}>X</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </li>
 
-                )}
-            </ul>
-        </div>
+                            </div>
+                        ))
+
+                    )}
+                </ul>
+            </div>
 
             <div className='table__primary__pagination'>
                 <div className='table__primary__pagination__info'>
-                    <p>{`Cantidad total de ${paginationLabelInfo}: ${totalResults}`}</p>
+                    <p>{`Cantidad Total de ${paginationLabelInfo}: ${totalResults}`}</p>
                 </div>
 
                 <div className='table__primary__pagination__buttons'>
@@ -257,13 +299,13 @@ const TestTable = ({
                     </div>
 
                     <span className='table__primary__pagination__current-page'>
-                        {currentPage}
+                        {`${currentPage} de ${totalPages}`}
                     </span>
 
                     <div className='table__primary__pagination__next'>
                         <button
                             onClick={() => handlePagination(pagination.offset + pagination.limit)}
-                            disabled={currentPage === totalPages} // Deshabilitar si está en la última página
+                            disabled={currentPage === totalPages}
                         >
                             &gt;
                         </button>
@@ -275,4 +317,4 @@ const TestTable = ({
     );
 };
 
-export default TestTable;
+export default ResponsiveTable;

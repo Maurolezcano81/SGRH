@@ -7,10 +7,9 @@ import UserDown from "../../../assets/Icons/Buttons/UserDown.png"
 import { useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
-import TableTest from '../../../components/Table/TestTable';
-import TestTable from '../../../components/Table/TestTable';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
+import ResponsiveTable from '../../../components/Table/ResponsiveTable';
 
 const ListUsers = () => {
 
@@ -129,40 +128,43 @@ const ListUsers = () => {
 
 
     return (
-        <>
-            {successMessage && <AlertSuccesfully message={successMessage} />}
-            {errorMessage && <ErrorMessage message={errorMessage} />}
+        <div className=''>
+            <div className='container__content'>
+                {successMessage && <AlertSuccesfully message={successMessage} />}
+                {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TestTable
-                addButtonTitle={addButtonTitle}
-                url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
-                authToken={authData.token}
-                columns={columns}
-                filterConfigs={filterConfigs}
-                searchOptions={searchOptions}
-                initialSearchField={'name_entity'}
-                initialSearchTerm={''}
-                initialSort={{ field: 'name_entity', order: 'ASC' }}
-                actions={{
-                    view: navigateProfile,
-                    edit: (row) => console.log("Editar", row),
-                    delete: updateStatus,
-                }}
-                showActions={{
-                    view: true,
-                    edit: false,
-                    delete: true
-                }}
-                actionColumn='id_user'
-                title_table={"Listado de Personal"}
-                paginationLabelInfo={"Usuarios"}
-                buttonOneInfo={{ img: User, color: "blue", title: "Ver" }}
-                buttonTreeInfo={{ img: UserDown, color: "black", title: "Dar de baja" }}
-                isStatusUpdated={isStatusUpdated}
-            />
+                <ResponsiveTable
+                    addButtonTitle={addButtonTitle}
+                    url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
+                    authToken={authData.token}
+                    columns={columns}
+                    filterConfigs={filterConfigs}
+                    searchOptions={searchOptions}
+                    initialSearchField={'name_entity'}
+                    initialSearchTerm={''}
+                    initialSort={{ field: 'name_entity', order: 'ASC' }}
+                    actions={{
+                        view: navigateProfile,
+                        edit: (row) => console.log("Editar", row),
+                        delete: updateStatus,
+                    }}
+                    showActions={{
+                        view: true,
+                        edit: false,
+                        delete: true
+                    }}
+                    actionColumn='id_user'
+                    title_table={"Listado de Personal"}
+                    paginationLabelInfo={"Usuarios"}
+                    buttonOneInfo={{ img: User, color: "blue", title: "Ver" }}
+                    buttonTreeInfo={{ img: UserDown, color: "black", title: "Dar de baja" }}
+                    isStatusUpdated={isStatusUpdated}
+                />
+            </div>
 
 
-        </>
+
+        </div>
 
     );
 }

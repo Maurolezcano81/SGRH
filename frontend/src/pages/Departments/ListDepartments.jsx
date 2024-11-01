@@ -9,7 +9,7 @@ import AlertSuccesfully from '../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../components/Alerts/ErrorMessage';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalAdd from '../../components/Modals/ModalAdd';
-import TestTable from '../../components/Table/TestTable';
+import ResponsiveTable from '../../components/Table/ResponsiveTable';
 
 
 const LisDepartment = () => {
@@ -99,8 +99,8 @@ const LisDepartment = () => {
                     handleModalAdd={handleOpenModalAdd}
                 />
             )}
-
-            <TestTable
+    
+            <ResponsiveTable
                 addButtonTitle={handleOpenModalAdd}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENTS_INFO}`}
                 authToken={authData.token}

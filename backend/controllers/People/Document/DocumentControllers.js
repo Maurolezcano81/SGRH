@@ -8,30 +8,78 @@ class DocumentControllers {
     this.entityDocument = new BaseModel('entity_document', 'value_ed');
   }
 
-  async getDocuments(req, res) {
+  async getAllWPagination(req, res) {
     try {
-      const { limit, offset, order, typeOrder, filters } = req.body;
-      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
+      const { limit, offset, order, orderBy, filters } = req.body;
 
-      if (queryResponse.length < 1) {
+      const list = await this.model.getAllPaginationWhere(limit, offset, order, orderBy, filters);
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los tipos de documento, compruebe su conexión a internet e intente reiniciando el sitio',
+        });
+      }
+
+      if (list.length < 1) {
+        return res.status(200).json({
+          list: []
+        });
+      }
+
+      const getTotalResults = await this.model.getTotalResultsAllPaginationWhere('id_document', filters)
+
+      if (getTotalResults.length < 1) {
         return res.status(200).json({
           message: 'No hay tipos de documento disponibles',
+          total: 0
+        });
+      }
+
+
+      return res.status(200).json({
+        message: 'Tipos de documento obtenidos correctamente',
+        list,
+        total: getTotalResults[0].total
+      });
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de Documento",
+      });
+    }
+  }
+
+  async getActives(req, res) {
+    try {
+      const { filters } = req.body;
+
+      const list = await this.model.getAllPaginationWhereFilteredActives('status_document', filters);
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los tipos de documento, compruebe su conexión a internet e intente reiniciando el sitio',
+        });
+      }
+
+      if (list.length < 1) {
+        return res.status(200).json({
+          list: []
         });
       }
 
       return res.status(200).json({
         message: 'Tipos de documento obtenidos correctamente',
-        queryResponse,
+        list,
       });
     } catch (error) {
       console.error('Error en controlador de documento: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de Documento",
       });
     }
   }
 
-  async getDocument(req, res) {
+  async getOne(req, res) {
     const { value_document } = req.body;
     try {
       if (isInputEmpty(value_document)) {
@@ -56,77 +104,102 @@ class DocumentControllers {
     }
   }
 
-  async createDocument(req, res) {
+  async createOne(req, res) {
     const { name_document } = req.body;
     try {
       if (isInputEmpty(name_document)) {
-        throw new Error('Debes completar todos los campos');
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
+
       if (isNotAToZ(name_document)) {
-        throw new Error('El documento no debe contener caracteres especiales');
+        return res.status(422).json({
+          message: "El documento no debe contener caracteres especiales"
+        })
       }
 
       const checkExists = await this.model.getOne(name_document, this.nameFieldToSearch);
 
       if (checkExists && checkExists.length > 0) {
-        throw new Error('Tipo de documento ya existente');
+        return res.status(403).json({
+          message: "Tipo de documento ya existente"
+        })
       }
 
       const queryResponse = await this.model.createOne({ name_document });
 
+
       if (!queryResponse) {
-        throw new Error('Error al crear tipo de documento');
+        return res.status(500).json({
+          message: "Ha ocurrido un error al crear el tipo de documento"
+        })
       }
 
       return res.status(200).json({
-        message: 'Tipo de documento creado exitosamente',
+        message: 'Documento creado exitosamente',
         queryResponse,
       });
+
     } catch (error) {
       console.error('Error en controlador de documento: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al crear el tipo de Documento",
       });
     }
   }
 
-  async updateDocument(req, res) {
+  async updateOne(req, res) {
     const { id_document, name_document, status_document } = req.body;
     try {
       if (isInputEmpty(name_document)) {
-        throw new Error('Debes completar todos los campos');
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
-      if (isNotAToZ(name_document)) {
-        throw new Error('El tipo de documento no debe contener caracteres especiales');
+      if (isInputEmpty(name_document)) {
+        return res.status(422).json({
+          message: "El documento no debe contener caracteres especiales"
+        })
       }
 
       if (isNotNumber(id_document)) {
-        throw new Error('Los datos del tipo de documento son inválidos');
+        return res.status(403).json({
+          message: "Los datos de estado del documento son inválidos"
+        })
       }
 
       if (isNotNumber(status_document)) {
-        throw new Error('Los datos de estado del tipo de documento son inválidos');
+        return res.status(403).json({
+          message: "Los datos de estado del documento son inválidos"
+        })
       }
 
       const checkExists = await this.model.getOne(id_document, this.nameFieldId);
 
       if (checkExists.length < 1) {
-        throw new Error('No se puede actualizar este tipo de documento, debido a que no existe');
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de documento, debido a que no existe'
+        })
       }
 
       const checkDuplicate = await this.model.getOne(name_document, 'name_document');
 
       if (checkDuplicate.length > 0) {
-        return res.status(403).json({
-          message: 'No se puede actualizar, debido a que ya es un registro existente'
-        })
+        if (checkDuplicate[0].id_document != id_document) {
+          return res.status(403).json({
+            message: 'No se puede actualizar, debido a que ya es un registro existente'
+          })
+        }
       }
 
       const queryResponse = await this.model.updateOne({ name_document, status_document }, [this.nameFieldId, id_document]);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al actualizar datos del documento');
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de Documento",
+        });
       }
 
       return res.status(200).json({
@@ -135,54 +208,28 @@ class DocumentControllers {
       });
     } catch (error) {
       console.error('Error en controlador de documento: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el tipo de Documento",
       });
     }
   }
 
-  async toggleStatusDocument(req, res) {
-    const { id_document, status_document } = req.body;
-    try {
-      if (isNotNumber(id_document)) {
-        throw new Error('Los datos del tipo de documento son inválidos');
-      }
-
-      const checkExists = await this.model.getOne(id_document, this.nameFieldId);
-
-      if (checkExists.length < 1) {
-        throw new Error('No se puede actualizar el tipo de documento, debido a que no existe');
-      }
-
-      const queryResponse = await this.model.updateOne({ status_document }, [this.nameFieldId, id_document]);
-
-      if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al cambiar estado del tipo de documento');
-      }
-
-      return res.status(200).json({
-        message: 'El estado ha sido actualizado correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
-      return res.status(403).json({
-        message: error.message,
-      });
-    }
-  }
-
-  async deleteDocument(req, res) {
+  async deleteOne(req, res) {
     const { id_document } = req.body;
     try {
+
       if (isNotNumber(id_document)) {
-        throw new Error('Ha ocurrido un error al eliminar el tipo de documento, intente reiniciando el sitio');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de documento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       const queryResponse = await this.model.deleteOne(id_document, this.nameFieldId);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al eliminar el tipo de documento');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de documento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       return res.status(200).json({
@@ -192,15 +239,52 @@ class DocumentControllers {
     } catch (error) {
       console.error('Error en controlador de documento: ' + error);
       return res.status(403).json({
-        message: error.message,
+        message: "Ha occurrido un error al eliminar el tipo de documento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema",
+      });
+    }
+  }
+
+
+  async toggleStatus(req, res) {
+    const { id_document, status_document } = req.body;
+    try {
+
+      if (isNotNumber(id_document)) {
+        return res.status(403).json({
+          message: "Los datos de estado del documento son inválidos"
+        })
+      }
+
+      const checkExists = await this.model.getOne(id_document, this.nameFieldId);
+
+      if (checkExists.length < 1) {
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de documento, debido a que no existe'
+        })
+      }
+
+      const queryResponse = await this.model.updateOne({ status_document }, [this.nameFieldId, id_document]);
+
+      if (queryResponse.affectedRows < 1) {
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de Documento",
+        });
+      }
+
+      return res.status(200).json({
+        message: 'El estado ha sido actualizado correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el estado del tipo de Documento",
       });
     }
   }
 
   async updateEntityDocument(req, res) {
     const { id_ed, entity_fk, value_ed, document_fk } = req.body;
-
-      console.log(req.body);
     try {
       const queryResponse = await this.entityDocument.updateOne({ value_ed, document_fk }, ['id_ed', id_ed]);
 
@@ -246,7 +330,7 @@ class DocumentControllers {
     }
   }
 
-  async createEntityDocument(req, res){
+  async createEntityDocument(req, res) {
     const { entity_fk, value_ed, document_fk } = req.body;
 
     try {

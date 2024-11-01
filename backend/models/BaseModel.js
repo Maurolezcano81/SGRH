@@ -17,8 +17,17 @@ class BaseModel {
     async getAllPaginationWhere(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
-            const query = `SELECT * FROM ${this.model} ${whereClause} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
+            const query = `
+                SELECT 
+                *
+                FROM ${this.model}
+                ${whereClause}
+                ORDER BY ${order} ${orderBy} 
+                LIMIT ? OFFSET ?
+                `
+
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+
             return results;
         } catch (error) {
             console.error("Error en getAllPaginationWhere:", error.message);
@@ -33,7 +42,10 @@ class BaseModel {
             SELECT 
             count(DISTINCT ${field_to_count}) as 'total' 
             FROM ${this.model} 
-            ${whereClause}`;
+                ${whereClause}
+                
+                `
+
             const [results] = await this.con.promise().query(query, [...values]);
             return results;
         } catch (error) {
