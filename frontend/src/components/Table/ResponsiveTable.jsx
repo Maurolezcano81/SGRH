@@ -137,10 +137,10 @@ const ResponsiveTable = ({
     };
 
 
-    const totalPages = Math.ceil(pagination.total / pagination.limit);
+    const totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
-    const statusFields = ['status', 'status_sex'];
+    const statusFields = ['status', 'status_sex', 'status_document'];
 
     const statusMap = {
         1: 'Activo',

@@ -117,7 +117,7 @@ const ModalUpdate = ({
             </div>
           </form>
           {errorMessage && (
-            <div className="preferences__modal__error">
+            <div className="preferences__modal__error error-message">
               <p>{errorMessage}</p>
             </div>
           )}

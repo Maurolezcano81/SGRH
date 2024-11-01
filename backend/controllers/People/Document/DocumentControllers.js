@@ -42,7 +42,7 @@ class DocumentControllers {
         total: getTotalResults[0].total
       });
     } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
+      console.error('Error en controlador GetAllWPagination de documento: ' + error);
       return res.status(500).json({
         message: "Ha occurrido un error al obtener los tipos de Documento",
       });
@@ -72,7 +72,7 @@ class DocumentControllers {
         list,
       });
     } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
+      console.error('Error en controlador GetActives de documento: ' + error);
       return res.status(500).json({
         message: "Ha occurrido un error al obtener los tipos de Documento",
       });
@@ -97,7 +97,7 @@ class DocumentControllers {
         queryResponse,
       });
     } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
+      console.error('Error en controlador GetOne de documento: ' + error);
       return res.status(403).json({
         message: error.message,
       });
@@ -108,13 +108,13 @@ class DocumentControllers {
     const { name_document } = req.body;
     try {
       if (isInputEmpty(name_document)) {
-        return res.status(422).json({
+        return res.status(403).json({
           message: "Debes completar todos los campos"
         })
       }
 
       if (isNotAToZ(name_document)) {
-        return res.status(422).json({
+        return res.status(403).json({
           message: "El documento no debe contener caracteres especiales"
         })
       }
@@ -142,7 +142,7 @@ class DocumentControllers {
       });
 
     } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
+      console.error('Error en controlador CreateOne de documento: ' + error);
       return res.status(500).json({
         message: "Ha occurrido un error al crear el tipo de Documento",
       });
@@ -153,13 +153,13 @@ class DocumentControllers {
     const { id_document, name_document, status_document } = req.body;
     try {
       if (isInputEmpty(name_document)) {
-        return res.status(422).json({
+        return res.status(403).json({
           message: "Debes completar todos los campos"
         })
       }
 
       if (isInputEmpty(name_document)) {
-        return res.status(422).json({
+        return res.status(403).json({
           message: "El documento no debe contener caracteres especiales"
         })
       }
@@ -176,6 +176,11 @@ class DocumentControllers {
         })
       }
 
+      if (isNotAToZ(name_document)) {
+        return res.status(403).json({
+          message: "El documento no debe contener caracteres especiales"
+        })
+      }
       const checkExists = await this.model.getOne(id_document, this.nameFieldId);
 
       if (checkExists.length < 1) {
@@ -207,7 +212,7 @@ class DocumentControllers {
         queryResponse,
       });
     } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
+      console.error('Error en controlador UpdateOne de documento: ' + error);
       return res.status(500).json({
         message: "Ha occurrido un error al actualizar el tipo de Documento",
       });
@@ -237,7 +242,7 @@ class DocumentControllers {
         queryResponse,
       });
     } catch (error) {
-      console.error('Error en controlador de documento: ' + error);
+      console.error('Error en controlador DeleteOne de documento: ' + error);
       return res.status(403).json({
         message: "Ha occurrido un error al eliminar el tipo de documento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema",
       });

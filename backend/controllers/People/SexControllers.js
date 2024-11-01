@@ -14,8 +14,6 @@ class SexControllers {
       const { limit, offset, order, orderBy, filters } = req.body;
 
       const list = await this.model.getAllPaginationWhere(limit, offset, order, orderBy, filters);
-      console.log(list)
-
 
       if (!list) {
         return res.status(500).json({
@@ -176,6 +174,12 @@ class SexControllers {
       if (isNotNumber(status_sex)) {
         return res.status(403).json({
           message: "Los datos de estado del sexo son inválidos"
+        })
+      }
+
+      if (isNotAToZ(name_sex)) {
+        return res.status(422).json({
+          message: "El sexo no debe contener caracteres especiales"
         })
       }
 

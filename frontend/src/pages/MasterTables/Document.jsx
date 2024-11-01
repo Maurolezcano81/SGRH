@@ -1,25 +1,37 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../../components/Modals/ModalAdd';
-import ModalUpdate from '../../components/Modals/ModalUpdate';
-import ModalDelete from '../../components/Modals/ModalDelete';
 import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
+import TestTable from '../../components/Table/ResponsiveTable';
+import User from '../../assets/Icons/Buttons/User.png'
+import UserDown from '../../assets/Icons/Buttons/UserDown.png';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import Edit from '../../assets/Icons/Buttons/Edit.png';
+import Trash from '../../assets/Icons/Buttons/Trash.png';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
 
-const Document = () => {
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [documents, setDocuments] = useState([]);
-  const [documentsFormatted, setDocumentsFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
-
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-
-  const {storageNavbarTitle}  = useNav();
-
+const Sex = () => {
+  const { storageNavbarTitle } = useNav();
   const location = useLocation();
+  const { authData } = useAuth();
+
+
+  const columns = [
+    { field: 'name_document', label: 'Nombre' },
+    { field: 'status_document', label: 'Estado' }
+  ];
+
+  const filterConfigs = [];
+  const searchOptions = [
+    { value: 'name_document', label: 'Nombre' },
+  ];
+
+
+  const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+  const updateStatus = () => {
+    setIsStatusUpdated(!isStatusUpdated);
+  };
 
   useEffect(() => {
     const pathParts = location.pathname.split('/');
@@ -28,136 +40,97 @@ const Document = () => {
   }, [location.pathname, storageNavbarTitle]);
 
 
-  // MODALES
-  const [toggleModalAdd, setToggleModalAdd] = useState(false);
-  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-  const [toggleModalDelete, setToggleModalDelete] = useState(false);
-
-  // ESTADOS DE ID
-  const [idToGet, setIdToGet] = useState(null);
-  const [idToToggle, setIdToToggle] = useState(null);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  // ESTADOS PARA ACTUALIZAR EL COMPONENTE PRINCIPAL
-  const [isNewField, setIsNewField] = useState(false);
-  const [isStatusChanged, setIsStatusChanged] = useState(false);
-  const [isUpdatedField, setIsUpdatedField] = useState(false);
-  const [isDeletedField, setIsDeletedField] = useState(false);
-
-  // CONTEXTO GLOBAL
-  const { authData } = useAuth();
-
-  // VARIABLES CON LAS PETICIONES FETCH
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT}`;
   const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_DOCUMENT}`;
   const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_DOCUMENT}`;
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_DOCUMENT}`;
   const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_DOCUMENT}`;
   const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_DOCUMENT}`;
-  
-  // ARRAY PARA MAPEAR EN LA TABLA
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const fetchResponse = await fetch(getAllUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
-        if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de documentos');
-        }
 
-        const data = await fetchResponse.json();
-        if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setDocuments([]);
-          setDocumentsFormatted([]);
-        } else {
-          setDocuments(data.queryResponse);
-          formatDocuments(data.queryResponse);
-          setNoDataMessage('');
-        }
-      } catch (error) {
-        console.error('Error al obtener los tipos de documentos', error);
-      }
-    };
 
-    fetchDocuments();
-  }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatDocuments = (documents) => {
-    const formatted = documents.map((document) => ({
-      ...document,
-    }));
-    setDocumentsFormatted(formatted);
-  };
-  // ARRAY PARA MAPEAR EN LA TABLA
+  // MODAL ADD
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-  // FUNCIONES PARA MANEJAR MODALES
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
+  const handleModalAddOpen = () => {
+    setIsModalAddOpen(true)
+  }
 
-  const handleModalUpdate = (item) => {
-    setIdToGet(item.id_document);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
-  // FUNCIONES PARA MANEJAR MODALES
+  const handleModalAddClose = () => {
+    setIsModalAddOpen(false)
+  }
 
-  const handleModalDelete = () => {
-    setToggleModalDelete(!toggleModalDelete);
-  };
+  // MODAL ADD
 
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
-  const handleDelete = (item) => {
-    setIdToDelete(item.id_document);
-  };
+  // MODAL UPDATE
 
-  const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_document);
-  };
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [idToGet, setIdToGet] = useState("");
 
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
-  const onSubmitUpdate = () => {
-    setIsUpdatedField(!isUpdatedField);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
+  const handleModalUpdateOpen = (row) => {
+    setIdToGet(row.id_document)
+    setIsModalUpdateOpen(true)
+  }
 
-  const onSubmitDelete = () => {
-    setToggleModalDelete(false);
-    setIsDeletedField(!isDeletedField);
-  };
+  const handleModalUpdateClose = () => {
+    setIdToGet("")
+    setIsModalUpdateOpen(false)
+    updateStatus()
+  }
 
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
+  // MODAL UPDATE
 
-  const handleDependencyToggle = () => {
-    setIsStatusChanged(!isStatusChanged);
-  };
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
+  // MODAL DELETE
+
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+
+
+  const handleModalDeleteOpen = (row) => {
+    setIdToGet(row.id_document)
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIdToGet("")
+    setIsModalDeleteOpen(false)
+    updateStatus()
+  }
+
+  // MODAL DELETE
+
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Tipo de Documento" onClick={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nuevo Tipo de Documento'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
-          method={'POST'}
-          fetchData={['name_document']}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
 
-      {toggleModalUpdate && (
+      <TestTable
+        addButtonTitle={handleModalAddOpen}
+        url={getAllUrl}
+        authToken={authData.token}
+        columns={columns}
+        filterConfigs={filterConfigs}
+        searchOptions={searchOptions}
+        initialSearchField={'name_document'}
+        initialSearchTerm={''}
+        initialSort={{ field: 'name_document', order: 'ASC' }}
+        actions={{
+          view: (row) => handleModalUpdateOpen(row),
+          edit: (row) => handleModalDeleteOpen(row),
+          delete: (row) => console.log("Editar", row),
+        }}
+        showActions={{
+          view: true,
+          edit: true,
+          delete: false
+        }}
+        actionColumn='id_document'
+        title_table={"Tipos de Documento"}
+        paginationLabelInfo={"Tipos de Documento"}
+        buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
+        buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        isStatusUpdated={isStatusUpdated}
+      />
+
+      {isModalUpdateOpen && (
         <ModalUpdate
           title_modal={'Editar Documento'}
           labels={['Nombre']}
@@ -169,51 +142,40 @@ const Document = () => {
           idFetchData="value_document"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_document"}
+          onSubmitUpdate={handleModalUpdateClose}
+          handleModalUpdate={handleModalUpdateClose}
+          fetchData_select={'status_document'}
         />
       )}
 
-      {toggleModalDelete && (
+      {isModalAddOpen && (
+        <ModalAdd
+          title_modal={'Nuevo Tipo de Documento'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
+          method={'POST'}
+          fetchData={['name_document']}
+          createOne={createOne}
+          handleDependencyAdd={updateStatus}
+          handleModalAdd={handleModalAddClose}
+        />
+      )}
+
+
+
+      {isModalDeleteOpen && (
         <ModalDelete
-          handleModalDelete={handleModalDelete}
+          handleModalDelete={handleModalDeleteClose}
           deleteOne={deleteOne}
           field_name={'id_document'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
+          idToDelete={idToGet}
+          onSubmitDelete={handleModalDeleteClose}
         />
       )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-          {documentsFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={documentsFormatted}
-              keys={['name_document']}
-              status_name={['id_document', 'status_document']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
-          ) : (
-            <tr>
-              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    </>
+
   );
 };
 
-export default Document;
+export default Sex;

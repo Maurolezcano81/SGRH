@@ -5,7 +5,7 @@ import DocumentControllers from '../../../controllers/People/Document/DocumentCo
 const document = new DocumentControllers();
 // DOCUMENT ROUTES
 router.post('/document/create', document.createOne.bind(document));
-router.get('/documents', document.getAllWPagination.bind(document));
+router.post('/documents', document.getAllWPagination.bind(document));
 router.post('/document', document.getOne.bind(document));
 router.patch('/document', document.updateOne.bind(document));
 router.patch('/document/status', document.toggleStatus.bind(document));
