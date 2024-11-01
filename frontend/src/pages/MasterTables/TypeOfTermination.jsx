@@ -24,7 +24,7 @@ const TypeOfTermination = () => {
   
       useEffect(() => {
           updateBreadcrumbs([
-              { name: 'Lista de Usuarios', url: '/rrhh/personal/ver' },
+              { name: 'Tipos de Terminación', url: '/rrhh/ajustes/tipo_renuncia' },
           ]);
       }, []);
 

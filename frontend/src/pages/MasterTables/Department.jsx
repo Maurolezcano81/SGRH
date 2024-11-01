@@ -10,12 +10,22 @@ import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
 const Department = () => {
   const { storageNavbarTitle } = useNav();
   const location = useLocation();
   const { authData } = useAuth();
 
+
+  const { updateBreadcrumbs } = useBreadcrumbs();
+  
+  useEffect(() => {
+      updateBreadcrumbs([
+          { name: 'Departamentos', url: '/rrhh/ajustes/departamento' },
+      ]);
+  }, []);
 
   const columns = [
     { field: 'name_department', label: 'Nombre' },

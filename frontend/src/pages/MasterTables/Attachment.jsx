@@ -10,12 +10,22 @@ import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+
 
 const Attachment = () => {
   const { storageNavbarTitle } = useNav();
   const location = useLocation();
   const { authData } = useAuth();
 
+  const { updateBreadcrumbs } = useBreadcrumbs();
+  
+  useEffect(() => {
+      updateBreadcrumbs([
+          { name: 'Tipos de Anexo', url: '/rrhh/ajustes/tipo_anexo' },
+      ]);
+  }, []);
 
   const columns = [
     { field: 'name_ta', label: 'Nombre' },

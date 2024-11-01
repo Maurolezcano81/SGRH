@@ -10,12 +10,21 @@ import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
 const Sex = () => {
   const { storageNavbarTitle } = useNav();
   const location = useLocation();
   const { authData } = useAuth();
 
+  const { updateBreadcrumbs } = useBreadcrumbs();
+  
+  useEffect(() => {
+      updateBreadcrumbs([
+          { name: 'Tipos de Sexo', url: '/rrhh/ajustes/sexo' },
+      ]);
+  }, []);
 
   const columns = [
     { field: 'name_sex', label: 'Nombre' },
