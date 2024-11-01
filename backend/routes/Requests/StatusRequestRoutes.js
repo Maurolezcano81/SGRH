@@ -5,12 +5,12 @@ import StatusRequestControllers from '../../controllers/Requests/StatusRequestCo
 
 const statusRequest = new StatusRequestControllers();
 // STATUS REQUEST ROUTES
-router.post('/status_request/create', statusRequest.createStatusRequest.bind(statusRequest));
-router.post('/status_request', statusRequest.getStatusRequest.bind(statusRequest));
-router.get('/statuses_request', statusRequest.getStatusesRequest.bind(statusRequest));
-router.patch('/status_request', statusRequest.updateStatusRequest.bind(statusRequest));
-router.patch('/status_request/status', statusRequest.toggleStatusRequest.bind(statusRequest));
-router.delete('/status_request', statusRequest.deleteStatusRequest.bind(statusRequest));
+router.post('/status_request/create', statusRequest.createOne.bind(statusRequest));
+router.post('/statuses_request', statusRequest.getAllWPagination.bind(statusRequest));
+router.post('/status_request', statusRequest.getOne.bind(statusRequest));
+router.patch('/status_request', statusRequest.updateOne.bind(statusRequest));
+router.patch('/status_request/status', statusRequest.toggleStatus.bind(statusRequest));
+router.delete('/status_request', statusRequest.deleteOne.bind(statusRequest));
 
 const StatusRequestRoutes = {
   router,

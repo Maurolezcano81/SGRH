@@ -45,6 +45,7 @@ import HomeQuizPerformancePersonal from './pages/Questionnaire/Performance/Perso
 import HomeNavigationMenu from './pages/NavigationMenu/HomeNavigationMenu';
 import Breadcrumbs from './components/Breadcrumbs/Breadcrumbs';
 import { BreadcrumbProvider } from './contexts/BreadcrumbsContext';
+import TypeOfLeave from './pages/MasterTables/TypeOfLeave';
 
 
 function App() {
@@ -99,6 +100,7 @@ function App() {
                     <Route path="departamento" element={<Department />} />
                     <Route path="tipo_asunto_mensaje" element={<Subject />} />
                     <Route path="tipo_anexo" element={<Attachment />} />
+                    <Route path="tipo_licencia" element={<TypeOfLeave />} />
                   </Route>
                   <Route path="solicitud/*">
                     <Route path="capacitacion" element={<RrhhCapacitation />} />

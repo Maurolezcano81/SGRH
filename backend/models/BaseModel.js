@@ -167,14 +167,15 @@ class BaseModel {
     async getAllPaginationWhereFilteredActives(field_status, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+
             const query = `SELECT 
             * 
             FROM ${this.model} 
             WHERE ${field_status} = 1 ${whereClause.length > 0 ? 'AND' : ''}
             ${whereClause} 
-            where
             `;
-            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+
+            const [results] = await this.con.promise().query(query, [...values]);
             return results;
         } catch (error) {
             console.error("Error en getAllPaginationWhere:", error.message);

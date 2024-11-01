@@ -31,6 +31,8 @@ const Preferences = () => {
 
           <LinkPreference path="tipo_asunto_mensaje" name="Tipos de Asuntos de Mensajes" />
 
+          <LinkPreference path="tipo_licencia" name="Tipos de Licencia" />
+
 
       </div>
 

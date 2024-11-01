@@ -140,192 +140,282 @@ class DepartmentController {
 
   }
 
-  async getDepartments(req, res) {
-    const { offset, order, typeOrder, filters } = req.body;
+  async getAllWPagination(req, res) {
     try {
-      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
+      const { limit, offset, order, orderBy, filters } = req.body;
 
-      if (queryResponse.length < 1) {
+      const list = await this.model.getAllPaginationWhere(limit, offset, order, orderBy, filters);
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los tipos de departamento, compruebe su conexión a internet e intente reiniciando el sitio',
+        });
+      }
+
+      if (list.length < 1) {
         return res.status(200).json({
-          message: 'No hay departamentos disponibles',
+          list: []
+        });
+      }
+
+      const getTotalResults = await this.model.getTotalResultsAllPaginationWhere('id_department', filters)
+
+      if (getTotalResults.length < 1) {
+        return res.status(200).json({
+          message: 'No hay tipos de departamento disponibles',
+          total: 0
+        });
+      }
+
+
+      return res.status(200).json({
+        message: 'Tipos de departamento obtenidos correctamente',
+        list,
+        total: getTotalResults[0].total
+      });
+    } catch (error) {
+      console.error('Error en controlador GetAllWPagination de departamento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de departamento",
+      });
+    }
+  }
+
+  async getActives(req, res) {
+    try {
+      const { filters } = req.body;
+
+      const list = await this.model.getAllPaginationWhereFilteredActives('status_department', filters);
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los tipos de departamento, compruebe su conexión a internet e intente reiniciando el sitio',
+        });
+      }
+
+      if (list.length < 1) {
+        return res.status(200).json({
+          list: []
         });
       }
 
       return res.status(200).json({
-        message: "Lista de usuarios obtenida con exito",
-        queryResponse: queryResponse,
-      })
+        message: 'Tipos de departamento obtenidos correctamente',
+        list,
+      });
     } catch (error) {
-      console.error('Error en controlador de departamento - getDepartments: ' + error.message);
-      return res.status(403).json({
-        message: error.message,
+      console.error('Error en controlador GetActives de departamento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de departamento",
       });
     }
   }
 
-  async getDepartment(req, res) {
-    const { id_department } = req.body;
+  async getOne(req, res) {
+    const { value_department } = req.body;
     try {
-      if (isInputEmpty(id_department)) {
-        throw new Error('El ID del departamento es inválido');
+      if (isInputEmpty(value_department)) {
+        throw new Error('Los datos que estás utilizando para la búsqueda de tipo de departamento son inválidos');
       }
 
-      const queryResponse = await this.model.getOne(id_department, this.nameFieldId);
+      const queryResponse = await this.model.getOne(value_department, this.nameFieldId);
 
       if (queryResponse.length < 1) {
-        throw new Error('Departamento no encontrado');
+        throw new Error('Error al obtener el departamento');
       }
 
       return res.status(200).json({
-        message: 'Departamento obtenido correctamente',
+        message: 'Tipo de departamento obtenido correctamente',
         queryResponse,
       });
     } catch (error) {
-      console.error('Error en controlador de departamento - getDepartment: ' + error.message);
+      console.error('Error en controlador GetOne de departamento: ' + error);
       return res.status(403).json({
         message: error.message,
       });
     }
   }
 
-  async createDepartment(req, res) {
+  async createOne(req, res) {
     const { name_department } = req.body;
     try {
       if (isInputEmpty(name_department)) {
-        throw new Error('Debes completar todos los campos');
+        return res.status(403).json({
+          message: "Debes completar todos los campos"
+        })
       }
+
       if (isNotAToZ(name_department)) {
-        throw new Error('El nombre del departamento no debe contener caracteres especiales');
+        return res.status(403).json({
+          message: "El departamento no debe contener caracteres especiales"
+        })
       }
 
       const checkExists = await this.model.getOne(name_department, this.nameFieldToSearch);
 
-      if (checkExists.length > 0) {
-        throw new Error('Departamento ya existente');
+      if (checkExists && checkExists.length > 0) {
+        return res.status(403).json({
+          message: "Tipo de departamento ya existente"
+        })
       }
 
       const queryResponse = await this.model.createOne({ name_department });
+
+
       if (!queryResponse) {
-        throw new Error('Error al crear el departamento');
+        return res.status(500).json({
+          message: "Ha ocurrido un error al crear el tipo de departamento"
+        })
       }
 
       return res.status(200).json({
-        message: 'Departamento creado exitosamente',
+        message: 'departamento creado exitosamente',
         queryResponse,
       });
+
     } catch (error) {
-      console.error('Error en controlador de departamento - createDepartment: ' + error.message);
-      return res.status(403).json({
-        message: error.message,
+      console.error('Error en controlador CreateOne de departamento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al crear el tipo de departamento",
       });
     }
   }
 
-  async updateDepartment(req, res) {
+  async updateOne(req, res) {
     const { id_department, name_department, status_department } = req.body;
-
     try {
-      if (isInputEmpty(name_department) || isInputEmpty(status_department)) {
-        throw new Error('Debes completar todos los campos');
+      if (isInputEmpty(name_department)) {
+        return res.status(403).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
-      if (isNotAToZ(name_department)) {
-        throw new Error('El nombre del departamento no debe contener caracteres especiales');
+      if (isInputEmpty(name_department)) {
+        return res.status(403).json({
+          message: "El departamento no debe contener caracteres especiales"
+        })
       }
 
       if (isNotNumber(id_department)) {
-        throw new Error('ID del departamento inválido');
+        return res.status(403).json({
+          message: "Los datos de estado del departamento son inválidos"
+        })
       }
 
       if (isNotNumber(status_department)) {
-        throw new Error('Estado del departamento inválido');
+        return res.status(403).json({
+          message: "Los datos de estado del departamento son inválidos"
+        })
       }
 
+      if (isNotAToZ(name_department)) {
+        return res.status(403).json({
+          message: "El departamento no debe contener caracteres especiales"
+        })
+      }
       const checkExists = await this.model.getOne(id_department, this.nameFieldId);
 
       if (checkExists.length < 1) {
-        throw new Error('Departamento no encontrado');
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de departamento, debido a que no existe'
+        })
       }
 
       const checkDuplicate = await this.model.getOne(name_department, 'name_department');
 
       if (checkDuplicate.length > 0) {
-        return res.status(403).json({
-          message: 'No se puede actualizar, debido a que ya es un registro existente'
-        })
+        if (checkDuplicate[0].id_department != id_department) {
+          return res.status(403).json({
+            message: 'No se puede actualizar, debido a que ya es un registro existente'
+          })
+        }
       }
 
       const queryResponse = await this.model.updateOne({ name_department, status_department }, [this.nameFieldId, id_department]);
 
-
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al actualizar el departamento');
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de departamento",
+        });
       }
 
       return res.status(200).json({
-        message: 'Departamento actualizado correctamente',
+        message: 'Tipo de departamento actualizado correctamente',
         queryResponse,
       });
     } catch (error) {
-      console.error('Error en controlador de departamento - updateDepartment: ' + error.message);
-      return res.status(403).json({
-        message: error.message,
+      console.error('Error en controlador UpdateOne de departamento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el tipo de departamento",
       });
     }
   }
 
-  async toggleStatusDepartment(req, res) {
-    const { id_department, status_department } = req.body;
-    try {
-      if (isNotNumber(id_department) || isNotNumber(status_department)) {
-        throw new Error('Datos inválidos para cambiar el estado del departamento');
-      }
-
-      const checkExists = await this.model.getOne(id_department, this.nameFieldId);
-
-      if (checkExists.length < 1) {
-        throw new Error('Departamento no encontrado');
-      }
-
-      const queryResponse = await this.model.updateOne({ status_department }, [this.nameFieldId, id_department]);
-
-      if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al cambiar el estado del departamento');
-      }
-
-      return res.status(200).json({
-        message: 'Estado del departamento actualizado correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de departamento - toggleStatusDepartment: ' + error.message);
-      return res.status(403).json({
-        message: error.message,
-      });
-    }
-  }
-
-  async deleteDepartment(req, res) {
+  async deleteOne(req, res) {
     const { id_department } = req.body;
     try {
+
       if (isNotNumber(id_department)) {
-        throw new Error('ID del departamento inválido');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de departamento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       const queryResponse = await this.model.deleteOne(id_department, this.nameFieldId);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al eliminar el departamento');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de departamento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       return res.status(200).json({
-        message: 'Departamento eliminado exitosamente',
+        message: 'Tipo de departamento eliminado exitosamente',
         queryResponse,
       });
     } catch (error) {
-      console.error('Error en controlador de departamento - deleteDepartment: ' + error.message);
+      console.error('Error en controlador DeleteOne de departamento: ' + error);
       return res.status(403).json({
-        message: error.message,
+        message: "Ha occurrido un error al eliminar el tipo de departamento, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema",
+      });
+    }
+  }
+
+
+  async toggleStatus(req, res) {
+    const { id_department, status_department } = req.body;
+    try {
+
+      if (isNotNumber(id_department)) {
+        return res.status(403).json({
+          message: "Los datos de estado del departamento son inválidos"
+        })
+      }
+
+      const checkExists = await this.model.getOne(id_department, this.nameFieldId);
+
+      if (checkExists.length < 1) {
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de departamento, debido a que no existe'
+        })
+      }
+
+      const queryResponse = await this.model.updateOne({ status_department }, [this.nameFieldId, id_department]);
+
+      if (queryResponse.affectedRows < 1) {
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de departamento",
+        });
+      }
+
+      return res.status(200).json({
+        message: 'El estado ha sido actualizado correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de departamento: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el estado del tipo de departamento",
       });
     }
   }

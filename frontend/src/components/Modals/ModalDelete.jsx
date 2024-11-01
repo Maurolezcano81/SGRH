@@ -12,7 +12,9 @@ const ModalDelete = ({
   messageToDelete = "¿Quieres eliminar este registro? Al aceptar no se puede recuperar la informacion",
   textButtonRed = "Eliminar"
 }) => {
-  const [message, setMessage] = useState('');
+
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { authData } = useAuth();
 
@@ -31,16 +33,18 @@ const ModalDelete = ({
 
       const dataFormatted = await fetchResponse.json();
 
-      if (!fetchResponse.ok) {
-        return setMessage(dataFormatted.message);
+      if (fetchResponse.status === 403) {
+        setErrorMessage(dataFormatted.message);
+        setSuccessMessage('');
+        return
       }
 
-      if (fetchResponse.status != 403) {
-        return setMessage(dataFormatted.message);
-      }
+      setSuccessMessage(dataFormatted.message);
+      setErrorMessage('');
       onSubmitDelete();
     } catch (error) {
-      console.log('catch' + error.message);
+      setErrorMessage('Error en la conexión');
+      setSuccessMessage('');
     }
   };
 
@@ -50,7 +54,10 @@ const ModalDelete = ({
         <div className="alert__header modal__delete">
           <p>{messageToDelete}</p>
         </div>
-        <div className="modal__delete__message">{message}</div>
+        <div className="modal__delete__message ">
+          {successMessage && successMessage.length > 0 && <div className="success-message">{successMessage}</div>}
+          {errorMessage && errorMessage.length > 0 && <div className="error-message">{errorMessage}</div>}
+        </div>
         <div className="alert__footer modal__delete">
           <ButtonRed onClick={handleSubmit} title={textButtonRed} />
           <ButtonBlue onClick={() => handleModalDelete()} title={'Volver'} />

@@ -2,24 +2,47 @@ import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
-
-import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
+import TestTable from '../../components/Table/ResponsiveTable';
+import User from '../../assets/Icons/Buttons/User.png'
+import UserDown from '../../assets/Icons/Buttons/UserDown.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
+import Edit from '../../assets/Icons/Buttons/Edit.png';
+import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
-const TypeTermination = () => {
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [typesTermination, setTypesTermination] = useState([]);
-  const [typesTerminationFormatted, setTypesTerminationFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
 
+const TypeOfTermination = () => {
   const { storageNavbarTitle } = useNav();
-
   const location = useLocation();
+  const { authData } = useAuth();
+
+
+      const { updateBreadcrumbs } = useBreadcrumbs();
+  
+      useEffect(() => {
+          updateBreadcrumbs([
+              { name: 'Lista de Usuarios', url: '/rrhh/personal/ver' },
+          ]);
+      }, []);
+
+  const columns = [
+    { field: 'description_tot', label: 'Nombre' },
+    { field: 'status_tot', label: 'Estado' }
+  ];
+
+  const filterConfigs = [];
+  const searchOptions = [
+    { value: 'description_tot', label: 'Nombre' },
+  ];
+
+
+  const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+  const updateStatus = () => {
+    setIsStatusUpdated(!isStatusUpdated);
+  };
 
   useEffect(() => {
     const pathParts = location.pathname.split('/');
@@ -27,192 +50,143 @@ const TypeTermination = () => {
     storageNavbarTitle(lastPart);
   }, [location.pathname, storageNavbarTitle]);
 
-  // MODALES
-  const [toggleModalAdd, setToggleModalAdd] = useState(false);
-  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-  const [toggleModalDelete, setToggleModalDelete] = useState(false);
 
-  // ESTADOS DE ID
-  const [idToGet, setIdToGet] = useState(null);
-  const [idToToggle, setIdToToggle] = useState(null);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  // ESTADOS PARA ACTUALIZAR EL COMPONENTE PRINCIPAL
-  const [isNewField, setIsNewField] = useState(false);
-  const [isStatusChanged, setIsStatusChanged] = useState(false);
-  const [isUpdatedField, setIsUpdatedField] = useState(false);
-  const [isDeletedField, setIsDeletedField] = useState(false);
-
-  // CONTEXTO GLOBAL
-  const { authData } = useAuth();
-
-  // VARIABLES CON LAS PETICIONES FETCH
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_TYPE_OF_TERMINATION}`;
   const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_TYPE_OF_TERMINATION}`;
   const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_TYPE_OF_TERMINATION}`;
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_TYPE_OF_TERMINATION}`;
   const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_TYPE_OF_TERMINATION}`;
   const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_TYPE_OF_TERMINATION}`;
-  
-  // ARRAY PARA MAPEAR EN LA TABLA
-  useEffect(() => {
-    const fetchTypeTermination = async () => {
-      try {
-        const fetchResponse = await fetch(getAllUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
-        if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los estados de solicitud');
-        }
 
-        const data = await fetchResponse.json();
-        if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setTypesTermination([]);
-          setTypesTerminationFormatted([]);
-        } else {
-          setTypesTermination(data.queryResponse);
-          formatStatuses(data.queryResponse);
-          setNoDataMessage('');
-        }
-      } catch (error) {
-        console.error('Error al obtener los estados de solicitud', error);
-      }
-    };
 
-    fetchTypeTermination();
-  }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatStatuses = (typesTermination) => {
-    const formatted = typesTermination.map((typeTermination) => ({
-      ...typeTermination,
-    }));
-    setTypesTerminationFormatted(formatted);
-  };
-  // ARRAY PARA MAPEAR EN LA TABLA
+  // MODAL ADD
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-  // FUNCIONES PARA MANEJAR MODALES
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
+  const handleModalAddOpen = () => {
+    setIsModalAddOpen(true)
+  }
 
-  const handleModalUpdate = (item) => {
-    setIdToGet(item.id_tot);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
-  // FUNCIONES PARA MANEJAR MODALES
+  const handleModalAddClose = () => {
+    setIsModalAddOpen(false)
+  }
 
-  const handleModalDelete = () => {
-    setToggleModalDelete(!toggleModalDelete);
-  };
+  // MODAL ADD
 
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
-  const handleDelete = (item) => {
-    setIdToDelete(item.id_tot);
-  };
+  // MODAL UPDATE
 
-  const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_tot);
-  };
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [idToGet, setIdToGet] = useState("");
 
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
-  const onSubmitUpdate = () => {
-    setIsUpdatedField(!isUpdatedField);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
+  const handleModalUpdateOpen = (row) => {
+    setIdToGet(row.id_tot)
+    setIsModalUpdateOpen(true)
+  }
 
-  const onSubmitDelete = () => {
-    setToggleModalDelete(false);
-    setIsDeletedField(!isDeletedField);
-  };
+  const handleModalUpdateClose = () => {
+    setIdToGet("")
+    setIsModalUpdateOpen(false)
+    updateStatus()
+  }
 
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
+  // MODAL UPDATE
 
-  const handleDependencyToggle = () => {
-    setIsStatusChanged(!isStatusChanged);
-  };
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
+  // MODAL DELETE
+
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+
+
+  const handleModalDeleteOpen = (row) => {
+    setIdToGet(row.id_tot)
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIdToGet("")
+    setIsModalDeleteOpen(false)
+    updateStatus()
+  }
+
+  // MODAL DELETE
+
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Estado" onClick={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nuevo Tipo de salida'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
-          method={'POST'}
-          fetchData={['description_tot']}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
 
-      {toggleModalUpdate && (
+      <TestTable
+        addButtonTitle={handleModalAddOpen}
+        url={getAllUrl}
+        authToken={authData.token}
+        columns={columns}
+        filterConfigs={filterConfigs}
+        searchOptions={searchOptions}
+        initialSearchField={'description_tot'}
+        initialSearchTerm={''}
+        initialSort={{ field: 'description_tot', order: 'ASC' }}
+        actions={{
+          view: (row) => handleModalUpdateOpen(row),
+          edit: (row) => handleModalDeleteOpen(row),
+          delete: (row) => console.log("Editar", row),
+        }}
+        showActions={{
+          view: true,
+          edit: true,
+          delete: false
+        }}
+        actionColumn='id_tot'
+        title_table={"Tipos de Terminación"}
+        paginationLabelInfo={"Tipos de Terminación"}
+        buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
+        buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        isStatusUpdated={isStatusUpdated}
+      />
+
+      {isModalUpdateOpen && (
         <ModalUpdate
-          title_modal={'Editar tipo de salida'}
+          title_modal={'Editar Tipo de Terminación'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
           fetchData={['description_tot']}
           getOneUrl={getSingleUrl}
-          idFetchData="id_tot"
+          idFetchData="value_tot"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
+          onSubmitUpdate={handleModalUpdateClose}
+          handleModalUpdate={handleModalUpdateClose}
           fetchData_select={'status_tot'}
         />
       )}
 
-      {toggleModalDelete && (
-        <ModalDelete
-          handleModalDelete={handleModalDelete}
-          deleteOne={deleteOne}
-          field_name={'id_tot'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
+      {isModalAddOpen && (
+        <ModalAdd
+          title_modal={'Nuevo Tipo de Terminación'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
+          method={'POST'}
+          fetchData={['description_tot']}
+          createOne={createOne}
+          handleDependencyAdd={updateStatus}
+          handleModalAdd={handleModalAddClose}
         />
       )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-          {typesTerminationFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={typesTerminationFormatted}
-              keys={['description_tot']}
-              status_name={['id_tot', 'status_tot']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
-          ) : (
-            <tr>
-              <td colSpan="3">{noDataMessage || 'No hay datos ingresados'}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+
+
+      {isModalDeleteOpen && (
+        <ModalDelete
+          handleModalDelete={handleModalDeleteClose}
+          deleteOne={deleteOne}
+          field_name={'id_tot'}
+          idToDelete={idToGet}
+          onSubmitDelete={handleModalDeleteClose}
+        />
+      )}
+
+    </>
+
   );
 };
 
-export default TypeTermination;
+export default TypeOfTermination;

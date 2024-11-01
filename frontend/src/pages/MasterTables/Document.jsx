@@ -11,7 +11,7 @@ import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
 
-const Sex = () => {
+const Document = () => {
   const { storageNavbarTitle } = useNav();
   const location = useLocation();
   const { authData } = useAuth();
@@ -178,4 +178,4 @@ const Sex = () => {
   );
 };
 
-export default Sex;
+export default Document;

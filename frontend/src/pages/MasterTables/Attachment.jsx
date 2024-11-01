@@ -11,20 +11,20 @@ import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
 
-const Sex = () => {
+const Attachment = () => {
   const { storageNavbarTitle } = useNav();
   const location = useLocation();
   const { authData } = useAuth();
 
 
   const columns = [
-    { field: 'name_attachment', label: 'Nombre' },
-    { field: 'status_attachment', label: 'Estado' }
+    { field: 'name_ta', label: 'Nombre' },
+    { field: 'status_ta', label: 'Estado' }
   ];
 
   const filterConfigs = [];
   const searchOptions = [
-    { value: 'name_attachment', label: 'Nombre' },
+    { value: 'name_ta', label: 'Nombre' },
   ];
 
 
@@ -40,7 +40,7 @@ const Sex = () => {
   }, [location.pathname, storageNavbarTitle]);
 
 
-  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.ATTACHMENT}`;
+  const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_ATTACHMENT}`;
   const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_ATTACHMENT}`;
   const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ATTACHMENT}`;
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_ATTACHMENT}`;
@@ -68,7 +68,7 @@ const Sex = () => {
   const [idToGet, setIdToGet] = useState("");
 
   const handleModalUpdateOpen = (row) => {
-    setIdToGet(row.id_attachment)
+    setIdToGet(row.id_ta)
     setIsModalUpdateOpen(true)
   }
 
@@ -86,7 +86,7 @@ const Sex = () => {
 
 
   const handleModalDeleteOpen = (row) => {
-    setIdToGet(row.id_attachment)
+    setIdToGet(row.id_ta)
     setIsModalDeleteOpen(true)
   }
 
@@ -109,9 +109,9 @@ const Sex = () => {
         columns={columns}
         filterConfigs={filterConfigs}
         searchOptions={searchOptions}
-        initialSearchField={'name_attachment'}
+        initialSearchField={'name_ta'}
         initialSearchTerm={''}
-        initialSort={{ field: 'name_attachment', order: 'ASC' }}
+        initialSort={{ field: 'name_ta', order: 'ASC' }}
         actions={{
           view: (row) => handleModalUpdateOpen(row),
           edit: (row) => handleModalDeleteOpen(row),
@@ -122,7 +122,7 @@ const Sex = () => {
           edit: true,
           delete: false
         }}
-        actionColumn='id_attachment'
+        actionColumn='id_ta'
         title_table={"Tipos de Anexo"}
         paginationLabelInfo={"Tipos de Anexo"}
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
@@ -137,14 +137,14 @@ const Sex = () => {
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
-          fetchData={['name_attachment']}
+          fetchData={['name_ta']}
           getOneUrl={getSingleUrl}
-          idFetchData="value_attachment"
+          idFetchData="value_ta"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
           onSubmitUpdate={handleModalUpdateClose}
           handleModalUpdate={handleModalUpdateClose}
-          fetchData_select={'status_attachment'}
+          fetchData_select={'status_ta'}
         />
       )}
 
@@ -154,7 +154,7 @@ const Sex = () => {
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           method={'POST'}
-          fetchData={['name_attachment']}
+          fetchData={['name_ta']}
           createOne={createOne}
           handleDependencyAdd={updateStatus}
           handleModalAdd={handleModalAddClose}
@@ -167,7 +167,7 @@ const Sex = () => {
         <ModalDelete
           handleModalDelete={handleModalDeleteClose}
           deleteOne={deleteOne}
-          field_name={'id_attachment'}
+          field_name={'id_ta'}
           idToDelete={idToGet}
           onSubmitDelete={handleModalDeleteClose}
         />
@@ -178,4 +178,4 @@ const Sex = () => {
   );
 };
 
-export default Sex;
+export default Attachment;

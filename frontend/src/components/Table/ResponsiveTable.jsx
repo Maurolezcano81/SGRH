@@ -74,7 +74,7 @@ const ResponsiveTable = ({
         });
         const data = await response.json();
         setData(data.list);
-        setTotalResults(data.total)
+        setTotalResults(data.total || 0)
         setPagination(prev => ({ ...prev, total: data.total }));
     };
 
@@ -140,7 +140,7 @@ const ResponsiveTable = ({
     const totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
-    const statusFields = ['status', 'status_sex', 'status_document'];
+    const statusFields = ['status', 'status_sex', 'status_document', 'status_department', 'status_ta', 'status_tot', 'status_sr', 'status_tol'];
 
     const statusMap = {
         1: 'Activo',

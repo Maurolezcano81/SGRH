@@ -55,7 +55,7 @@ router.get('/address/cities', city.getCities.bind(city)); // Obtener todas las c
 router.get('/address/states', state.getStates.bind(state)); // Obtener todos los estados con paginación y filtros
 
 // Attachment Routes
-router.get('/attachments', attachment.getAttachments.bind(attachment));
+router.post('/attachments/actives', attachment.getActives.bind(attachment));
 
 // Contact Routes
 router.get('/contacts', contact.getContacts.bind(contact));
@@ -67,7 +67,7 @@ router.get('/countries', country.getCountries.bind(country));
 router.get('/nacionalities', nacionality.getNacionalities.bind(nacionality));
 
 // Department Routes
-router.get('/departments', department.getDepartments.bind(department));
+router.post('/departments/actives', department.getActives.bind(department));
 
 // Occupation Routes
 router.get('/occupations', occupation.getOccupations.bind(occupation));
@@ -81,14 +81,12 @@ router.post('/documents/actives', document.getActives.bind(document));
 router.get('/sexs/actives', sex.getActives.bind(sex));
 
 // Status Request Routes
-router.get('/statuses_request', statusRequest.getStatusesRequest.bind(statusRequest));
+router.post('/statuses_request/actives', statusRequest.getActives.bind(statusRequest));
 
 // Profile Routes
-router.get('/profiles', profile.getProfiles.bind(profile));
 
 // Type of leaves routes
-router.get('/types_of_leave', typeOfLeave.getTypesOfLeave.bind(typeOfLeave));
-router.post('/types_of_leave', typeOfLeave.getTypeOfLeave.bind(typeOfLeave));
+router.post('/types_of_leave', typeOfLeave.getActives.bind(typeOfLeave));
 
 router.post('/request/capacitations/user', capacitation.getCapacitationsById.bind(capacitation));
 router.post('/request/capacitation/new', capacitation.createRequestCapacitation.bind(capacitation));

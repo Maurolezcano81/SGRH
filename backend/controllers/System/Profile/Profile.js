@@ -9,14 +9,10 @@ class ProfileController {
   }
 
   async getProfiles(req, res) {
-    const { offset, orderBy, order, filters } = req.body;
-
+    const { filters } = req.body;
     try {
-      const queryResponse = await this.model.getAllPaginationWhere(
-        1000, 
-        offset, 
-        orderBy,
-        order,
+      const queryResponse = await this.model.getAllPaginationWhereFilteredActives(
+        'status_profile',
         filters
       );
 
