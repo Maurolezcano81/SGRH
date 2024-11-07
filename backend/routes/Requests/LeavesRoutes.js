@@ -8,6 +8,7 @@ const leave = new LeavesControllers();
 router.post('/request/leaves', leave.getLeaves.bind(leave));
 router.post('/request/leaves/not_answer', leave.getLeavesNotAnswer.bind(leave));
 router.post('/request/leave/answer', leave.responseRequestLeave.bind(leave));
+router.delete('/request/leave/answer', leave.deleteLeaveAnswered.bind(leave));
 
 const CapacitationRoutes = {
   router,

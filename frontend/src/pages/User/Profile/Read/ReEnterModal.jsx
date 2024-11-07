@@ -15,7 +15,8 @@ const ReEnterModal = ({
     updateProfile,
     lastTerminationId
 }) => {
-    const [message, setMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const { authData } = useAuth();
 
@@ -36,12 +37,14 @@ const ReEnterModal = ({
             const dataFormatted = await fetchResponse.json();
 
             if (!fetchResponse.ok) {
-                return setMessage(dataFormatted.message);
+                return setErrorMessage(dataFormatted.message);
             }
 
-            if (fetchResponse.status != 403) {
-                return setMessage(dataFormatted.message);
+            if (fetchResponse.status != 200) {
+                return setErrorMessage(dataFormatted.message);
             }
+
+            setSuccessMessage(dataFormatted.message);
             onSubmitDeleteAction();
             updateProfile()
         } catch (error) {
@@ -55,10 +58,15 @@ const ReEnterModal = ({
     return (
         <div className="alert__background__black">
             <div className="alert__container">
+
                 <div className="alert__header modal__delete">
                     <p>{messageToDelete}</p>
                 </div>
-                <div className="modal__delete__message">{message}</div>
+
+                <div className="modal__delete__message ">
+                    {successMessage && successMessage.length > 0 && <div className="success-message">{successMessage}</div>}
+                    {errorMessage && errorMessage.length > 0 && <div className="error-message">{errorMessage}</div>}
+                </div>
 
                 <div className="alert__footer modal__delete">
                     <ButtonBlue onClick={handleSubmit} title={textButtonRed} />

@@ -32,6 +32,7 @@ class LeaveModel extends BaseModel {
             const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
             SELECT 
+                lrr.id_lrr,
                 lr.id_lr,
                 tol.name_tol,
                 lr.reason_lr,
@@ -66,6 +67,40 @@ class LeaveModel extends BaseModel {
             LIMIT ? OFFSET ?`;
 
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+    async getTotalLeavesInformation(filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClause(filters);
+            const query = `
+            SELECT 
+                count(distinct lr.id_lr) as total
+            FROM 
+                leave_request lr
+            JOIN 
+                user u ON lr.user_fk = u.id_user
+            JOIN 
+                entity e ON u.entity_fk = e.id_entity
+            JOIN 
+                leave_response_request lrr ON lr.id_lr = lrr.lr_fk
+            JOIN
+                user uaut on lrr.user_fk = uaut.id_user
+            JOIN 
+                entity eaut on uaut.entity_fk = eaut.id_entity
+            JOIN 
+                type_of_leave tol on lr.tol_fk = tol.id_tol
+            LEFT JOIN 
+                status_request sr ON lrr.sr_fk = sr.id_sr
+            ${whereClause}
+`;
+
+
+            const [results] = await this.con.promise().query(query, [...values]);
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
@@ -108,6 +143,56 @@ class LeaveModel extends BaseModel {
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
             throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+    async getDataForResponse(id_lrr) {
+        try {
+            const query = `
+               select id_lrr ,e.name_entity, e.lastname_entity, sr.name_sr, tol.name_tol  from leave_response_request lrr 
+                    left join status_request sr on sr.id_sr = lrr.sr_fk 
+                    left join leave_request lr on lrr.lr_fk = lr.id_lr 
+                    left join user u on lr.user_fk = u.id_user
+                    left join entity e on e.id_entity = u.entity_fk 
+                    join type_of_leave tol on lr.tol_fk = tol.id_tol 
+                where id_lrr = ?;
+                                         `
+
+            const [results] = await this.conn.promise().query(query, [id_lrr])
+
+            return results
+
+        } catch (error) {
+            console.error("Error en Users LeaveModels:", error.message);
+            throw new Error("Error en Users LeaveModels: " + error.message);
+        }
+    }
+
+    async getDataCreatedRequest(id_lr) {
+        try {
+            const query = `
+                select 
+                id_lr,
+                name_entity, 
+                lastname_entity, 
+                tol.name_tol, 
+                lr.reason_lr, 
+                lr.start_lr, 
+                lr.end_lr 
+                from leave_request lr
+                    left join type_of_leave tol on lr.tol_fk = tol.id_tol 
+                    left join user u on lr.user_fk = u.id_user 
+                    left join entity e on u.entity_fk = e.id_entity 
+                    where lr.id_lr = ?   
+            `
+
+            const [results] = await this.conn.promise().query(query, [id_lr])
+
+            return results
+
+        } catch (error) {
+            console.error("Error en Users LeaveModels:", error.message);
+            throw new Error("Error en Users LeaveModels: " + error.message);
         }
     }
 
@@ -162,6 +247,41 @@ class LeaveModel extends BaseModel {
         }
     }
 
+    async getTotalLeavesInformattionById(id_user, filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClauseCapacitation(filters);
+            const query = `
+                    SELECT 
+                        count(lr.id_lr) as total
+                    FROM 
+                        leave_request lr
+                    JOIN 
+                        user u ON lr.user_fk = u.id_user
+                    JOIN 
+                        entity e ON u.entity_fk = e.id_entity
+                    LEFT JOIN 
+                        leave_response_request lrr ON lr.id_lr = lrr.lr_fk
+                    LEFT JOIN 
+                        user uaut ON lrr.user_fk = uaut.id_user
+                    LEFT JOIN 
+                        entity eaut ON uaut.entity_fk = eaut.id_entity
+                    JOIN 
+                        type_of_leave tol ON lr.tol_fk = tol.id_tol
+                    LEFT JOIN 
+                        status_request sr ON lrr.sr_fk = sr.id_sr
+                    WHERE 
+                        lr.user_fk = ? ${whereClause.length > 0 ? 'AND' : ''} 
+                        ${whereClause}
+`;
+            const [results] = await this.con.promise().query(query, [id_user, ...values]);
+
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
     buildWhereClauseCapacitation(filters) {
         const whereClauses = [];
         const values = [];
@@ -199,7 +319,7 @@ class LeaveModel extends BaseModel {
             const [results] = await this.conn.promise().query(query, [id_lr])
 
             return results[0]
-            
+
         } catch (error) {
             console.error("Error en Users LeaveModels:", error.message);
             throw new Error("Error en Users LeaveModels: " + error.message);

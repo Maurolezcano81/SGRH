@@ -1,50 +1,48 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
-import ModalAdd from '../../components/Modals/ModalAdd';
-import ModalUpdate from '../../components/Modals/ModalUpdate';
-import ModalDelete from '../../components/Modals/ModalDelete';
 import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
+import TestTable from '../../components/Table/ResponsiveTable';
+import User from '../../assets/Icons/Buttons/User.png'
+import UserDown from '../../assets/Icons/Buttons/UserDown.png';
+import ModalAdd from '../../components/Modals/ModalAdd';
+import Edit from '../../assets/Icons/Buttons/Edit.png';
+import Trash from '../../assets/Icons/Buttons/Trash.png';
+import ModalUpdate from '../../components/Modals/ModalUpdate';
+import ModalDelete from '../../components/Modals/ModalDelete';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
-const Country = () => {
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [countries, setCountries] = useState([]);
-  const [countriesFormatted, setCountriesFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
+const Occupation = () => {
+  const { authData } = useAuth();
 
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-
-  const { storageNavbarTitle } = useNav();
-
-  const location = useLocation();
+  const { updateBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
+    updateBreadcrumbs([
+      { name: 'Tipos de País', url: '/rrhh/ajustes/País' },
+    ]);
+  }, []);
 
-  // MODALES
-  const [toggleModalAdd, setToggleModalAdd] = useState(false);
-  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-  const [toggleModalDelete, setToggleModalDelete] = useState(false);
+  const columns = [
+    { field: 'name_country', label: 'Nombre' },
+    { field: 'abbreviation_country', label: 'Abreviación' },
+    { field: 'status_country', label: 'Estado' }
+  ];
 
-  // ESTADOS DE ID
-  const [idToGet, setIdToGet] = useState(null);
-  const [idToToggle, setIdToToggle] = useState(null);
-  const [idToDelete, setIdToDelete] = useState(null);
+  const filterConfigs = [];
+  const searchOptions = [
 
-  // ESTADOS PARA ACTUALIZAR EL COMPONENTE PRINCIPAL
-  const [isNewField, setIsNewField] = useState(false);
-  const [isStatusChanged, setIsStatusChanged] = useState(false);
-  const [isUpdatedField, setIsUpdatedField] = useState(false);
-  const [isDeletedField, setIsDeletedField] = useState(false);
+    { value: 'name_country', label: 'Nombre' },
+    { value: 'abbreviation_country', label: 'Abreviación' },
 
-  // CONTEXTO GLOBAL
-  const { authData } = useAuth();
+  ];
+
+
+  const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+  const updateStatus = () => {
+    setIsStatusUpdated(!isStatusUpdated);
+  };
 
   // VARIABLES CON LAS PETICIONES FETCH
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY}`;
@@ -53,114 +51,95 @@ const Country = () => {
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_COUNTRY}`;
   const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_COUNTRY}`;
   const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_COUNTRY}`;
-  
-  // ARRAY PARA MAPEAR EN LA TABLA
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const fetchResponse = await fetch(getAllUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
-        if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener las ocupaciones');
-        }
 
-        const data = await fetchResponse.json();
-        if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setCountries([]);
-          setCountriesFormatted([]);
-        } else {
-          setCountries(data.queryResponse);
-          formatCountries(data.queryResponse);
-          setNoDataMessage('');
-        }
-      } catch (error) {
-        console.error('Error al obtener las ocupaciones', error);
-      }
-    };
 
-    fetchCountries();
-  }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatCountries = (countries) => {
-    const formatted = countries.map((country) => ({
-      ...country,
-    }));
-    setCountriesFormatted(formatted);
-  };
-  // ARRAY PARA MAPEAR EN LA TABLA
+  // MODAL ADD
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-  // FUNCIONES PARA MANEJAR MODALES
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
+  const handleModalAddOpen = () => {
+    setIsModalAddOpen(true)
+  }
 
-  const handleModalUpdate = (item) => {
-    setIdToGet(item.id_country);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
-  // FUNCIONES PARA MANEJAR MODALES
+  const handleModalAddClose = () => {
+    setIsModalAddOpen(false)
+  }
 
-  const handleModalDelete = () => {
-    setToggleModalDelete(!toggleModalDelete);
-  };
+  // MODAL ADD
 
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
-  const handleDelete = (item) => {
-    setIdToDelete(item.id_country);
-  };
+  // MODAL UPDATE
 
-  const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_country);
-  };
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [idToGet, setIdToGet] = useState("");
 
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
-  const onSubmitUpdate = () => {
-    setIsUpdatedField(!isUpdatedField);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
+  const handleModalUpdateOpen = (row) => {
+    setIdToGet(row.id_country)
+    setIsModalUpdateOpen(true)
+  }
 
-  const onSubmitDelete = () => {
-    setToggleModalDelete(false);
-    setIsDeletedField(!isDeletedField);
-  };
+  const handleModalUpdateClose = () => {
+    setIdToGet("")
+    setIsModalUpdateOpen(false)
+    updateStatus()
+  }
 
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
+  // MODAL UPDATE
 
-  const handleDependencyToggle = () => {
-    setIsStatusChanged(!isStatusChanged);
-  };
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
+  // MODAL DELETE
+
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+
+
+  const handleModalDeleteOpen = (row) => {
+    setIdToGet(row.id_country)
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIdToGet("")
+    setIsModalDeleteOpen(false)
+    updateStatus()
+  }
+
+  // MODAL DELETE
+
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Pais" onClick={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nuevo Pais'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
-          method={'POST'}
-          fetchData={['name_country', 'abbreviation_country']}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
 
-      {toggleModalUpdate && (
+      <TestTable
+        addButtonTitle={handleModalAddOpen}
+        url={getAllUrl}
+        authToken={authData.token}
+        columns={columns}
+        filterConfigs={filterConfigs}
+        searchOptions={searchOptions}
+        initialSearchField={'name_country'}
+        initialSearchTerm={''}
+        initialSort={{ field: 'name_country', order: 'ASC' }}
+        actions={{
+          view: (row) => handleModalUpdateOpen(row),
+          edit: (row) => handleModalDeleteOpen(row),
+          delete: (row) => console.log("Editar", row),
+        }}
+        showActions={{
+          view: true,
+          edit: true,
+          delete: false
+        }}
+        actionColumn='id_country'
+        title_table={"Tipos de País"}
+        paginationLabelInfo={"Tipos de País"}
+        buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
+        buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        isStatusUpdated={isStatusUpdated}
+      />
+
+      {isModalUpdateOpen && (
         <ModalUpdate
-          title_modal={'Editar Pais'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la abreviacion']}
+          title_modal={'Editar País'}
+          labels={['Nombre', 'Abreviación']}
+          placeholders={['Ingrese nombre', 'Ingrese una abreviación']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
           fetchData={['name_country', 'abbreviation_country']}
@@ -168,52 +147,40 @@ const Country = () => {
           idFetchData="value_country"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
+          onSubmitUpdate={handleModalUpdateClose}
+          handleModalUpdate={handleModalUpdateClose}
           fetchData_select={'status_country'}
         />
-        
       )}
 
-      {toggleModalDelete && (
-        <ModalDelete
-          handleModalDelete={handleModalDelete}
-          deleteOne={deleteOne}
-          field_name={'id_country'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
+      {isModalAddOpen && (
+        <ModalAdd
+          title_modal={'Nuevo Tipo de País'}
+          labels={['Nombre', 'Abreviación']}
+          placeholders={['Ingrese nombre', 'Ingrese una abreviación']}
+          method={'POST'}
+          fetchData={['name_country', 'abbreviation_country']}
+          createOne={createOne}
+          handleDependencyAdd={updateStatus}
+          handleModalAdd={handleModalAddClose}
         />
       )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Abreviacion', 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-          {countriesFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={countriesFormatted}
-              keys={['name_country', 'abbreviation_country']}
-              status_name={['id_country', 'status_country']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
-          ) : (
-            <tr>
-              <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+
+
+      {isModalDeleteOpen && (
+        <ModalDelete
+          handleModalDelete={handleModalDeleteClose}
+          deleteOne={deleteOne}
+          field_name={'id_country'}
+          idToDelete={idToGet}
+          onSubmitDelete={handleModalDeleteClose}
+        />
+      )}
+
+    </>
+
   );
 };
 
-export default Country;
+export default Occupation;

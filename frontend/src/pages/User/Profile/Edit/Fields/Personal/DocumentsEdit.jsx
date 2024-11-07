@@ -12,7 +12,7 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
     const [initialData, setInitialData] = useState({});
     const [isModalCreateDocumentOpen, setIsModalCreateDocumentOpen] = useState(false);
 
-    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT}`
+    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT_ACTIVES}`
     const updateDocument = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITYDOCUMENT}`
 
     const handleSingleEditClick = (document) => {

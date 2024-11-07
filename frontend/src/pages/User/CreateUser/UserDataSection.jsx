@@ -24,7 +24,7 @@ const UserDataSection = ({
       const fetchProfilesRequest = async () => {
         try {
           const fetchResponse = await fetch(getProfiles, {
-            method: 'GET',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${authData.token}`,
@@ -42,9 +42,7 @@ const UserDataSection = ({
             throw new Error('Error en la solicitud de perfiles');
           }
 
-          const activeProfiles = profilesData.queryResponse.filter((profile) => profile.status_profile === 1);
-
-          setListProfiles(activeProfiles);
+          setListProfiles(profilesData.list);
         } catch (error) {
           console.error('Error en la solicitud de perfiles:', error);
         }
@@ -61,7 +59,6 @@ const UserDataSection = ({
       [name]: value,
     }));
 
-    // Rellena el campo de contraseña con el mismo valor del nombre de usuario
     if (name === 'username_user') {
       setUserData((prevState) => ({
         ...prevState,
@@ -162,16 +159,8 @@ const UserDataSection = ({
           <option value="" key="">
             Seleccione un Perfil
           </option>
-          {authData.profile_fk !== 1 &&
-            listProfiles
-              .filter((profile) => profile.id_profile !== 1) // Filtrar los perfiles cuyo id_profile no sea 1
-              .map((profile) => (
-                <option key={profile.id_profile} value={profile.id_profile}>
-                  {profile.name_profile}
-                </option>
-              ))}
 
-          {authData.profile_fk === 1 &&
+          {listProfiles &&
             listProfiles.map((profile) => (
               <option key={profile.id_profile} value={profile.id_profile}>
                 {profile.name_profile}

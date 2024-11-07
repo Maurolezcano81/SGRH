@@ -41,7 +41,7 @@ const PersonalCapacitation = () => {
             key: 'name_sr',
             label: 'Estado de solicitud',
             name_field: 'name_sr',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}` // URL para obtener las opciones de ocupación 
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST_ACTIVES}` // URL para obtener las opciones de ocupación 
         },
     ];
 
@@ -83,8 +83,8 @@ const PersonalCapacitation = () => {
                     delete: (row) => console.log('Editar', row),
                 }}
                 showActions={{
-                    view: true,
-                    edit: true,
+                    view: false,
+                    edit: false,
                     delete: false
                 }}
                 actionColumn='id_rc'

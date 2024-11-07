@@ -32,11 +32,14 @@ class UserController {
     this.nameFieldId = 'id_user';
     this.nameFieldToSearch = 'username_user';
 
+    this.audit = new BaseModel('audit_general', 'id_ag')
   }
 
 
   async toggleStatusUser(req, res) {
     const { id_user, status } = req.body;
+
+    // const { id_user_executed_action } = req;
     try {
 
       const checkUser = await this.user.getOne(id_user, this.nameFieldId);
@@ -47,20 +50,89 @@ class UserController {
         })
       }
 
+      // const checkEntity = await this.entity.getOne(checkUser[0].entity_fk, 'id_entity');
+
+      // if (checkEntity.length < 1) {
+      //   return res.status(403).json({
+      //     message: "Este usuario no existe"
+      //   })
+      // }
+
+      // const checkEmployee = await this.employee.getOne(checkEntity[0].id_entity, 'entity_fk');
+
+      // if (checkEmployee.length < 1) {
+      //   return res.status(403).json({
+      //     message: "Este usuario no existe"
+      //   })
+      // }
+
       if (status != 1 && status != 0) {
         return res.status(403).json({
           message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
         })
       }
 
+      
+      // const getDataPrev = await this.user.getDataEmployeeForAudit(id_user)
+
+      // if (getDataPrev.length < 1) {
+      //     return res.status(403).json({
+      //         message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+      //     });
+      // }
 
       const update = await this.user.updateOne({ status_user: status }, ['id_user', id_user])
+
+      // const updateEmployee = await this.entity.updateOne({ status_entity: status }, ['id_entity', checkUser[0].entity_fk])
+
+      // const updateEntity = await this.employee.updateOne({ status_employee: status }, ['id_employee', checkEntity[0].id_entity])
 
       if (update.affectedRows < 1) {
         return res.status(403).json({
           message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
         })
       }
+
+      // if (updateEmployee.affectedRows < 1) {
+      //   return res.status(403).json({
+      //     message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
+      //   })
+      // }
+
+      // if (updateEntity.affectedRows < 1) {
+      //   return res.status(403).json({
+      //     message: "Error al actualizar el estado del usuario, intente reiniciando el sitio"
+      //   })
+      // }
+
+
+      // const getDataActual = await this.user.getDataEmployeeForAudit(id_user)
+
+
+      // if (getDataActual.length < 1) {
+      //   return res.status(403).json({
+      //     message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+      //   });
+      // }
+
+      // const getDataUserAction = await this.entity.getDataByIdUser(id_user_executed_action)
+
+      // if (getDataUserAction.length < 1) {
+      //   return res.status(403).json({
+      //     message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+      //   });
+      // }
+
+      // const updateAudit = await this.audit.createOne({
+      //   table_affected_ag: 'employee',
+      //   id_affected_ag: checkEmployee[0].id_employee,
+      //   action_executed_ag: 'D',
+      //   action_context: 'delete_logic_employee',
+      //   user_id_ag: JSON.stringify(getDataUserAction[0]),
+      //   prev_data_ag: JSON.stringify(getDataPrev[0]),
+      //   actual_data_ag: JSON.stringify(getDataActual[0])
+      // })
+
 
       return res.status(200).json({
         message: "Estado actualizado correctamente"
@@ -376,6 +448,8 @@ class UserController {
         value_profile,
       } = req.body;
 
+      const { id_user } = req;
+
       // PARSED DATA IN JSON
       const entity_dataInJson = JSON.parse(entity_data);
       const entity_document_dataInJson = JSON.parse(entity_document_data);
@@ -662,7 +736,34 @@ class UserController {
         return res.status(422).json({ message: 'Error al asignar puesto de trabajo', group: 'alert' });
       }
 
-      res.status(200).json({ message: 'Usuario creado correctamente' });
+
+      const getDataActual = await this.user.getDataEmployeeForAudit(insertUser.lastId)
+
+      if (getDataActual.length < 1) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+        });
+      }
+
+      const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+      if (getDataUserAction.length < 1) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+        });
+      }
+
+      const updateAudit = await this.audit.createOne({
+        table_affected_ag: 'employee',
+        id_affected_ag: insertEmployee.lastId,
+        action_executed_ag: 'C',
+        action_context: 'create_employee',
+        user_id_ag: JSON.stringify(getDataUserAction[0]),
+        prev_data_ag: null,
+        actual_data_ag: JSON.stringify(getDataActual[0])
+      })
+
+      return res.status(200).json({ message: 'Usuario creado correctamente' });
     } catch (error) {
       console.error('Error al crear usuario:', error);
       deleteImage();
@@ -673,36 +774,29 @@ class UserController {
   async changePwdEmployee(req, res) {
     const { id_user, pwd_new, pwd_actual } = req.body;
 
-    console.log(req.body);
     try {
       if (isInputEmpty(id_user) || isInputEmpty(pwd_new) || isInputEmpty(pwd_actual)) {
         throw new Error('Debes completar todos los campos');
       }
 
-      // Verificar si el usuario existe en la base de datos
       const checkPwdInDb = await this.user.getOne(id_user, "id_user");
 
       if (!checkPwdInDb || checkPwdInDb.length < 1) {
         throw new Error('Los datos para cambiar la contraseña son erróneos, intente reiniciando el sitio o más tarde');
       }
 
-      // Comparar la contraseña actual con la que está en la base de datos
       const isPwdCorrect = await comparePwd(pwd_actual, checkPwdInDb[0].pwd_user);
 
-      // Si la contraseña actual es incorrecta, devolver un error
       if (!isPwdCorrect) {
         return res.status(401).json({
           message: 'La contraseña actual es incorrecta',
         });
       }
 
-      // Encriptar la nueva contraseña
       const hashPwd = await encryptPwd(pwd_new);
 
-      // Actualizar la contraseña en la base de datos
       const changePwdEmployee = await this.user.changePwdEmployee(id_user, hashPwd);
 
-      // Respuesta de éxito
       return res.status(200).json({
         message: 'Cambio de contraseña finalizado de manera exitosa',
         changePwdEmployee,

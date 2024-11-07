@@ -154,7 +154,8 @@ const SingleQuiz = () => {
 
     const columns = [
         { field: 'avatar_user', label: '' },
-        { field: 'author', label: 'Apellido y Nombre' },
+        { field: 'name_entity', label: 'Nombre del Autor' },
+        { field: 'lastname_entity', label: 'Apellido del Autor' },
         { field: 'average', label: 'Puntuación Promedio' },
         { field: 'date_complete', label: 'Fecha de Finalización' },
         { field: 'name_department', label: 'Departamento' },
@@ -164,11 +165,23 @@ const SingleQuiz = () => {
 
 
     const filterConfigs = [
-
+        {
+            key: 'name_occupation',
+            label: 'Ocupación',
+            name_field: 'name_occupation',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}` // URL para obtener las opciones de ocupación 
+        },
+        {
+            key: 'name_department',
+            label: 'Departamento',
+            name_field: 'name_department',
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_ACTIVES}` // URL para obtener las opciones de departamento
+        }
     ];
 
     const searchOptions = [
-        { value: 'author', label: 'Nombre' },
+        { value: 'name_entity', label: 'Nombre del Autor' },
+        { value: 'lastname_entity', label: 'Apellido del Autor' },
         { value: 'name_sq', label: 'Nombre de cuestionario' },
 
     ];
@@ -375,9 +388,9 @@ const SingleQuiz = () => {
                     columns={columns}
                     filterConfigs={filterConfigs}
                     searchOptions={searchOptions}
-                    initialSearchField={'author'}
+                    initialSearchField={'name_entity'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'author', order: 'ASC' }}
+                    initialSort={{ field: 'name_entity', order: 'ASC' }}
                     actions={{
                         view: (row) => handleIsModalSeeInfoOpen(row),
                         edit: () => console.log('asd'),

@@ -30,7 +30,6 @@ class PerformanceModel extends BaseModel {
                     join user u on ep.author_fk = u.id_user
                     join entity e on u.entity_fk = e.id_entity  
                     left join entity_department_occupation edo on edo.entity_fk = e.id_entity
-                ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                     group by ep.name_ep, ep.id_ep 
                 ORDER BY ${orderBy} ${order} 
@@ -38,6 +37,53 @@ class PerformanceModel extends BaseModel {
 
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
 
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+    async getTotalQuestionnairesInformation(filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClause(filters);
+            const query = `
+                select 
+                count(distinct id_ep) as total
+                from evaluation_performance ep 
+                    join evaluation_performance_question epq on ep.id_ep = epq.ep_fk 
+                    join user u on ep.author_fk = u.id_user
+                    join entity e on u.entity_fk = e.id_entity  
+                    left join entity_department_occupation edo on edo.entity_fk = e.id_entity
+                ${whereClause}
+                `
+            const [results] = await this.con.promise().query(query, [...values]);
+
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+    async getDataQuizForAudit(id_ep) {
+        try {
+            const query = `
+                select id_ep, 
+                name_ep, 
+                start_ep, 
+                end_ep,
+                (
+                select count(id_epq) 
+                from evaluation_performance_question epq 
+                where epq.ep_fk = ep.id_ep
+                ) as "quantity_questions"
+                from evaluation_performance ep
+                join user u on ep.author_fk = u.id_user 
+                join entity e on u.entity_fk = e.id_entity
+                where id_ep = ?
+                `
+            const [results] = await this.conn.promise().query(query, [id_ep])
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
@@ -76,7 +122,7 @@ class PerformanceModel extends BaseModel {
                 `
 
             const [results] = await this.conn.promise().query(query, [id_ep])
-            
+
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
@@ -162,10 +208,6 @@ class PerformanceModel extends BaseModel {
     }
 
     async getTotalResultsExclude(
-        limit = this.defaultLimitPagination,
-        offset = this.defaultOffsetPagination,
-        orderBy = this.defaultOrderBy,
-        order = this.defaultOrderPagination,
         filters = {},
         supervisorsToExclude = []
     ) {
@@ -187,11 +229,9 @@ class PerformanceModel extends BaseModel {
             ${excludeClause} 
             ${excludeClause && whereClause.length > 0 ? 'AND' : ''}
             ${whereClause}
-            ORDER BY ${orderBy} ${order} 
-            LIMIT ? OFFSET ?;
             `;
 
-            const [results] = await this.conn.promise().query(query, [...supervisorsToExclude, ...values, limit, offset]);
+            const [results] = await this.conn.promise().query(query, [...supervisorsToExclude, ...values]);
             return results;
         } catch (error) {
             console.error("Error en getTotalResultsExcludes:", error.message);
@@ -294,8 +334,8 @@ class PerformanceModel extends BaseModel {
                 LEFT JOIN 
                     detail_evaluation_performance dep ON ap.id_ap = dep.ap_fk  
                 WHERE 
-                    dep.id_dep IS NULL
-                    AND d.id_department = ? 
+                     d.id_department = ? 
+                    AND edo.status_edo = 1
                     ${whereClause.length > 0 || excludeClause ? 'AND' : ''}
                     ${excludeClause} 
                     ${excludeClause && whereClause.length > 0 ? 'AND' : ''}
@@ -467,65 +507,62 @@ class PerformanceModel extends BaseModel {
     async getAnswersForQuizForSupervisor(id_ep, id_department, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
         try {
-
-            
             const query = `
-                SELECT 
-                    uevaluated.avatar_user,
-                    evaluated.name_entity as evaluated_name,
-                    evaluated.lastname_entity as evaluated_lastname,
-                    uevaluated.id_user as evaluated_id,
-                    ep.id_ep,
-                    ap2.id_ap,
-                    ep.name_ep,
-                    ep.start_ep,
-                    ep.end_ep,
-                    ep.created_at,
-                    ap2.date_complete,
-                    d.name_department,
-                    o.name_occupation,
-                    (
-                        SELECT ROUND(AVG(dep.score_dep), 2)
-                        FROM detail_evaluation_performance dep
-                        JOIN answer_performance ap ON dep.ap_fk = ap.id_ap
-                        WHERE ap.ep_fk = ?
-                    ) AS average,
-                    esupervisor.name_entity as supervisor_name, 
-                    esupervisor.lastname_entity as supervisor_lastname,
-                    usupervisor.id_user as supervisor_id
-                FROM 
-                    evaluation_performance ep 
-                JOIN 
-                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
-                JOIN 
-                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
-                JOIN 
-                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
-                JOIN 
-                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
-                JOIN 
-                    department d ON edo.department_fk = d.id_department 
-                JOIN 
-                    occupation o ON edo.occupation_fk = o.id_occupation 
-                JOIN 
-                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
-                JOIN 
-                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
-                JOIN 
-                    user usupervisor ON spq.user_fk = usupervisor.id_user
-                JOIN 
-                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
-                WHERE 
-                    ep.id_ep = ?
-                    and d.id_department = ?
-                                ${whereClause.length > 0 ? 'AND' : ''}
-                                ${whereClause}
-                GROUP BY 
-                    uevaluated.id_user, evaluated.id_entity
-                ORDER BY ${orderBy} ${order} 
-                LIMIT ? OFFSET ?`;
+    SELECT 
+        uevaluated.avatar_user,
+        evaluated.name_entity AS evaluated_name,
+        evaluated.lastname_entity AS evaluated_lastname,
+        uevaluated.id_user AS evaluated_id,
+        ep.id_ep,
+        ap2.id_ap,
+        ep.name_ep,
+        ep.start_ep,
+        ep.end_ep,
+        ep.created_at,
+        ap2.date_complete,
+        d.name_department,
+        o.name_occupation,
+        ROUND(AVG(dep.score_dep), 2) AS average,  -- Calcula el promedio aquí
+        esupervisor.name_entity AS supervisor_name, 
+        esupervisor.lastname_entity AS supervisor_lastname,
+        usupervisor.id_user AS supervisor_id
+    FROM 
+        evaluation_performance ep 
+    JOIN 
+        answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
+    JOIN 
+        user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
+    JOIN 
+        entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
+    JOIN 
+        entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
+    JOIN 
+        department d ON edo.department_fk = d.id_department 
+    JOIN 
+        occupation o ON edo.occupation_fk = o.id_occupation 
+    JOIN 
+        supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
+    JOIN 
+        answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
+    JOIN 
+        user usupervisor ON spq.user_fk = usupervisor.id_user
+    JOIN 
+        entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+    LEFT JOIN 
+        detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap  -- Asegúrate de unir correctamente la tabla de detalles
+    WHERE 
+        ep.id_ep = ?
+        AND d.id_department = ?
+        ${whereClause.length > 0 ? 'AND' : ''}
+        ${whereClause}
+    GROUP BY 
+        uevaluated.id_user, evaluated.id_entity, ap2.id_ap
+    ORDER BY 
+        ${orderBy} ${order} 
+    LIMIT ? OFFSET ?`;
 
-            const [results] = await this.con.promise().query(query, [id_ep, id_ep, id_department, ...values, limit, offset]);
+            const [results] = await this.con.promise().query(query, [id_ep, id_department, ...values, limit, offset]);
+
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Satisfaction:", error.message);
@@ -541,34 +578,37 @@ class PerformanceModel extends BaseModel {
                 SELECT 
                     count(DISTINCT ap2.id_ap) as total
                 FROM 
-                    evaluation_performance ep 
-                JOIN 
-                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
-                JOIN 
-                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
-                JOIN 
-                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
-                JOIN 
-                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
-                JOIN 
-                    department d ON edo.department_fk = d.id_department 
-                JOIN 
-                    occupation o ON edo.occupation_fk = o.id_occupation 
-                JOIN 
-                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
-                JOIN 
-                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
-                JOIN 
-                    user usupervisor ON spq.user_fk = usupervisor.id_user
-                JOIN 
-                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
-                WHERE 
-                    ep.id_ep = ?
-                    and d.id_department = ?
+        evaluation_performance ep 
+    JOIN 
+        answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
+    JOIN 
+        user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
+    JOIN 
+        entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
+    JOIN 
+        entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
+    JOIN 
+        department d ON edo.department_fk = d.id_department 
+    JOIN 
+        occupation o ON edo.occupation_fk = o.id_occupation 
+    JOIN 
+        supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
+    JOIN 
+        answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
+    JOIN 
+        user usupervisor ON spq.user_fk = usupervisor.id_user
+    JOIN 
+        entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+    LEFT JOIN 
+        detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap  -- Asegúrate de unir correctamente la tabla de detalles
+    WHERE 
+        ep.id_ep = ?
+        AND d.id_department = ?
                                 ${whereClause.length > 0 ? 'AND' : ''}
                                 ${whereClause}
-                ORDER BY ${orderBy} ${order} 
-                LIMIT ? OFFSET ?`;
+                                    GROUP BY 
+        uevaluated.id_user, evaluated.id_entity, ap2.id_ap
+                `;
 
 
             const [results] = await this.con.promise().query(query, [id_ep, id_department, ...values, limit, offset]);
@@ -643,120 +683,6 @@ class PerformanceModel extends BaseModel {
     async getQuizInformationAnsweredForRrhh(id_ep, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
         try {
-            
-            const query = `
-                SELECT 
-                    uevaluated.avatar_user,
-                    evaluated.name_entity as evaluated_name,
-                    evaluated.lastname_entity as evaluated_lastname,
-                    uevaluated.id_user as evaluated_id,
-                    ep.id_ep,
-                    ap2.id_ap,
-                    ep.name_ep,
-                    ep.start_ep,
-                    ep.end_ep,
-                    ep.created_at,
-                    ap2.date_complete,
-                    d.name_department,
-                    o.name_occupation,
-                    (
-                        SELECT ROUND(AVG(dep.score_dep), 2)
-                        FROM detail_evaluation_performance dep
-                        JOIN answer_performance ap ON dep.ap_fk = ap.id_ap
-                        WHERE ap.ep_fk = ?
-                    ) AS average,
-                    esupervisor.name_entity as supervisor_name, 
-                    esupervisor.lastname_entity as supervisor_lastname,
-                    usupervisor.id_user as supervisor_id
-                FROM 
-                    evaluation_performance ep 
-                JOIN 
-                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
-                JOIN 
-                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
-                JOIN 
-                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
-                JOIN 
-                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
-                JOIN 
-                    department d ON edo.department_fk = d.id_department 
-                JOIN 
-                    occupation o ON edo.occupation_fk = o.id_occupation 
-                JOIN 
-                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
-                JOIN 
-                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
-                JOIN 
-                    user usupervisor ON spq.user_fk = usupervisor.id_user
-                JOIN 
-                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
-                WHERE 
-                    ep.id_ep = ?
-                                ${whereClause.length > 0 ? 'AND' : ''}
-                                ${whereClause}
-                GROUP BY 
-                    uevaluated.id_user, evaluated.id_entity
-                ORDER BY ${orderBy} ${order} 
-                LIMIT ? OFFSET ?`;
-
-            const [results] = await this.con.promise().query(query, [id_ep, id_ep, ...values, limit, offset]);
-            return results;
-        } catch (error) {
-            console.error("Error en Users Quiz Satisfaction:", error.message);
-            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
-        }
-    }
-
-    async getTotalQuizInformationAnsweredForRrhh(id_ep,limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
-        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
-        try {
-
-            const query = `
-                SELECT 
-                    count(DISTINCT ap2.id_ap) as total
-                FROM 
-                    evaluation_performance ep 
-                JOIN 
-                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
-                JOIN 
-                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
-                JOIN 
-                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
-                JOIN 
-                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
-                JOIN 
-                    department d ON edo.department_fk = d.id_department 
-                JOIN 
-                    occupation o ON edo.occupation_fk = o.id_occupation 
-                JOIN 
-                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
-                JOIN 
-                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
-                JOIN 
-                    user usupervisor ON spq.user_fk = usupervisor.id_user
-                JOIN 
-                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
-                WHERE 
-                    ep.id_ep = ?
-                                ${whereClause.length > 0 ? 'AND' : ''}
-                                ${whereClause}
-                ORDER BY ${orderBy} ${order} 
-                LIMIT ? OFFSET ?`;
-
-
-            const [results] = await this.con.promise().query(query, [id_ep, ...values, limit, offset]);
-            return results[0];
-        } catch (error) {
-            console.error("Error en Users Quiz Satisfaction:", error.message);
-            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
-        }
-    }
-
-    async getAnswersForQuizForPersonal(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
-        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
-        try {
-
-            
             const query = `
                 SELECT 
                     uevaluated.avatar_user,
@@ -772,12 +698,117 @@ class PerformanceModel extends BaseModel {
                     ap2.date_complete,
                     d.name_department,
                     o.name_occupation,
-                    (
-                        SELECT ROUND(AVG(dep.score_dep), 2)
-                        FROM detail_evaluation_performance dep
-                        JOIN answer_performance ap ON dep.ap_fk = ap.id_ap
-                        WHERE ap.ep_fk = ep.id_ep 
-                    ) AS average,
+                    ROUND(AVG(dep.score_dep), 2) AS average,
+                    esupervisor.name_entity AS supervisor_name, 
+                    esupervisor.lastname_entity AS supervisor_lastname,
+                    usupervisor.id_user AS supervisor_id
+                FROM 
+                    evaluation_performance ep 
+                JOIN 
+                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
+                JOIN 
+                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
+                JOIN 
+                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
+                JOIN 
+                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
+                JOIN 
+                    department d ON edo.department_fk = d.id_department 
+                JOIN 
+                    occupation o ON edo.occupation_fk = o.id_occupation 
+                JOIN 
+                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
+                JOIN 
+                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
+                JOIN 
+                    user usupervisor ON spq.user_fk = usupervisor.id_user
+                JOIN 
+                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+                LEFT JOIN 
+                    detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap
+                WHERE 
+                    ep.id_ep = ?
+                    ${whereClause.length > 0 ? 'AND' : ''}
+                    ${whereClause}
+                GROUP BY 
+                    uevaluated.id_user, evaluated.id_entity, ep.id_ep, ap2.id_ap 
+                ORDER BY 
+                    ${orderBy} ${order} 
+                LIMIT ? OFFSET ?`;
+
+            const [results] = await this.con.promise().query(query, [id_ep, ...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
+
+
+    async getTotalQuizInformationAnsweredForRrhh(id_ep, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+        try {
+
+            const query = `
+                SELECT 
+                    count(DISTINCT ap2.id_ap) as total
+FROM 
+                    evaluation_performance ep 
+                JOIN 
+                    answer_performance ap2 ON ap2.ep_fk = ep.id_ep 
+                JOIN 
+                    user uevaluated ON ap2.evaluated_fk = uevaluated.id_user 
+                JOIN 
+                    entity evaluated ON uevaluated.entity_fk = evaluated.id_entity 
+                JOIN 
+                    entity_department_occupation edo ON edo.entity_fk = evaluated.id_entity 
+                JOIN 
+                    department d ON edo.department_fk = d.id_department 
+                JOIN 
+                    occupation o ON edo.occupation_fk = o.id_occupation 
+                JOIN 
+                    supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
+                JOIN 
+                    answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
+                JOIN 
+                    user usupervisor ON spq.user_fk = usupervisor.id_user
+                JOIN 
+                    entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+                LEFT JOIN 
+                    detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap
+                WHERE 
+                    ep.id_ep = ?
+                                ${whereClause.length > 0 ? 'AND' : ''}
+                                ${whereClause}
+`
+
+            const [results] = await this.con.promise().query(query, [id_ep, ...values, limit, offset]);
+            return results[0];
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
+
+    async getAnswersForQuizForPersonal(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+        try {
+            const query = `
+                SELECT 
+                    uevaluated.avatar_user,
+                    evaluated.name_entity AS evaluated_name,
+                    evaluated.lastname_entity AS evaluated_lastname,
+                    uevaluated.id_user AS evaluated_id,
+                    ep.id_ep,
+                    ap2.id_ap,
+                    ep.name_ep,
+                    ep.start_ep,
+                    ep.end_ep,
+                    ep.created_at,
+                    ap2.date_complete,
+                    d.name_department,
+                    o.name_occupation,
+                    ROUND(AVG(dep.score_dep), 2) AS average, 
                     esupervisor.name_entity AS supervisor_name, 
                     esupervisor.lastname_entity AS supervisor_lastname,
                     usupervisor.id_user AS supervisor_id
@@ -803,18 +834,19 @@ class PerformanceModel extends BaseModel {
                     user usupervisor ON spq.user_fk = usupervisor.id_user
                 JOIN 
                     entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
+                LEFT JOIN 
+                    detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap 
                 WHERE 
                     ap2.date_complete IS NOT NULL 
                     AND uevaluated.id_user = ?
-                                ${whereClause.length > 0 ? 'AND' : ''}
-                                ${whereClause}
+                    ${whereClause.length > 0 ? 'AND' : ''}
+                    ${whereClause}
                 GROUP BY 
-                    uevaluated.id_user, evaluated.id_entity
-                ORDER BY ${orderBy} ${order} 
+                    uevaluated.id_user, evaluated.id_entity, ep.id_ep, ap2.id_ap 
+                ORDER BY 
+                    ${orderBy} ${order} 
                 LIMIT ? OFFSET ?`;
-
-            console.log(whereClause);
-
+    
             const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
             return results;
         } catch (error) {
@@ -822,6 +854,7 @@ class PerformanceModel extends BaseModel {
             throw new Error("Error en Users Quiz Satisfaction: " + error.message);
         }
     }
+    
 
     async getTotalAnswersForQuizForPersonal(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);

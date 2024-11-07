@@ -15,6 +15,8 @@ class SatisfactionControllers {
 
         this.searchFieldId = 'id_sq';
         this.nameSearchField = 'name_sq';
+
+        this.audit = new BaseModel('audit_general', 'id_ag')
     }
 
 
@@ -112,6 +114,32 @@ class SatisfactionControllers {
                 }
             }
 
+            const getDataActual = await this.model.getDataQuizForAudit(createQuiz.lastId)
+
+            if (getDataActual.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'satisfaction_questionnaire',
+                id_affected_ag: createQuiz.lastId,
+                action_executed_ag: 'C',
+                action_context: 'create_satisfaction_quiz',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: null,
+                actual_data_ag: JSON.stringify(getDataActual[0])
+            })
+
             return res.status(200).json({
                 message: "Cuestionario creado exitosamente"
             })
@@ -133,7 +161,24 @@ class SatisfactionControllers {
 
             if (!list) {
                 return res.status(403).json({
-                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo",
+                    list: []
+                });
+            }
+
+            if (list.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo",
+                    list: []
+                });
+            }
+
+            const getTotalResults = await this.model.getTotalQuestionnairesInformation(limit, offset, typeOrder, order, filters);
+
+            if (getTotalResults.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo",
+                    total: 0
                 });
             }
 
@@ -150,7 +195,7 @@ class SatisfactionControllers {
             return res.status(200).json({
                 message: "Lista de cuestionarios obtenida con éxito",
                 list: formattedList,
-                total: list.length
+                total: getTotalResults[0]?.total
             });
 
         } catch (error) {
@@ -214,7 +259,7 @@ class SatisfactionControllers {
 
     async updateQuizHeader(req, res) {
         const { id_sq, name_sq, start_sq, end_sq } = req.body;
-
+        const {id_user} = req;
         try {
             if (isInputEmpty(id_sq) || isInputEmpty(start_sq) || isInputEmpty(name_sq) || isInputEmpty(end_sq)) {
                 console.error("Debe completar todos los campos");
@@ -254,6 +299,14 @@ class SatisfactionControllers {
                 })
             }
 
+            const getDataPrev = await this.model.getDataQuizForAudit(id_sq)
+
+            if (getDataPrev.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
             const update = await this.model.updateOne({
                 name_sq: name_sq,
                 start_sq: start_sq,
@@ -267,6 +320,32 @@ class SatisfactionControllers {
                     message: "Error al actualizar la informacion del cuestionario"
                 })
             }
+
+            const getDataActual = await this.model.getDataQuizForAudit(id_sq)
+
+            if (getDataActual.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'satisfaction_questionnaire',
+                id_affected_ag: id_sq,
+                action_executed_ag: 'U',
+                action_context: 'edit_satisfaction_header',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: JSON.stringify(getDataPrev[0]),
+                actual_data_ag: JSON.stringify(getDataActual[0])
+            })
 
             return res.status(200).json({
                 message: "Cuestionario actualizado correctamente"
@@ -283,13 +362,21 @@ class SatisfactionControllers {
 
     async deleteAllQuiz(req, res) {
         const { id_sq } = req.body;
-
+        const { id_user } = req
         try {
             if (isInputEmpty(id_sq)) {
                 console.error("Ha ocurrido un error en el cuestionario");
                 return res.status(403).json({
                     message: "Error al Eliminar el Cuestionario"
                 })
+            }
+
+            const getDataPrev = await this.model.getDataQuizForAudit(id_sq)
+
+            if (getDataPrev.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
             }
 
             const deleteQuiz = await this.model.deleteOne(id_sq, 'id_sq');
@@ -300,7 +387,31 @@ class SatisfactionControllers {
                 })
             }
 
-            res.status(200).json({
+            if (deleteQuiz.affectedRows < 1) {
+                return res.status(403).json({
+                    message: "Error al Eliminar el Cuestionario"
+                })
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'satisfaction_questionnaire',
+                id_affected_ag: id_sq,
+                action_executed_ag: 'D',
+                action_context: 'delete_satisfaction_quiz',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: JSON.stringify(getDataPrev[0]),
+                actual_data_ag: null
+            })
+
+            return res.status(200).json({
                 message: "Cuestionario elimnado exitosamente, sera redireccionado en 2 segundos"
             })
 
@@ -476,32 +587,29 @@ class SatisfactionControllers {
     }
 
     async deleteQuestion(req, res) {
-        const { id_qsq } = req.body;
-
-        if (isInputEmpty(id_qsq)) {
-            console.error("Ha ocurrido un error al eliminar la pregunta");
-            return res.status(403).json({
-                message: "Error al eliminar la pregunta"
-            })
-        }
-
-
-        const deleteQuestion = await this.questionTable.deleteOne(id_qsq, 'id_qsq');
-
-        if (deleteQuestion.affectedRows < 1) {
-            console.error("Ha ocurrido un error al eliminar la pregunta");
-            return res.status(403).json({
-                message: "Error al eliminar la pregunta"
-            })
-        }
-
-        res.status(200).json({
-            message: "La pregunta ha sido eliminada correctamente"
-        })
-
-
         try {
+            const { id_qsq } = req.body;
 
+            if (isInputEmpty(id_qsq)) {
+                console.error("Ha ocurrido un error al eliminar la pregunta");
+                return res.status(403).json({
+                    message: "Error al eliminar la pregunta"
+                })
+            }
+
+
+            const deleteQuestion = await this.questionTable.deleteOne(id_qsq, 'id_qsq');
+
+            if (deleteQuestion.affectedRows < 1) {
+                console.error("Ha ocurrido un error al eliminar la pregunta");
+                return res.status(403).json({
+                    message: "Error al eliminar la pregunta"
+                })
+            }
+
+            return res.status(200).json({
+                message: "La pregunta ha sido eliminada correctamente"
+            })
         } catch (error) {
             console.error("Ha ocurrido un error al eliminar la pregunta");
             return res.status(403).json({
@@ -766,8 +874,6 @@ class SatisfactionControllers {
             }
 
             const getTotalResults = await this.model.getTotalResultsQuizAnsweredByEmployeeAndSq(id_sq);
-
-            console.log(getTotalResults)
 
             if (!getTotalResults) {
                 return res.status(403).json({

@@ -1,6 +1,7 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber } from '../../../middlewares/Validations.js';
 import DepartmentModel from '../../../models/Department/Deparment.js';
+import EntityModel from '../../../models/People/People/Entity.js';
 class DepartmentController {
   constructor() {
     this.model = new DepartmentModel()
@@ -8,6 +9,9 @@ class DepartmentController {
     this.nameFieldToSearch = 'name_department';
     this.edo = new BaseModel('entity_department_occupation', 'id_edo');
     this.occupation = new BaseModel("occupation", "name_occupation")
+
+    this.entity = new EntityModel();
+    
   }
 
   async getDepartmentsInfo(req, res) {
@@ -41,14 +45,8 @@ class DepartmentController {
     const { id_department } = req.params;
     const { limit, offset, order, orderBy, filters } = req.body;
 
-
-    const newFilters = {
-      ...filters,
-      id_department: id_department
-    }
-
     try {
-      const list = await this.model.getDepartmentInformation(limit, offset, orderBy, order, newFilters);
+      const list = await this.model.getDepartmentInformation(id_department, limit, offset, orderBy, order, filters);
 
       if (!list) {
         return res.status(403).json({
@@ -56,7 +54,7 @@ class DepartmentController {
         })
       }
 
-      const getTotalResults = await this.model.getTotalDepartmentInformation(limit, offset, orderBy, order, newFilters);
+      const getTotalResults = await this.model.getTotalDepartmentInformation(id_department, limit, offset, orderBy, order, filters);
 
 
       return res.status(200).json({
@@ -99,6 +97,7 @@ class DepartmentController {
 
   async AddEmployeeToDepartment(req, res) {
     const { id_edo, department_fk, entity_fk, occupation_fk } = req.body;
+    const { id_user } = req
 
     try {
 
@@ -127,10 +126,48 @@ class DepartmentController {
           message: "Ha ocurrido un problema al agregar al empleado"
         });
       }
+
+      const getDataPrev = await this.model.getData(id_edo)
+
+      if (getDataPrev.length < 1) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+        });
+      }
+
+      const getDataActual = await this.model.getData(id_edo)
+
+      if (getDataActual.length < 1) {
+        return res.status(403).json({
+          message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+        });
+      }
+
+      const getDataUserAction = await this.entity.getDataByIdUser(id_user);
+
+      if (getDataUserAction.length < 1) {
+          return res.status(403).json({
+              message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+          });
+      }
+
+
+      const updateAudit = await this.audit.createOne({
+        table_affected_ag: 'entity_department_occupation',
+        id_affected_ag: id_edo,
+        action_executed_ag: 'C',
+        action_context: 'rotation_personal',
+        user_id_ag: JSON.stringify(getDataUserAction[0]),
+        prev_data_ag: JSON.stringify(getDataPrev[0]),
+        actual_data_ag: JSON.stringify(getDataActual[0])
+      })
+
       return res.status(200).json({
         message: "Personal agregado correctamente",
         createEdo
       })
+
+
     } catch (error) {
       console.error('Error en controlador de departamento - getDepartments: ' + error.message);
       return res.status(403).json({
@@ -173,6 +210,8 @@ class DepartmentController {
         list,
         total: getTotalResults[0].total
       });
+
+
     } catch (error) {
       console.error('Error en controlador GetAllWPagination de departamento: ' + error);
       return res.status(500).json({

@@ -38,7 +38,9 @@ class UserModel extends BaseModel {
               LEFT JOIN entity_department_occupation edo ON edo.entity_fk = e.id_entity 
               LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
               LEFT JOIN department d ON edo.department_fk = d.id_department 
-              ${whereClause}
+              where status_edo = 1 
+                ${whereClause.length > 0 ? 'AND' : ''}
+                ${whereClause}
               GROUP BY u.id_user, u.username_user, e.name_entity, e.lastname_entity, u.avatar_user, u.status_user, p.name_profile
               ORDER BY ${orderBy} ${order} 
               LIMIT ? OFFSET ?`;
@@ -65,7 +67,9 @@ class UserModel extends BaseModel {
               LEFT JOIN entity_department_occupation edo ON edo.entity_fk = e.id_entity 
               LEFT JOIN occupation o ON edo.occupation_fk = o.id_occupation 
               LEFT JOIN department d ON edo.department_fk = d.id_department 
-              ${whereClause}
+              where status_edo = 1 
+                ${whereClause.length > 0 ? 'AND' : ''}
+                ${whereClause}
               `
       const [results] = await this.con.promise().query(query, [...values, limit, offset]);
       return results;
@@ -144,6 +148,45 @@ class UserModel extends BaseModel {
       throw new Error(`Error al obtener los datos del usuario`);
     }
   }
+
+
+  async getDataEmployeeForAudit(id_user) {
+    try {
+      const query = `
+            select 
+              id_edo,
+              id_user,
+              avatar_user,
+              username_user,
+              name_entity,
+              status_employee,
+              lastname_entity,
+              file_employee,
+              name_department,
+              name_occupation,
+              status_employee,
+              status_entity,
+              status_user
+            from employee emp
+              join entity e on emp.entity_fk = e.id_entity 
+              join user u on e.id_entity = u.entity_fk 
+              join entity_department_occupation edo on edo.entity_fk = e.id_entity 
+              join department d on d.id_department = edo.department_fk 
+              join occupation o  on edo.occupation_fk = o.id_occupation 
+            where id_user = ?
+            group by name_entity, lastname_entity
+            order by edo.created_at asc
+;
+            `
+      const [results] = await this.conn.promise().query(query, [id_user])
+      return results;
+    } catch (error) {
+      console.error("Error en Users Quiz Performance:", error.message);
+      throw new Error("Error en Users Quiz Performance: " + error.message);
+    }
+  }
+
+
 }
 
 export default UserModel

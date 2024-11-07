@@ -65,7 +65,7 @@ class DepartmentModel extends BaseModel {
         }
     }
 
-    async getDepartmentInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    async getDepartmentInformation(id_department, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.whereForOutDepartment(filters);
             const query = `
@@ -88,13 +88,15 @@ class DepartmentModel extends BaseModel {
                 JOIN entity e ON edo.entity_fk = e.id_entity
                 LEFT JOIN employee emp ON e.id_entity = emp.entity_fk
                 JOIN user u ON u.entity_fk = e.id_entity 
-                WHERE status_edo = 1 ${whereClause.length > 0 ? 'AND' : ''}
+                WHERE status_edo = 1 
+                and id_department = ?
+                ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                 GROUP BY id_user, name_entity, lastname_entity
                 ORDER BY ${orderBy} ${order} 
                 LIMIT ? OFFSET ?`;
 
-            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            const [results] = await this.con.promise().query(query, [id_department,...values, limit, offset]);
             return results;
         } catch (error) {
             console.error("Error en Users Model:", error.message);
@@ -102,7 +104,7 @@ class DepartmentModel extends BaseModel {
         }
     }
 
-    async getTotalDepartmentInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    async getTotalDepartmentInformation(id_department, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.whereForOutDepartment(filters);
             const query = `
@@ -116,10 +118,12 @@ class DepartmentModel extends BaseModel {
                 JOIN entity e ON edo.entity_fk = e.id_entity
                 LEFT JOIN employee emp ON e.id_entity = emp.entity_fk
                 JOIN user u ON u.entity_fk = e.id_entity 
-                WHERE status_edo = 1 ${whereClause.length > 0 ? 'AND' : ''}
+                WHERE status_edo = 1 
+                and id_department = ? 
+                ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                     `
-            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            const [results] = await this.con.promise().query(query, [id_department, ...values, limit, offset]);
             return results;
         } catch (error) {
             console.error("Error en Users Model:", error.message);
@@ -224,6 +228,31 @@ class DepartmentModel extends BaseModel {
 
         const whereClause = whereClauses.length ? whereClauses.join(' AND ') : '';
         return { whereClause, values };
+    }
+
+    async getData(id_edo) {
+        try {
+            const query = `
+                select 
+                    id_edo, 
+                    name_entity, 
+                    lastname_entity,
+                    name_department 
+                from entity_department_occupation edo 
+                join entity e on edo.entity_fk = e.id_entity
+                join department d on edo.department_fk = d.id_department 
+                where edo.id_edo = ?
+            `
+
+
+            const [results] = await this.conn.promise().query(query, [id_edo])
+
+            return results
+
+        } catch (error) {
+            console.error("Error en Users EmployeeModels:", error.message);
+            throw new Error("Error en Users EmployeeModels: " + error.message);
+        }
     }
 }
 

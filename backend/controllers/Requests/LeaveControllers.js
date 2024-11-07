@@ -1,5 +1,6 @@
 import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces, formatDateTime, isNotDate, formatDateYear } from '../../middlewares/Validations.js';
 import BaseModel from '../../models/BaseModel.js';
+import EntityModel from '../../models/People/People/Entity.js';
 import LeaveModel from '../../models/Requests/LeaveModels.js';
 
 
@@ -14,6 +15,10 @@ class LeavesControllers {
         this.nameFieldToSearch = 'tol_fk';
 
         this.employee = new BaseModel('employee', 'id_employee');
+
+        this.audit = new BaseModel('audit_general', 'id_ag');
+
+        this.entity = new EntityModel();
     }
 
     async getLeaves(req, res) {
@@ -26,6 +31,8 @@ class LeavesControllers {
                     message: "Ha ocurrido un error al obtener las solicitudes de Licencia, intentalo de nuevo"
                 });
             }
+
+            const getTotalResults = await this.model.getTotalLeavesInformation(filters);
 
             const formattedList = await Promise.all(
                 list.map(async (item) => {
@@ -46,7 +53,7 @@ class LeavesControllers {
             return res.status(200).json({
                 message: "Lista de solicitudes de Licencia obtenida con éxito",
                 list: formattedList,
-                total: list.length
+                total: getTotalResults[0]?.total || 0
             });
 
         } catch (error) {
@@ -62,22 +69,25 @@ class LeavesControllers {
         const { limit, offset, order, typeOrder, filters } = req.body;
         try {
             const list = await this.model.getLeavesInformattionById(id_user, limit, offset, typeOrder, order, filters);
-
             if (!list) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener las solicitudes de Licencia, intentalo de nuevo"
                 });
             }
 
+            const getTotalResults = await this.model.getTotalLeavesInformattionById(id_user, filters);
+
+
             const formattedList = await Promise.all(
                 list.map(async (item) => {
                     const attachments = await this.model.getAttachments(item.id_lr);
 
+                    console.log(item.answered_at)
                     return {
                         ...item,
                         created_at: formatDateTime(item.created_at),
                         updated_at: formatDateTime(item.updated_at),
-                        answered_at: formatDateTime(item.answered_at),
+                        answered_at: item.answered ? formatDateTime(item.answered_at) : "-",
                         start_lr: formatDateYear(item.start_lr),
                         end_lr: formatDateYear(item.end_lr),
                         attachments: attachments
@@ -87,7 +97,7 @@ class LeavesControllers {
             return res.status(200).json({
                 message: "Lista de solicitudes de Licencia obtenida con éxito",
                 list: formattedList,
-                total: list.length
+                total: getTotalResults[0]?.total || 0
             });
 
         } catch (error) {
@@ -188,6 +198,32 @@ class LeavesControllers {
                 });
             }
 
+            const getDataCreated = await this.model.getDataCreatedRequest(create.lastId)
+
+            if (getDataCreated.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user);
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const createAudit = await this.audit.createOne({
+                table_affected_ag: 'leave_request',
+                id_affected_ag: create.lastId,
+                action_executed_ag: 'C',
+                action_context: 'leave_request',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: null,
+                actual_data_ag: JSON.stringify(getDataCreated[0])
+            })
+
             if (imgsArray.length > 0) {
                 await Promise.all(imgsArray.map(async (item) => {
                     if (item.path) {
@@ -217,9 +253,8 @@ class LeavesControllers {
         const { id_user } = req;
         const { sr_fk, lr_fk, description_lrr } = req.body;
 
-
-
         try {
+
 
             const getEmployeeData = await this.model.getEmployeeData(lr_fk);
 
@@ -236,6 +271,8 @@ class LeavesControllers {
                 })
             }
 
+
+
             if (sr_fk === 6 && create.affectedRows > 0) {
                 const changeStatusEmployee = await this.employee.updateOne({
                     tse_fk: 2,
@@ -247,6 +284,33 @@ class LeavesControllers {
                     }, getEmployeeData.id_employee)
                 }
             }
+
+            const getCreateData = await this.model.getDataForResponse(create.lastId)
+
+            if (!getCreateData) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                })
+            }
+
+            
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user);
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const createAudit = await this.audit.createOne({
+                table_affected_ag: 'leave_response_request',
+                id_affected_ag: create.lastId,
+                action_executed_ag: 'C',
+                action_context: 'leave_response_request',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: null,
+                actual_data_ag: JSON.stringify(getCreateData[0])
+            })
 
             return res.status(200).json({
                 message: "La solicitud se ha registrado exitosamente",
@@ -260,6 +324,58 @@ class LeavesControllers {
             })
         }
 
+    }
+
+    async deleteLeaveAnswered(req, res) {
+        const { id_lrr } = req.body;
+        const { id_user } = req
+
+        try {
+
+            const getDataDelete = await this.model.getDataForResponse(id_lrr)
+
+            if (getDataDelete.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al eliminar la respuesta a la licencia"
+                })
+            }
+
+            const deleteAnswers = await this.responseLeaves.deleteOne(id_lrr, "id_lrr");
+
+            if (deleteAnswers.affectedRows < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al eliminar la respuesta a la licencia"
+                })
+            }
+            
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user);
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const deleteAudit = await this.audit.createOne({
+                table_affected_ag: 'leave_response_request',
+                id_affected_ag: id_lrr,
+                action_executed_ag: 'D',
+                action_context: 'delete_response_leave',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: JSON.stringify(getDataDelete[0]),
+                actual_data_ag: null
+            })
+
+            return res.status(200).json({
+                message: "Respuesta a la licencia eliminada exitomasamente"
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en la respuesta a la licencia", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
     }
 
 }

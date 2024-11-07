@@ -24,6 +24,8 @@ import CapacitationRoutes from "./Requests/CapacitationRoutes.js";
 import LeavesRoutes from "./Requests/LeavesRoutes.js";
 import TerminationRoutes from "./Termination/TerminationRoutes.js";
 import DashboardRrhhRoutes from "./Dashboard/DashboardRrhhRoutes.js";
+import TypeStatusEmployeeRoutes from "./People/TypeStatusEmployee/TypeStatusEmployeeRoutes.js";
+import AuditRoutes from "./Audit/AuditRoutes.js";
 
 app.use(SubjectRoutes.router)
 app.use(AttachmentRoutes.router)
@@ -53,10 +55,13 @@ app.use(ProfileRoutes.router);
 app.use(ModuleRoutes.router);
 app.use(NavigationMenuRoutes.router);
 
-app.use(TerminationRoutes.router)
+app.use(TerminationRoutes.router);
 
-app.use(DashboardRrhhRoutes.router)
+app.use(DashboardRrhhRoutes.router);
 
+app.use(TypeStatusEmployeeRoutes.router);
+
+app.use(AuditRoutes.router);
 const AdminRoutes = {
     app
 }

@@ -58,7 +58,7 @@ const PersonalLeave = () => {
             key: 'name_sr',
             label: 'Estado de solicitud',
             name_field: 'name_sr',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}`
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST_ACTIVES}`
         },
     ];
 

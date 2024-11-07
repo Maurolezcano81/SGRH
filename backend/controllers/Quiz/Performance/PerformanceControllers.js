@@ -15,6 +15,8 @@ class PerformanceControllers {
         this.entity = new EntityModel()
         this.searchFieldId = 'id_ep';
         this.nameSearchField = 'name_ep';
+
+        this.audit = new BaseModel('audit_general', 'id_ag');
     }
 
 
@@ -58,6 +60,22 @@ class PerformanceControllers {
                     message: 'No se puede crear el cuestionario con este nombre, debido a que ya hay uno existente'
                 })
             }
+
+            // const startDate = new Date(headerQuiz.start_ep);
+            // const endDate = new Date(headerQuiz.end_ep);
+            // const currentDate = new Date();
+
+            // if (startDate <= currentDate) {
+            //     return res.status(403).json({
+            //         message: "La fecha de inicio debe ser posterior a la fecha actual."
+            //     });
+            // }
+
+            // if (endDate < startDate) {
+            //     return res.status(403).json({
+            //         message: "La fecha de fin no debe ser anterior a la fecha de inicio."
+            //     });
+            // }
 
             const dataToCreateQuiz = {
                 name_ep: headerQuiz.name_ep,
@@ -118,15 +136,40 @@ class PerformanceControllers {
                 }
             }
 
+            const getDataActual = await this.model.getDataQuizForAudit(createQuiz.lastId)
+
+            if (getDataActual.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'evaluation_performance',
+                id_affected_ag: createQuiz.lastId,
+                action_executed_ag: 'C',
+                action_context: 'create_performance_quiz',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: null,
+                actual_data_ag: JSON.stringify(getDataActual[0])
+            })
+
             return res.status(200).json({
                 message: "Cuestionario creado exitosamente"
             })
 
         } catch (error) {
-
             console.error("Ha ocurrido un error en el cuestionario");
             return res.status(403).json({
-                message: "Error al insertar las preguntas al cuestionario"
+                message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
             })
         }
     }
@@ -143,6 +186,15 @@ class PerformanceControllers {
                 });
             }
 
+            const getTotalResults = await this.model.getTotalQuestionnairesInformation(filters);
+
+            if (!getTotalResults) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al obtener los cuestionarios, intentalo de nuevo"
+                });
+            }
+
+
             const formattedList = list.map(item => {
                 return {
                     ...item,
@@ -156,7 +208,7 @@ class PerformanceControllers {
             return res.status(200).json({
                 message: "Lista de cuestionarios obtenida con éxito",
                 list: formattedList,
-                total: list.length
+                total: getTotalResults[0].total
             });
 
         } catch (error) {
@@ -220,6 +272,7 @@ class PerformanceControllers {
 
     async updateQuizHeader(req, res) {
         const { id_ep, name_ep, start_ep, end_ep } = req.body;
+        const { id_user } = req
 
         try {
             if (isInputEmpty(id_ep) || isInputEmpty(start_ep) || isInputEmpty(name_ep) || isInputEmpty(end_ep)) {
@@ -260,6 +313,15 @@ class PerformanceControllers {
                 })
             }
 
+
+            const getDataPrev = await this.model.getDataQuizForAudit(id_ep)
+
+            if (getDataPrev.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
             const update = await this.model.updateOne({
                 name_ep: name_ep,
                 start_ep: start_ep,
@@ -273,6 +335,32 @@ class PerformanceControllers {
                     message: "Error al actualizar la informacion del cuestionario"
                 })
             }
+
+            const getDataActual = await this.model.getDataQuizForAudit(id_ep)
+
+            if (getDataActual.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'evaluation_performance',
+                id_affected_ag: id_ep,
+                action_executed_ag: 'U',
+                action_context: 'edit_performance_header',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: JSON.stringify(getDataPrev[0]),
+                actual_data_ag: JSON.stringify(getDataActual[0])
+            })
 
             return res.status(200).json({
                 message: "Cuestionario actualizado correctamente"
@@ -289,6 +377,7 @@ class PerformanceControllers {
 
     async deleteAllQuiz(req, res) {
         const { id_ep } = req.body;
+        const { id_user } = req
 
         try {
             if (isInputEmpty(id_ep)) {
@@ -296,6 +385,14 @@ class PerformanceControllers {
                 return res.status(403).json({
                     message: "Error al Eliminar el Cuestionario"
                 })
+            }
+
+            const getDataPrev = await this.model.getDataQuizForAudit(id_ep)
+
+            if (getDataPrev.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
             }
 
             const deleteQuiz = await this.model.deleteOne(id_ep, 'id_ep');
@@ -306,8 +403,32 @@ class PerformanceControllers {
                 })
             }
 
-            res.status(200).json({
-                message: "Cuestionario elimnado exitosamente, sera redireccionado en 2 segundos"
+            if (deleteQuiz.affectedRows < 1) {
+                return res.status(403).json({
+                    message: "Error al Eliminar el Cuestionario"
+                })
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user)
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'evaluation_performance',
+                id_affected_ag: id_ep,
+                action_executed_ag: 'D',
+                action_context: 'delete_performance_quiz',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: JSON.stringify(getDataPrev[0]),
+                actual_data_ag: null
+            })
+
+            return res.status(200).json({
+                message: "Cuestionario eliminado exitosamente, sera redireccionado en 2 segundos"
             })
 
         } catch (error) {
@@ -505,7 +626,7 @@ class PerformanceControllers {
                 })
             }
 
-            res.status(200).json({
+            return res.status(200).json({
                 message: "La pregunta ha sido eliminada correctamente"
             })
 
@@ -523,7 +644,7 @@ class PerformanceControllers {
         try {
             const list = await this.model.getPeopleForSupervisor(limit, offset, orderBy, typeOrder, filters, arrayToExclude);
 
-            const getTotalResults = await this.model.getTotalResultsExclude(limit, offset, orderBy, typeOrder, filters, arrayToExclude);
+            const getTotalResults = await this.model.getTotalResultsExclude(filters, arrayToExclude);
 
             if (list.length < 1) {
                 console.log("No se encontraron usuarios.");
@@ -534,7 +655,7 @@ class PerformanceControllers {
                 });
             }
 
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Usuarios obtenidos correctamente",
                 list: list,
                 total: getTotalResults[0]?.total
@@ -634,7 +755,7 @@ class PerformanceControllers {
                     end_ep: formatDateYear(item.end_ep),
                     created_at: formatDateTime(item.created_at),
                     updated_at: formatDateTime(item.updated_at),
-                    status_date_expire 
+                    status_date_expire
                 };
             });
 
@@ -686,22 +807,10 @@ class PerformanceControllers {
         const { answerData, answersArray } = req.body;
         const { id_user } = req;
 
-
         try {
 
-            const insertIntoSupervisorTable = await this.supervisorTable.createOne({
-                user_fk: id_user,
-                ep_fk: answerData.id_ep
-            })
-
-             if (!insertIntoSupervisorTable) {
-                return res.status(403).json({
-                    message: "Ha ocurrido un error al enviar las respuestas del cuestionario, intente reiniciando el sitio"
-                });
-            }
-
             const dataToCreateAnswer = {
-                author_fk: insertIntoSupervisorTable.lastId,
+                author_fk: answerData.id_spq,
                 is_complete: 1,
                 ep_fk: answerData.id_ep,
                 evaluated_fk: answerData.evaluated_fk,
@@ -778,7 +887,7 @@ class PerformanceControllers {
 
             const getTotalResults = await this.model.getTotalEmployeesToEvaluate(department_supervisor_id, limit, offset, orderBy, typeOrder, filters, updatedArrayToExclude)
 
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Usuarios obtenidos correctamente",
                 list: list,
                 total: getTotalResults[0]?.total
@@ -836,7 +945,7 @@ class PerformanceControllers {
     async getAnswersForQuizForSupervisor(req, res) {
         const { limit, offset, order, typeOrder, filters } = req.body;
         const { ep_fk } = req.params;
-        const {id_user} = req
+        const { id_user } = req
 
 
         try {
@@ -915,7 +1024,7 @@ class PerformanceControllers {
                 })
             }
 
-            
+
             const dataEmployee = await this.entity.getDataBasicEmployeeByIdUser(id_evaluated);
 
             if (!dataEmployee) {
@@ -1027,13 +1136,11 @@ class PerformanceControllers {
 
     async getAnswersForQuizForPersonal(req, res) {
         const { limit, offset, order, typeOrder, filters } = req.body;
-        const {id_user} = req
+        const { id_user } = req
 
 
         try {
-            console.log(req.body)
             const list = await this.model.getAnswersForQuizForPersonal(id_user, limit, offset, typeOrder, order, filters);
-            console.log(list);
 
             if (!list) {
                 return res.status(403).json({

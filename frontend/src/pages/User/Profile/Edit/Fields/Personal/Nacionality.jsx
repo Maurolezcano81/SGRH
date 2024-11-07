@@ -9,7 +9,7 @@ const Nacionality = ({ entity, updateProfile, permissionsData,
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
 
-    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NACIONALITY}`
+    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NACIONALITY_ACTIVES}`
     const urlUpdate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITY_NACIONALITY}`
 
     const handleSingleEditClick = () => {

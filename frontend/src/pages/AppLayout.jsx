@@ -29,7 +29,6 @@ const AppLayout = () => {
 
   useEffect(() => {
     const checkTokenAvailability = async () => {
-      // Verificar si hay token antes de proceder
       if (!token) {
         setShowErrorMessage(true);
         setErrorMessage('Primero debes iniciar sesión');
@@ -45,7 +44,6 @@ const AppLayout = () => {
       setIsTokenChecked(true);
   
       try {
-        // Llamada a la API para verificar el token
         const response = await fetch(urlCheckToken, {
           method: 'GET',
           headers: {
@@ -61,10 +59,9 @@ const AppLayout = () => {
         const fetchData = await response.json();
         const currentLocalToken = JSON.parse(localStorage.getItem('token'));
   
-        // Comparar token actual con el nuevo token y actualizar solo si es necesario
         if (currentLocalToken.token !== fetchData.queryResponse.token) {
-          storageAuthData(fetchData.queryResponse); // Actualizar el contexto
-          localStorage.setItem('token', JSON.stringify(fetchData.queryResponse)); // Actualizar localStorage solo si ha cambiado
+          storageAuthData(fetchData.queryResponse);
+          localStorage.setItem('token', JSON.stringify(fetchData.queryResponse));
         }
   
       } catch (error) {

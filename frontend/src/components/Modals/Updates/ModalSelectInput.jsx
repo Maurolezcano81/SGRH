@@ -14,7 +14,7 @@ const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectF
         const fetchRequest = async () => {
             try {
                 const fetchResponse = await fetch(urlForSelect, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${authData.token}`,
@@ -26,10 +26,10 @@ const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectF
 
                 const data = await fetchResponse.json();
 
-                if (data.queryResponse.length === 0) {
+                if (data.list.length === 0) {
                     setDataToSelect([]);
                 } else {
-                    setDataToSelect(data.queryResponse);
+                    setDataToSelect(data.list);
                 }
             } catch (error) {
                 console.error('Error al obtener los datos', error);

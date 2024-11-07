@@ -29,13 +29,14 @@ const PageWithSelect = ({
     const fetchOptions = async () => {
       try {
         const response = await fetch(getOptions, {
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${authData.token}`,
             'Content-Type': 'application/json',
           },
         });
         const data = await response.json();
-        setArrayWithOptions(data.queryResponse);
+        setArrayWithOptions(data.list);
       } catch (error) {
         console.error('Error fetching options:', error);
       }

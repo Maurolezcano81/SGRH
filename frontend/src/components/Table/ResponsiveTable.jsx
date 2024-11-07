@@ -44,13 +44,14 @@ const ResponsiveTable = ({
     const fetchFilterOptions = async () => {
         const fetchPromises = filterConfigs.map(async (filter) => {
             const response = await fetch(filter.url, {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`
                 }
             });
             const data = await response.json();
-            return { [filter.key]: data.queryResponse };
+            return { [filter.key]: data.list };
         });
 
         const filterOptionsArray = await Promise.all(fetchPromises);
@@ -140,7 +141,7 @@ const ResponsiveTable = ({
     const totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
-    const statusFields = ['status', 'status_sex', 'status_document', 'status_department', 'status_ta', 'status_tot', 'status_sr', 'status_tol'];
+    const statusFields = ['status', 'status_sex', 'status_document', 'status_department', 'status_ta', 'status_tot', 'status_sr', 'status_tol', 'status_contact', 'status_sm', 'status_nm', 'status_tse', 'status_occupation', 'status_nacionality', 'status_country', 'status_module'];
 
     const statusMap = {
         1: 'Activo',

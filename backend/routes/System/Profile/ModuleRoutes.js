@@ -2,29 +2,28 @@ import express from 'express';
 const router = express.Router();
 
 import {
-  createModule,
-  getModule,
-  getModules,
   getModulesByProfile,
   getModulesOutProfile,
-  updateModule,
-  toggleStatusModule,
-  deleteModule,
   bindModuleToProfile,
   unBindModuleToProfile,
 } from '../../../controllers/System/Profile/ModuleControllers.js';
 
+import ModuleControllersClass from '../../../controllers/System/Profile/ModuleControllersClass.js';
+const module = new ModuleControllersClass();
+
 // MODULE ROUTES
-router.post('/module/create', createModule);
-router.get('/modules', getModules);
+router.post('/module/create', module.createOne.bind(module));
+router.post('/modules', module.getAllWPagination.bind(module));
+router.post('/module', module.getOne.bind(module));
+router.patch('/module', module.updateOne.bind(module));
+router.delete('/module', module.deleteOne.bind(module));
+
+
 router.post('/modules/profile', getModulesByProfile);
 router.post('/modules/profile/out', getModulesOutProfile);
 router.post('/module/profile', bindModuleToProfile);
 router.delete('/module/profile', unBindModuleToProfile);
-router.post('/module', getModule);
-router.patch('/module', updateModule);
-router.patch('/module/status', toggleStatusModule);
-router.delete('/module', deleteModule);
+
 
 const ModuleRoutes = {
   router,

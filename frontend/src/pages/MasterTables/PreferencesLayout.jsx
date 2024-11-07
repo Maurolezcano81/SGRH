@@ -33,6 +33,12 @@ const Preferences = () => {
 
           <LinkPreference path="tipo_licencia" name="Tipos de Licencia" />
 
+          <LinkPreference path="menu_navegacion" name="Menues de Navegación" />
+
+          <LinkPreference path="estado_empleado" name="Tipos de Estados de Empleado" />
+
+
+
 
       </div>
 

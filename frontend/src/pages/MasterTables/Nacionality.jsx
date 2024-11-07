@@ -1,40 +1,48 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
+import useNav from '../../hooks/useNav';
+import { useLocation } from 'react-router-dom';
+import TestTable from '../../components/Table/ResponsiveTable';
+import User from '../../assets/Icons/Buttons/User.png'
+import UserDown from '../../assets/Icons/Buttons/UserDown.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
+import Edit from '../../assets/Icons/Buttons/Edit.png';
+import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
-import { useLocation } from 'react-router-dom';
-import useNav from '../../hooks/useNav';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
-const Nacionality = () => {
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [nacionalities, setNacionalities] = useState([]);
-  const [nacionalitiesFormatted, setNacionalitiesFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(''); // Estado para almacenar el mensaje de "no hay datos"
-
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-
-  // MODALES
-  const [toggleModalAdd, setToggleModalAdd] = useState(false);
-  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-  const [toggleModalDelete, setToggleModalDelete] = useState(false);
-
-  // ESTADOS DE ID
-  const [idToGet, setIdToGet] = useState(null);
-  const [idToToggle, setIdToToggle] = useState(null);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  // ESTADOS PARA ACTUALIZAR EL COMPONENTE PRINCIPAL
-  const [isNewField, setIsNewField] = useState(false);
-  const [isStatusChanged, setIsStatusChanged] = useState(false);
-  const [isUpdatedField, setIsUpdatedField] = useState(false);
-  const [isDeletedField, setIsDeletedField] = useState(false);
-
-  // CONTEXTO GLOBAL
+const Occupation = () => {
   const { authData } = useAuth();
+
+  const { updateBreadcrumbs } = useBreadcrumbs();
+
+  useEffect(() => {
+    updateBreadcrumbs([
+      { name: 'Tipos de Nacionalidad', url: '/rrhh/ajustes/Nacionalidad' },
+    ]);
+  }, []);
+
+  const columns = [
+    { field: 'name_nacionality', label: 'Nombre' },
+    { field: 'abbreviation_nacionality', label: 'Abreviación' },
+    { field: 'status_nacionality', label: 'Estado' }
+  ];
+
+  const filterConfigs = [];
+  const searchOptions = [
+
+    { value: 'name_nacionality', label: 'Nombre' },
+    { value: 'abbreviation_nacionality', label: 'Abreviación' },
+
+  ];
+
+
+  const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+  const updateStatus = () => {
+    setIsStatusUpdated(!isStatusUpdated);
+  };
 
   // VARIABLES CON LAS PETICIONES FETCH
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NACIONALITY}`;
@@ -43,124 +51,95 @@ const Nacionality = () => {
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_NACIONALITY}`;
   const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_NACIONALITY}`;
   const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_NACIONALITY}`;
-  const {storageNavbarTitle}  = useNav();
 
-  const location = useLocation();
 
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
 
-  
-  // ARRAY PARA MAPEAR EN LA TABLA
-  useEffect(() => {
-    const fetchNacionalities = async () => {
-      try {
-        const fetchResponse = await fetch(getAllUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
-        if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener las nacionalidades');
-        }
+  // MODAL ADD
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-        const data = await fetchResponse.json();
-        if (data.queryResponse.length == 0) {
-          setNoDataMessage(data.message);
-          setNacionalities([]);
-          setNacionalitiesFormatted([]);
-        } else {
-          setNacionalities(data.queryResponse);
-          formatCountries(data.queryResponse);
-          setNoDataMessage('');
-        }
-      } catch (error) {
-        console.error('Error al obtener las nacionalidades', error);
-      }
-    };
+  const handleModalAddOpen = () => {
+    setIsModalAddOpen(true)
+  }
 
-    fetchNacionalities();
-  }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
+  const handleModalAddClose = () => {
+    setIsModalAddOpen(false)
+  }
 
-  const formatCountries = (nacionalities) => {
-    const formatted = nacionalities.map((nacionality) => ({
-      ...nacionality
-    }));
-    setNacionalitiesFormatted(formatted);
-  };
-  // ARRAY PARA MAPEAR EN LA TABLA
+  // MODAL ADD
 
-  // FUNCIONES PARA MANEJAR MODALES
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
+  // MODAL UPDATE
 
-  const handleModalUpdate = (item) => {
-    setIdToGet(item.id_nacionality);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
-  // FUNCIONES PARA MANEJAR MODALES
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [idToGet, setIdToGet] = useState("");
 
-  const handleModalDelete = () => {
-    setToggleModalDelete(!toggleModalDelete);
-  };
+  const handleModalUpdateOpen = (row) => {
+    setIdToGet(row.id_nacionality)
+    setIsModalUpdateOpen(true)
+  }
 
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
-  const handleDelete = (item) => {
-    setIdToDelete(item.id_nacionality);
-  };
+  const handleModalUpdateClose = () => {
+    setIdToGet("")
+    setIsModalUpdateOpen(false)
+    updateStatus()
+  }
 
-  const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_nacionality);
-  };
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
+  // MODAL UPDATE
 
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
-  const onSubmitUpdate = () => {
-    setIsUpdatedField(!isUpdatedField);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
+  // MODAL DELETE
 
-  const onSubmitDelete = () => {
-    setToggleModalDelete(false);
-    setIsDeletedField(!isDeletedField);
-  };
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
 
-  const handleDependencyToggle = () => {
-    setIsStatusChanged(!isStatusChanged);
-  };
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
+  const handleModalDeleteOpen = (row) => {
+    setIdToGet(row.id_nacionality)
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIdToGet("")
+    setIsModalDeleteOpen(false)
+    updateStatus()
+  }
+
+  // MODAL DELETE
+
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Nacionalidad" onClick={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nueva Nacionalidad'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la Abreviacion']}
-          method={'POST'}
-          fetchData={['name_nacionality', 'abbreviation_nacionality']}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
 
-      {toggleModalUpdate && (
+      <TestTable
+        addButtonTitle={handleModalAddOpen}
+        url={getAllUrl}
+        authToken={authData.token}
+        columns={columns}
+        filterConfigs={filterConfigs}
+        searchOptions={searchOptions}
+        initialSearchField={'name_nacionality'}
+        initialSearchTerm={''}
+        initialSort={{ field: 'name_nacionality', order: 'ASC' }}
+        actions={{
+          view: (row) => handleModalUpdateOpen(row),
+          edit: (row) => handleModalDeleteOpen(row),
+          delete: (row) => console.log("Editar", row),
+        }}
+        showActions={{
+          view: true,
+          edit: true,
+          delete: false
+        }}
+        actionColumn='id_nacionality'
+        title_table={"Tipos de Nacionalidad"}
+        paginationLabelInfo={"Tipos de Nacionalidad"}
+        buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
+        buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        isStatusUpdated={isStatusUpdated}
+      />
+
+      {isModalUpdateOpen && (
         <ModalUpdate
           title_modal={'Editar Nacionalidad'}
-          labels={['Nombre', 'Abreviacion']}
-          placeholders={['Ingrese nombre', 'Ingrese la abreviacion']}
+          labels={['Nombre', 'Abreviación']}
+          placeholders={['Ingrese nombre', 'Ingrese una abreviación']}
           methodGetOne={'POST'}
           methodUpdateOne={'PATCH'}
           fetchData={['name_nacionality', 'abbreviation_nacionality']}
@@ -168,51 +147,40 @@ const Nacionality = () => {
           idFetchData="value_nacionality"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_nacionality"}
+          onSubmitUpdate={handleModalUpdateClose}
+          handleModalUpdate={handleModalUpdateClose}
+          fetchData_select={'status_nacionality'}
         />
       )}
 
-      {toggleModalDelete && (
+      {isModalAddOpen && (
+        <ModalAdd
+          title_modal={'Nuevo Tipo de Nacionalidad'}
+          labels={['Nombre', 'Abreviación']}
+          placeholders={['Ingrese nombre', 'Ingrese una abreviación']}
+          method={'POST'}
+          fetchData={['name_nacionality', 'abbreviation_nacionality']}
+          createOne={createOne}
+          handleDependencyAdd={updateStatus}
+          handleModalAdd={handleModalAddClose}
+        />
+      )}
+
+
+
+      {isModalDeleteOpen && (
         <ModalDelete
-          handleModalDelete={handleModalDelete}
+          handleModalDelete={handleModalDeleteClose}
           deleteOne={deleteOne}
           field_name={'id_nacionality'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
+          idToDelete={idToGet}
+          onSubmitDelete={handleModalDeleteClose}
         />
       )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Abreviacion', 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-          {nacionalitiesFormatted.length > 0 ? (
-            <PreferencesBodyRow
-              items={nacionalitiesFormatted}
-              keys={['name_nacionality', 'abbreviation_nacionality']}
-              status_name={['id_nacionality', 'status_nacionality']}
-              fetchUrl={toggleStatus}
-              idToToggle={idToToggle}
-              handleStatusToggle={handleStatusToggle}
-              handleDependencyToggle={handleDependencyToggle}
-              handleEdit={handleModalUpdate}
-              handleModalDelete={handleModalDelete}
-              handleDelete={handleDelete}
-            />
-          ) : (
-            <tr>
-              <td colSpan="4">{noDataMessage || 'No hay datos ingresados'}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    </>
+
   );
 };
 
-export default Nacionality;
+export default Occupation;

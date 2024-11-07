@@ -48,7 +48,7 @@ const leave = new LeavesControllers();
 // Routes
 
 // Subject Routes
-router.get('/subjects', subject.getSubjects.bind(subject));
+router.post('/subjects/actives', subject.getActives.bind(subject));
 
 // Address Routes
 router.get('/address/cities', city.getCities.bind(city)); // Obtener todas las ciudades con paginación y filtros
@@ -58,27 +58,26 @@ router.get('/address/states', state.getStates.bind(state)); // Obtener todos los
 router.post('/attachments/actives', attachment.getActives.bind(attachment));
 
 // Contact Routes
-router.get('/contacts', contact.getContacts.bind(contact));
+router.post('/contacts/actives', contact.getActives.bind(contact));
 
 // Country Routes
-router.get('/countries', country.getCountries.bind(country));
+router.post('/countries/actives', country.getActives.bind(country));
 
 // Nacionality Routes
-router.get('/nacionalities', nacionality.getNacionalities.bind(nacionality));
+router.post('/nacionalities/actives', nacionality.getActives.bind(nacionality));
 
 // Department Routes
 router.post('/departments/actives', department.getActives.bind(department));
 
 // Occupation Routes
-router.get('/occupations', occupation.getOccupations.bind(occupation));
+router.post('/occupations/actives', occupation.getActives.bind(occupation));
 
 // Document Routes
 router.patch('/document/update', document.updateEntityDocument.bind(document));
 router.post('/documents/actives', document.getActives.bind(document));
 
-
 // Sex Routes
-router.get('/sexs/actives', sex.getActives.bind(sex));
+router.post('/sexs/actives', sex.getActives.bind(sex));
 
 // Status Request Routes
 router.post('/statuses_request/actives', statusRequest.getActives.bind(statusRequest));
@@ -86,7 +85,7 @@ router.post('/statuses_request/actives', statusRequest.getActives.bind(statusReq
 // Profile Routes
 
 // Type of leaves routes
-router.post('/types_of_leave', typeOfLeave.getActives.bind(typeOfLeave));
+router.post('/types_of_leave/actives', typeOfLeave.getActives.bind(typeOfLeave));
 
 router.post('/request/capacitations/user', capacitation.getCapacitationsById.bind(capacitation));
 router.post('/request/capacitation/new', capacitation.createRequestCapacitation.bind(capacitation));

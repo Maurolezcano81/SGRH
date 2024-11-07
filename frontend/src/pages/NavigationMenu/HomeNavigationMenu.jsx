@@ -26,7 +26,7 @@ const HomeNavigationMenu = () => {
 
     const { authData } = useAuth();
 
-    const getNavs = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NAVMENUS}`
+    const getNavs = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NAVMENU_ACTIVES}`
 
 
     useEffect(() => {
@@ -49,7 +49,7 @@ const HomeNavigationMenu = () => {
             }
 
 
-            setNavbarLists(dataFormatted.queryResponse);
+            setNavbarLists(dataFormatted.list);
         }
 
         fetchUseEffect();

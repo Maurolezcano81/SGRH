@@ -14,7 +14,8 @@ const TerminationModal = ({
     const [message, setMessage] = useState('');
     const [type_of_termination, setType_of_termination] = useState(null);
     const [arrayTots, setArrayTots] = useState([]);
-
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const { authData } = useAuth();
 
     const handleSubmit = async () => {
@@ -34,12 +35,15 @@ const TerminationModal = ({
             const dataFormatted = await fetchResponse.json();
 
             if (!fetchResponse.ok) {
-                return setMessage(dataFormatted.message);
+                return setErrorMessage(dataFormatted.message);
             }
 
-            if (fetchResponse.status != 403) {
-                return setMessage(dataFormatted.message);
+            if (fetchResponse.status != 200) {
+                return setErrorMessage(dataFormatted.message);
             }
+
+            setSuccessMessage(dataFormatted.message);
+
             onSubmitDeleteAction();
             updateProfile();
         } catch (error) {
@@ -47,7 +51,7 @@ const TerminationModal = ({
         }
     };
 
-    const getAllTot = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_TYPE_OF_TERMINATION}`
+    const getAllTot = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_TYPE_OF_TERMINATION_ACTIVES}`
 
     const dismissUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_DISMISS_TERMINATION}`
 
@@ -58,7 +62,7 @@ const TerminationModal = ({
         const getAllForSelect = async () => {
 
             const fetchRequest = await fetch(getAllTot, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authData.token}`
@@ -71,26 +75,23 @@ const TerminationModal = ({
                 setArrayTots([]);
             }
 
-            console.log(formattedData)
-            setArrayTots(formattedData.queryResponse);
+            setArrayTots(formattedData.list);
         }
 
         getAllForSelect()
     }, [authData])
 
     const handleTotChange = (e) => {
-        console.log(e.target.value);
         setType_of_termination(e.target.value)
     }
 
     return (
         <div className="alert__background__black">
             <div className="alert__container">
-                <div className="alert__header modal__delete">
+
+            <div className="alert__header modal__delete">
                     <p>{messageToDelete}</p>
                 </div>
-                <div className="modal__delete__message">{message}</div>
-
 
                 <div className="input__form__div">
                     <label className='input__form__div__label' htmlFor="id_tot">Motivo de Baja:</label>
@@ -110,6 +111,10 @@ const TerminationModal = ({
                     )}
                 </div>
 
+                <div className="modal__delete__message ">
+                    {successMessage && successMessage.length > 0 && <div className="success-message">{successMessage}</div>}
+                    {errorMessage && errorMessage.length > 0 && <div className="error-message">{errorMessage}</div>}
+                </div>
 
                 <div className="alert__footer modal__delete">
                     <ButtonRed onClick={handleSubmit} title={textButtonRed} />

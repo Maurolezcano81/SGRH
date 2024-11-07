@@ -16,10 +16,10 @@ const PersonalDetailsSection = ({
   const [listContact, setListContact] = useState([]);
 
   const API_URLS = [
-    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/documents`,
-    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/sexs`,
-    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/nacionalities`,
-    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/contacts`,
+    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DOCUMENT_ACTIVES}`,
+    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX_ACTIVES}`,
+    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NACIONALITY_ACTIVES}`,
+    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT_ACTIVES}`,
   ];
 
   const { authData } = useAuth();
@@ -31,7 +31,7 @@ const PersonalDetailsSection = ({
           const responses = await Promise.all(
             API_URLS.map((url) =>
               fetch(url, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${authData.token}`,
@@ -44,17 +44,10 @@ const PersonalDetailsSection = ({
 
           const [documentsData, sexsData, nacionalitiesData, contactsData] = datas;
 
-          const activeSexs = sexsData.queryResponse.filter((sex) => sex.status_sex === 1);
-          const activeTypeDocuments = documentsData.queryResponse.filter((document) => document.status_document === 1);
-          const activeNacionalities = nacionalitiesData.queryResponse.filter(
-            (nacionality) => nacionality.status_nacionality === 1
-          );
-          const activeContacts = contactsData.queryResponse.filter((contact) => contact.status_contact === 1);
-
-          setListTypeDocument(activeTypeDocuments || []);
-          setListSex(activeSexs || []);
-          setListNacionality(activeNacionalities || []);
-          setListContact(activeContacts || []);
+          setListTypeDocument(documentsData.list || []);
+          setListSex(sexsData.list || []);
+          setListNacionality(nacionalitiesData.list || []);
+          setListContact(contactsData.list || []);
         }
       } catch (error) {
         setCriticalErrorToggle(true);

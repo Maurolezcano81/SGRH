@@ -9,7 +9,7 @@ const Sex = ({ entity, updateProfile, permissionsData,
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
 
-    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`
+    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX_ACTIVES}`
     const urlUpdate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITY_SEX}`
 
 

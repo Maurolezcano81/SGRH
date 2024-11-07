@@ -19,7 +19,8 @@ class SatisfactionModel extends BaseModel {
                         start_sq,
                         end_sq,
                         status_sq,
-                        concat(name_entity," ",lastname_entity) as "author",
+                        e.name_entity,
+                        e.lastname_entity,
                         sq.created_at,
                         sq.updated_at,
                         (
@@ -32,7 +33,6 @@ class SatisfactionModel extends BaseModel {
                     join user u on sq.author_fk = u.id_user
                     join entity e on u.entity_fk = e.id_entity  
                     left join entity_department_occupation edo on edo.entity_fk = e.id_entity
-                ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                     group by sq.name_sq, sq.id_sq 
                 ORDER BY ${orderBy} ${order} 
@@ -46,14 +46,63 @@ class SatisfactionModel extends BaseModel {
         }
     }
 
+    async getTotalQuestionnairesInformation(filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClause(filters);
+            const query = `
+                select 
+                    count(distinct id_sq) as total
+                from satisfaction_questionnaire sq 
+                    join question_satisfaction_questionnaire qsq on sq.id_sq = qsq.sq_fk 
+                    join user u on sq.author_fk = u.id_user
+                    join entity e on u.entity_fk = e.id_entity  
+                    left join entity_department_occupation edo on edo.entity_fk = e.id_entity
+                ${whereClause.length > 0 ? 'AND' : ''}
+                ${whereClause}
+                `
+            const [results] = await this.con.promise().query(query, [...values]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
+
+    async getDataQuizForAudit(id_sq) {
+        try {
+            const query = `
+                select 
+                id_sq, 
+                name_sq, 
+                start_sq, 
+                end_sq,
+                (
+                select count(id_asq) 
+                from answer_satisfaction_questionnaire asq 
+                where asq.sq_fk = sq.id_sq
+                ) as "quantity_questions"
+                from satisfaction_questionnaire sq
+                join user u on sq.author_fk = u.id_user 
+                join entity e on u.entity_fk = e.id_entity
+                where id_sq = ?
+                `
+            const [results] = await this.conn.promise().query(query, [id_sq])
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
     async getAnswersForQuiz(id_sq, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
-        const { whereClause, values } = this.buildWhereClause(filters);
+        const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
         try {
 
             const query = `
                 SELECT 
                     u.avatar_user,
-                    concat(e.name_entity,+" ",e.lastname_entity) as author,
+                    e.name_entity,
+                    e.lastname_entity,
                     sq.id_sq, 
                     asq2.id_asq, 
                     sq.name_sq, 

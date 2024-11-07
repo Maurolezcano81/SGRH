@@ -75,7 +75,7 @@ const DepartmentView = () => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`
         },
     ];
 
@@ -166,13 +166,13 @@ const DepartmentView = () => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`
         },
         {
             key: 'name_department',
             label: 'Departamento',
             name_field: 'name_department',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}`
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_ACTIVES}`
         },
     ];
 
@@ -182,7 +182,7 @@ const DepartmentView = () => {
     ]
 
 
-    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`
 
 
     const toggleAddModal = (row) => {

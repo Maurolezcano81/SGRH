@@ -46,6 +46,9 @@ import HomeNavigationMenu from './pages/NavigationMenu/HomeNavigationMenu';
 import Breadcrumbs from './components/Breadcrumbs/Breadcrumbs';
 import { BreadcrumbProvider } from './contexts/BreadcrumbsContext';
 import TypeOfLeave from './pages/MasterTables/TypeOfLeave';
+import NavigationMenuTable from './pages/MasterTables/NavigationMenuTable';
+import TypeStatusEmployee from './pages/MasterTables/TypeStatusEmployee';
+import AuditPage from './pages/Audit/AuditPage';
 
 
 function App() {
@@ -62,6 +65,7 @@ function App() {
                   <Route path="inicio" element={<HomeRRHH />} />
                   <Route path="perfiles" element={<Profiles />} />
                   <Route path="navegacion" element={<HomeNavigationMenu />} />
+                  <Route path="auditoria" element={<AuditPage />} />
                 </Route>
                 {/* Home del admin */}
                 {/* Ruta para RRHH */}
@@ -101,6 +105,8 @@ function App() {
                     <Route path="tipo_asunto_mensaje" element={<Subject />} />
                     <Route path="tipo_anexo" element={<Attachment />} />
                     <Route path="tipo_licencia" element={<TypeOfLeave />} />
+                    <Route path="menu_navegacion" element={<NavigationMenuTable />} />
+                    <Route path="estado_empleado" element={<TypeStatusEmployee />} />
                   </Route>
                   <Route path="solicitud/*">
                     <Route path="capacitacion" element={<RrhhCapacitation />} />

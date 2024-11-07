@@ -9,8 +9,7 @@ const ProfileUserUpdate = ({ user, updateProfile, profile, permissionsData,
 
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
-    const { storageAuthData } = useAuth();
-    const { canRefresh } = useNav();
+
     const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_PROFILE}`
     const urlUpdate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_USER_PROFILE}`
 

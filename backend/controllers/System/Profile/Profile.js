@@ -10,13 +10,14 @@ class ProfileController {
 
   async getProfiles(req, res) {
     const { filters } = req.body;
+
     try {
-      const queryResponse = await this.model.getAllPaginationWhereFilteredActives(
+      const list = await this.model.getAllPaginationWhereFilteredActives(
         'status_profile',
         filters
       );
 
-      if (queryResponse.length < 1) {
+      if (list.length < 1) {
         return res.status(200).json({
           message: 'No hay perfiles disponibles',
         });
@@ -24,7 +25,7 @@ class ProfileController {
 
       return res.status(200).json({
         message: 'Perfiles obtenidos correctamente',
-        queryResponse,
+        list,
       });
     } catch (error) {
       console.error('Error en controlador de perfil: ' + error);
@@ -60,7 +61,7 @@ class ProfileController {
   }
 
   async createProfile(req, res) {
-    const {name_profile, nm_fk} = req.body;
+    const { name_profile, nm_fk } = req.body;
 
     try {
       if (isInputEmpty(name_profile)) {

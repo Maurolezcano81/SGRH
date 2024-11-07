@@ -13,7 +13,7 @@ const ModalAdd = ({
   createOne,
   handleModalAdd,
   handleDependencyAdd,
-  extraData={}
+  extraData = {}
 }) => {
   // Estado para almacenar los valores de los inputs de manera dinámica
   const [inputValues, setInputValues] = useState({});
@@ -36,16 +36,16 @@ const ModalAdd = ({
     e.preventDefault();
 
     const newData = {
-      ...extraData, 
-      ...inputValues, 
-  };
+      ...extraData,
+      ...inputValues,
+    };
 
 
-  // ACA HICE ESTE CAMBIO: suplante newData
-  /* const newData = fetchData.reduce((acc, key, index) => {
-    acc[key] = inputValues[key] || '';
-    return acc;
-  }, {}); */
+    // ACA HICE ESTE CAMBIO: suplante newData
+    /* const newData = fetchData.reduce((acc, key, index) => {
+      acc[key] = inputValues[key] || '';
+      return acc;
+    }, {}); */
 
     try {
       const response = await fetch(createOne, {
@@ -59,8 +59,9 @@ const ModalAdd = ({
 
       const dataFormatted = await response.json();
 
-      if (response.status === 403) {
+      if (response.status === 403 || response.status === 500 || response.status === 422) {
         setErrorMessage(dataFormatted.message);
+        return
       } else {
         handleDependencyAdd();
         handleModalAdd();

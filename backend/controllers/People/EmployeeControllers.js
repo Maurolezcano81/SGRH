@@ -1,11 +1,13 @@
 import BaseModel from "../../models/BaseModel.js";
 import { isNotAToZ, isNotDate, isNotNumber, isInputEmpty, isInputWithWhiteSpaces } from "../../middlewares/Validations.js";
 import EntityModel from "../../models/People/People/Entity.js";
+import EmployeeModel from "../../models/People/Employee.js";
 
 
 class EmployeeControllers {
     constructor() {
-        this.employee = new BaseModel('employee', 'file_employee');
+        this.employee = new EmployeeModel();
+
         this.entityDepartmentOccupation = new BaseModel('entity_department_occupation', 'id_edo');
         this.occupation = new BaseModel('occupation', 'name_occupation');
         this.department = new BaseModel('department', 'name_department');
@@ -13,6 +15,8 @@ class EmployeeControllers {
 
         this.nameFieldId = 'id_employee';
         this.nameFieldToSearch = 'file_employee';
+
+        this.audit = new BaseModel('audit_general', 'id_ag');
     }
 
     async updateFile(req, res) {
@@ -64,7 +68,7 @@ class EmployeeControllers {
         const { id_employee, date_entry_employee } = req.body;
 
         console.log(req.body);
-        
+
         try {
 
             if (isInputEmpty(id_employee) || isNotNumber(id_employee)) {
@@ -235,8 +239,8 @@ class EmployeeControllers {
 
     async updateDepartment(req, res) {
         const { id_edo, department_fk } = req.body;
+        const { id_user } = req
         try {
-
             if (isInputEmpty(id_edo) || isNotNumber(id_edo)) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error con los datos a actualizar, por favor intentelo nuevamente reiniciando el sitio"
@@ -257,6 +261,14 @@ class EmployeeControllers {
                 })
             }
 
+            const getDataPrev = await this.employee.getData(id_edo)
+
+            if (getDataPrev.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
             const update = await this.entityDepartmentOccupation.updateOne({ department_fk }, ['id_edo', id_edo]);
 
             if (update.affectedRows < 1) {
@@ -264,6 +276,34 @@ class EmployeeControllers {
                     message: "Ha ocurrido un error con los datos a actualizar, por favor intentelo nuevamente reiniciando el sitio"
                 })
             }
+
+
+            const getDataActual = await this.employee.getData(id_edo)
+
+            if (getDataActual.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+            const getDataUserAction = await this.entity.getDataByIdUser(id_user);
+
+            if (getDataUserAction.length < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+                });
+            }
+
+
+            const updateAudit = await this.audit.createOne({
+                table_affected_ag: 'entity_department_occupation',
+                id_affected_ag: id_edo,
+                action_executed_ag: 'U',
+                action_context: 'change_department',
+                user_id_ag: JSON.stringify(getDataUserAction[0]),
+                prev_data_ag: JSON.stringify(getDataPrev[0]),
+                actual_data_ag: JSON.stringify(getDataActual[0])
+            })
 
             return res.status(200).json({
                 message: "Actualizado correctamente"

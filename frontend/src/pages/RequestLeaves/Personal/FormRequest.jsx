@@ -18,13 +18,13 @@ const FormRequest = ({ handleCloseFormRequest, handleStatusUpdated }) => {
 
   const { authData } = useAuth();
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_LEAVE_USER}`;
-  const urlGetData = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_TYPES_OF_LEAVE}`;
+  const urlGetData = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_TYPES_OF_LEAVE_ACTIVES}`;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const fetchResponse = await fetch(urlGetData, {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authData.token}`
@@ -34,7 +34,7 @@ const FormRequest = ({ handleCloseFormRequest, handleStatusUpdated }) => {
         if (fetchResponse.status === 403) {
           console.log('error: ', formatData.message);
         }
-        setTypesOfLeave(formatData.queryResponse);
+        setTypesOfLeave(formatData.list);
       } catch (error) {
         console.log(error.message);
       }

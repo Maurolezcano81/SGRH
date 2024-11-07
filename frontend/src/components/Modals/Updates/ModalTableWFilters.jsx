@@ -48,13 +48,14 @@ const ModalTableWFilters = ({
     const fetchFilterOptions = async () => {
         const fetchPromises = filterConfigs.map(async (filter) => {
             const response = await fetch(filter.url, {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`
                 }
             });
             const data = await response.json();
-            return { [filter.key]: data.queryResponse };
+            return { [filter.key]: data.list };
         });
 
         const filterOptionsArray = await Promise.all(fetchPromises);

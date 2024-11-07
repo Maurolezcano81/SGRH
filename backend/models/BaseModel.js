@@ -25,7 +25,6 @@ class BaseModel {
                 ORDER BY ${order} ${orderBy} 
                 LIMIT ? OFFSET ?
                 `
-
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
 
             return results;

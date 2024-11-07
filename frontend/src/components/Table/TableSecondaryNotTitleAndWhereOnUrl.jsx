@@ -24,8 +24,10 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     buttonTreeInfo = { img: "", color: "", title: "" },
     isStatusUpdated = false
 }) => {
+
     // Estados
     const [data, setData] = useState([]);
+
     const [filters, setFilters] = useState(initialFilters);
     const [sortField, setSortField] = useState(initialSort.field);
     const [sortOrder, setSortOrder] = useState(initialSort.order);
@@ -42,13 +44,14 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
     const fetchFilterOptions = async () => {
         const fetchPromises = filterConfigs.map(async (filter) => {
             const response = await fetch(filter.url, {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`
                 }
             });
             const data = await response.json();
-            return { [filter.key]: data.queryResponse };
+            return { [filter.key]: data.list };
         });
 
         const filterOptionsArray = await Promise.all(fetchPromises);
@@ -71,7 +74,6 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
             })
         });
         const data = await response.json();
-        console.log(data);
         setData(data.list);
         setTotalResults(data.total)
         setPagination(prev => ({ ...prev, total: data.total }));
@@ -201,8 +203,8 @@ const TableSecondaryNotTitleAndWhereOnUrl = ({
                         <thead>
                             <tr>
                                 {columns.map(column => (
-                                    <th key={column.field} onClick={() => handleSort(column.field)}>
-                                        {column.label}
+                                    <th key={column?.field} onClick={() => handleSort(column?.field)}>
+                                        {column?.label}
                                     </th>
                                 ))}
                                 <th>Acciones</th>

@@ -25,7 +25,8 @@ const ListSatisfaction = () => {
         { field: 'start_sq', label: 'Fecha de inicio' },
         { field: 'end_sq', label: 'Fecha de Cierre' },
         { field: 'quantity_questions', label: 'Cantidad de preguntas' },
-        { field: 'author', label: 'Autor' },
+        { field: 'name_entity', label: 'Nombre del Autor' },
+        { field: 'lastname_entity', label: 'Apellido del Autor' },
         { field: 'created_at', label: 'Creado' },
         { field: 'updated_at', label: 'Ultima Actualizacion' },
     ];
@@ -36,9 +37,14 @@ const ListSatisfaction = () => {
     ];
 
     const searchOptions = [
-        { value: 'name_entity', label: 'Nombre' },
-        { value: 'lastname_entity', label: 'Apellido' },
-        { value: 'name_sq', label: 'Nombre de cuestionario' },
+        { value: 'name_sq', label: 'Nombre del cuestionario' },
+        { value: 'start_sq', label: 'Fecha de inicio' },
+        { value: 'end_sq', label: 'Fecha de Cierre' },
+        { value: 'quantity_questions', label: 'Cantidad de preguntas' },
+        { value: 'name_entity', label: 'Nombre del Autor' },
+        { value: 'lastname_entity', label: 'Apellido del Autor' },
+        { value: 'created_at', label: 'Creado' },
+        { value: 'updated_at', label: 'Ultima Actualizacion' },
     ];
 
     const seeQuiz = (row) => {

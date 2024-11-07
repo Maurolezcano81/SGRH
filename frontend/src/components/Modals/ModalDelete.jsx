@@ -33,7 +33,7 @@ const ModalDelete = ({
 
       const dataFormatted = await fetchResponse.json();
 
-      if (fetchResponse.status === 403) {
+      if (fetchResponse.status != 200) {
         setErrorMessage(dataFormatted.message);
         setSuccessMessage('');
         return
@@ -42,6 +42,7 @@ const ModalDelete = ({
       setSuccessMessage(dataFormatted.message);
       setErrorMessage('');
       onSubmitDelete();
+      return
     } catch (error) {
       setErrorMessage('Error en la conexión');
       setSuccessMessage('');

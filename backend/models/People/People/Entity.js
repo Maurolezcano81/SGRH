@@ -21,6 +21,31 @@ class EntityModel extends BaseModel {
         }
     }
 
+    async getDataByIdUser(id_user) {
+        try {
+            const query =
+                `
+                select 
+                    id_user,
+                    avatar_user,
+                    username_user,
+                    name_entity,
+                    lastname_entity
+                from user u 
+                    join entity e on u.entity_fk = e.id_entity 
+                where id_user = ?
+            `
+                ;
+
+            const [results] = await this.conn.promise().query(query, [id_user]);
+
+            return results;
+        } catch (error) {
+            console.error(`Error en modelo de Entity: ` + error);
+            throw new Error(`Error al obtener los datos de la persona`);
+        }
+    }
+
     async getEntityOccupation(fk_entity) {
 
         try {
@@ -37,7 +62,15 @@ class EntityModel extends BaseModel {
 
     async getEntityDepartment(fk_entity) {
         try {
-            const query = "SELECT id_entity, id_department, id_edo, name_department FROM department join entity_department_occupation edo on department_fk = id_department  join entity on id_entity = entity_fk where edo.entity_fk = ?";
+            const query = `SELECT 
+            id_entity,
+             id_department,
+              id_edo,
+               name_department 
+               FROM department 
+               join entity_department_occupation edo on department_fk = id_department  
+               join entity on id_entity = entity_fk 
+               where edo.entity_fk = ? and edo.status_edo = 1`;
 
             const [results] = await this.conn.promise().query(query, [fk_entity]);
 

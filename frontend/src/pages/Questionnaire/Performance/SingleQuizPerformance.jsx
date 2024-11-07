@@ -67,16 +67,11 @@ const SingleQuizPerformance = () => {
 
     const handleOpenDeleteHeader = () => {
         setShowModalHeaderDelete(!showModalHeaderDelete);
-        setTimeout(() => {
-            navigate('/rrhh/rendimiento/cuestionarios')
-        }, 3000)
     }
 
     const handleModalDeleteHeader = () => {
         setShowModalDelete(!showModalHeaderDelete)
-        setTimeout(() => {
-            navigate('/rrhh/rendimiento/cuestionarios')
-        }, 3000)
+        navigate('/rrhh/rendimiento/cuestionarios')
     }
 
     const handleOpenUpdate = (question) => {
@@ -176,13 +171,13 @@ const SingleQuizPerformance = () => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`
         },
         {
             key: 'name_department',
             label: 'Departamento',
             name_field: 'name_department',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}`
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_ACTIVES}`
         },
     ];
 
@@ -273,13 +268,13 @@ const SingleQuizPerformance = () => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}` // URL para obtener las opciones de ocupación 
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}` // URL para obtener las opciones de ocupación 
         },
         {
             key: 'name_department',
             label: 'Departamento',
             name_field: 'name_department',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}` // URL para obtener las opciones de departamento
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_ACTIVES}` // URL para obtener las opciones de departamento
         }
     ];
 
@@ -299,10 +294,8 @@ const SingleQuizPerformance = () => {
     const urlDeleteQuizAnswered = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_PERFORMANCE_ANSWERED}`
 
     const handleIsModalSeeInfoOpen = (row) => {
-        if (row.id_ap !== initialDataForSeeInfo.id_ap) {
             setInitialDataForSeeInfo(row);
             setIsModalSeeInfoOpen(true);
-        }
     }
     const handleCloseIsModalSeeInfoOpen = () => {
         setIsModalSeeInfoOpen(false);
@@ -325,7 +318,7 @@ const SingleQuizPerformance = () => {
                 <div className="quiz__header__container">
                     <div className="quiz__header__section">
                         <div className="question__title">
-                            <h1 className="quiz__label quiz__title">{headerData.name_ep}</h1>
+                            <h1 className="quiz__label quiz__title">{headerData?.name_ep}</h1>
 
                             {headerData && headerData.canEdit && (
 
@@ -346,17 +339,17 @@ const SingleQuizPerformance = () => {
                         <div className="quiz__header__dates">
                             <div className="quiz__header__date">
                                 <h4>Fecha de inicio:</h4>
-                                <p className="quiz__input">{headerData.start_ep}</p>
+                                <p className="quiz__input">{headerData?.start_ep}</p>
                             </div>
 
                             <div className="quiz__header__date">
                                 <h4>Fecha de finalización:</h4>
-                                <h4 className="quiz__input">{headerData.end_ep}</h4>
+                                <h4 className="quiz__input">{headerData?.end_ep}</h4>
                             </div>
 
                             <div className="quiz__header__date">
                                 <h4>Autor:</h4>
-                                <h4 className="quiz__input">{headerData.author}</h4>
+                                <h4 className="quiz__input">{headerData?.author}</h4>
                             </div>
 
                             <div className="quiz__header__date">
@@ -378,7 +371,7 @@ const SingleQuizPerformance = () => {
                         <h4>Selección de supervisores</h4>
                         <div className="quiz__supervisors__container">
 
-                            {headerData.supervisors && headerData.supervisors.length > 0 && headerData.supervisors.map((supervisor) => (
+                            {headerData.supervisors && headerData?.supervisors.length > 0 && headerData?.supervisors.map((supervisor) => (
                                 <div className="quiz__supervisor__container" key={supervisor.id_user}>
                                     <div className="not__answer__header__profile">
                                         <img src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${supervisor.avatar_user}`} alt="" />
@@ -401,12 +394,10 @@ const SingleQuizPerformance = () => {
                             ))}
 
 
-                            {headerData && headerData.canEdit && (
                                 <ButtonWhiteOutlineBlack
                                     title={"+ Agregar Supervisor"}
                                     onClick={handleOpenModalAddSupervisor}
                                 />
-                            )}
 
                         </div>
 
@@ -594,7 +585,7 @@ const SingleQuizPerformance = () => {
                 {isModalSeeInfoOpen && (
                     <ModalInfoQuizAnswered
                         initialData={initialDataForSeeInfo}
-                        closeModalAnswer={handleCloseIsModalSeeInfoOpen}
+                        closeModalAnswer={() => handleCloseIsModalSeeInfoOpen()}
                     />
                 )}
 

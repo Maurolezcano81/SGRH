@@ -8,44 +8,91 @@ class OccupationControllers {
     this.nameFieldToSearch = "name_occupation";
   }
 
-  async getOccupations(req, res) {
+  async getAllWPagination(req, res) {
     try {
-      const { limit, offset, order, typeOrder, filters } = req.body;
-      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
+      const { limit, offset, order, orderBy, filters } = req.body;
 
-      if (queryResponse.length < 1) {
+      const list = await this.model.getAllPaginationWhere(limit, offset, order, orderBy, filters);
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los tipos de puesto de trabajo, compruebe su conexión a internet e intente reiniciando el sitio',
+        });
+      }
+
+      if (list.length < 1) {
         return res.status(200).json({
-          message: 'No hay puestos de trabajo disponibles',
+          list: []
+        });
+      }
+
+      const getTotalResults = await this.model.getTotalResultsAllPaginationWhere('id_occupation', filters)
+
+      if (getTotalResults.length < 1) {
+        return res.status(200).json({
+          message: 'No hay tipos de puesto de trabajo disponibles',
+          total: 0
         });
       }
 
       return res.status(200).json({
-        message: 'Listado de puestos de trabajo obtenido con éxito',
-        queryResponse,
+        message: 'Tipos de puesto de trabajo obtenidos correctamente',
+        list,
+        total: getTotalResults[0].total
       });
     } catch (error) {
-      console.error('Error en controlador de puestos de trabajo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      console.error('Error en controlador de puesto de trabajo: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de puesto de trabajo",
       });
     }
   }
 
-  async getOccupation(req, res) {
+  async getActives(req, res) {
+    try {
+      const { filters } = req.body;
+
+      const list = await this.model.getAllPaginationWhereFilteredActives('status_occupation', filters);
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los tipos de puesto de trabajo, compruebe su conexión a internet e intente reiniciando el sitio',
+        });
+      }
+
+      if (list.length < 1) {
+        return res.status(200).json({
+          list: []
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Tipos de puesto de trabajo obtenidos correctamente',
+        list,
+      });
+    } catch (error) {
+      console.error('Error en controlador de puesto de trabajo: ' + error);
+      return res.status(500).json({
+        message: "Ha occurrido un error al obtener los tipos de puesto de trabajo",
+      });
+    }
+  }
+
+  async getOne(req, res) {
     const { value_occupation } = req.body;
     try {
       if (isInputEmpty(value_occupation)) {
-        throw new Error('Los datos que estás utilizando para la búsqueda de puestos de trabajo son inválidos');
+        throw new Error('Los datos que estás utilizando para la búsqueda de tipo de puesto de trabajo son inválidos');
       }
 
       const queryResponse = await this.model.getOne(value_occupation, this.nameFieldId);
 
       if (queryResponse.length < 1) {
-        throw new Error('Este puesto de trabajo no existe');
+        throw new Error('Error al obtener el puesto de trabajo');
       }
 
       return res.status(200).json({
-        message: 'Puesto de trabajo obtenido correctamente',
+        message: 'Tipo de puesto de trabajo obtenido correctamente',
         queryResponse,
       });
     } catch (error) {
@@ -56,150 +103,154 @@ class OccupationControllers {
     }
   }
 
-  async createOccupation(req, res) {
+  async createOne(req, res) {
     const { name_occupation, salary_occupation } = req.body;
+
+    console.log(req.body);
     try {
       if (isInputEmpty(name_occupation) || isInputEmpty(salary_occupation)) {
-        throw new Error('Debes completar todos los campos de puesto de trabajo');
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
       if (isNotNumber(salary_occupation)) {
-        throw new Error('El salario debe estar expresado en valor numérico');
+        return res.status(422).json({
+          message: "El salario debe estar expresado en numeros"
+        })
       }
 
       if (isNotAToZ(name_occupation)) {
-        throw new Error('El nombre no debe contener caracteres especiales');
+        return res.status(422).json({
+          message: "El puesto de trabajo no puede contener caracteres especiales"
+        })
       }
 
       const checkExists = await this.model.getOne(name_occupation, this.nameFieldToSearch);
 
       if (checkExists && checkExists.length > 0) {
-        throw new Error('Ya existe un puesto de trabajo con este nombre, ingrese otro');
+        return res.status(403).json({
+          message: "Ya existe un puesto de trabajo con este nombre, por favor ingrese uno distinto"
+        })
       }
 
       const queryResponse = await this.model.createOne({ name_occupation, salary_occupation });
+
+
       if (!queryResponse) {
-        throw new Error('Error al crear el puesto de trabajo');
+        return res.status(500).json({
+          message: "Ha ocurrido un error al crear el tipo de puesto de trabajo"
+        })
       }
 
       return res.status(200).json({
-        message: 'Puesto de trabajo creado correctamente',
+        message: 'puesto de trabajo creado exitosamente',
         queryResponse,
       });
+
     } catch (error) {
       console.error('Error en controlador de puesto de trabajo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al crear el tipo de puesto de trabajo",
       });
     }
   }
 
-  async updateOccupation(req, res) {
+  async updateOne(req, res) {
     const { id_occupation, name_occupation, salary_occupation, status_occupation } = req.body;
     try {
       if (isInputEmpty(id_occupation) || isInputEmpty(name_occupation) || isInputEmpty(salary_occupation) || isInputEmpty(status_occupation)) {
-        throw new Error('Debes completar todos los campos');
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
       if (isNotNumber(salary_occupation)) {
-        throw new Error('El salario debe ser un valor numérico');
+        return res.status(422).json({
+          message: "El salario debe estar expresado en formato numerico"
+        })
       }
 
       if (isNotAToZ(name_occupation)) {
-        throw new Error('El nombre del puesto de trabajo no puede contener caracteres especiales');
+        return res.status(422).json({
+          message: "El puesto de trabajo no debe contener caracteres especiales"
+        })
       }
 
       if (isNotNumber(status_occupation)) {
-        throw new Error('Ha ocurrido un error al introducir el estado');
+        return res.status(403).json({
+          message: "Los datos de estado del puesto de trabajo son inválidos"
+        })
       }
 
       const checkExists = await this.model.getOne(id_occupation, this.nameFieldId);
 
       if (checkExists.length < 1) {
-        throw new Error('No se puede actualizar el puesto de trabajo debido a que no existe');
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de puesto de trabajo, debido a que no existe'
+        })
       }
 
       const checkDuplicate = await this.model.getOne(name_occupation, 'name_occupation');
 
       if (checkDuplicate.length > 0) {
-        return res.status(403).json({
-          message: 'No se puede actualizar, debido a que ya es un registro existente'
-        })
+        if (checkDuplicate[0].id_occupation != id_occupation) {
+          return res.status(403).json({
+            message: 'No se puede actualizar, debido a que ya es un registro existente'
+          })
+        }
       }
 
-      const queryResponse = await this.model.updateOne({ name_occupation, salary_occupation, status_occupation }, [this.nameFieldId, id_occupation]);
+      const queryResponse = await this.model.updateOne({ name_occupation, status_occupation }, [this.nameFieldId, id_occupation]);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al actualizar el puesto de trabajo');
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de puesto de trabajo",
+        });
       }
 
       return res.status(200).json({
-        message: 'Puesto de trabajo actualizado correctamente',
+        message: 'Tipo de puesto de trabajo actualizado correctamente',
         queryResponse,
       });
     } catch (error) {
       console.error('Error en controlador de puesto de trabajo: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el tipo de puesto de trabajo",
       });
     }
   }
 
-  async toggleStatusOccupation(req, res) {
-    const { id_occupation, status_occupation } = req.body;
-    try {
-      if (isNotNumber(id_occupation) || isNotNumber(status_occupation)) {
-        throw new Error('Los datos proporcionados son inválidos');
-      }
-
-      const checkExists = await this.model.getOne(id_occupation, this.nameFieldId);
-
-      if (checkExists.length < 1) {
-        throw new Error('No se puede actualizar el puesto de trabajo debido a que no existe');
-      }
-
-      const queryResponse = await this.model.updateOne({ status_occupation }, [this.nameFieldId, id_occupation]);
-
-      if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al cambiar el estado del puesto de trabajo');
-      }
-
-      return res.status(200).json({
-        message: 'El estado ha sido actualizado correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de puesto de trabajo: ' + error);
-      return res.status(403).json({
-        message: error.message,
-      });
-    }
-  }
-
-  async deleteOccupation(req, res) {
+  async deleteOne(req, res) {
     const { id_occupation } = req.body;
     try {
+
       if (isNotNumber(id_occupation)) {
-        throw new Error('Ha ocurrido un error al eliminar el puesto de trabajo, intente reiniciando el sitio');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de puesto de trabajo, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       const queryResponse = await this.model.deleteOne(id_occupation, this.nameFieldId);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al eliminar el puesto de trabajo');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de puesto de trabajo, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       return res.status(200).json({
-        message: 'El puesto de trabajo ha sido eliminado correctamente',
+        message: 'Tipo de puesto de trabajo eliminado exitosamente',
         queryResponse,
       });
     } catch (error) {
       console.error('Error en controlador de puesto de trabajo: ' + error);
       return res.status(403).json({
-        message: error.message,
+        message: "Ha occurrido un error al eliminar el tipo de puesto de trabajo, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema",
       });
     }
   }
+
 }
 
 export default OccupationControllers;

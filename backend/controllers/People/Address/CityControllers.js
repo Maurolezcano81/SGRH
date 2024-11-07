@@ -202,25 +202,25 @@ class CityControllers {
     const { state_fk } = req.body; // ids puede ser un array de IDs o un solo ID
 
 
-      // Obtener ciudades usando getAllPaginationWhere para manejar múltiples IDs
-      const queryResponse = await this.model.getAllPaginationWhere(undefined, undefined, undefined, undefined, { state_fk: state_fk });
+    // Obtener ciudades usando getAllPaginationWhere para manejar múltiples IDs
+    const queryResponse = await this.model.getAllPaginationWhereFilteredActives('status_city', { state_fk: state_fk });
 
-      if (queryResponse.length < 1) {
-        return res.status(200).json({
-          message: 'No se encontraron ciudades relacionadas a la provincia',
-        });
-      }
-
+    if (queryResponse.length < 1) {
       return res.status(200).json({
-        message: 'Ciudades obtenidas correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de ciudad: ' + error);
-      return res.status(403).json({
-        message: error.message,
+        message: 'No se encontraron ciudades relacionadas a la provincia',
       });
     }
+
+    return res.status(200).json({
+      message: 'Ciudades obtenidas correctamente',
+      queryResponse,
+    });
+  } catch(error) {
+    console.error('Error en controlador de ciudad: ' + error);
+    return res.status(403).json({
+      message: error.message,
+    });
   }
+}
 
 export default CityControllers;

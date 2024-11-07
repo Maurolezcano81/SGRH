@@ -8,7 +8,7 @@ import ImgModal from "../../../components/Attachments/ImgModal";
 const ModalAnswer = ({
     initialData,
     closeModalAnswer,
-    setDependencyToRefresh,
+    handleUpdate,
     dependencyToRefresh
 }) => {
 
@@ -16,7 +16,7 @@ const ModalAnswer = ({
     const { authData } = useAuth();
 
     const urlAnswer = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_LEAVE_ANSWER_RRHH}`
-    const urlGetData = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST}`
+    const urlGetData = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_STATUS_REQUEST_ACTIVES}`
 
     const [dataToAnswerFetch, setDataToAnswerFetch] = useState({
         lr_fk: initialData.id_lr,
@@ -73,7 +73,7 @@ const ModalAnswer = ({
 
             setErrorMessage('');
             setSuccesMessage(dataFormatted.message);
-            setDependencyToRefresh(!dependencyToRefresh)
+            handleUpdate()
             closeModalAnswer();
         } catch (error) {
             console.log(error)
@@ -84,7 +84,7 @@ const ModalAnswer = ({
         const fetchData = async () => {
             try {
                 const fetchResponse = await fetch(urlGetData, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authData.token}`
@@ -94,7 +94,7 @@ const ModalAnswer = ({
                 if (fetchResponse.status === 403) {
                     console.log('error: ', formatData.message)
                 }
-                setStatusRequest(formatData.queryResponse);
+                setStatusRequest(formatData.list);
             } catch (error) {
                 console.log(error.message)
             }

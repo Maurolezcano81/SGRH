@@ -5,12 +5,13 @@ import NavigationMenuControllers from '../../../controllers/System/Navbar/Naviga
 const navbar = new NavigationMenuControllers();
 
 // NAVIGATION MENU ROUTES
-router.post('/navigation_menu/create', navbar.createNavigationMenu.bind(navbar));
-router.post('/navigation_menus', navbar.getNavigationMenus.bind(navbar));
-router.post('/navigation_menu', navbar.getNavigationMenu.bind(navbar));
-router.patch('/navigation_menu', navbar.updateNavigationMenu.bind(navbar));
-router.patch('/navigation_menu/status', navbar.toggleStatusNavigationMenu.bind(navbar));
-router.delete('/navigation_menu', navbar.deleteNavigationMenu.bind(navbar));
+router.post('/navigation_menu/create', navbar.createOne.bind(navbar));
+router.post('/navigation_menus', navbar.getAllWPagination.bind(navbar));
+router.post('/navigation_menus/actives', navbar.getActives.bind(navbar));
+router.post('/navigation_menu', navbar.getOne.bind(navbar));
+router.patch('/navigation_menu', navbar.updateOne.bind(navbar));
+router.patch('/navigation_menu/status', navbar.toggleStatus.bind(navbar));
+router.delete('/navigation_menu', navbar.deleteOne.bind(navbar));
 
 router.post('/menu/parents', navbar.getMenuParentsByIdProfile.bind(navbar));
 

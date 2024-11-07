@@ -15,8 +15,8 @@ const EmployeeDataSection = ({
   const { authData } = useAuth();
 
   const apiUrls = [
-    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/occupations`,
-    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/departments`,
+    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`,
+    `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_ACTIVES}`,
   ];
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const EmployeeDataSection = ({
           const [occupationsResponse, departmentsResponse] = await Promise.all(
             apiUrls.map((url) =>
               fetch(url, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${authData.token}`,
@@ -46,19 +46,10 @@ const EmployeeDataSection = ({
             return;
           }
 
-          const activeOccupations = occupationsData.queryResponse.filter(
-            (occupation) => occupation.status_occupation === 1
-          );
-
-          const activeDepartments = departmentsData.queryResponse.filter(
-            (department) => department.status_department === 1
-          );
-
-          setListOccupations(activeOccupations || []);
-          setListDepartments(activeDepartments || []);
+          setListOccupations(occupationsData.list || []);
+          setListDepartments(departmentsData.list || []);
         } catch (error) {
           console.error(error.message);
-          // Manejar el error aquí, como mostrar un mensaje al usuario
         }
       }
     };

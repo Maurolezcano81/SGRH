@@ -8,7 +8,7 @@ const OccupationUpdate = ({ occupation, updateProfile, permissionsData,
     const [singleModalIsOpen, setSingleModalIsOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
 
-    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`
+    const urlSelect = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`
     const urlUpdate = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITY_EMPLOYEE_OCCUPATION}`
 
     const handleSingleEditClick = () => {

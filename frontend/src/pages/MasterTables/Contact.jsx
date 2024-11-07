@@ -1,167 +1,140 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import useNav from '../../hooks/useNav';
-import {
-  useLocation
-} from 'react-router-dom'
-
-import PreferencesTableHeader from '../../components/Table/TablePreferences/PreferencesTableHeader';
-import PreferencesBodyRow from '../../components/Table/TablePreferences/PreferencesBodyRow';
-import PreferenceTitle from './PreferenceTitle';
+import { useLocation } from 'react-router-dom';
+import TestTable from '../../components/Table/ResponsiveTable';
+import User from '../../assets/Icons/Buttons/User.png'
+import UserDown from '../../assets/Icons/Buttons/UserDown.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
+import Edit from '../../assets/Icons/Buttons/Edit.png';
+import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+
 
 const Contact = () => {
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-  const [contacts, setContacts] = useState([]);
-  const [contactsFormatted, setContactsFormatted] = useState([]);
-  const [noDataMessage, setNoDataMessage] = useState(""); // Estado para almacenar el mensaje de "no hay datos"
-  // ESTADO PARA ALMACENAR LOS RESULTADOS DEL FETCH Y SU POSTERIOR FORMATEO
-
-  const {storageNavbarTitle}  = useNav();
-
-  const location = useLocation();
-
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
-
-  
-  // MODALES
-  const [toggleModalAdd, setToggleModalAdd] = useState(false);
-  const [toggleModalUpdate, setToggleModalUpdate] = useState(false);
-  const [toggleModalDelete, setToggleModalDelete] = useState(false);
-
-  // ESTADOS DE ID
-  const [idToGet, setIdToGet] = useState(null);
-  const [idToToggle, setIdToToggle] = useState(null);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  // ESTADOS PARA ACTUALIZAR EL COMPONENTE PRINCIPAL
-  const [isNewField, setIsNewField] = useState(false);
-  const [isStatusChanged, setIsStatusChanged] = useState(false);
-  const [isUpdatedField, setIsUpdatedField] = useState(false);
-  const [isDeletedField, setIsDeletedField] = useState(false);
-
-  // CONTEXTO GLOBAL
   const { authData } = useAuth();
 
-  // VARIABLES CON LAS PETICIONES FETCH
+  
+  const { updateBreadcrumbs } = useBreadcrumbs();
+
+  useEffect(() => {
+      updateBreadcrumbs([
+          { name: 'Tipos de Contacto', url: '/rrhh/ajustes/contacto' },
+      ]);
+  }, []);
+
+  const columns = [
+    { field: 'name_contact', label: 'Nombre' },
+    { field: 'status_contact', label: 'Estado' }
+  ];
+
+  const filterConfigs = [];
+  const searchOptions = [
+    { value: 'name_contact', label: 'Nombre' },
+  ];
+
+
+  const [isStatusUpdated, setIsStatusUpdated] = useState(false);
+  const updateStatus = () => {
+    setIsStatusUpdated(!isStatusUpdated);
+  };
+
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT}`;
   const getSingleUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RONE_CONTACT}`;
   const updateOneUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_CONTACT}`;
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_CONTACT}`;
   const toggleStatus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USTATUS_CONTACT}`;
   const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_CONTACT}`;
-  
-  // ARRAY PARA MAPEAR EN LA TABLA
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const fetchResponse = await fetch(getAllUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authData.token}`,
-          },
-        });
-        if (!fetchResponse.ok) {
-          throw new Error('Ha ocurrido un error al obtener los tipos de sexo');
-        }
 
-        const data = await fetchResponse.json();
-        if (data.queryResponse.length == 0) {
-            setNoDataMessage(data.message);
-            setContacts([]);
-            setContactsFormatted([]);
-          } else {
-            setContacts(data.queryResponse);
-            formatContacts(data.queryResponse);
-            setNoDataMessage("");
-          }
-      } catch (error) {
-        console.error('Error al obtener los tipos de sexo', error);
-      }
-    };
 
-    fetchContacts();
-  }, [authData.token, isNewField, isStatusChanged, isUpdatedField, isDeletedField]);
 
-  const formatContacts = (contacts) => {
-    const formatted = contacts.map((contact) => ({
-      ...contact
-    }));
-    setContactsFormatted(formatted);
-  };
-  // ARRAY PARA MAPEAR EN LA TABLA
+  // MODAL ADD
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-  // FUNCIONES PARA MANEJAR MODALES
-  const handleModalAdd = () => {
-    setToggleModalAdd(!toggleModalAdd);
-  };
+  const handleModalAddOpen = () => {
+    setIsModalAddOpen(true)
+  }
 
-  const handleModalUpdate = (item) => {
-    setIdToGet(item.id_contact);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
-  // FUNCIONES PARA MANEJAR MODALES
+  const handleModalAddClose = () => {
+    setIsModalAddOpen(false)
+  }
 
-  const handleModalDelete = () => {
-    setToggleModalDelete(!toggleModalDelete);
-  };
+  // MODAL ADD
 
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
-  const handleDelete = (item) => {
-    setIdToDelete(item.id_contact);
-  };
+  // MODAL UPDATE
 
-  const handleStatusToggle = (item) => {
-    setIdToToggle(item.id_contact);
-  };
-  // FUNCIONES PARA OBTENER LAS IDS Y GUARDARLAS EN UN ESTADO PARA LUEGO MANDARLAS POR PROPS
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [idToGet, setIdToGet] = useState("");
 
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
-  const onSubmitUpdate = () => {
-    setIsUpdatedField(!isUpdatedField);
-    setToggleModalUpdate(!toggleModalUpdate);
-  };
+  const handleModalUpdateOpen = (row) => {
+    setIdToGet(row.id_contact)
+    setIsModalUpdateOpen(true)
+  }
 
-  const onSubmitDelete = () => {
-    setToggleModalDelete(false);
-    setIsDeletedField(!isDeletedField);
-  };
+  const handleModalUpdateClose = () => {
+    setIdToGet("")
+    setIsModalUpdateOpen(false)
+    updateStatus()
+  }
 
-  const handleDependencyAdd = () => {
-    setIsNewField(!isNewField);
-  };
+  // MODAL UPDATE
 
-  const handleDependencyToggle = () => {
-    setIsStatusChanged(!isStatusChanged);
-  };
-  // FUNCIONES PARA MANEJO DE ESTADOS PARA ACTUALIZAR COMPONENTE PRINCIPAL
+  // MODAL DELETE
+
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+
+
+  const handleModalDeleteOpen = (row) => {
+    setIdToGet(row.id_contact)
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIdToGet("")
+    setIsModalDeleteOpen(false)
+    updateStatus()
+  }
+
+  // MODAL DELETE
+
 
   return (
-    <div className="preference__container">
-      <PreferenceTitle title="Contacto" onClick={handleModalAdd} />
-      {toggleModalAdd && (
-        <ModalAdd
-          title_modal={'Nuevo Tipo de Contacto'}
-          labels={['Nombre']}
-          placeholders={['Ingrese nombre']}
-          method={'POST'}
-          fetchData={['name_contact']}
-          createOne={createOne}
-          handleDependencyAdd={handleDependencyAdd}
-          handleModalAdd={handleModalAdd}
-        />
-      )}
+    <>
 
-      {toggleModalUpdate && (
+      <TestTable
+        addButtonTitle={handleModalAddOpen}
+        url={getAllUrl}
+        authToken={authData.token}
+        columns={columns}
+        filterConfigs={filterConfigs}
+        searchOptions={searchOptions}
+        initialSearchField={'name_contact'}
+        initialSearchTerm={''}
+        initialSort={{ field: 'name_contact', order: 'ASC' }}
+        actions={{
+          view: (row) => handleModalUpdateOpen(row),
+          edit: (row) => handleModalDeleteOpen(row),
+          delete: (row) => console.log("Editar", row),
+        }}
+        showActions={{
+          view: true,
+          edit: true,
+          delete: false
+        }}
+        actionColumn='id_contact'
+        title_table={"Tipos de Contacto"}
+        paginationLabelInfo={"Tipos de Contacto"}
+        buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
+        buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        isStatusUpdated={isStatusUpdated}
+      />
+
+      {isModalUpdateOpen && (
         <ModalUpdate
-          title_modal={'Editar Contacto'}
+          title_modal={'Editar Tipo de Contacto'}
           labels={['Nombre']}
           placeholders={['Ingrese nombre']}
           methodGetOne={'POST'}
@@ -171,50 +144,39 @@ const Contact = () => {
           idFetchData="value_contact"
           idToUpdate={idToGet}
           updateOneUrl={updateOneUrl}
-          onSubmitUpdate={onSubmitUpdate}
-          handleModalUpdate={handleModalUpdate}
-          fetchData_select={"status_contact"}
+          onSubmitUpdate={handleModalUpdateClose}
+          handleModalUpdate={handleModalUpdateClose}
+          fetchData_select={'status_contact'}
         />
       )}
 
-      {toggleModalDelete && (
+      {isModalAddOpen && (
+        <ModalAdd
+          title_modal={'Nuevo Tipo de Contacto'}
+          labels={['Nombre']}
+          placeholders={['Ingrese nombre']}
+          method={'POST'}
+          fetchData={['name_contact']}
+          createOne={createOne}
+          handleDependencyAdd={updateStatus}
+          handleModalAdd={handleModalAddClose}
+        />
+      )}
+
+
+
+      {isModalDeleteOpen && (
         <ModalDelete
-          handleModalDelete={handleModalDelete}
+          handleModalDelete={handleModalDeleteClose}
           deleteOne={deleteOne}
           field_name={'id_contact'}
-          idToDelete={idToDelete}
-          onSubmitDelete={onSubmitDelete}
+          idToDelete={idToGet}
+          onSubmitDelete={handleModalDeleteClose}
         />
       )}
 
-      <table className="table__preference">
-        <thead className="table__preference__head">
-          <tr>
-            <PreferencesTableHeader keys={['Nombre', 'Estado', 'Acciones']} />
-          </tr>
-        </thead>
-        <tbody className="table__preference__body">
-        {contactsFormatted.length > 0 ? (
-                    <PreferencesBodyRow
-                    items={contactsFormatted}
-                    keys={['name_contact']}
-                    status_name={['id_contact', 'status_contact']}
-                    fetchUrl={toggleStatus}
-                    idToToggle={idToToggle}
-                    handleStatusToggle={handleStatusToggle}
-                    handleDependencyToggle={handleDependencyToggle}
-                    handleEdit={handleModalUpdate}
-                    handleModalDelete={handleModalDelete}
-                    handleDelete={handleDelete}
-                  />
-          ) : (
-            <tr>
-              <td colSpan="3">{noDataMessage || "No hay datos ingresados"}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    </>
+
   );
 };
 

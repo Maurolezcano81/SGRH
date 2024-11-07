@@ -26,6 +26,9 @@ const TableCapacitations = ({
         setIsModalAnswerOpen(false);
     }
 
+    const handleUpdate = () =>{
+        setDependencyToRefresh(!dependencyToRefresh)
+    }
 
 
     useEffect(() => {
@@ -88,7 +91,8 @@ const TableCapacitations = ({
                 <ModalAnswer
                     initialData={initialDataToAnswer}
                     closeModalAnswer={closeModalAnswer}
-                    setDependencyToRefresh={setDependencyToRefresh}
+                    handleUpdate={handleUpdate}
+                    
                 />
             )}
         </div>

@@ -32,6 +32,34 @@ class TerminationModel extends BaseModel {
         }
     }
 
+    async getDataQuizForAudit(id_employee) {
+        try {
+            const query = `
+                select 
+                    id_tot,
+                    id_user,
+                    avatar_user,
+                    username_user,
+                    tot.description_tot,
+                    name_entity,
+                    lastname_entity,
+                    name_tse
+                from employee e 
+	               	join entity ent on e.entity_fk = ent.id_entity 
+                 	join user u on ent.id_entity = u.entity_fk
+	                join type_status_employee tse on e.tse_fk = tse.id_tse 
+                	left join termination_employee te on e.id_employee = te.employee_fk 
+	                left join type_of_termination tot on te.tot_fk = tot.id_tot 
+	                where id_employee = ?
+                `
+            const [results] = await this.conn.promise().query(query, [id_employee])
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
 
     async getLastTerminationsByEmployee(id_employee) {
         try {

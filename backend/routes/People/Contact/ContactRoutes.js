@@ -5,12 +5,12 @@ import ContactController from '../../../controllers/People/Contact/ContactContro
 
 const contact = new ContactController();
 // CONTACT ROUTES
-router.post('/contact/create', contact.createContact.bind(contact));
-router.get('/contacts', contact.getContacts.bind(contact));
-router.post('/contact', contact.getContact.bind(contact));
-router.patch('/contact', contact.updateContact.bind(contact));
-router.patch('/contact/status', contact.toggleStatusContact.bind(contact));
-router.delete('/contact', contact.deleteContact.bind(contact));
+router.post('/contact/create', contact.createOne.bind(contact));
+router.post('/contacts', contact.getAllWPagination.bind(contact));
+router.post('/contact', contact.getOne.bind(contact));
+router.patch('/contact', contact.updateOne.bind(contact));
+router.patch('/contact/status', contact.toggleStatus.bind(contact));
+router.delete('/contact', contact.deleteOne.bind(contact));
 
 const ContactRoutes = {
   router,

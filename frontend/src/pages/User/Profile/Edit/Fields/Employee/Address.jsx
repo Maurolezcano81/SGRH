@@ -18,7 +18,7 @@ const Address = ({ address, title_modal, updateProfile, permissionsData,
 
     const { authData } = useAuth();
 
-    const getCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY}`;
+    const getCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY_ACTIVES}`;
     const getStatesByCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.STATES_BY_COUNTRY}`;
     const getCitiesByState = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.CITIES_BY_STATE}`;
 
@@ -44,7 +44,7 @@ const Address = ({ address, title_modal, updateProfile, permissionsData,
             if (authData.token) {
                 try {
                     const fetchResponse = await fetch(getCountries, {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${authData.token}`,
@@ -56,7 +56,7 @@ const Address = ({ address, title_modal, updateProfile, permissionsData,
                     }
 
                     const countriesList = await fetchResponse.json();
-                    const activeCountries = countriesList.queryResponse.filter((country) => country.status_country === 1);
+                    const activeCountries = countriesList.list.filter((country) => country.status_country === 1);
                     setListCountries(activeCountries || []);
                 } catch (error) {
                     console.error(error.message);

@@ -87,7 +87,7 @@ const SeeMore = ({
 
                         <div className="not__answer__body__item answer__body__item">
                             <p className="div__form__input__label title__modal__answer">Respondido el:</p>
-                            <h3 className="div__form__input__input">{initialData.answered_at}</h3>
+                            <h3 className="div__form__input__input">{initialData.answered_at || "-"}</h3>
                         </div>
 
                         <div className="not__answer__body__item answer__body__item">

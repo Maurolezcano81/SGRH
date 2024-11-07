@@ -9,7 +9,7 @@ const AddressdataSection = ({ setAddressData, error, setCriticalErrorToggle, set
 
   const { authData } = useAuth();
 
-  const getCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY}`;
+  const getCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_COUNTRY_ACTIVES}`;
   const getStatesByCountries = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.STATES_BY_COUNTRY}`;
   const getCitiesByState = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.CITIES_BY_STATE}`;
 
@@ -18,7 +18,7 @@ const AddressdataSection = ({ setAddressData, error, setCriticalErrorToggle, set
       if (authData.token) {
         try {
           const fetchResponse = await fetch(getCountries, {
-            method: 'GET',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${authData.token}`,
@@ -33,12 +33,11 @@ const AddressdataSection = ({ setAddressData, error, setCriticalErrorToggle, set
 
           const countriesList = await fetchResponse.json();
 
-          const activeCountries = countriesList.queryResponse.filter((country) => country.status_country === 1);
+          const activeCountries = countriesList.list.filter((country) => country.status_country === 1);
 
           setListCountries(activeCountries || []);
         } catch (error) {
           console.error(error.message);
-          // Manejar el error aquí, como mostrar un mensaje al usuario
         }
       }
     };

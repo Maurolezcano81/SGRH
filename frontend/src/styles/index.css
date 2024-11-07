@@ -226,7 +226,7 @@
   font-size: var(--size-navbar-button);
 }
 
-@media (max-width: 1366px) {
+@media (max-width: 768px) {
   .responsive__table-header {
     display: none;
   }
@@ -1552,13 +1552,10 @@ input {
 }
 
 .table__primary__pagination {
-  display: flex;
+  margin-top: 2rem;
+  display: block;
+  text-align: center;
   width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-  margin-top: 1rem;
-  flex-wrap: wrap;
 }
 
 .table__primary__pagination button {
@@ -2485,11 +2482,12 @@ input {
 }
 
 .title__responsive {
-  width: min-content;
+  width: 100%;
 }
 
 .title__responsive h4 {
   font-weight: 600;
+  width: max-content;
   text-align: left;
   font-size: var(--size-preferences-title);
 }
@@ -2506,7 +2504,127 @@ input {
   padding: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
+
+.audits__container{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 2rem;
+  box-shadow: var(--shadow-a-25-b-02);
+}
+
+.audit__container{
+  min-width: 100%;
+}
+
+
+
+.audit__title{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  margin: 1rem 0;
+}
+
+.audit__title__container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.audit__user__profile{
+  width: 4rem;
+  height: 4rem;
+  border-radius: 100%;
+  aspect-ratio: 4/3;
+  object-fit: contain;
+  border: .1rem solid var(--blue-2);
+}
+
+.expanded{
+  color: var(--blue-2);
+  min-width: max-content;
+  font-size: var(--size-navbar-dropdown-item);
+}
+
+.non-expanded{
+  color: var(--red-1);
+  min-width: max-content;
+  font-size: var(--size-navbar-dropdown-item);
+}
+
+.audit__title h4{
+  padding: 1rem;
+  font-size: var(--size-navbar-dropdown);
+}
+
+.audit__content{
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-a-25-b-02);
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.audit__card{
+  width: 100%;
+  padding: 1rem;
+}
+
+
+.audit__card:nth-child(even){
+  background-color: var(--white-1);
+}
+
+.audit__profile__container{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.audit__label{
+  width: 100%;
+  font-size: var(--size-navbar-dropdown-item);
+  padding: .5rem;
+}
+
+.audit__label span{
+  font-size: var(--size-navbar-dropdown-item);
+  font-weight: 400;
+  background-color: var(--white-3);
+  padding: .5rem; 
+  text-transform: capitalize;
+}
+
+.audit__content__divider__container{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 100%;
+}
+
+.audit__content__divider{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.audit__content__divider h5{
+  display: block;
+}
+
+
 
 @media (width >= 468px) {
   .question__title__container {
@@ -2517,8 +2635,11 @@ input {
     width: max-content;
   }
 
+
+
   .table__primary__pagination__buttons {
     width: auto;
+    display: flex;
   }
 
   .quiz__question__check__container {
@@ -2578,6 +2699,16 @@ input {
 @media (width >=1024px) {
   .button__blue {
     padding: 0;
+  }
+
+  .table__primary__pagination {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    margin-top: 1rem;
+    flex-wrap: wrap;
   }
 
   .preferences__container {
@@ -2700,7 +2831,7 @@ input {
 
   .container__stadistic__individual {
     flex-grow: 1;
-    width: 30%;
+    width: 40%;
   }
 
   .chart {
