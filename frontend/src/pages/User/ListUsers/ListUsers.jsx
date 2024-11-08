@@ -10,6 +10,7 @@ import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
 import ResponsiveTable from '../../../components/Table/ResponsiveTable';
+import ResponsiveTableCopy from '../../../components/Table/ResponsiveTableCopy';
 
 const ListUsers = () => {
 
@@ -31,7 +32,7 @@ const ListUsers = () => {
     }, []);
 
     const columns = [
-        { field: 'avatar_user', label: '' },
+        { field: 'avatar_user', label: '', section: "General" },
         { field: 'username_user', label: 'Nombre de usuario' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
@@ -125,7 +126,7 @@ const ListUsers = () => {
                 {successMessage && <AlertSuccesfully message={successMessage} />}
                 {errorMessage && <ErrorMessage message={errorMessage} />}
 
-                <ResponsiveTable
+                <ResponsiveTableCopy
                     addButtonTitle={addButtonTitle}
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
                     authToken={authData.token}
@@ -151,6 +152,14 @@ const ListUsers = () => {
                     buttonOneInfo={{ img: User, color: "blue", title: "Ver" }}
                     buttonTreeInfo={{ img: UserDown, color: "black", title: "Dar de baja" }}
                     isStatusUpdated={isStatusUpdated}
+                
+                    titleInfo={
+                        ["name_entity", "lastname_entity"]
+                    }
+                    headerInfo={
+                        ["Nombre y Apellido"]
+                    }
+
                 />
             </div>
 

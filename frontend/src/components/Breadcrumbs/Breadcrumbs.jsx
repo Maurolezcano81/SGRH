@@ -7,12 +7,13 @@ const Breadcrumbs = () => {
     const { breadcrumbs } = useBreadcrumbs();
 
     return (
-        <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
+        <div className='container__content'>
+        <nav aria-label="breadcrumb__container">
+            <ol className="breadcrumb__ol">
                 {breadcrumbs.map((breadcrumb, index) => (
-                    <li key={breadcrumb.url} className="breadcrumb-item">
+                    <li key={breadcrumb.url} className="breadcrumb__item">
                         {index === breadcrumbs.length - 1 ? (
-                            <span>{breadcrumb.name}</span>
+                            <p>{breadcrumb.name}</p>
                         ) : (
                             <Link to={breadcrumb.url}>{breadcrumb.name}</Link>
                         )}
@@ -20,6 +21,8 @@ const Breadcrumbs = () => {
                 ))}
             </ol>
         </nav>
+
+        </div>
     );
 };
 

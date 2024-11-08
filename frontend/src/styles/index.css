@@ -10,6 +10,8 @@
 
   --black-0: #04070c;
 
+  --violet-0: #e964f2;
+
   --blue-0: #0c8ce9;
   --blue-1: #1f2e39;
   --blue-2: #4682dd;
@@ -225,6 +227,44 @@
   content: "Ocultar";
   font-size: var(--size-navbar-button);
 }
+
+.breadcrumb__container{
+  width: 100%;
+}
+
+.breadcrumb__ol{
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: .2rem;
+  font-size: var(--size-navbar-button);
+  gap: 1rem;
+  color: var(--white-2);
+}
+
+
+.breadcrumb__item > a{
+  color: var(--gray-1);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.breadcrumb__item > p::before {
+  content: "/";
+  margin-right: 1rem;
+  color: var(--blue-1);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.breadcrumb__item > p{
+  color: var(--blue-2);
+  
+}
+
 
 @media (max-width: 768px) {
   .responsive__table-header {
@@ -2631,6 +2671,16 @@ input {
     flex-direction: row;
   }
 
+
+  .breadcrumb__container{
+    width: 70%;
+  }
+
+  .breadcrumb__ol{
+    width: 70%;
+    margin: 0 auto;
+  }
+
   .quiz__question__delete {
     width: max-content;
   }
@@ -2700,6 +2750,8 @@ input {
   .button__blue {
     padding: 0;
   }
+
+  
 
   .table__primary__pagination {
     display: flex;

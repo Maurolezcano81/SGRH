@@ -12,7 +12,7 @@ class UserModel extends BaseModel {
 
   async getUsersInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
     try {
-      const { whereClause, values } = this.buildWhereClause(filters);
+      const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
       const query = `SELECT 
               u.id_user, 
               u.username_user, 
@@ -54,7 +54,7 @@ class UserModel extends BaseModel {
 
   async getTotalUsersInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
     try {
-      const { whereClause, values } = this.buildWhereClause(filters);
+      const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
       const query = `SELECT 
               COUNT (DISTINCT u.id_user) as 'total'
               FROM user u
