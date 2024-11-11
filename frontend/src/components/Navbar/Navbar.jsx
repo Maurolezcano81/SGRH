@@ -29,7 +29,18 @@ const Navbar = () => {
       <div className={`navbar__container-open`}>
         <div>
           <button onClick={toggleNavbar} className="navbar__collapsed-button">
-            <img src={Hamburguer} alt="Menu" />
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="3.5rem"
+              height="3.5rem"
+              viewBox="0 0 32 32">
+              <path fill="currentColor" d="M2 6a1 1 0 0 1 1-1h26a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1m0 10a1 1 0 0 1 1-1h26a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1m1 9a1 1 0 1 0 0 2h26a1 1 0 1 0 0-2z" />
+            </svg>
+
+
+
+
           </button>
         </div>
 
@@ -51,7 +62,7 @@ const Navbar = () => {
           <HeaderButtons username={authData?.id_user} />
         </div>
         <NavbarContent
-        toggleNavbar={toggleNavbar}
+          toggleNavbar={toggleNavbar}
         />
         <div className="navbar__footer">
           <button onClick={handleLogout} className="button__navbar">

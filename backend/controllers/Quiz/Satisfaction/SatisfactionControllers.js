@@ -154,10 +154,10 @@ class SatisfactionControllers {
     }
 
     async getQuizzesInformation(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
 
         try {
-            const list = await this.model.getQuestionnairesInformation(limit, offset, typeOrder, order, filters);
+            const list = await this.model.getQuestionnairesInformation(limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -173,7 +173,7 @@ class SatisfactionControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalQuestionnairesInformation(limit, offset, typeOrder, order, filters);
+            const getTotalResults = await this.model.getTotalQuestionnairesInformation(filters);
 
             if (getTotalResults.length < 1) {
                 return res.status(403).json({
@@ -187,8 +187,8 @@ class SatisfactionControllers {
                     ...item,
                     start_sq: formatDateYear(item.start_sq),
                     end_sq: formatDateYear(item.end_sq),
-                    created_at: formatDateTime(item.created_at),
-                    updated_at: formatDateTime(item.updated_at),
+                    created_at: item.created_at,
+                    updated_at: item.updated_at,
                 };
             });
 
@@ -706,13 +706,13 @@ class SatisfactionControllers {
     }
 
     async getQuizAnsweredByEmployee(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
         const { id_user } = req;
 
         try {
-            const list = await this.model.getQuestionnairesInformationByEmployee(id_user, limit, offset, typeOrder, order, filters);
+            const list = await this.model.getQuestionnairesInformationByEmployee(id_user, limit, offset, orderBy, order, filters);
 
-            const getTotalResults = await this.model.getTotalResultsQuizAnsweredByEmployee();
+            const getTotalResults = await this.model.getTotalResultsQuizAnsweredByEmployee(id_user, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -727,6 +727,7 @@ class SatisfactionControllers {
                     end_sq: formatDateYear(item.end_sq),
                     created_at: formatDateTime(item.created_at),
                     updated_at: formatDateTime(item.updated_at),
+                    date_complete: formatDateTime(item.date_complete),
                 };
             });
 
@@ -861,11 +862,11 @@ class SatisfactionControllers {
     }
 
     async getAnswersForQuizById(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
         const { id_sq } = req.params;
 
         try {
-            const list = await this.model.getAnswersForQuiz(id_sq, limit, offset, typeOrder, order, filters);
+            const list = await this.model.getAnswersForQuiz(id_sq, limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({

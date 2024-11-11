@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import HeaderCreate from "./Components/HeaderCreate"
 import BodyCreate from "./Components/BodyCreate"
 import ButtonBlue from "../../../components/ButtonBlue"
 import useAuth from "../../../hooks/useAuth"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext"
 
 
 const CreateSatisfaction = () => {
@@ -34,6 +35,18 @@ const CreateSatisfaction = () => {
     const { authData } = useAuth();
     const navigate = useNavigate();
 
+
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Cuestionarios de Satisfacción', url: '/rrhh/satisfaccion/cuestionarios' },
+            { name: 'Creación de Cuestionario', url: '/rrhh/satisfaccion/crear' },
+        ]);
+    }, [location.pathname]);
+
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
@@ -62,7 +75,7 @@ const CreateSatisfaction = () => {
             setErrorMessage('');
             setSuccessMessage(data.message);
 
-            setTimeout( () =>{
+            setTimeout(() => {
                 navigate('/rrhh/satisfaccion/cuestionarios')
             }, 1500)
 

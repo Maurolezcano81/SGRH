@@ -119,13 +119,24 @@ const Profile = () => {
   useEffect(() => {
     if (personalData && personalData?.entity && Object.keys(personalData.entity).length > 0) {
       const firstEntity = personalData.entity["0"];
-      updateBreadcrumbs([
-        { name: 'Ver Personal', url: '/rrhh/personal/ver' },
-        { 
-          name: `${firstEntity.name_entity} ${firstEntity.lastname_entity}`, 
-          url: '/rrhh/ajustes/departamento' 
-        },
-      ]);
+
+      if (permissionsData.isRrhh === 1 || permissionsData.isAdmin === 1) {
+        updateBreadcrumbs([
+          { name: 'Ver Personal', url: '/rrhh/personal/ver' },
+          {
+            name: `${firstEntity.name_entity} ${firstEntity.lastname_entity}`,
+            url: '/rrhh/ajustes/departamento'
+          },
+        ]);
+      } else {
+        updateBreadcrumbs([
+          {
+            name: `${firstEntity.name_entity} ${firstEntity.lastname_entity}`,
+            url: '/personal/inicio'
+          },
+        ]);
+      }
+
     }
   }, [location.pathname, personalData]);
 

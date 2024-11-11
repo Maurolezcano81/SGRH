@@ -6,6 +6,7 @@ import MoveEmployee from '../../../../assets/Icons/Buttons/MoveEmployee.png'
 import LastFive from "./LastFive";
 import useAuth from "../../../../hooks/useAuth";
 import ModalInfoQuizAnswered from "../ModalInfoQuizAnswered";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
 
 const HomeQuizSatisfaction = () => {
 
@@ -67,7 +68,7 @@ const HomeQuizSatisfaction = () => {
                 setDependencyToRefresh={setIsStatusUpdated}
             />
 
-            <TableSecondaryNotTitleAndWhereOnUrl
+            <ResponsiveTableNotTitleAndWhereOnUrl
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTIONS_EMPLOYEE_ANSWERED}`}
                 authToken={authData.token}
                 columns={columns}
@@ -75,7 +76,7 @@ const HomeQuizSatisfaction = () => {
                 searchOptions={searchOptions}
                 initialSearchField={'name_sq'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'name_sq', order: 'ASC' }}
+                initialSort={{ field: 'date_complete', order: 'ASC' }}
                 actions={{
                     view: (row) => openSeeMore(row),
                     edit: (row) => console.log('Editar', row),
@@ -91,6 +92,14 @@ const HomeQuizSatisfaction = () => {
                 buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
+                titleInfo={[
+                    { field: "name_sq", type: "field" },
+                    { field: "Respondido el", type: "string" },
+                    { field: "date_complete", type: "field" },
+                ]}
+                  headerInfo={
+                    ["Mis Respuestas a los Cuestionarios"]
+                  }
             />
 
             {isModalInfoOpen && (

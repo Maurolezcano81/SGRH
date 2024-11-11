@@ -57,7 +57,6 @@ class SatisfactionModel extends BaseModel {
                     join user u on sq.author_fk = u.id_user
                     join entity e on u.entity_fk = e.id_entity  
                     left join entity_department_occupation edo on edo.entity_fk = e.id_entity
-                ${whereClause.length > 0 ? 'AND' : ''}
                 ${whereClause}
                 `
             const [results] = await this.con.promise().query(query, [...values]);
@@ -225,6 +224,7 @@ class SatisfactionModel extends BaseModel {
                     sq.end_sq, 
                     sq.created_at,
                     asq2.user_fk as answered_by,
+                    asq2.date_complete,
                     (
                         SELECT COUNT(qsq.id_qsq) 
                         FROM question_satisfaction_questionnaire qsq 
@@ -257,14 +257,26 @@ class SatisfactionModel extends BaseModel {
         }
     }
 
-    async getTotalResultsQuizAnsweredByEmployee() {
+    async getTotalResultsQuizAnsweredByEmployee(id_user, filters = {}) {
         try {
-            const query = `SELECT COUNT(id_asq) as total FROM answer_satisfaction_questionnaire group by sq_fk`;
-            const [results] = await this.con.promise().query(query);
+            const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+            const query = `
+                SELECT 
+                    count(distinct asq2.id_asq) as total
+                FROM satisfaction_questionnaire sq
+                JOIN answer_satisfaction_questionnaire asq2 
+                    ON asq2.sq_fk = sq.id_sq
+                JOIN user author on sq.author_fk = author.id_user
+                join entity authentity on authentity.id_entity = author.entity_fk
+                WHERE asq2.user_fk = ?
+                                ${whereClause.length > 0 ? 'AND' : ''}
+                                ${whereClause}
+                `
+            const [results] = await this.con.promise().query(query, [id_user, id_user, ...values]);
             return results;
         } catch (error) {
-            console.error("Error en getAll:", error.message);
-            throw new Error("Error en getAll: " + error.message);
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
         }
     }
 

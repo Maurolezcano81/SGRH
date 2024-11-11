@@ -12,6 +12,8 @@ import PreferenceTitle from "../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import SeeProfile from '../../../assets/Icons/Buttons/Quizz.png'
 import ModalInfoQuizAnswered from "./ModalInfoQuizAnswered";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
 
 const SingleQuiz = () => {
 
@@ -27,6 +29,17 @@ const SingleQuiz = () => {
     const { authData } = useAuth();
 
     const { value_quiz } = location.state || '';
+
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        if (headerData && headerData.name_sq !== undefined) {
+            updateBreadcrumbs([
+                { name: 'Cuestionarios de Satisfacción', url: '/rrhh/satisfaccion/cuestionarios' },
+                { name: `${headerData.name_sq}`, url: '/rrhh/satisfaccion/cuestionarios' },
+            ]);
+        }
+    }, [headerData, location.pathname]);
 
 
     const getHeaderQuiz = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTION_HEADER}/${value_quiz}`
@@ -309,7 +322,7 @@ const SingleQuiz = () => {
                         full={true}
                     />
                 )}
-                
+
             </div>
 
             {showModalAdd && (
@@ -382,7 +395,7 @@ const SingleQuiz = () => {
                     title={"Respuestas"}
                 />
 
-                <TableSecondaryNotTitleAndWhereOnUrl
+                <ResponsiveTableNotTitleAndWhereOnUrl
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTION_ANSWERED}/${value_quiz}`}
                     authToken={authData.token}
                     columns={columns}
@@ -406,6 +419,15 @@ const SingleQuiz = () => {
                     buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
                     buttonTreeInfo={{ img: Trash, color: 'red', title: 'Eliminar' }}
                     isStatusUpdated={isStatusUpdated}
+                    titleInfo={[
+                        { field: "name_entity", type: "field" },
+                        { field: "lastname_entity", type: "field" },
+                        { field: "Respondio el", type: "string" },
+                        { field: "date_complete", type: "field" },
+                    ]}
+                      headerInfo={
+                        ["Respuestas al Cuestionario"]
+                      }
                 />
 
                 {isModalSeeInfoOpen && (

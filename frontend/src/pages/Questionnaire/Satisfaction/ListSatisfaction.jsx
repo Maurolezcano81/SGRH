@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableHorWithFilters from '../../../components/Table/TableHorWithFilters';
 import useAuth from '../../../hooks/useAuth';
 import ButtonRed from '../../../components/ButtonRed';
 import User from "../../../assets/Icons/Buttons/User.png"
 import UserDown from "../../../assets/Icons/Buttons/UserDown.png"
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 import Quizz from '../../../assets/Icons/Buttons/Quizz.png';
+import ResponsiveTable from '../../../components/Table/ResponsiveTable';
+import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
 
 const ListSatisfaction = () => {
 
@@ -19,6 +21,16 @@ const ListSatisfaction = () => {
     const { authData } = useAuth();
     const navigate = useNavigate();
 
+
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+  
+    useEffect(() => {
+      updateBreadcrumbs([
+        { name: 'Cuestionarios de Satisfacción', url: '/rrhh/satisfaccion/cuestionarios' },
+      ]);
+    }, [location.pathname]);
+  
     
     const columns = [
         { field: 'name_sq', label: 'Nombre del cuestionario' },
@@ -40,7 +52,6 @@ const ListSatisfaction = () => {
         { value: 'name_sq', label: 'Nombre del cuestionario' },
         { value: 'start_sq', label: 'Fecha de inicio' },
         { value: 'end_sq', label: 'Fecha de Cierre' },
-        { value: 'quantity_questions', label: 'Cantidad de preguntas' },
         { value: 'name_entity', label: 'Nombre del Autor' },
         { value: 'lastname_entity', label: 'Apellido del Autor' },
         { value: 'created_at', label: 'Creado' },
@@ -48,7 +59,6 @@ const ListSatisfaction = () => {
     ];
 
     const seeQuiz = (row) => {
-        console.log(row);
         navigate("/rrhh/satisfaccion/ampliar", { state: { value_quiz: row.id_sq } })
         console.log(row.id_sq)
     };
@@ -63,7 +73,7 @@ const ListSatisfaction = () => {
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableHorWithFilters
+            <ResponsiveTable
                 addButtonTitle={addButtonTitle}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_SATISFACTION}`}
                 authToken={authData.token}
@@ -88,6 +98,14 @@ const ListSatisfaction = () => {
                 paginationLabelInfo={"Cuestionarios de satisfaccion"}
                 buttonOneInfo={{ img: Quizz, color: "blue", title: "Ver" }}
                 isStatusUpdated={isStatusUpdated}
+                titleInfo={[
+                    { field: "name_sq", type: "field" },
+                    { field: "-", type: "string" },
+                    { field: "start_sq", type: "field" },
+                ]}
+                  headerInfo={
+                    ["Nombre"]
+                  }
             />
 
 
