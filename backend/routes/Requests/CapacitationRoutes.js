@@ -8,6 +8,7 @@ const capacitation = new CapacitationControllers();
 router.post('/request/capacitations', capacitation.getCapacitations.bind(capacitation));
 router.post('/request/capacitations/not_answer', capacitation.getCapacitationsNotAnswer.bind(capacitation));
 router.post('/request/capacitation/answer', capacitation.responseRequestCapacitation.bind(capacitation));
+router.delete('/request/capacitation/answer', capacitation.deleteCapacitationAnswered.bind(capacitation));
 
 const CapacitationRoutes = {
   router,

@@ -159,6 +159,8 @@ const ResponsiveTableNotTitleAndWhereOnUrl = ({
         );
     };
 
+    console.log(data)
+
     const [expandedRows, setExpandedRows] = useState([]);
 
     return (
@@ -248,8 +250,8 @@ const ResponsiveTableNotTitleAndWhereOnUrl = ({
                                 <div className='bold'>
                                     <p>Ordenar por:</p>
                                 </div>
-                                {columns.map(column => (
-                                    <div key={column.field} data-label={sortOrder} className={`${sortField === column.field ? 'sort__selected' : ''} responsive__table-orders`} onClick={() => handleSort(column.field)}>
+                                {searchOptions.map(column => (
+                                    <div key={column.value} data-label={sortOrder} className={`${sortField === column.value ? 'sort__selected' : ''} responsive__table-orders`} onClick={() => handleSort(column.value)}>
                                         {column.label}
                                     </div>
                                 ))}

@@ -4,7 +4,7 @@ import DropDownButton from './DropDownButton';
 import useNav from '../../hooks/useNav';
 import { Link } from 'react-router-dom';
 
-const NavbarContent = () => {
+const NavbarContent = ({toggleNavbar}) => {
   const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_MENUPARENTS}`;
 
   const { authData } = useAuth();
@@ -49,6 +49,7 @@ const NavbarContent = () => {
             id_pm={parent.id_pm}
             name_pm={parent.name_pm}
             authData={authData}
+            toggleNavbar={toggleNavbar}
           />
         ))
       ) : (
@@ -62,7 +63,7 @@ const NavbarContent = () => {
           </div>
           {isDropdown && (
             <div className="navbar__content-dropdown">
-              <Link to='/supervisor/rendimiento'>
+              <Link onClick={toggleNavbar} to='/supervisor/rendimiento'>
                 Responder Cuestionarios
               </Link>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PreferenceTitle from "../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import useAuth from "../../../hooks/useAuth";
@@ -6,6 +6,11 @@ import Info from '../../../assets/Icons/Buttons/Info.png'
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png'
 import TableCapacitations from "./TableCapacitations";
 import SeeMore from "./SeeMore";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
+import Trash from '../../../assets/Icons/Buttons/Trash.png'
+import ModalDelete from "../../../components/Modals/ModalDelete";
+import { useLocation } from "react-router-dom";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
 
 
 const RrhhCapacitation = () => {
@@ -24,14 +29,27 @@ const RrhhCapacitation = () => {
         setToggleFormRequest(!toggleFormRequest)
     }
 
+    
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Solicitudes de Capacitación', url: '/rrhh/solicitud/capacitacion' },
+        ]);
+    }, [location.pathname]);
+
 
     const columns = [
         { field: 'avatar_user', label: '' },
-        { field: 'requestor_name', label: 'Nombre' },
-        { field: 'title_rc', label: 'Titulo' },
+        { field: 'name_entity', label: 'Nombre del solicitante' },
+        { field: 'lastname_entity', label: 'Apellido del solicitante' },
+        { field: 'title_rc', label: 'Asunto' },
         { field: 'description_rc', label: 'Descripcion' },
-        { field: 'created_at', label: 'Solicitado' },
-        { field: 'name_sr', label: 'Estado de la solicitud' }
+        { field: 'date_requested', label: 'Solicitado' },
+        { field: 'name_sr', label: 'Estado de la solicitud' },
+        { field: 'author_name', label: 'Nombre del respondedor' },
+        { field: 'author_lastname', label: 'Apellido del respondedor' },
     ];
 
     const filterConfigs = [
@@ -44,8 +62,14 @@ const RrhhCapacitation = () => {
     ];
 
     const searchOptions = [
-        { value: 'title_rc', label: 'Titulo' },
+        { value: 'title_rc', label: 'Asunto' },
+        { value: 'e.name_entity', label: 'Nombre del solicitante' },
+        { value: 'e.lastname_entity', label: 'Apellido del solicitante' },
         { value: 'description_rc', label: 'Descripcion' },
+        { value: 'date_requested', label: 'Solicitado' },
+        { value: 'name_sr', label: 'Estado de la solicitud' },
+        { value: 'author_name', label: 'Nombre del respondedor' },
+        { value: 'author_lastname', label: 'Apellido del respondedor' },
     ];
 
 
@@ -57,6 +81,21 @@ const RrhhCapacitation = () => {
     const closeSeeMore = () => {
         setIsOpenSeeMore(false);
     }
+
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [idToDelete, setIdToDelete] = useState("");
+
+    const handleModalDeleteOpen = (row) => {
+        setIdToDelete(row.id_rrc)
+        setIsModalDeleteOpen(true);
+    }
+
+    const handleModalDeleteClose = () => {
+        setIdToDelete("");
+        setIsModalDeleteOpen(false);
+        setIsStatusUpdated(!isStatusUpdated)
+    }
+
 
     return (
         <>
@@ -74,32 +113,56 @@ const RrhhCapacitation = () => {
                 />
 
 
-                <TableSecondaryNotTitleAndWhereOnUrl
+                <ResponsiveTableNotTitleAndWhereOnUrl
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CAPACITATION_RRHH}`}
                     authToken={authData.token}
                     columns={columns}
                     filterConfigs={filterConfigs}
                     searchOptions={searchOptions}
-                    initialSearchField={'title_rc'}
+                    initialSearchField={'date_requested'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'title_rc', order: 'ASC' }}
+                    initialSort={{ field: 'date_requested', order: 'DESC' }}
                     actions={{
                         view: (row) => openSeeMore(row),
-                        edit: (row) => console.log('Editar', row),
-                        delete: (row) => console.log('Editar', row),
+                        delete: (row) => handleModalDeleteOpen(row),
                     }}
                     showActions={{
                         view: true,
                         edit: false,
-                        delete: false
+                        delete: true
                     }}
                     actionColumn='id_rc'
-                    paginationLabelInfo={'Solicitudes de capacitación'}
+                    paginationLabelInfo={'Solicitudes de Capacitación'}
                     buttonOneInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
-                    buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
+                    buttonTreeInfo={{ img: Trash, color: 'red', title: 'Eliminar Respuesta' }}
                     isStatusUpdated={isStatusUpdated}
+                    titleInfo={[
+                        { field: "author_profile", type: "field" },
+                        { field: "author_name", type: "field" },
+                        { field: "author_lastname", type: "field" },
+                        { field: "respondio", type: "string" },
+                        { field: "title_rc", type: "field" },
+                        { field: "de", type: "string" },
+                        { field: "name_entity", type: "field" },
+                        { field: "lastname_entity", type: "field" },
+                        { field: "solicitada el", type: "string" },
+                        { field: "date_requested", type: "field" },
+                    ]}
+                    headerInfo={
+                        ["Solicitudes de Capacitaciones Contestadas"]
+                    }
                 />
             </div>
+
+            {isModalDeleteOpen && (
+                <ModalDelete
+                    handleModalDelete={handleModalDeleteClose}
+                    deleteOne={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_CAPACITATION_ANSWER_RRHH}`}
+                    field_name={'id_rrc'}
+                    idToDelete={idToDelete}
+                    onSubmitDelete={handleModalDeleteClose}
+                />
+            )}
 
 
             {isOpenSeeMore && (

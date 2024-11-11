@@ -168,6 +168,10 @@
   font-weight: bold;
 }
 
+.pointer{
+  cursor: pointer;
+}
+
 .sort__selected::after {
   font-weight: 400;
   content: attr(data-label) '';
@@ -2851,11 +2855,6 @@ input {
   }
 
   
-  .responsive__table-expanded {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-  }
 
   .responsive__table-col {
     width: auto;

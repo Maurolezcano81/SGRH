@@ -3,7 +3,6 @@ import PreferenceTitle from "../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import useAuth from "../../../hooks/useAuth";
 import Info from '../../../assets/Icons/Buttons/Info.png'
-import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png'
 import TableCapacitations from "./TableLeaves";
 import SeeMore from "./SeeMore";
 import ModalDelete from "../../../components/Modals/ModalDelete";
@@ -126,7 +125,7 @@ const RrhhLeave = () => {
                     }}
                     showActions={{
                         view: true,
-                        edit: true,
+                        edit: false,
                         delete: true
                     }}
                     actionColumn='id_lrr'

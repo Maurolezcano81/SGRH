@@ -50,7 +50,9 @@ const Navbar = () => {
           />
           <HeaderButtons username={authData?.id_user} />
         </div>
-        <NavbarContent />
+        <NavbarContent
+        toggleNavbar={toggleNavbar}
+        />
         <div className="navbar__footer">
           <button onClick={handleLogout} className="button__navbar">
             Cerrar Sesión

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const DropDownButton = ({ id_pm, name_pm, authData }) => {
+const DropDownButton = ({ id_pm, name_pm, authData,toggleNavbar }) => {
   const [isDropdown, setIsDropdown] = useState(false);
   const [childrenList, setChildrenList] = useState([]);
 
@@ -41,8 +41,6 @@ const DropDownButton = ({ id_pm, name_pm, authData }) => {
     }
   }, [isDropdown, authData.token, getChildrens, id_pm]);
 
-  console.log(childrenList)
-
   return (
     <div onClick={handleDropdownToggle} className={`navbar__dropdown ${isDropdown ? 'navbar__background-active' : ''}`}>
       <div className="navbar__content-redirect">
@@ -51,7 +49,7 @@ const DropDownButton = ({ id_pm, name_pm, authData }) => {
       {isDropdown && (
         <div className="navbar__content-dropdown">
           {childrenList.map((child) => (
-            <Link key={child.id_module} to={child.url_module}>
+            <Link onClick={toggleNavbar} key={child.id_module} to={child.url_module}>
               {child.name_module}
             </Link>
           ))}

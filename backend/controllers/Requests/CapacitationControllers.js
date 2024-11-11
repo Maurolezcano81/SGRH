@@ -1,5 +1,5 @@
 import CapacitationModel from '../../models/Requests/CapacitationModel.js';
-import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces, formatDateTime } from '../../middlewares/Validations.js';
+import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces, formatDateTime, formatDateYear } from '../../middlewares/Validations.js';
 import BaseModel from '../../models/BaseModel.js';
 
 
@@ -11,12 +11,13 @@ class CapacitationControllers {
 
         this.nameFieldId = 'id_rc';
         this.nameFieldToSearch = 'title_rc';
+        this.audit = new BaseModel('audit_general', 'id_ag')
     }
 
     async getCapacitations(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
         try {
-            const list = await this.model.getCapacitationInformattion(limit, offset, typeOrder, order, filters);
+            const list = await this.model.getCapacitationInformattion(limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -24,10 +25,13 @@ class CapacitationControllers {
                 });
             }
 
+            const getTotalResults = await this.model.getTotalCapacitationInformattion(filters);
+
+
             const formattedList = list.map(item => {
                 return {
                     ...item,
-                    created_at: formatDateTime(item.created_at),
+                    date_requested: formatDateTime(item.date_requested),
                     updated_at: formatDateTime(item.updated_at),
                     answered_at: formatDateTime(item.answered_at),
                 };
@@ -36,7 +40,7 @@ class CapacitationControllers {
             return res.status(200).json({
                 message: "Lista de solicitudes de capacitacion obtenida con éxito",
                 list: formattedList,
-                total: list.length
+                total: getTotalResults[0].total || 0
             });
 
         } catch (error) {
@@ -49,28 +53,31 @@ class CapacitationControllers {
 
     async getCapacitationsById(req, res) {
         const { id_user } = req;
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
         try {
-            const list = await this.model.getCapacitationInformattionById(id_user, limit, offset, typeOrder, order, filters);
-
+            const list = await this.model.getCapacitationInformattionById(id_user, limit, offset, orderBy, order, filters);
             if (!list) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener las solicitudes de capacitacion, intentalo de nuevo"
                 });
             }
 
+            const getTotalResults = await this.model.getTotalCapacitationInformattionById(id_user, filters);
+
             const formattedList = list.map(item => {
                 return {
                     ...item,
-                    created_at: formatDateTime(item.created_at),
+                    date_requested: formatDateTime(item.date_requested),
                     updated_at: formatDateTime(item.updated_at),
+                    answered_at: formatDateTime(item.answered_at),
                 };
             });
 
+
             return res.status(200).json({
                 message: "Lista de solicitudes de capacitacion obtenida con éxito",
-                list: formattedList,
-                total: list.length
+                list: formattedList || [],
+                total: getTotalResults[0].total || 0
             });
 
         } catch (error) {
@@ -81,7 +88,7 @@ class CapacitationControllers {
         }
     }
 
-    async getCapacitationsNotAnswer(req, res){
+    async getCapacitationsNotAnswer(req, res) {
 
         try {
             const list = await this.model.getCapacitationsNotAnswered();
@@ -95,8 +102,11 @@ class CapacitationControllers {
             const formattedList = list.map(item => {
                 return {
                     ...item,
-                    created_at: formatDateTime(item.created_at),
+                    date_requested: formatDateTime(item.date_requested),
                     updated_at: formatDateTime(item.updated_at),
+                    answered_at: formatDateTime(item.answered_at),
+                    start_rc: formatDateYear(item.start_rc),
+                    end_rc: formatDateYear(item.end_rc),
                 };
             });
 
@@ -176,6 +186,29 @@ class CapacitationControllers {
 
     }
 
+    async deleteCapacitationAnswered(req, res) {
+        const { id_rrc } = req.body;
+        try {
+
+            const deleteAnswers = await this.responseCapacitation.deleteOne(id_rrc, "id_rrc");
+
+            if (deleteAnswers.affectedRows < 1) {
+                return res.status(403).json({
+                    message: "Ha ocurrido un error al eliminar la respuesta a la capacitación"
+                })
+            }
+
+            return res.status(200).json({
+                message: "Respuesta a la capacitación eliminada exitomasamente"
+            })
+
+        } catch (error) {
+            console.error("Ha ocurrido un error en la respuesta a la capacitación", error);
+            return res.status(403).json({
+                message: "Error al obtener los cuestionarios"
+            });
+        }
+    }
 
 }
 

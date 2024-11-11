@@ -10,24 +10,61 @@ class CapacitationModel extends BaseModel {
     }
 
 
-    async getCapacitationInformattion(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    async getCapacitationInformattion(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy, order, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
             SELECT 
                 rc.id_rc, 
+                rrc.id_rrc,
                 rc.user_fk, 
                 e.id_entity, 
                 u.avatar_user, 
                 rc.title_rc, 
                 rc.description_rc, 
-                CONCAT(e.name_entity, ' ', e.lastname_entity) AS requestor_name, 
-                CONCAT(eaut.name_entity,' ', eaut.lastname_entity) as answered_by,
+                e.name_entity,
+                e.lastname_entity, 
+                uaut.avatar_user as author_profile,
+                eaut.name_entity as author_name,
+                eaut.lastname_entity as author_lastname,
                 rrc.description_rrc,
                 rrc.created_at as answered_at,
-                rc.created_at,
+                rc.created_at as date_requested,
                 rc.updated_at, 
                 name_sr
+ FROM 
+                request_capacitation rc
+            LEFT JOIN 
+                user u ON rc.user_fk = u.id_user
+            LEFT JOIN 
+                entity e ON u.entity_fk = e.id_entity
+            LEFT JOIN 
+                response_request_capacitation rrc ON rc.id_rc = rrc.rc_fk
+            JOIN
+                user uaut on rrc.user_fk = uaut.id_user
+            JOIN 
+                entity eaut on uaut.entity_fk = eaut.id_entity
+            LEFT JOIN 
+                status_request sr ON rrc.sr_fk = sr.id_sr
+            ${whereClause}
+                group by rc.id_rc 
+            ORDER BY ${orderBy} ${order} 
+            LIMIT ? OFFSET ?`;
+
+            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+    async getTotalCapacitationInformattion(filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClause(filters);
+            const query = `
+            SELECT 
+                count( distinct rc.id_rc) as total 
             FROM 
                 request_capacitation rc
             JOIN 
@@ -43,11 +80,9 @@ class CapacitationModel extends BaseModel {
             LEFT JOIN 
                 status_request sr ON rrc.sr_fk = sr.id_sr
             ${whereClause}
-                group by rc.title_rc, rc.id_rc 
-            ORDER BY ${orderBy} ${order} 
-            LIMIT ? OFFSET ?`;
+            `
 
-            const [results] = await this.con.promise().query(query, [...values, limit, offset]);
+            const [results] = await this.con.promise().query(query, [...values]);
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
@@ -92,35 +127,91 @@ class CapacitationModel extends BaseModel {
         }
     }
 
-    async getCapacitationInformattionById(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    async getCapacitationInformattionById(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy, order, filters = {}) {
         try {
-            const { whereClause, values } = this.buildWhereClauseCapacitation(filters);
+            const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
             const query = `
-                    SELECT 
-                        rc.id_rc, 
-                        rc.user_fk, 
-                        rc.title_rc, 
-                        rc.description_rc, 
-                        rc.created_at, 
-                        rc.updated_at,
-                        COALESCE(sr.name_sr, 'No Respondido') as "name_sr"
-                    FROM 
-                        request_capacitation rc
-                    LEFT JOIN 
-                        response_request_capacitation rrc
-                        ON rc.id_rc = rrc.rc_fk
-                    LEFT JOIN
+            SELECT 
+                rc.id_rc, 
+                rrc.id_rrc,
+                rc.user_fk, 
+                u.avatar_user,
+                e.id_entity, 
+                u.avatar_user, 
+                rc.title_rc, 
+                rc.description_rc, 
+                e.name_entity,
+                e.lastname_entity, 
+                uaut.avatar_user as author_profile,
+                eaut.name_entity as author_name,
+                eaut.lastname_entity as author_lastname,
+                rrc.description_rrc,
+                rrc.created_at as answered_at,
+                rc.created_at as date_requested,
+                rc.updated_at, 
+                COALESCE(sr.name_sr, 'No Respondido') as "name_sr"
+            FROM 
+                request_capacitation rc
+            LEFT JOIN 
+                user u ON rc.user_fk = u.id_user
+            LEFT JOIN 
+                entity e ON u.entity_fk = e.id_entity
+            LEFT JOIN 
+                response_request_capacitation rrc ON rc.id_rc = rrc.rc_fk
+            LEFT JOIN
+                user uaut on rrc.user_fk = uaut.id_user
+            LEFT JOIN 
+                entity eaut on uaut.entity_fk = eaut.id_entity
+            LEFT JOIN 
                         status_request sr on rrc.sr_fk = sr.id_sr
                     WHERE 
-                        rc.user_fk = ? ${whereClause.length > 0 ? 'AND' : ''} 
+                        rc.user_fk = ? 
+                        ${whereClause.length > 0 ? 'AND' : ''} 
                         ${whereClause}
                     GROUP BY 
                         rc.id_rc, rrc.rc_fk
                     ORDER BY 
                         ${orderBy} ${order} 
                     LIMIT ? OFFSET ?`;
+            console.log(query)
 
             const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
+
+            console.log(results)
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Performance:", error.message);
+            throw new Error("Error en Users Quiz Performance: " + error.message);
+        }
+    }
+
+    async getTotalCapacitationInformattionById(id_user, filters = {}) {
+        try {
+            const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+            const query = `
+            SELECT 
+                count( distinct rc.id_rc) as total 
+            FROM 
+                request_capacitation rc
+            LEFT JOIN 
+                user u ON rc.user_fk = u.id_user
+            LEFT JOIN 
+                entity e ON u.entity_fk = e.id_entity
+            LEFT JOIN 
+                response_request_capacitation rrc ON rc.id_rc = rrc.rc_fk
+            LEFT JOIN
+                user uaut on rrc.user_fk = uaut.id_user
+            LEFT JOIN 
+                entity eaut on uaut.entity_fk = eaut.id_entity
+            LEFT JOIN 
+                        status_request sr on rrc.sr_fk = sr.id_sr
+            WHERE 
+                    rc.user_fk = ? 
+                    ${whereClause.length > 0 ? 'AND' : ''} 
+                    ${whereClause}
+`;
+
+            const [results] = await this.con.promise().query(query, [id_user, ...values]);
             return results;
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
