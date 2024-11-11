@@ -1,34 +1,34 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
-import TestTable from '../../components/Table/ResponsiveTable';
-import User from '../../assets/Icons/Buttons/User.png'
-import UserDown from '../../assets/Icons/Buttons/UserDown.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
 import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
-import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+import ResponsiveTable from '../../components/Table/ResponsiveTable';
 
 
 const TypeStatusEmployee = () => {
   const { authData } = useAuth();
 
   
+  const location = useLocation();
   const { updateBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
       updateBreadcrumbs([
-          { name: 'Tipos de estado de empleado', url: '/rrhh/ajustes/estado_empleado' },
+          { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+          { name: 'Tipos de Estados de Empleado', url: '/rrhh/ajustes/estado_empleado' },
       ]);
-  }, []);
+  }, [location.pathname]);
 
   const columns = [
     { field: 'name_tse', label: 'Nombre' },
-    { field: 'status_tse', label: 'Estado' }
+    { field: 'status_tse', label: 'Estado' },
+    { field: 'created_at', label: 'Creado el' },
+    { field: 'updated_at', label: 'Actualizado el' }
   ];
 
   const filterConfigs = [];
@@ -104,7 +104,7 @@ const TypeStatusEmployee = () => {
   return (
     <>
 
-      <TestTable
+      <ResponsiveTable
         addButtonTitle={handleModalAddOpen}
         url={getAllUrl}
         authToken={authData.token}
@@ -130,6 +130,12 @@ const TypeStatusEmployee = () => {
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
         buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
         isStatusUpdated={isStatusUpdated}
+        titleInfo={[
+          { field: "name_tse", type: "field" },
+      ]}
+        headerInfo={
+          ["Nombre"]
+        }
       />
 
       {isModalUpdateOpen && (

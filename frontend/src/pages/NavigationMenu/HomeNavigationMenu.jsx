@@ -5,6 +5,8 @@ import PreferenceTitle from '../MasterTables/PreferenceTitle';
 import AlertError from '../../components/Alerts/AlertError';
 import ParentsMenu from './ParentsMenu';
 import ButtonEditable from '../../components/Buttons/ButtonEditable';
+import { useLocation } from 'react-router-dom';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
 const HomeNavigationMenu = () => {
 
@@ -25,6 +27,16 @@ const HomeNavigationMenu = () => {
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
     const { authData } = useAuth();
+
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+  
+    useEffect(() => {
+      updateBreadcrumbs([
+        { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+        { name: 'Ajustes de Menúes de Navegación', url: '/admin/navegación' },
+      ]);
+    }, [location.pathname]);
 
     const getNavs = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NAVMENU_ACTIVES}`
 

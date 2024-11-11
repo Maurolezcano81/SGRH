@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import useAuth from '../../../hooks/useAuth';
-import EditButton from '../../../components/Buttons/EditButton';
 import ButtonBlue from '../../../components/ButtonBlue';
 import ButtonRed from '../../../components/ButtonRed';
 
@@ -11,13 +10,10 @@ const MoveOtherDepartment = ({ personal, department, updateProfile, handleSingle
     const [selectedOccupation, setSelectedOccupation] = useState(personal.occupation_fk || '');
     const [errorMessage, setErrorMessage] = useState('');
 
-
-    console.log(personal)
-
     const { authData } = useAuth();
 
-    const getDepartments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT}`;
-    const getOccupations = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`;
+    const getDepartments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_ACTIVES}`;
+    const getOccupations = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`;
     const update = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.R_DEPARTMENT_INSERT_EMPLOYEE}`;
 
     useEffect(() => {
@@ -25,7 +21,7 @@ const MoveOtherDepartment = ({ personal, department, updateProfile, handleSingle
             if (authData.token) {
                 try {
                     const fetchResponse = await fetch(getOccupations, {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${authData.token}`,
@@ -37,7 +33,7 @@ const MoveOtherDepartment = ({ personal, department, updateProfile, handleSingle
                     }
 
                     const occupations = await fetchResponse.json();
-                    const occupationsActives = occupations.queryResponse.filter((occupation) => occupation.status_occupation === 1);
+                    const occupationsActives = occupations.list.filter((occupation) => occupation.status_occupation === 1);
                     setListOccupations(occupationsActives || []);
                 } catch (error) {
                     console.error(error.message);
@@ -49,7 +45,7 @@ const MoveOtherDepartment = ({ personal, department, updateProfile, handleSingle
             if (authData.token) {
                 try {
                     const fetchResponse = await fetch(getDepartments, {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${authData.token}`,
@@ -61,7 +57,7 @@ const MoveOtherDepartment = ({ personal, department, updateProfile, handleSingle
                     }
 
                     const departments = await fetchResponse.json();
-                    const departmentsActives = departments.queryResponse.filter((department) => department.status_department === 1);
+                    const departmentsActives = departments.list.filter((department) => department.status_department === 1);
                     setListDepartments(departmentsActives || []);
                 } catch (error) {
                     console.error(error.message);

@@ -4,13 +4,12 @@ import useAuth from '../../../hooks/useAuth';
 import ButtonRed from '../../../components/ButtonRed';
 import User from "../../../assets/Icons/Buttons/User.png"
 import UserDown from "../../../assets/Icons/Buttons/UserDown.png"
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
 import ResponsiveTable from '../../../components/Table/ResponsiveTable';
-import ResponsiveTableCopy from '../../../components/Table/ResponsiveTableCopy';
 
 const ListUsers = () => {
 
@@ -21,18 +20,16 @@ const ListUsers = () => {
     const { authData } = useAuth();
     const navigate = useNavigate();
 
-    // Rutas para los breadcrumbs
-
+    const location = useLocation();
     const { updateBreadcrumbs } = useBreadcrumbs();
-
+  
     useEffect(() => {
-        updateBreadcrumbs([
-            { name: 'Lista de Usuarios', url: '/rrhh/personal/ver' },
-        ]);
-    }, []);
+      updateBreadcrumbs([
+        { name: 'Ver Personal', url: '/rrhh/personal/ver' },
+      ]);
+    }, [location.pathname]);
 
     const columns = [
-        { field: 'avatar_user', label: '', section: "General" },
         { field: 'username_user', label: 'Nombre de usuario' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
@@ -126,7 +123,7 @@ const ListUsers = () => {
                 {successMessage && <AlertSuccesfully message={successMessage} />}
                 {errorMessage && <ErrorMessage message={errorMessage} />}
 
-                <ResponsiveTableCopy
+                <ResponsiveTable
                     addButtonTitle={addButtonTitle}
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_USER}`}
                     authToken={authData.token}
@@ -153,9 +150,13 @@ const ListUsers = () => {
                     buttonTreeInfo={{ img: UserDown, color: "black", title: "Dar de baja" }}
                     isStatusUpdated={isStatusUpdated}
                 
-                    titleInfo={
-                        ["name_entity", "lastname_entity"]
-                    }
+
+                    titleInfo={[
+                        { field: "avatar_user", type: "field" },
+                        { field: "name_entity", type: "field" },
+                        { field: "lastname_entity", type: "field" },
+
+                    ]}
                     headerInfo={
                         ["Nombre y Apellido"]
                     }

@@ -1,8 +1,10 @@
 import PageWithSelect from '../../components/Layouts/PageWithSelect';
 import ButtonWithOutlineBlack from '../../components/Buttons/ButtonWhiteOutlineBlack'
 import ModalAdd from '../../components/Modals/ModalAdd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ModalAddProfiles from '../../components/Modals/Specifics/ProfileModule/ModalAddProfile';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+import { useLocation } from 'react-router-dom';
 const Profiles = () => {
 
   const getOptionsUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_PROFILE}`;
@@ -22,6 +24,16 @@ const Profiles = () => {
     setToggleModalAdd(!toggleModalAdd);
     setIsNewField(!isNewField);
   };
+
+  const location = useLocation();
+  const { updateBreadcrumbs } = useBreadcrumbs();
+
+  useEffect(() => {
+    updateBreadcrumbs([
+      { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+      { name: 'Asignación de Modulos', url: '/admin/perfiles' },
+    ]);
+  }, [location.pathname]);
 
   const handleDependencyAdd = () => {
     setIsNewField(!isNewField);

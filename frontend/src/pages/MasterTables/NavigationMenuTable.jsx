@@ -12,6 +12,7 @@ import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+import ResponsiveTable from '../../components/Table/ResponsiveTable';
 
 
 const NavigationMenuTable = () => {
@@ -104,7 +105,7 @@ const NavigationMenuTable = () => {
   return (
     <>
 
-      <TestTable
+      <ResponsiveTable
         addButtonTitle={handleModalAddOpen}
         url={getAllUrl}
         authToken={authData.token}
@@ -130,6 +131,9 @@ const NavigationMenuTable = () => {
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
         buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
         isStatusUpdated={isStatusUpdated}
+        titleInfo={[
+          { field: "name_nm", type: "field" },
+      ]}
       />
 
       {isModalUpdateOpen && (

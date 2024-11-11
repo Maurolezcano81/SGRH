@@ -16,18 +16,22 @@ import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 const Occupation = () => {
   const { authData } = useAuth();
 
+  const location = useLocation();
   const { updateBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    updateBreadcrumbs([
-      { name: 'Tipos de País', url: '/rrhh/ajustes/País' },
-    ]);
-  }, []);
+      updateBreadcrumbs([
+          { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+          { name: 'Tipos de País', url: '/rrhh/ajustes/pais' },
+      ]);
+  }, [location.pathname]);
 
   const columns = [
     { field: 'name_country', label: 'Nombre' },
     { field: 'abbreviation_country', label: 'Abreviación' },
-    { field: 'status_country', label: 'Estado' }
+    { field: 'status_country', label: 'Estado' },
+    { field: 'created_at', label: 'Creado el' },
+    { field: 'updated_at', label: 'Actualizado el' }
   ];
 
   const filterConfigs = [];
@@ -133,6 +137,12 @@ const Occupation = () => {
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
         buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
         isStatusUpdated={isStatusUpdated}
+        titleInfo={[
+          { field: "name_country", type: "field" },
+      ]}
+        headerInfo={
+          ["Nombre"]
+        }
       />
 
       {isModalUpdateOpen && (

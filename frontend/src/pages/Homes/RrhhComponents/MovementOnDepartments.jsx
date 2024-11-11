@@ -9,7 +9,7 @@ const MoveOnDepartment = ({ token }) => {
     const [minAndMaxYears, setMinAndMaxYears] = useState({});
     const [years, setYears] = useState([]);
 
-    const [selectedYear, setSelectedYear] = useState('2023');
+    const [selectedYear, setSelectedYear] = useState('2024');
     const [errorMessageSelectedYear, setErrorMessageSelectedYear] = useState('');
     const [dataDismiss, setDataDismiss] = useState([]);
 

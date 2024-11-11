@@ -151,6 +151,7 @@ class DashboardModel extends BaseModel {
                             termination_employee te
                         WHERE 
                             YEAR(te.date_te) = ?
+                            and te.status_tot = 1
                         GROUP BY 
                             MONTH(te.date_te)
                         ) AS terminations ON m.month = terminations.month

@@ -6,11 +6,12 @@ import Profile from './Profile';
 import HeaderButtons from './HeaderButtons';
 import NavbarContent from './NavbarContent';
 import Hamburguer from '../../assets/Icons/Navbar/hamburguer.png';
+import BackButton from '../Buttons/BackButton';
+import ForwardButton from '../Buttons/ForwardButton';
 
 const Navbar = () => {
   const { authData, deleteAuthData } = useAuth();
   const navigate = useNavigate();
-  const { navbarTitle } = useNav();
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
   const toggleNavbar = () => {
@@ -24,18 +25,18 @@ const Navbar = () => {
   };
 
   return (
-    <div>
-      <div className={`navbar__container-open ${isNavbarOpen ? 'hidden' : ''}`}>
+    <div className='sticky'>
+      <div className={`navbar__container-open`}>
         <div>
           <button onClick={toggleNavbar} className="navbar__collapsed-button">
             <img src={Hamburguer} alt="Menu" />
           </button>
         </div>
-        {navbarTitle && (
-          <div className="title__navbar">
-            <h2>{navbarTitle}</h2>
-          </div>
-        )}
+
+        <div className='buttons__nav__container'>
+          <BackButton />
+          <ForwardButton />
+        </div>
       </div>
       <div className={`navbar__container ${!isNavbarOpen ? 'hidden' : ''}`}>
         <div className="navbar__header">

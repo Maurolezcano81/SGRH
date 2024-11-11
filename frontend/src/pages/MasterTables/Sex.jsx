@@ -2,33 +2,32 @@ import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
-import TestTable from '../../components/Table/ResponsiveTable';
-import User from '../../assets/Icons/Buttons/User.png'
-import UserDown from '../../assets/Icons/Buttons/UserDown.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
 import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
-import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+import ResponsiveTable from '../../components/Table/ResponsiveTable';
 
 const Sex = () => {
-  const { storageNavbarTitle } = useNav();
-  const location = useLocation();
   const { authData } = useAuth();
 
+  const location = useLocation();
   const { updateBreadcrumbs } = useBreadcrumbs();
-  
+
   useEffect(() => {
-      updateBreadcrumbs([
-          { name: 'Tipos de Sexo', url: '/rrhh/ajustes/sexo' },
-      ]);
-  }, []);
+    updateBreadcrumbs([
+      { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+      { name: 'Tipos de Sexo', url: '/rrhh/ajustes/sexo' },
+    ]);
+  }, [location.pathname]);
 
   const columns = [
     { field: 'name_sex', label: 'Nombre' },
-    { field: 'status_sex', label: 'Estado' }
+    { field: 'status_sex', label: 'Estado' },
+    { field: 'created_at', label: 'Creado el' },
+    { field: 'updated_at', label: 'Actualizado el' }
   ];
 
   const filterConfigs = [];
@@ -43,13 +42,6 @@ const Sex = () => {
   const updateStatus = () => {
     setIsStatusUpdated(!isStatusUpdated);
   };
-
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
-
 
   // VARIABLES CON LAS PETICIONES FETCH
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`;
@@ -114,7 +106,7 @@ const Sex = () => {
   return (
     <>
 
-      <TestTable
+      <ResponsiveTable
         addButtonTitle={handleModalAddOpen}
         url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_SEX}`}
         authToken={authData.token}
@@ -140,6 +132,12 @@ const Sex = () => {
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
         buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
         isStatusUpdated={isStatusUpdated}
+        titleInfo={[
+          { field: "name_sex", type: "field" },
+      ]}
+        headerInfo={
+          ["Nombre"]
+        }
       />
 
       {isModalUpdateOpen && (

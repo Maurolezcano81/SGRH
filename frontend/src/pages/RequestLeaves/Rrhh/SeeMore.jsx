@@ -10,7 +10,6 @@ const SeeMore = ({
     closeModalAnswer,
 }) => {
 
-
     const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
     const [urlForAttachmentModal, setUrlForAttachmentModal] = useState(null);
 
@@ -23,6 +22,16 @@ const SeeMore = ({
         setIsAttachmentModalOpen(false);
     }
 
+    const formatDateYear = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+        const year = date.getUTCFullYear();
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+
+        return `${day}-${month}-${year} ${hours}:${minutes}`;
+    };
     return (
         <div className="alert__background__black" onClick={(e) => e.stopPropagation()}>
             <div className="preferences__modal__container">
@@ -31,7 +40,7 @@ const SeeMore = ({
                     <div className="answer__modal__data">
                         <div className="not__answer__header__profile">
                             <img src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${initialData.avatar_user}`} alt="" />
-                            <p>{initialData.requestor_name}</p>
+                            <p>{`${initialData.name_entity} ${initialData.lastname_entity}`}</p>
                         </div>
 
                         <div className="not__answer__body__description answer__body">
@@ -48,7 +57,7 @@ const SeeMore = ({
 
                             <div className="not__answer__body__item answer__body__item">
                                 <p className="div__form__input__label title__modal__answer">Fecha de solicitud:</p>
-                                <h3 className="div__form__input__input">{initialData.created_at}</h3>
+                                <h3 className="div__form__input__input">{initialData.date_requested}</h3>
                             </div>
 
                             <div className="not__answer__body__item answer__body__item">
@@ -82,7 +91,7 @@ const SeeMore = ({
 
                         <div className="not__answer__body__item answer__body__item">
                             <p className="div__form__input__label title__modal__answer">Respondido por:</p>
-                            <h3 className="div__form__input__input">{initialData.answered_by}</h3>
+                            <h3 className="div__form__input__input">{`${initialData.author_name} ${initialData.author_lastname}`}</h3>
                         </div>
 
                         <div className="not__answer__body__item answer__body__item">
@@ -91,8 +100,13 @@ const SeeMore = ({
                         </div>
 
                         <div className="not__answer__body__item answer__body__item">
+                            <p className="div__form__input__label title__modal__answer">Respuesta:</p>
+                            <h3 className="div__form__input__input">{initialData.name_sr || "-"}</h3>
+                        </div>
+
+                        <div className="not__answer__body__item answer__body__item">
                             <p className="div__form__input__label title__modal__answer">Descripción en la respuesta:</p>
-                            <h3 className="div__form__input__input">{initialData.description_lrr}</h3>
+                            <h3 className="div__form__input__input">{initialData && initialData.description_lrr.length > 0 ? initialData.description_lrr : "No hay descripción" }</h3>
                         </div>
 
 

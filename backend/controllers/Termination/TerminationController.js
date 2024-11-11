@@ -26,7 +26,7 @@ class TerminationEmployee {
 
             const now = new Date()
 
-            const nowData = `${now.getFullYear()}/${now.getMonth()}/${now.getDay()}`
+            const nowData = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
 
             const create = await this.model.createOne({
                 tot_fk: tot_fk,

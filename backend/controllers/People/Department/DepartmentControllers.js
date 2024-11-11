@@ -11,7 +11,8 @@ class DepartmentController {
     this.occupation = new BaseModel("occupation", "name_occupation")
 
     this.entity = new EntityModel();
-    
+
+    this.audit = new BaseModel('audit_general', 'id_ag')
   }
 
   async getDepartmentsInfo(req, res) {
@@ -97,6 +98,9 @@ class DepartmentController {
 
   async AddEmployeeToDepartment(req, res) {
     const { id_edo, department_fk, entity_fk, occupation_fk } = req.body;
+
+    console.log(req.body);
+    
     const { id_user } = req
 
     try {
@@ -146,9 +150,9 @@ class DepartmentController {
       const getDataUserAction = await this.entity.getDataByIdUser(id_user);
 
       if (getDataUserAction.length < 1) {
-          return res.status(403).json({
-              message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
-          });
+        return res.status(403).json({
+          message: "Ha ocurrido un error al realizar la solicitud, intentelo nuevamente reiniciando el sitio."
+        });
       }
 
 

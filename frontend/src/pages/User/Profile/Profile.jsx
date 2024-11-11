@@ -8,13 +8,18 @@ import PersonalData from './Read/PersonalData';
 import UserData from './Read/UserData';
 import AddressData from './Read/AddressData';
 import EmployeeData from './Read/EmployeeData';
+import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
 
 const Profile = () => {
   const profileURL = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.USER_PROFILE}`
 
+
+
   const { authData } = useAuth();
   const location = useLocation();
+
   const { value_user, isRedirectToChangePwd } = location.state || {};
+
 
   const [userData, setUserData] = useState([]);
   const [personalData, setPersonalData] = useState([]);
@@ -31,8 +36,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (isRedirectToChangePwd && !redirectedToChangePwd) {
-      setToggleChangePwd(true); 
-      setRedirectedToChangePwd(true); 
+      setToggleChangePwd(true);
+      setRedirectedToChangePwd(true);
     }
   }, [isRedirectToChangePwd, redirectedToChangePwd]);
 
@@ -108,6 +113,21 @@ const Profile = () => {
       setRedirectedToChangePwd(true);
     }
   };
+
+  const { updateBreadcrumbs } = useBreadcrumbs();
+
+  useEffect(() => {
+    if (personalData && personalData?.entity && Object.keys(personalData.entity).length > 0) {
+      const firstEntity = personalData.entity["0"];
+      updateBreadcrumbs([
+        { name: 'Ver Personal', url: '/rrhh/personal/ver' },
+        { 
+          name: `${firstEntity.name_entity} ${firstEntity.lastname_entity}`, 
+          url: '/rrhh/ajustes/departamento' 
+        },
+      ]);
+    }
+  }, [location.pathname, personalData]);
 
   return (
     <div className="container__profile">

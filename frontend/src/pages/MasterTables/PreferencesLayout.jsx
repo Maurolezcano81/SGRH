@@ -1,12 +1,22 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 
 import { useState, useEffect } from 'react';
 import LinkPreference from './LinkPreference';
+import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 
 const Preferences = () => {
+  const location = useLocation();
+  const { updateBreadcrumbs } = useBreadcrumbs();
+
+  useEffect(() => {
+    updateBreadcrumbs([
+      { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+    ]);
+  }, [location.pathname]);
   return (
     <div className='container__content'>
-        <div className="preferences__container__links">
+      <div className='preferences__container p-2'>
+        <div className="preferences__container__links w-full ">
           <LinkPreference path="ocupacion" name="Ocupacion" selected="ocupacion" />
 
           <LinkPreference path="sexo" name="Sexo" />
@@ -19,7 +29,7 @@ const Preferences = () => {
 
           <LinkPreference path="tipo_estado_solicitud" name="Estado de solicitud" />
 
-          <LinkPreference path="tipo_renuncia" name="Tipo de renuncia" />
+          <LinkPreference path="tipo_renuncia" name="Tipos de Salida" />
 
           <LinkPreference path="modulo" name="Modulos" />
 
@@ -40,7 +50,9 @@ const Preferences = () => {
 
 
 
+        </div>
       </div>
+
 
       <main className="">
         <Outlet />

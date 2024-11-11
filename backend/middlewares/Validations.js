@@ -1,7 +1,7 @@
 const regularExpressions = {
     whiteSpaces: /\s/,
     onlyNumbers: /^\d+(\.\d+)?$/,
-    aToZ: /^[A-Za-zñÑ0-9]+(?:\s+[A-Za-zñÑ0-9]+)*$/,
+    aToZ: /^[A-Za-zñÑáéíóúÁÉÍÓÚ0-9]+(?:\s+[A-Za-zñÑáéíóúÁÉÍÓÚ0-9]+)*$/,
     isDate: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 }
 

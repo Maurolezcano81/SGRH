@@ -5,11 +5,19 @@ import MoveOnDepartment from "./RrhhComponents/MovementOnDepartments";
 import ReasonDismiss from "./RrhhComponents/ReasonDismiss";
 import QuantityForLeaves from "./RrhhComponents/QuantityForLeaves";
 import QuantityForLeavesAndDepartment from "./RrhhComponents/QuantityForLeavesAndDepartment";
+import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
+import { useEffect } from "react";
 
 const HomeRRHH = () => {
 
   const { authData } = useAuth();
-
+  const { updateBreadcrumbs } = useBreadcrumbs();
+  
+  useEffect(() => {
+      updateBreadcrumbs([
+          { name: 'Estadisticas', url: '/rrhh/inicio' },
+      ]);
+  }, []);
   return (
 
     <div className="container__page ">

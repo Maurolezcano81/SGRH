@@ -17,7 +17,8 @@ class DepartmentModel extends BaseModel {
                     d.id_department,
                     d.name_department,
                     COALESCE(COUNT(edo.entity_fk), 0) AS "quantity_department",
-                    COALESCE(SUM(o.salary_occupation), 0) AS "salary_total_department"
+                    COALESCE(SUM(o.salary_occupation), 0) AS "salary_total_department",
+                    status_department
                 FROM
                     department d
                 LEFT JOIN entity_department_occupation edo ON d.id_department = edo.department_fk AND edo.status_edo = 1

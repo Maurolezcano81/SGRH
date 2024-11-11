@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PersonalDetailsSection from './PersonalDetailsSection';
 import EmployeeDataSection from './EmployeeDataSection';
 import AddressdataSection from './AddressDataSection';
@@ -10,12 +10,23 @@ import ButtonRed from '../../../components/ButtonRed';
 import AlertSuccesfullyBackground from '../../../components/Alerts/AlertSuccesfullyBackground';
 import useAuth from '../../../hooks/useAuth';
 import AlertError from '../../../components/Alerts/AlertError';
+import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
 
 const CreateUser = () => {
   const createUserUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/admin/user/create`;
   const navigate = useNavigate();
 
   const { authData } = useAuth();
+
+  const location = useLocation();
+  const { updateBreadcrumbs } = useBreadcrumbs();
+
+  useEffect(() => {
+    updateBreadcrumbs([
+      { name: 'Ver Personal', url: '/rrhh/personal/ver' },
+      { name: 'Dar de alta un Personal', url: '/rrhh/personal/crear' },
+    ]);
+  }, [location.pathname]);
 
   const [isSuccessfully, setIsSuccessfully] = useState(false);
   const [successfullyMessage, setSuccessfullyMessage] = useState('');

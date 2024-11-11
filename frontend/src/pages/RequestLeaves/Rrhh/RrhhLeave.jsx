@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PreferenceTitle from "../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import useAuth from "../../../hooks/useAuth";
@@ -8,6 +8,9 @@ import TableCapacitations from "./TableLeaves";
 import SeeMore from "./SeeMore";
 import ModalDelete from "../../../components/Modals/ModalDelete";
 import Trash from '../../../assets/Icons/Buttons/Trash.png'
+import { useLocation } from "react-router-dom";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
 
 const RrhhLeave = () => {
 
@@ -25,16 +28,28 @@ const RrhhLeave = () => {
         setToggleFormRequest(!toggleFormRequest)
     }
 
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Solicitudes de Licencias', url: '/rrhh/solicitud/licencia' },
+        ]);
+    }, [location.pathname]);
+
+
 
     const columns = [
-        { field: 'avatar_user', label: '' },
-        { field: 'name_tol', label: 'Titulo' },
-        { field: 'requestor_name', label: 'Nombre' },
+        { field: 'name_tol', label: 'Tipo de Licencia' },
+        { field: 'name_entity', label: 'Nombre del solicitante' },
+        { field: 'lastname_entity', label: 'Apellido del solicitante' },
         { field: 'reason_lr', label: 'Descripcion' },
+        { field: 'date_requested', label: 'Solicitado el' },
         { field: 'start_lr', label: 'Fecha de Inicio' },
         { field: 'end_lr', label: 'Fecha de Fin' },
-        { field: 'created_at', label: 'Solicitado' },
-        { field: 'answered_by', label: 'Respondido por' },
+        { field: 'author_name', label: 'Nombre del Autor' },
+        { field: 'author_lastname', label: 'Apellido del Autor' },
+        { field: 'answered_at', label: 'Respondido el' },
         { field: 'name_sr', label: 'Estado de la solicitud' }
     ];
 
@@ -48,10 +63,12 @@ const RrhhLeave = () => {
     ];
 
     const searchOptions = [
-        { value: 'name_tol', label: 'Titulo' },
+        { value: 'name_tol', label: 'Tipo de Licencia' },
         { value: 'reason_lr', label: 'Descripcion' },
-        { value: 'requestor_name', label: 'Nombre y apellido del solicitante' },
-        { value: 'requestor_name', label: 'Nombre y apellido del respondedor' }
+        { value: 'e.name_entity', label: 'Nombre del solicitante' },
+        { value: 'e.lastname_entity', label: 'Apellido del solicitante' },
+        { value: 'eaut.name_entity', label: 'Nombre del Autor' },
+        { value: 'eaut.lastname_entity', label: 'Apellido del Autor' },
     ];
 
 
@@ -77,6 +94,7 @@ const RrhhLeave = () => {
         setIsModalDeleteOpen(false);
         setIsStatusUpdated(!isStatusUpdated)
     }
+    
 
     return (
         <>
@@ -93,7 +111,7 @@ const RrhhLeave = () => {
                     setDependencyToRefresh={setIsStatusUpdated}
                 />
 
-                <TableSecondaryNotTitleAndWhereOnUrl
+                <ResponsiveTableNotTitleAndWhereOnUrl
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_LEAVE_RRHH}`}
                     authToken={authData.token}
                     columns={columns}
@@ -101,7 +119,7 @@ const RrhhLeave = () => {
                     searchOptions={searchOptions}
                     initialSearchField={'name_tol'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'name_tol', order: 'ASC' }}
+                    initialSort={{ field: 'answered_at', order: 'ASC' }}
                     actions={{
                         view: (row) => openSeeMore(row),
                         delete: (row) => handleModalDeleteOpen(row),
@@ -117,7 +135,24 @@ const RrhhLeave = () => {
                     buttonTwoInfo={{ img: Info, color: 'blue', title: 'Ver Más' }}
                     buttonTreeInfo={{ img: Trash, color: 'red', title: 'Eliminar Respuesta' }}
                     isStatusUpdated={isStatusUpdated}
+                    titleInfo={[
+                        { field: "author_profile", type: "field" },
+                        { field: "author_name", type: "field" },
+                        { field: "author_lastname", type: "field" },
+                        { field: "aprobo", type: "string" },
+                        { field: "name_tol", type: "field" },
+                        { field: "de", type: "string" },
+                        { field: "name_entity", type: "field" },
+                        { field: "lastname_entity", type: "field" },
+                        { field: "solicitada el", type: "string" },
+                        { field: "date_requested", type: "field" },
+                    ]}
+                    headerInfo={
+                        ["Solicitudes de Licencia Contestadas"]
+                    }
                 />
+
+
 
                 {isModalDeleteOpen && (
                     <ModalDelete

@@ -1,35 +1,33 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import useNav from '../../hooks/useNav';
 import { useLocation } from 'react-router-dom';
-import TestTable from '../../components/Table/ResponsiveTable';
-import User from '../../assets/Icons/Buttons/User.png'
-import UserDown from '../../assets/Icons/Buttons/UserDown.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
 import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
-import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+import ResponsiveTable from '../../components/Table/ResponsiveTable';
 
 
 const Attachment = () => {
-  const { storageNavbarTitle } = useNav();
-  const location = useLocation();
   const { authData } = useAuth();
 
   const { updateBreadcrumbs } = useBreadcrumbs();
-  
+
   useEffect(() => {
-      updateBreadcrumbs([
-          { name: 'Tipos de Anexo', url: '/rrhh/ajustes/tipo_anexo' },
-      ]);
+    updateBreadcrumbs([
+      { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+      { name: 'Tipos de Anexo', url: '/rrhh/ajustes/tipo_anexo' },
+    ]);
   }, []);
 
   const columns = [
     { field: 'name_ta', label: 'Nombre' },
-    { field: 'status_ta', label: 'Estado' }
+    { field: 'status_ta', label: 'Estado' },
+    { field: 'created_at', label: 'Creado el' },
+    { field: 'updated_at', label: 'Actualizado el' }
+
   ];
 
   const filterConfigs = [];
@@ -42,12 +40,6 @@ const Attachment = () => {
   const updateStatus = () => {
     setIsStatusUpdated(!isStatusUpdated);
   };
-
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    storageNavbarTitle(lastPart);
-  }, [location.pathname, storageNavbarTitle]);
 
 
   const getAllUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_ATTACHMENT}`;
@@ -112,7 +104,7 @@ const Attachment = () => {
   return (
     <>
 
-      <TestTable
+      <ResponsiveTable
         addButtonTitle={handleModalAddOpen}
         url={getAllUrl}
         authToken={authData.token}
@@ -138,6 +130,13 @@ const Attachment = () => {
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
         buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
         isStatusUpdated={isStatusUpdated}
+
+        titleInfo={[
+          { field: "name_ta", type: "field" },
+      ]}
+        headerInfo={
+          ["Nombre"]
+        }
       />
 
       {isModalUpdateOpen && (

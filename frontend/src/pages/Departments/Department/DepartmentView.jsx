@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import User from '../../../assets/Icons/Buttons/User.png'
 import { useLocation, useNavigate } from 'react-router-dom';
 import AlertSuccesfully from '../../../components/Alerts/AlertSuccesfully';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
-import TableSecondaryNotTitleAndWhereOnUrl from '../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl';
+import TableSecondaryNotTitleAndWhereOnUrl from '../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl.jsx';
 import PreferenceTitle from '../../MasterTables/PreferenceTitle';
 import ModalTableWFilters from '../../../components/Modals/Updates/ModalTableWFilters';
 
@@ -12,6 +12,9 @@ import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png';
 import MoveEmployee from '../../../assets/Icons/Buttons/MoveEmployee.png';
 import ModalLabelSelect from '../../../components/Modals/Updates/ModalLabelSelect';
 import MoveOtherDepartment from './MoveOtherDepartment';
+import { useBreadcrumbs } from '../../../contexts/BreadcrumbsContext';
+import ResponsiveTableNotTitleAndWhereOnUrl from '../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl.jsx';
+import ResponsiveTableModalTableWFilters from '../../../components/Table/TablePreferences/ResponsiveTableModalTableWFilters.jsx';
 
 
 
@@ -41,13 +44,20 @@ const DepartmentView = () => {
 
     const { authData } = useAuth();
     const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
 
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Ver Departamentos', url: '/rrhh/departamentos/ver' },
+            { name: `${name_department}`, url: '/rrhh/departamentos/ver' },
+        ]);
+    }, [location.pathname]);
     const navigate = useNavigate();
 
     const { id_department, name_department } = location.state || {};
 
 
-    
+
     const [dataToMoveOtherDepartment, setDataToMoveOtherDepartment] = useState({
         id_edo: "",
         department: id_department,
@@ -62,7 +72,6 @@ const DepartmentView = () => {
 
 
     const columns = [
-        { field: 'avatar_user', label: '' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
         { field: 'name_occupation', label: 'Puesto' },
@@ -130,14 +139,14 @@ const DepartmentView = () => {
         setModalRotationOpen(!isModalRotationOpen);
     }
 
-    const updateModalRotationPersonal = () =>{
+    const updateModalRotationPersonal = () => {
         setIsModalRotationUpdated(!isModalRotationUpdated)
 
         setIsStatusUpdated(!isStatusUpdated);
     }
 
-    const toggleModalMoveOtherDepartment = (row) =>{
-        setIsModalMoveOtherDepartmentActive(!isModalMoveOtherDepartmentActive);
+    const handleModalMoveOtherDepartmentOpen = (row) => {
+        setIsModalMoveOtherDepartmentActive(true);
         setDataToMoveOtherDepartment({
             id_edo: row.id_edo,
             department_fk: id_department,
@@ -146,13 +155,17 @@ const DepartmentView = () => {
         })
     }
 
-    const updateMoveOtherDepartment = ()=>{
+    const handleModalMoveOtherDepartmentClose = () => {
+        setIsModalMoveOtherDepartmentActive(false);
+
+    }
+
+    const updateMoveOtherDepartment = () => {
         setIsStatusUpdated(!isStatusUpdated);
     }
 
 
     const columsToModal = [
-        { field: 'avatar_user', label: '' },
         { field: 'file_employee', label: 'Legajo' },
         { field: 'name_entity', label: 'Nombre' },
         { field: 'lastname_entity', label: 'Apellido' },
@@ -199,21 +212,19 @@ const DepartmentView = () => {
 
     return (
         <div className='container__page'>
-            <div className='container__content'>
-                <PreferenceTitle
-                    title={name_department}
-                    titleButton={"Agregar Personal"}
-                    onClick={toggleModalRotationPersonal}
-                />
-            </div>
+            <PreferenceTitle
+                title={name_department}
+                titleButton={"Agregar Personal"}
+                onClick={toggleModalRotationPersonal}
+            />
 
 
             {isModalMoveOtherDepartmentActive && (
-                <MoveOtherDepartment 
-                personal={dataToMoveOtherDepartment}
-                department={id_department}
-                updateProfile={updateMoveOtherDepartment}
-                handleSingleCloseModal={toggleModalMoveOtherDepartment}
+                <MoveOtherDepartment
+                    personal={dataToMoveOtherDepartment}
+                    department={id_department}
+                    updateProfile={updateMoveOtherDepartment}
+                    handleSingleCloseModal={handleModalMoveOtherDepartmentClose}
                 />
             )}
 
@@ -237,7 +248,7 @@ const DepartmentView = () => {
                         />
                     )}
 
-                    <ModalTableWFilters
+                    <ResponsiveTableModalTableWFilters
                         url={urlToGetEmployeesOutDepartment}
                         authToken={authData.token}
                         columns={columsToModal}
@@ -262,7 +273,16 @@ const DepartmentView = () => {
                         isStatusUpdated={isModalRotationUpdated}
                         handleCloseModal={toggleModalRotationPersonal}
                         title_table={"Lista de Empleados"}
-                        colorTable={'bg__green-5'}
+
+                        titleInfo={[
+                            { field: "avatar_user", type: "field" },
+                            { field: "name_entity", type: "field" },
+                            { field: "lastname_entity", type: "field" },
+                        ]}
+
+                        headerInfo={
+                            ["Personal Fuera del Departamento"]
+                        }
                     />
                 </>
 
@@ -271,7 +291,7 @@ const DepartmentView = () => {
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableSecondaryNotTitleAndWhereOnUrl
+            <ResponsiveTableNotTitleAndWhereOnUrl
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_DEPARTMENT_INFO}/${id_department}`}
                 authToken={authData.token}
                 columns={columns}
@@ -282,7 +302,7 @@ const DepartmentView = () => {
                 initialSort={{ field: 'name_entity', order: 'ASC' }}
                 actions={{
                     view: navigateProfile,
-                    edit: toggleModalMoveOtherDepartment,
+                    edit: handleModalMoveOtherDepartmentOpen,
                     delete: (row) => console.log('Editar', row),
                 }}
                 showActions={{
@@ -295,6 +315,14 @@ const DepartmentView = () => {
                 buttonOneInfo={{ img: User, color: 'blue', title: 'Ver Perfil' }}
                 buttonTwoInfo={{ img: MoveEmployee, color: 'black', title: 'Mover a otro departamento' }}
                 isStatusUpdated={isStatusUpdated}
+                titleInfo={[
+                    { field: "avatar_user", type: "field" },
+                    { field: "name_entity", type: "field" },
+                    { field: "lastname_entity", type: "field" },
+                ]}
+                headerInfo={
+                    ["Personal del Departamento"]
+                }
             />
 
 

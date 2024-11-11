@@ -22,9 +22,9 @@ class LeavesControllers {
     }
 
     async getLeaves(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
         try {
-            const list = await this.model.getLeavesInformation(limit, offset, typeOrder, order, filters);
+            const list = await this.model.getLeavesInformation(limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -38,9 +38,10 @@ class LeavesControllers {
                 list.map(async (item) => {
                     const attachments = await this.model.getAttachments(item.id_lr);
 
+
                     return {
                         ...item,
-                        created_at: formatDateTime(item.created_at),
+                        date_requested: formatDateTime(item.date_requested),
                         updated_at: formatDateTime(item.updated_at),
                         answered_at: formatDateTime(item.answered_at),
                         start_lr: formatDateYear(item.start_lr),
@@ -66,9 +67,9 @@ class LeavesControllers {
 
     async getLeavesById(req, res) {
         const { id_user } = req;
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, order, orderBy, filters } = req.body;
         try {
-            const list = await this.model.getLeavesInformattionById(id_user, limit, offset, typeOrder, order, filters);
+            const list = await this.model.getLeavesInformattionById(id_user, limit, offset, orderBy, order, filters);
             if (!list) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener las solicitudes de Licencia, intentalo de nuevo"
@@ -77,15 +78,12 @@ class LeavesControllers {
 
             const getTotalResults = await this.model.getTotalLeavesInformattionById(id_user, filters);
 
-
             const formattedList = await Promise.all(
                 list.map(async (item) => {
                     const attachments = await this.model.getAttachments(item.id_lr);
-
-                    console.log(item.answered_at)
                     return {
                         ...item,
-                        created_at: formatDateTime(item.created_at),
+                        date_requested: formatDateTime(item.date_requested),
                         updated_at: formatDateTime(item.updated_at),
                         answered_at: item.answered ? formatDateTime(item.answered_at) : "-",
                         start_lr: formatDateYear(item.start_lr),

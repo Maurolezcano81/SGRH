@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import PreferenceTitle from '../../pages/MasterTables/PreferenceTitle';
 import ButtonRed from '../ButtonRed';
 import ButtonImgTxt from '../ButtonImgTex';
 import ButtonWhiteOutlineBlack from '../Buttons/ButtonWhiteOutlineBlack';
 import ButtonBlue from '../ButtonBlue';
 
-const ResponsiveTable = ({
+const ResponsiveTableNotTitleAndWhereOnUrl = ({
     url,
     authToken,
     columns,
@@ -27,7 +26,7 @@ const ResponsiveTable = ({
     addButtonTitle,
     isStatusUpdated = false,
     titleInfo,
-    headerInfo,
+    headerInfo
 }) => {
     const [data, setData] = useState([]);
     const [filters, setFilters] = useState(initialFilters);
@@ -163,13 +162,8 @@ const ResponsiveTable = ({
     const [expandedRows, setExpandedRows] = useState([]);
 
     return (
-        <div className='container__page'>
+        <>
             <div className='container__content'>
-                <PreferenceTitle
-                    title={title_table}
-                    onClick={addButtonTitle}
-                />
-
                 <div className="responsive__table-actions" data-label="Acciones">
                     {showActions.view && actions.view && (
                         <ButtonImgTxt
@@ -285,8 +279,7 @@ const ResponsiveTable = ({
                             <div key={rowIndex} className="responsive__table-row">
                                 <div className="responsive__table-title">
                                     <div className='responsive__table-title__container'>
-
-                                    {titleInfo.map((fieldInfo, index) => {
+                                        {titleInfo.map((fieldInfo, index) => {
                                             const field = typeof fieldInfo === 'string' ? fieldInfo : fieldInfo.field;
                                             const isField = typeof fieldInfo === 'object' && fieldInfo.type === 'field';
 
@@ -421,8 +414,8 @@ const ResponsiveTable = ({
                 </div>
 
             </div>
-        </div >
+        </ >
     );
 };
 
-export default ResponsiveTable;
+export default ResponsiveTableNotTitleAndWhereOnUrl;

@@ -12,10 +12,11 @@ router.patch('/department/status', department.toggleStatus.bind(department));
 router.delete('/department', department.deleteOne.bind(department));
 
 router.post('/departments/info', department.getDepartmentsInfo.bind(department));
+router.patch('/departments/rotation/insert_employee', department.AddEmployeeToDepartment.bind(department));
+
 router.post('/departments/department/:id_department', department.getDepartmentInfo.bind(department));
 
 router.post('/departments/rotation/employees_out/:id_department', department.getEmployeesInOtherDepartment.bind(department));
-router.patch('/departments/rotation/insert_employee', department.AddEmployeeToDepartment.bind(department));
 
 
 const DepartmentRoutes = {

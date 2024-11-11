@@ -27,7 +27,7 @@ class LeaveModel extends BaseModel {
     }
 
 
-    async getLeavesInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    async getLeavesInformation(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy, order, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);
             const query = `
@@ -39,12 +39,15 @@ class LeaveModel extends BaseModel {
                 lr.start_lr,
                 lr.end_lr,
                 u.avatar_user,
-                CONCAT(e.name_entity, ' ', e.lastname_entity) AS requestor_name, 
-                CONCAT(eaut.name_entity,' ', eaut.lastname_entity) as answered_by,
+                e.name_entity,
+                e.lastname_entity,
+                uaut.avatar_user as author_profile,
+                eaut.name_entity as author_name,
+                eaut.lastname_entity as author_lastname,
                 lrr.created_at as answered_at,
                 name_sr,
                 description_lrr,
-                lr.created_at
+                lr.created_at  as "date_requested"
             FROM 
                 leave_request lr
             JOIN 
@@ -63,7 +66,8 @@ class LeaveModel extends BaseModel {
                 status_request sr ON lrr.sr_fk = sr.id_sr
             ${whereClause}
                 group by name_tol, id_lr
-            ORDER BY ${orderBy} ${order} 
+
+            ORDER BY ${orderBy} ${order}
             LIMIT ? OFFSET ?`;
 
             const [results] = await this.con.promise().query(query, [...values, limit, offset]);
@@ -196,22 +200,25 @@ class LeaveModel extends BaseModel {
         }
     }
 
-    async getLeavesInformattionById(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+    async getLeavesInformattionById(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy, order, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClauseCapacitation(filters);
+
             const query = `
                     SELECT 
                         lr.id_lr,
                         tol.name_tol,
-                        CONCAT(e.name_entity, ' ', e.lastname_entity) AS requestor_name, 
+                        e.name_entity,
+                        e.lastname_entity,
                         u.avatar_user,
                         lr.reason_lr,
                         lr.start_lr,
                         lr.end_lr,
-                        lr.created_at,
+                        lr.created_at as date_requested,
                         COALESCE(lrr.description_lrr, '-') as description_lrr,
                         COALESCE(sr.name_sr, 'No Respondido') as name_sr,
-                        COALESCE(CONCAT(eaut.name_entity,' ', eaut.lastname_entity), '-') as answered_by,
+                        eaut.name_entity as author_name,
+                        eaut.lastname_entity as author_lastname,
                         COALESCE(lrr.created_at, '-') as answered_at
                     FROM 
                         leave_request lr
@@ -234,8 +241,7 @@ class LeaveModel extends BaseModel {
                         ${whereClause}
                     GROUP BY 
                         lr.id_lr, lrr.lr_fk
-                    ORDER BY 
-                        ${orderBy} ${order} 
+                        ORDER BY ${orderBy} ${order}
                     LIMIT ? OFFSET ?`;
 
             const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);

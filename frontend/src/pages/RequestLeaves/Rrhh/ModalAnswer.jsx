@@ -112,7 +112,7 @@ const ModalAnswer = ({
                     <div className="answer__modal__data">
                         <div className="not__answer__header__profile">
                             <img src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${initialData.avatar_user}`} alt="" />
-                            <p>{initialData.requestor_name}</p>
+                            <p>{`${initialData.name_entity} ${initialData.lastname_entity}`}</p>
                         </div>
 
                         <div className="not__answer__body__description answer__body">

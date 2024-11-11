@@ -5,7 +5,7 @@ import ButtonImgTxt from '../ButtonImgTex';
 import ButtonWhiteOutlineBlack from '../Buttons/ButtonWhiteOutlineBlack';
 import ButtonBlue from '../ButtonBlue';
 
-const ResponsiveTableCopy = ({
+const ResponsiveTableNonEdited = ({
     url,
     authToken,
     columns,
@@ -25,9 +25,7 @@ const ResponsiveTableCopy = ({
     buttonTwoInfo = { img: "", color: "", title: "" },
     buttonTreeInfo = { img: "", color: "", title: "" },
     addButtonTitle,
-    isStatusUpdated = false,
-    titleInfo,
-    headerInfo
+    isStatusUpdated = false
 }) => {
     const [data, setData] = useState([]);
     const [filters, setFilters] = useState(initialFilters);
@@ -150,50 +148,6 @@ const ResponsiveTableCopy = ({
         0: 'Inactivo',
     };
 
-    const toggleExpand = (rowIndex) => {
-        setExpandedRows(prevExpandedRows =>
-            prevExpandedRows.includes(rowIndex)
-                ? prevExpandedRows.filter(index => index !== rowIndex)
-                : [...prevExpandedRows, rowIndex]
-        );
-    };
-
-    const [expandedRows, setExpandedRows] = useState([]);
-
-    const renderTableHeader = () => (
-        <div className="responsive__table-header">
-            {columns.map(column => (
-                <div key={column.field} className="responsive__table-col" onClick={() => handleSort(column.field)}>
-                    {column.label}
-                </div>
-            ))}
-        </div>
-    );
-
-    const renderTableBody = () => (
-        data.map((row, rowIndex) => (
-            <div key={rowIndex} className="responsive__table-row">
-                <div className="responsive__table-main">
-                    {titleInfo.map((field, index) => (
-                        <span key={index} className="responsive__table-title">
-                            {row[field] || "N/A"}
-                        </span>
-                    ))}
-                    <button onClick={() => toggleExpand(rowIndex)}>Expandir</button>
-                </div>
-                {expandedRows.includes(rowIndex) && (
-                    <div className="responsive__table-expanded">
-                        {columns.map(column => (
-                            <div key={column.field} className="responsive__table-col" data-label={column.label}>
-                                {statusFields.includes(column.field) ? statusMap[row[column.field]] || 'Desconocido' : row[column.field]}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        ))
-    );
-
     return (
         <div className='container__page'>
             <div className='container__content'>
@@ -241,15 +195,6 @@ const ResponsiveTableCopy = ({
                                     </label>
                                 ))}
 
-                                <div className='table__filter__orders'>
-                                    {columns.map(column => (
-                                        <div key={column.field} className="responsive__table-col" onClick={() => handleSort(column.field)}>
-                                            {column.label}
-                                        </div>
-                                    ))}
-                                </div>
-
-
                                 <div className='table__filter__container__button'>
                                     <ButtonRed
                                         title={"Limpiar Filtros"}
@@ -266,9 +211,9 @@ const ResponsiveTableCopy = ({
             <div className="table__responsive__container">
                 <ul className="ul__responsive__table">
                     <li className="responsive__table-header">
-                        {headerInfo.map(column => (
-                            <div key={column} className="responsive__table-col" onClick={() => handleSort(column)}>
-                                {column}
+                        {columns.map(column => (
+                            <div key={column.field} className="responsive__table-col" onClick={() => handleSort(column.field)}>
+                                {column.label}
                             </div>
                         ))}
                     </li>
@@ -277,18 +222,10 @@ const ResponsiveTableCopy = ({
                             <p>No hay datos disponibles</p>
                         </li>
                     ) : (
-                        data.map((row, rowIndex) => (
-                            <div key={rowIndex} className="responsive__table-row">
-                                <div className="responsive__table-main">
-                                    {titleInfo.map((field, index) => (
-                                        <span key={index} className="responsive__table-title">
-                                            {row[field] || "N/A"}
-                                        </span>
-                                    ))}
-                                    <button onClick={() => toggleExpand(rowIndex)}>Expandir</button>
-                                </div>
-                                {expandedRows.includes(rowIndex) && (
-                                    columns.map((column) => {
+                        data.map(row => (
+                            <div className='responsive__table-body__container'>
+                                <li key={row[actionColumn]} className="responsive__table-body">
+                                    {columns.map(column => {
 
                                         const cellValue = statusFields.includes(column.field)
                                             ? statusMap[row[column.field]] || 'Desconocido'
@@ -304,23 +241,45 @@ const ResponsiveTableCopy = ({
                                                             className="responsive__table-avatar"
                                                         />
                                                     ) :
-
-                                                        <div key={column.field} className="responsive__table-field">
-                                                            <span className="label">{column.label}:</span>
-                                                            <span className="value">{row[column.field] || "N/A"}</span>
-                                                        </div>
-
-
-
+                                                        cellValue
                                                     }
                                                 </div>
                                             </>
 
                                         )
-                                    })
-                                )}
+                                    })}
+
+                                    {openActionModal != row[actionColumn] ? (
+                                        <div className='actions__modal-button'>
+                                            <ButtonBlue
+                                                title={":"}
+                                                onClick={() => openActionsModal(row[actionColumn])}
+                                            />
+                                        </div>
+                                    ) : ''}
+
+
+                                    {openActionModal != 'closed' && openActionModal === row[actionColumn] && (
+                                        <div className="actions__modal">
+                                            {showActions.view && actions.view && (
+                                                <ButtonImgTxt onClick={() => actions.view(row)} title={buttonOneInfo.title} img={buttonOneInfo.img} color={buttonOneInfo.color} />
+                                            )}
+                                            {showActions.edit && actions.edit && (
+                                                <ButtonImgTxt onClick={() => actions.edit(row)} title={buttonTwoInfo.title} img={buttonTwoInfo.img} color={buttonTwoInfo.color} />
+                                            )}
+                                            {showActions.delete && actions.delete && (
+                                                <ButtonImgTxt onClick={() => actions.delete(row)} title={buttonTreeInfo.title} img={buttonTreeInfo.img} color={buttonTreeInfo.color} />
+                                            )}
+                                            <div className='actions__modal-button__close__container'>
+                                                <button className='actions__modal-button__close' onClick={closeActionsModal}>X</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </li>
+
                             </div>
                         ))
+
                     )}
                 </ul>
             </div>
@@ -359,4 +318,4 @@ const ResponsiveTableCopy = ({
     );
 };
 
-export default ResponsiveTableCopy;
+export default ResponsiveTableNonEdited;
