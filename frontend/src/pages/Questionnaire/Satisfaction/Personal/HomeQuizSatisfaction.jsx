@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PreferenceTitle from "../../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import Info from '../../../../assets/Icons/Buttons/Info.png'
@@ -7,6 +7,8 @@ import LastFive from "./LastFive";
 import useAuth from "../../../../hooks/useAuth";
 import ModalInfoQuizAnswered from "../ModalInfoQuizAnswered";
 import ResponsiveTableNotTitleAndWhereOnUrl from "../../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
+import { useLocation } from "react-router-dom";
+import { useBreadcrumbs } from "../../../../contexts/BreadcrumbsContext";
 
 const HomeQuizSatisfaction = () => {
 
@@ -24,6 +26,17 @@ const HomeQuizSatisfaction = () => {
         setToggleFormRequest(!toggleFormRequest)
     }
 
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+  
+    useEffect(() => {
+      updateBreadcrumbs([
+        { name: 'Mis Cuestionarios de Satisfacción', url: '/personal/satisfaccion/ver' },
+      ]);
+    }, [location.pathname]);
+  
+    
+
 
     const columns = [
         { field: 'name_sq', label: 'Cuestionario' },
@@ -39,8 +52,8 @@ const HomeQuizSatisfaction = () => {
 
     const searchOptions = [
         { value: 'name_sq', label: 'Nombre del cuestionario' },
-        { value: 'author', label: 'Autor del cuestionario' },
-        { value: 'quantity_questions', label: 'Cantidad de preguntas' },
+        { value: 'start_sq', label: 'Fecha de inicio' },
+        { value: 'end_sq', label: 'Fecha de Cierre' },
     ];
 
 

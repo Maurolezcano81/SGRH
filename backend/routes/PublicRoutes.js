@@ -51,8 +51,8 @@ const leave = new LeavesControllers();
 router.post('/subjects/actives', subject.getActives.bind(subject));
 
 // Address Routes
-router.get('/address/cities', city.getCities.bind(city)); // Obtener todas las ciudades con paginación y filtros
-router.get('/address/states', state.getStates.bind(state)); // Obtener todos los estados con paginación y filtros
+router.get('/address/cities', city.getActives.bind(city)); // Obtener todas las ciudades con paginación y filtros
+router.post('/address/states', state.getActives.bind(state)); // Obtener todos los estados con paginación y filtros
 
 // Attachment Routes
 router.post('/attachments/actives', attachment.getActives.bind(attachment));

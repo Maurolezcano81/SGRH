@@ -119,7 +119,8 @@ const EmployeeData = ({ employeeData, updateProfile, permissionsData,
                 </div>
             )}
 
-            {(permissionsData.isAdmin || permissionsData.isRrhh) && !permissionsData.isTheSameUser && (
+            {(permissionsData.isAdmin || permissionsData.isRrhh) && !permissionsData.isTheSameUser ?
+
                 <div>
                     {employee.status_employee === 1 && (
                         <ButtonEditable
@@ -138,7 +139,9 @@ const EmployeeData = ({ employeeData, updateProfile, permissionsData,
                     )}
 
                 </div>
-            )}
+                :
+                null
+            }
 
 
             {isDismissOpen && (

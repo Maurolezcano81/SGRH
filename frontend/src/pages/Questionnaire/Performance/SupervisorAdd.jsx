@@ -5,6 +5,7 @@ import useAuth from "../../../hooks/useAuth";
 import AddEmployee from '../../../assets/Icons/Buttons/AddEmployee.png'
 import ButtonImgTxt from "../../../components/ButtonImgTex";
 import Trash from '../../../assets/Icons/Preferences/Trash.png'
+import ResponsiveTableModalTableWFilters from "../../../components/Table/TablePreferences/ResponsiveTableModalTableWFilters";
 
 const SupervisorAdd = ({
     setSupervisorBody,
@@ -117,7 +118,7 @@ const SupervisorAdd = ({
             </div>
 
             {isAddSupervisorModalOpen && (
-                <ModalTableWFilters
+                <ResponsiveTableModalTableWFilters
                     url={getNotSupervisorUrl}
                     authToken={authData.token}
                     columns={columsToModal}
@@ -144,6 +145,15 @@ const SupervisorAdd = ({
                     title_table={"Lista de Personas"}
                     colorTable={'bg__green-5'}
                     arrayToExclude={supervisorBody}
+                    titleInfo={[
+                        { field: "name_entity", type: "field" },
+                        { field: "lastname_entity", type: "field" },
+                        { field: "-", type: "string" },
+                        { field: "name_department", type: "field" },
+                    ]}
+                      headerInfo={
+                        ["Nombre Completo y Departamento"]
+                      }
                 />
             )}
         </div>

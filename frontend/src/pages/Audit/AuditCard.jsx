@@ -54,6 +54,8 @@ const AuditCard = ({ audit, labelMapping }) => {
                     return 'Rotación de personal';
                 case 'employee':
                     return 'Empleado';
+                case 'leave_response_request':
+                    return 'respuesta a un cuestionario de Satisfacción'
                 default:
                     return 'Tabla desconocida';
             }

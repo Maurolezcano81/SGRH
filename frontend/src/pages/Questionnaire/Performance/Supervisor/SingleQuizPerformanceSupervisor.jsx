@@ -2,9 +2,11 @@ import { useState, useEffect } from "react"
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from "../../../../hooks/useAuth";
 import PreferenceTitle from "../../../MasterTables/PreferenceTitle";
-import TableSecondaryNotTitleAndWhereOnUrl from "../../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import SeeProfile from '../../../../assets/Icons/Buttons/Quizz.png'
 import ModalInfoQuizAnswered from "../ModalInfoQuizAnswered";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
+import { useBreadcrumbs } from "../../../../contexts/BreadcrumbsContext";
+import ButtonWhiteOutlineBlack from "../../../../components/Buttons/ButtonWhiteOutlineBlack";
 
 const SingleQuizPerformanceSupervisor = () => {
 
@@ -18,8 +20,19 @@ const SingleQuizPerformanceSupervisor = () => {
     const navigate = useNavigate();
     const { authData } = useAuth();
 
-    const { value_quiz } = location.state || '';
 
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        if (headerData) {
+            updateBreadcrumbs([
+                { name: 'Cuestionarios de Rendimiento', url: '/supervisor/rendimiento' },
+                { name: `${headerData.name_ep}`, url: '/supervisor/rendimiento' },
+            ]);
+        }
+    }, [location.pathname, headerData]);
+
+    const { value_quiz } = location.state || '';
 
     const getHeaderQuiz = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_HEADER}/${value_quiz}`
 
@@ -74,6 +87,10 @@ const SingleQuizPerformanceSupervisor = () => {
     }, [value_quiz, authData.token])
 
 
+    const redirectToAnswerPage = (item) => {
+        navigate('/supervisor/rendimiento/responder', { state: { ep: item } })
+    }
+
     const columns = [
         { field: 'avatar_user', label: '' },
         { field: 'evaluated_name', label: 'Nombre del Evaluado' },
@@ -93,16 +110,16 @@ const SingleQuizPerformanceSupervisor = () => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}` // URL para obtener las opciones de ocupación 
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`
         },
     ];
 
     const searchOptions = [
-        { value: 'evaluated.name_entity', label: 'Nombre del Evaluado' },
-        { value: 'evaluated.entity_lastname', label: 'Apellido del Evaluado' },
-        { value: 'esupervisor.name_entity', label: 'Nombre del Supervisor' },
-        { value: 'esupervisor.lastname_entity', label: 'Apellido del Supervisor' },
-        { value: 'name_ep', label: 'Nombre de cuestionario' },
+
+        { value: 'evaluated_name', label: 'Nombre del Evaluado' },
+        { value: 'evaluated_lastname', label: 'Apellido del Evaluado' },
+        { value: 'supervisor_name', label: 'Nombre del Supervisor' },
+        { value: 'supervisor_lastname', label: 'Apellido del Supervisor' },
 
     ];
 
@@ -190,7 +207,7 @@ const SingleQuizPerformanceSupervisor = () => {
                                     <p>{question.description_epq}</p>
                                 </div>
 
-                                
+
                                 <div className="question__information">
                                     <p>Descripción obligatoria: <span>
                                         {question && question.is_obligatory === 1 ? "Si" : "No"}
@@ -204,6 +221,13 @@ const SingleQuizPerformanceSupervisor = () => {
 
 
                 </div>
+                {headerData && headerData?.canEvaluate && (
+                    <ButtonWhiteOutlineBlack
+                        onClick={() => redirectToAnswerPage(headerData)}
+                        title={"Ir Evaluar Personal"}
+                        full={true}
+                    />
+                )}
             </div>
 
 
@@ -212,7 +236,7 @@ const SingleQuizPerformanceSupervisor = () => {
                     title={"Respuestas"}
                 />
 
-                <TableSecondaryNotTitleAndWhereOnUrl
+                <ResponsiveTableNotTitleAndWhereOnUrl
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_ANSWERED_SUPERVISOR_AND_BY_ID_QUIZ}/${value_quiz}`}
                     authToken={authData.token}
                     columns={columns}
@@ -220,7 +244,7 @@ const SingleQuizPerformanceSupervisor = () => {
                     searchOptions={searchOptions}
                     initialSearchField={'evaluated.name_entity'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'evaluated.name_entity', order: 'ASC' }}
+                    initialSort={{ field: 'date_complete', order: 'desc' }}
                     actions={{
                         view: (row) => handleIsModalSeeInfoOpen(row),
                         edit: () => console.log('asd'),
@@ -235,6 +259,19 @@ const SingleQuizPerformanceSupervisor = () => {
                     paginationLabelInfo={'Cuestionarios Desarrollados'}
                     buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
                     isStatusUpdated={isStatusUpdated}
+                    titleInfo={[
+                        { field: "supervisor_name", type: "field" },
+                        { field: "supervisor_lastname", type: "field" },
+                        { field: "evalúo a", type: "string" },
+                        { field: "evaluated_name", type: "field" },
+                        { field: "evaluated_lastname", type: "field" },
+                        { field: "con promedio", type: "string" },
+                        { field: "average", type: "field" },
+
+                    ]}
+                    headerInfo={
+                        ["Respuestas al Cuestionario"]
+                    }
                 />
 
                 {isModalSeeInfoOpen && (

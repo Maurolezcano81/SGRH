@@ -144,7 +144,7 @@ const ResponsiveTableNotTitleAndWhereOnUrl = ({
     const totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
 
-    const statusFields = ['status', 'status_sex', 'status_document', 'status_department', 'status_ta', 'status_tot', 'status_sr', 'status_tol', 'status_contact', 'status_sm', 'status_nm', 'status_tse', 'status_occupation', 'status_nacionality', 'status_country', 'status_module'];
+    const statusFields = ['status', 'status_sex', 'status_document', 'status_department', 'status_ta', 'status_tot', 'status_sr', 'status_tol', 'status_contact', 'status_sm', 'status_nm', 'status_tse', 'status_occupation', 'status_nacionality', 'status_country', 'status_module', 'status_state', 'status_city'];
 
     const statusMap = {
         1: 'Activo',

@@ -82,7 +82,7 @@ const ListSatisfaction = () => {
                 searchOptions={searchOptions}
                 initialSearchField={'name_sq'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'name_sq', order: 'ASC' }}
+                initialSort={{ field: 'start_sq', order: 'desc' }}
                 actions={{
                     view: seeQuiz,
                     edit: (row) => console.log("Editar", row),
@@ -93,7 +93,7 @@ const ListSatisfaction = () => {
                     edit: false,
                     delete: false
                 }}
-                actionColumn='id_sq'
+                actionColumn='id_ep'
                 title_table={"Listado de cuestionarios"}
                 paginationLabelInfo={"Cuestionarios de satisfaccion"}
                 buttonOneInfo={{ img: Quizz, color: "blue", title: "Ver" }}
@@ -104,7 +104,7 @@ const ListSatisfaction = () => {
                     { field: "start_sq", type: "field" },
                 ]}
                   headerInfo={
-                    ["Nombre"]
+                    ["Cuestionarios y Fecha de Inicio"]
                   }
             />
 

@@ -7,16 +7,18 @@ const BreadcrumbContext = createContext();
 export const BreadcrumbProvider = ({ children }) => {
     const [breadcrumbs, setBreadcrumbs] = useState([{}]);
     const {authData} = useAuth()
-    console.log(authData.home_page)
-
 
     const updateBreadcrumbs = (newBreadcrumbs) => {
         setBreadcrumbs([{ name: 'Inicio', url: authData.home_page }, ...newBreadcrumbs]);
     };
 
+    const resetBreadcrumbs = () => {
+        setBreadcrumbs([{ name: 'Inicio', url: authData.home_page }]);
+    };
+
 
     return (
-        <BreadcrumbContext.Provider value={{ breadcrumbs, updateBreadcrumbs }}>
+        <BreadcrumbContext.Provider value={{ breadcrumbs, updateBreadcrumbs, resetBreadcrumbs }}>
             {children}
         </BreadcrumbContext.Provider>
     );

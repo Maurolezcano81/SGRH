@@ -17,7 +17,8 @@ class PerformanceModel extends BaseModel {
                 select id_ep, 
                 name_ep, start_ep, 
                 end_ep, status_ep, 
-                concat(name_entity," ",lastname_entity) as "author", 
+                e.name_entity,
+                e.lastname_entity, 
                 ep.created_at, 
                 ep.updated_at,
                 (
@@ -304,6 +305,7 @@ class PerformanceModel extends BaseModel {
         filters = {},
         EmployeesToExclude = []) {
 
+
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
 
         try {
@@ -355,10 +357,7 @@ class PerformanceModel extends BaseModel {
         }
     }
 
-    async getTotalEmployeesToEvaluate(department_supervisor, limit = this.defaultLimitPagination,
-        offset = this.defaultOffsetPagination,
-        orderBy = this.defaultOrderBy,
-        order = this.defaultOrderPagination,
+    async getTotalEmployeesToEvaluate(department_supervisor,
         filters = {},
         EmployeesToExclude = []) {
 
@@ -393,12 +392,9 @@ class PerformanceModel extends BaseModel {
                     ${excludeClause} 
                     ${excludeClause && whereClause.length > 0 ? 'AND' : ''}
                     ${whereClause}
-                ORDER BY 
-                    ${orderBy} ${order} 
-                LIMIT ? OFFSET ?
             `;
 
-            const [results] = await this.conn.promise().query(query, [department_supervisor, ...EmployeesToExclude, ...values, limit, offset]);
+            const [results] = await this.conn.promise().query(query, [department_supervisor, ...EmployeesToExclude, ...values]);
             return results;
         } catch (error) {
             console.error("Error en getTotalResultsExcludes:", error.message);
@@ -441,7 +437,8 @@ class PerformanceModel extends BaseModel {
                         name_ep,
                         start_ep,
                         end_ep,
-                        concat(name_entity," ",lastname_entity) as "author",
+                        e.name_entity,
+                        e.lastname_entity,
                         ep.created_at,
                         ep.updated_at,
                         (
@@ -471,10 +468,7 @@ class PerformanceModel extends BaseModel {
         }
     }
 
-    async getTotalQuizzesInformationForSupervisor(id_supervisor, limit = this.defaultLimitPagination,
-        offset = this.defaultOffsetPagination,
-        orderBy = this.defaultOrderBy,
-        order = this.defaultOrderPagination,
+    async getTotalQuizzesInformationForSupervisor(id_supervisor,
         filters = {}
     ) {
         try {
@@ -482,21 +476,22 @@ class PerformanceModel extends BaseModel {
 
 
             const query = `
-                        select 
-                        COUNT(DISTINCT ep.id_ep) AS total
-                        from evaluation_performance ep
-                    join evaluation_performance_question epq on ep.id_ep = epq.ep_fk
-                    join user u on ep.author_fk = u.id_user
-                    join entity e on u.entity_fk = e.id_entity  
-                    join supervisor_performance_questionnaire spq on ep.id_ep = spq.ep_fk 
-                    left join entity_department_occupation edo on edo.entity_fk = e.id_entity
-                    where spq.user_fk = ?
-                    ${whereClause.length > 0 ? 'AND' : ''}
-                    ${whereClause}
-                    ORDER BY ${orderBy} ${order} 
-                    LIMIT ? OFFSET ?;
+                     SELECT COUNT(*) AS total FROM (
+                SELECT 
+                    ep.id_ep
+                FROM evaluation_performance ep
+                JOIN evaluation_performance_question epq ON ep.id_ep = epq.ep_fk
+                JOIN user u ON ep.author_fk = u.id_user
+                JOIN entity e ON u.entity_fk = e.id_entity  
+                JOIN supervisor_performance_questionnaire spq ON ep.id_ep = spq.ep_fk 
+                LEFT JOIN entity_department_occupation edo ON edo.entity_fk = e.id_entity
+                WHERE spq.user_fk = ?
+                ${whereClause.length > 0 ? 'AND' : ''}
+                ${whereClause}
+                GROUP BY name_ep
+            ) AS subquery;
                 `
-            const [results] = await this.conn.promise().query(query, [id_supervisor, ...values, limit, offset])
+            const [results] = await this.conn.promise().query(query, [id_supervisor, ...values])
             return results[0];
         } catch (error) {
             console.error("Error en Users Quiz Performance:", error.message);
@@ -506,9 +501,10 @@ class PerformanceModel extends BaseModel {
 
     async getAnswersForQuizForSupervisor(id_ep, id_department, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
+
         try {
             const query = `
-    SELECT 
+SELECT 
         uevaluated.avatar_user,
         evaluated.name_entity AS evaluated_name,
         evaluated.lastname_entity AS evaluated_lastname,
@@ -522,7 +518,7 @@ class PerformanceModel extends BaseModel {
         ap2.date_complete,
         d.name_department,
         o.name_occupation,
-        ROUND(AVG(dep.score_dep), 2) AS average,  -- Calcula el promedio aquí
+        COALESCE(ROUND(AVG(dep.score_dep), 2), 0) AS average,
         esupervisor.name_entity AS supervisor_name, 
         esupervisor.lastname_entity AS supervisor_lastname,
         usupervisor.id_user AS supervisor_id
@@ -543,24 +539,25 @@ class PerformanceModel extends BaseModel {
     JOIN 
         supervisor_performance_questionnaire spq ON spq.id_spq = ap2.author_fk
     JOIN 
-        answer_performance apsupervisor ON spq.id_spq = apsupervisor.author_fk
-    JOIN 
         user usupervisor ON spq.user_fk = usupervisor.id_user
     JOIN 
         entity esupervisor ON usupervisor.entity_fk = esupervisor.id_entity
     LEFT JOIN 
-        detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap  -- Asegúrate de unir correctamente la tabla de detalles
+        detail_evaluation_performance dep ON dep.ap_fk = ap2.id_ap
     WHERE 
         ep.id_ep = ?
         AND d.id_department = ?
         ${whereClause.length > 0 ? 'AND' : ''}
         ${whereClause}
     GROUP BY 
-        uevaluated.id_user, evaluated.id_entity, ap2.id_ap
+        uevaluated.avatar_user, evaluated.name_entity, evaluated.lastname_entity, uevaluated.id_user, 
+        ep.id_ep, ap2.id_ap, ep.name_ep, ep.start_ep, ep.end_ep, ep.created_at, ap2.date_complete, 
+        d.name_department, o.name_occupation, esupervisor.name_entity, esupervisor.lastname_entity, 
+        usupervisor.id_user
     ORDER BY 
         ${orderBy} ${order} 
-    LIMIT ? OFFSET ?`;
-
+    LIMIT ? OFFSET ?
+    `;
             const [results] = await this.con.promise().query(query, [id_ep, id_department, ...values, limit, offset]);
 
             return results;
@@ -606,8 +603,6 @@ class PerformanceModel extends BaseModel {
         AND d.id_department = ?
                                 ${whereClause.length > 0 ? 'AND' : ''}
                                 ${whereClause}
-                                    GROUP BY 
-        uevaluated.id_user, evaluated.id_entity, ap2.id_ap
                 `;
 
 
@@ -657,7 +652,8 @@ class PerformanceModel extends BaseModel {
                 start_ep,
                 u.avatar_user,
                 end_ep,
-                concat(e.name_entity ," ", e.lastname_entity) as author,
+                e.name_entity ,
+                e.lastname_entity,
                 (
                 SELECT COUNT(epq.id_epq) 
                 FROM evaluation_performance_question epq 
@@ -846,7 +842,7 @@ FROM
                 ORDER BY 
                     ${orderBy} ${order} 
                 LIMIT ? OFFSET ?`;
-    
+
             const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
             return results;
         } catch (error) {
@@ -854,9 +850,9 @@ FROM
             throw new Error("Error en Users Quiz Satisfaction: " + error.message);
         }
     }
-    
 
-    async getTotalAnswersForQuizForPersonal(id_user, limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
+
+    async getTotalAnswersForQuizForPersonal(id_user, filters = {}) {
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
         try {
 
@@ -889,11 +885,10 @@ FROM
                     uevaluated.id_user = ?
                                 ${whereClause.length > 0 ? 'AND' : ''}
                                 ${whereClause}
-                ORDER BY ${orderBy} ${order} 
-                LIMIT ? OFFSET ?`;
+       `;
 
 
-            const [results] = await this.con.promise().query(query, [id_user, ...values, limit, offset]);
+            const [results] = await this.con.promise().query(query, [id_user, ...values]);
             return results[0];
         } catch (error) {
             console.error("Error en Users Quiz Satisfaction:", error.message);

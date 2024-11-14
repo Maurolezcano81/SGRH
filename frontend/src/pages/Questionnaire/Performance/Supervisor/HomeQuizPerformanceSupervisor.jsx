@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PreferenceTitle from "../../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import Info from '../../../../assets/Icons/Buttons/Info.png'
@@ -10,7 +10,9 @@ import TableHorWithFilters from "../../../../components/Table/TableHorWithFilter
 import AlertSuccesfully from "../../../../components/Alerts/AlertSuccesfully";
 import ErrorMessage from "../../../../components/Alerts/ErrorMessage";
 import Quizz from '../../../../assets/Icons/Buttons/Quizz.png'
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useBreadcrumbs } from "../../../../contexts/BreadcrumbsContext";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
 
 const HomeQuizPerformanceSupervisor = () => {
 
@@ -29,12 +31,22 @@ const HomeQuizPerformanceSupervisor = () => {
         setToggleFormRequest(!toggleFormRequest)
     }
 
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Cuestionarios de Rendimiento', url: '/supervisor/rendimiento' },
+        ]);
+    }, [location.pathname]);
+
 
     const columns = [
-        { field: 'name_ep', label: 'Cuestionario' },
+        { field: 'name_ep', label: 'Nombre del Cuestionario' },
         { field: 'start_ep', label: 'Fecha de Inicio' },
         { field: 'end_ep', label: 'Fecha de Fin' },
-        { field: 'author', label: 'Autor' },
+        { field: 'name_entity', label: 'Nombre del Autor' },
+        { field: 'lastname_entity', label: 'Apellido del Autor' },
         { field: 'quantity_questions', label: 'Cantidad de Preguntas' },
     ];
 
@@ -43,7 +55,11 @@ const HomeQuizPerformanceSupervisor = () => {
     ];
 
     const searchOptions = [
-        { value: 'name_ep', label: 'Nombre del cuestionario' },
+        { field: 'name_ep', label: 'Nombre del Cuestionario' },
+        { field: 'start_ep', label: 'Fecha de Inicio' },
+        { field: 'end_ep', label: 'Fecha de Fin' },
+        { field: 'name_entity', label: 'Nombre del Autor' },
+        { field: 'lastname_entity', label: 'Apellido del Autor' },
     ];
 
 
@@ -66,16 +82,16 @@ const HomeQuizPerformanceSupervisor = () => {
             {successMessage && <AlertSuccesfully message={successMessage} />}
             {errorMessage && <ErrorMessage message={errorMessage} />}
 
-            <TableSecondaryNotTitleAndWhereOnUrl
+            <ResponsiveTableNotTitleAndWhereOnUrl
                 addButtonTitle={addButtonTitle}
                 url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_SUPERVISOR}`}
                 authToken={authData.token}
                 columns={columns}
                 filterConfigs={filterConfigs}
                 searchOptions={searchOptions}
-                initialSearchField={'name_sq'}
+                initialSearchField={'name_ep'}
                 initialSearchTerm={''}
-                initialSort={{ field: 'name_sq', order: 'ASC' }}
+                initialSort={{ field: 'start_ep', order: 'desc' }}
                 actions={{
                     view: seeQuiz,
                     edit: (row) => console.log("Editar", row),
@@ -86,11 +102,19 @@ const HomeQuizPerformanceSupervisor = () => {
                     edit: false,
                     delete: false
                 }}
-                actionColumn='id_sq'
+                actionColumn='id_ep'
                 title_table={"Listado de cuestionarios"}
                 paginationLabelInfo={"Cuestionarios de satisfaccion"}
                 buttonOneInfo={{ img: Quizz, color: "blue", title: "Ver" }}
                 isStatusUpdated={isStatusUpdated}
+                titleInfo={[
+                    { field: "name_ep", type: "field" },
+                    { field: "-", type: "string" },
+                    { field: "start_ep", type: "field" },
+                ]}
+                  headerInfo={
+                    ["Cuestionarios y Fecha de Inicio"]
+                  }
             />
 
 

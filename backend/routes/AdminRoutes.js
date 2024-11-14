@@ -62,6 +62,8 @@ app.use(DashboardRrhhRoutes.router);
 app.use(TypeStatusEmployeeRoutes.router);
 
 app.use(AuditRoutes.router);
+
+app.use(AddressRoutes.router);
 const AdminRoutes = {
     app
 }

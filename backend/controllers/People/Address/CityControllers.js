@@ -1,24 +1,84 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
+import StateModel from '../../../models/Address/StateModel.js';
+import CityModel from '../../../models/Address/CityModel.js';
 
-class CityControllers {
+class StateControllers {
   constructor() {
-    this.model = new BaseModel('city', 'name_city');
-    this.stateModel = new BaseModel('state', 'name_state');
+    this.model = new CityModel()
     this.nameFieldId = "id_city";
     this.nameFieldToSearch = "name_city";
-    this.defaultOrderBy = "name_city";
+
   }
 
-  async getCities(req, res) {
-    const { limit, offset, order, typeOrder, filters } = req.body;
+  async getAll(req, res) {
+    const { limit, offset, order, orderBy, filters } = req.body;
+    const { id_state } = req.params;
+
     try {
-      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
+      const list = await this.model.getStatesByCountry(id_state, limit, offset, orderBy, order, filters)
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los datos de las ciudades, intentelo reiniciando el sitio',
+        });
+      }
+
+      const getTotalResults = await this.model.getTotalStatesByCountry(id_state, filters);
+
+      if (list.length < 1) {
+        return res.status(200).json({
+          message: 'No hay ciudades disponibles',
+          total: 0,
+          list: []
+        });
+      }
+
+
+      if (!getTotalResults) {
+        return res.status(200).json({
+          message: 'No hay ciudades disponibles',
+          total: 0,
+          list: []
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Ciudades obtenidas correctamente',
+        list: list,
+        total: getTotalResults?.total || 0
+      });
+
+    } catch (error) {
+      console.error('Error en controlador de ciudad: ' + error);
+      return res.status(500).json({
+        message: 'No se pudo obtener los datos de las ciudades, intentelo reiniciando el sitio',
+      });
+    }
+  }
+
+  async getActives(req, res) {
+    const { state_fk } = req.body;
+    try {
+      if (isInputEmpty(state_fk)) {
+        return res.status(500).json({
+          message: 'Los datos que estás utilizando para la búsqueda de ciudad son inválidos'
+        })
+      }
+
+      const queryResponse = await this.model.getStatesActivesByCountry(state_fk);
+
+      if (!queryResponse) {
+        return res.status(500).json({
+          message: 'Error al obtener las ciudades'
+        })
+      }
 
       if (queryResponse.length < 1) {
         return res.status(200).json({
-          message: 'No hay ciudades disponibles',
-        });
+          message: "Obtenido exitosamente",
+          queryResponse: []
+        })
       }
 
       return res.status(200).json({
@@ -27,13 +87,13 @@ class CityControllers {
       });
     } catch (error) {
       console.error('Error en controlador de ciudad: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: 'Error al obtener las ciudades'
       });
     }
   }
 
-  async getCity(req, res) {
+  async getOne(req, res) {
     const { value_city } = req.body;
     try {
       if (isInputEmpty(value_city)) {
@@ -42,12 +102,12 @@ class CityControllers {
 
       const queryResponse = await this.model.getOne(value_city, this.nameFieldId);
 
-      if (!queryResponse) {
-        throw new Error('Error al obtener la ciudad');
+      if (queryResponse.length < 1) {
+        throw new Error('Error al obtener el ciudad');
       }
 
       return res.status(200).json({
-        message: 'Ciudad obtenida correctamente',
+        message: 'Tipo de ciudad obtenido correctamente',
         queryResponse,
       });
     } catch (error) {
@@ -58,169 +118,161 @@ class CityControllers {
     }
   }
 
-  async createCity(req, res) {
-    const data = req.body;
+  async createOne(req, res) {
+    const { id_state, name_city } = req.body;
+
     try {
-      if (isInputEmpty(data.name_city)) {
-        throw new Error('Debes completar todos los campos');
-      }
-      if (isNotAToZ(data.name_city)) {
-        throw new Error('El nombre de la ciudad no debe contener caracteres especiales');
-      }
-
-      const checkExists = await this.model.getOne(data.name_city, this.nameFieldToSearch);
-
-      if (checkExists) {
-        throw new Error('Ciudad ya existente');
+      if (isInputEmpty(name_city)) {
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
-      const queryResponse = await this.model.createOne(data);
+      if (isNotAToZ(name_city)) {
+        return res.status(422).json({
+          message: "La ciudad no debe contener caracteres especiales"
+        })
+      }
+
+      const checkExists = await this.model.getOneByStateAndNameCity(id_state, name_city);
+
+      if (checkExists && checkExists.length > 0) {
+        return res.status(403).json({
+          message: "Este nombre  de ciudad ya existe en este país"
+        })
+      }
+
+      const queryResponse = await this.model.createOne(
+        {
+          name_city: name_city,
+          state_fk: id_state
+        }
+      );
+
       if (!queryResponse) {
-        throw new Error('Error al crear la ciudad');
+        return res.status(500).json({
+          message: "Ha ocurrido un error al crear el tipo de ciudad"
+        })
       }
 
       return res.status(200).json({
         message: 'Ciudad creada exitosamente',
         queryResponse,
       });
+
     } catch (error) {
       console.error('Error en controlador de ciudad: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al crear el tipo de Ciudad",
       });
     }
   }
 
-  async updateCity(req, res) {
+  async updateOne(req, res) {
     const { id_city, name_city, status_city } = req.body;
 
+
+    
     try {
       if (isInputEmpty(name_city)) {
-        throw new Error('Debes completar todos los campos');
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
-      if (isNotAToZ(name_city)) {
-        throw new Error('El nombre de la ciudad no debe contener caracteres especiales');
+      if (isInputEmpty(name_city)) {
+        return res.status(422).json({
+          message: "El ciudad no debe contener caracteres especiales"
+        })
       }
 
       if (isNotNumber(id_city)) {
-        throw new Error('Los datos de la ciudad son inválidos');
+        return res.status(403).json({
+          message: "Los datos de estado de la ciudad son inválidos"
+        })
       }
 
       if (isNotNumber(status_city)) {
-        throw new Error('Los datos de estado de la ciudad son inválidos');
+        return res.status(403).json({
+          message: "Los datos de estado de la ciudad son inválidos"
+        })
+      }
+
+      if (isNotAToZ(name_city)) {
+        return res.status(422).json({
+          message: "El ciudad no debe contener caracteres especiales"
+        })
       }
 
       const checkExists = await this.model.getOne(id_city, this.nameFieldId);
 
-      if (!checkExists) {
-        throw new Error('No se puede actualizar esta ciudad, debido a que no existe');
+      if (checkExists.length < 1) {
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de ciudad, debido a que no existe'
+        })
       }
 
       const checkDuplicate = await this.model.getOne(name_city, 'name_city');
 
       if (checkDuplicate.length > 0) {
-        return res.status(403).json({
-          message: 'No se puede actualizar, debido a que ya es un registro existente'
-        })
+        if (checkDuplicate[0].id_city != id_city) {
+          return res.status(403).json({
+            message: 'No se puede actualizar, debido a que ya es un registro existente'
+          })
+        }
       }
 
       const queryResponse = await this.model.updateOne({ name_city, status_city }, [this.nameFieldId, id_city]);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al actualizar datos de la ciudad');
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de Ciudad",
+        });
       }
 
       return res.status(200).json({
-        message: 'Ciudad actualizada correctamente',
+        message: 'Tipo de ciudad actualizado correctamente',
         queryResponse,
       });
     } catch (error) {
       console.error('Error en controlador de ciudad: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el tipo de Ciudad",
       });
     }
   }
 
-  async toggleStatusCity(req, res) {
-    const { id_city, status_city } = req.body;
-
-    try {
-      if (isNotNumber(id_city)) throw new Error('Los datos de la ciudad son inválidos');
-
-      const checkExists = await this.model.getOne(id_city, this.nameFieldId);
-
-      if (!checkExists) {
-        throw new Error('No se puede actualizar el estado de la ciudad, debido a que no existe');
-      }
-
-      const queryResponse = await this.model.updateOne({ status_city }, [this.nameFieldId, id_city]);
-
-      if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al cambiar estado de la ciudad');
-      }
-
-      return res.status(200).json({
-        message: 'El estado ha sido actualizado correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de ciudad: ' + error);
-      return res.status(403).json({
-        message: error.message,
-      });
-    }
-  }
-
-  async deleteCity(req, res) {
+  async deleteOne(req, res) {
     const { id_city } = req.body;
+
     try {
+
       if (isNotNumber(id_city)) {
-        throw new Error('Ha ocurrido un error al eliminar la ciudad, intente reiniciando el sitio');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de ciudad, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       const queryResponse = await this.model.deleteOne(id_city, this.nameFieldId);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al eliminar la ciudad');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de ciudad, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       return res.status(200).json({
-        message: 'Ciudad eliminada exitosamente',
+        message: 'Tipo de ciudad eliminado exitosamente',
         queryResponse,
       });
     } catch (error) {
       console.error('Error en controlador de ciudad: ' + error);
       return res.status(403).json({
-        message: error.message,
+        message: "Ha occurrido un error al eliminar el tipo de ciudad, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema",
       });
     }
   }
 
-  async getCitiesByState(req, res) {
-    const { state_fk } = req.body; // ids puede ser un array de IDs o un solo ID
-
-
-    // Obtener ciudades usando getAllPaginationWhere para manejar múltiples IDs
-    const queryResponse = await this.model.getAllPaginationWhereFilteredActives('status_city', { state_fk: state_fk });
-
-    if (queryResponse.length < 1) {
-      return res.status(200).json({
-        message: 'No se encontraron ciudades relacionadas a la provincia',
-      });
-    }
-
-    return res.status(200).json({
-      message: 'Ciudades obtenidas correctamente',
-      queryResponse,
-    });
-  } catch(error) {
-    console.error('Error en controlador de ciudad: ' + error);
-    return res.status(403).json({
-      message: error.message,
-    });
-  }
 }
 
-export default CityControllers;
+export default StateControllers;

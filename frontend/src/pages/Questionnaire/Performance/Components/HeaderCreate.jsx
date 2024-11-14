@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonWhiteOutlineBlack from "../../../../components/Buttons/ButtonWhiteOutlineBlack";
 import PreferenceTitle from "../../../MasterTables/PreferenceTitle";
+import { useLocation } from "react-router-dom";
+import { useBreadcrumbs } from "../../../../contexts/BreadcrumbsContext";
 
 const HeaderCreate = ({
     title,
@@ -17,6 +19,15 @@ const HeaderCreate = ({
             [name]: value
         }))
     }
+
+    const location = useLocation();
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Creación de Cuestionario', url: '/rrhh/rendimiento/crear' },
+        ]);
+    }, [location.pathname]);
 
     return (
         <>

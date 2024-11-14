@@ -3,7 +3,6 @@ import useAuth from '../../hooks/useAuth';
 import DropDownButton from './DropDownButton';
 import useNav from '../../hooks/useNav';
 import { Link } from 'react-router-dom';
-
 const NavbarContent = ({toggleNavbar}) => {
   const getParents = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.END_MENUPARENTS}`;
 
@@ -11,6 +10,7 @@ const NavbarContent = ({toggleNavbar}) => {
   const { navbarRefresh } = useNav()
   const [parentList, setParentList] = useState([]);
   const [isSupervisor, setIsSupervisor] = useState(false);
+
 
   const token = JSON.parse(localStorage.getItem('token'))
 

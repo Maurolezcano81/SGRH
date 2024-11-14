@@ -256,11 +256,11 @@ const ResponsiveTableModalTableWFilters = ({
                                     <div className='bold'>
                                         <p>Ordenar por:</p>
                                     </div>
-                                    {columns.map(column => (
-                                        <div key={column.field} data-label={sortOrder} className={`${sortField === column.field ? 'sort__selected' : ''} responsive__table-orders`} onClick={() => handleSort(column.field)}>
-                                            {column.label}
-                                        </div>
-                                    ))}
+                                    {searchOptions.map(column => (
+                                    <div key={column.value} data-label={sortOrder} className={`${sortField === column.value ? 'sort__selected' : ''} responsive__table-orders`} onClick={() => handleSort(column.value)}>
+                                        {column.label}
+                                    </div>
+                                ))}
                                 </div>
                             </div>
                         )}

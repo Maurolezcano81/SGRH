@@ -10,6 +10,7 @@ import ModalTableWFilters from "../../../../components/Modals/Updates/ModalTable
 import AddEmployee from '.././../../../assets/Icons/Buttons/AddEmployee.png'
 import ButtonImgTxt from "../../../../components/ButtonImgTex";
 import Trash from '../../../../assets/Icons/Preferences/Trash.png'
+import ResponsiveTableModalTableWFilters from "../../../../components/Table/TablePreferences/ResponsiveTableModalTableWFilters";
 
 const AnswerBody = ({ ep }) => {
     const [errorMessage, setErrorMessage] = useState("");
@@ -203,7 +204,7 @@ const AnswerBody = ({ ep }) => {
             key: 'name_occupation',
             label: 'Ocupación',
             name_field: 'name_occupation',
-            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION}`,
+            url: `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_OCCUPATION_ACTIVES}`,
         },
     ];
 
@@ -280,7 +281,7 @@ const AnswerBody = ({ ep }) => {
             )}
 
             {isAddSupervisorModalOpen && (
-                <ModalTableWFilters
+                <ResponsiveTableModalTableWFilters
                     url={getEmployeesUrl}
                     authToken={authData.token}
                     columns={columsToModal}
@@ -307,16 +308,25 @@ const AnswerBody = ({ ep }) => {
                     title_table={"Lista de Personas"}
                     colorTable={'bg__green-5'}
                     arrayToExclude={selectedEmployeeArrayToExclude}
+                    titleInfo={[
+                        { field: "name_entity", type: "field" },
+                        { field: "lastname_entity", type: "field" },
+                        { field: "-", type: "string" },
+                        { field: "name_occupation", type: "field" },
+                    ]}
+                    headerInfo={
+                        ["Nombre Completo y Puesto de Trabajo"]
+                    }
                 />
             )}
 
             {
                 listQuestions && listQuestions.map((question, index) => (
                     <form className="quiz__body__question__container" key={question.id_epq}>
-                        
-                                <div className="question__title">
-                                    <p>Pregunta {index + 1}</p>
-                                </div>
+
+                        <div className="question__title">
+                            <p>Pregunta {index + 1}</p>
+                        </div>
 
                         <div className="question__title">
                             <h2>{question.question_epq}</h2>
@@ -324,7 +334,7 @@ const AnswerBody = ({ ep }) => {
                         <div className="quiz__question__check__container left">
                             <p>{question.description_epq}</p>
                         </div>
-                        
+
                         <div className="flex flex-col">
                             <h4 className="bold">Seleccione una respuesta:</h4>
                             <div className="score-buttons">

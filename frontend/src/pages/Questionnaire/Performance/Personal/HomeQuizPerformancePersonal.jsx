@@ -5,18 +5,37 @@ import PreferenceTitle from "../../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import SeeProfile from '../../../../assets/Icons/Buttons/Quizz.png'
 import ModalInfoQuizAnswered from "../ModalInfoQuizAnswered";
+import { useBreadcrumbs } from "../../../../contexts/BreadcrumbsContext";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
 
 const SingleQuizPerformanceSupervisor = () => {
 
+    const { authData } = useAuth();
+
+    const location = useLocation();
     const { value_quiz } = location.state || '';
-    const {authData} = useAuth();
+
+    const { updateBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        updateBreadcrumbs([
+            { name: 'Mis Cuestionarios de Satisfacción', url: '/personal/rendimiento/ver' },
+        ]);
+    }, [location.pathname]);
+
+
 
     const columns = [
-        { field: 'name_ep', label: '' },
+        { field: 'avatar_user', label: '' },
+        { field: 'evaluated_name', label: 'Nombre del Evaluado' },
+        { field: 'evaluated_lastname', label: 'Apellido del Evaluado' },
         { field: 'average', label: 'Puntuación Promedio' },
         { field: 'date_complete', label: 'Fecha de Finalización' },
         { field: 'supervisor_name', label: 'Nombre del Supervisor' },
         { field: 'supervisor_lastname', label: 'Apellido del Supervisor' },
+        { field: 'name_department', label: 'Departamento' },
+        { field: 'name_occupation', label: 'Puesto de Trabajo' },
+
     ];
 
 
@@ -25,10 +44,9 @@ const SingleQuizPerformanceSupervisor = () => {
     ];
 
     const searchOptions = [
-        { value: 'esupervisor.name_entity', label: 'Nombre del Supervisor' },
-        { value: 'esupervisor.lastname_entity', label: 'Apellido del Supervisor' },
+        { value: 'supervisor_name', label: 'Nombre del Supervisor' },
+        { value: 'supervisor_lastname', label: 'Apellido del Supervisor' },
         { value: 'name_ep', label: 'Nombre de cuestionario' },
-
     ];
 
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
@@ -48,12 +66,12 @@ const SingleQuizPerformanceSupervisor = () => {
 
     return (
         <div className="container__page">
-<div className="container__content">
+            <div className="container__content">
                 <PreferenceTitle
                     title={"Respuestas"}
                 />
 
-                <TableSecondaryNotTitleAndWhereOnUrl
+                <ResponsiveTableNotTitleAndWhereOnUrl
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_ANSWERED_PERSONAL}`}
                     authToken={authData.token}
                     columns={columns}
@@ -61,11 +79,11 @@ const SingleQuizPerformanceSupervisor = () => {
                     searchOptions={searchOptions}
                     initialSearchField={'name_ep'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'name_ep', order: 'ASC' }}
+                    initialSort={{ field: 'ap2.date_complete', order: 'desc' }}
                     actions={{
                         view: (row) => handleIsModalSeeInfoOpen(row),
                         edit: () => console.log('asd'),
-                        delete:() => console.log('asd'),
+                        delete: () => console.log('asd'),
                     }}
                     showActions={{
                         view: true,
@@ -76,6 +94,15 @@ const SingleQuizPerformanceSupervisor = () => {
                     paginationLabelInfo={'Cuestionarios Desarrollados'}
                     buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
                     isStatusUpdated={isStatusUpdated}
+                    titleInfo={[
+                        { field: "supervisor_name", type: "field" },
+                        { field: "supervisor_lastname", type: "field" },
+                        { field: "Te evalúo con -", type: "string" },
+                        { field: "average", type: "field" },
+                    ]}
+                    headerInfo={
+                        ["Evalúaciones"]
+                    }
                 />
 
                 {isModalSeeInfoOpen && (
@@ -86,7 +113,7 @@ const SingleQuizPerformanceSupervisor = () => {
                 )}
             </div>
         </div>
-            
+
 
     )
 }

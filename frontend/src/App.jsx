@@ -49,6 +49,8 @@ import TypeOfLeave from './pages/MasterTables/TypeOfLeave';
 import NavigationMenuTable from './pages/MasterTables/NavigationMenuTable';
 import TypeStatusEmployee from './pages/MasterTables/TypeStatusEmployee';
 import AuditPage from './pages/Audit/AuditPage';
+import State from './pages/MasterTables/State';
+import City from './pages/MasterTables/City';
 
 
 function App() {
@@ -96,6 +98,12 @@ function App() {
                     <Route path="sexo" element={<Sex />} />
                     <Route path="contacto" element={<Contact />} />
                     <Route path="pais" element={<Country />} />
+
+                    <Route path="provincia" element={<State />} />
+
+                    <Route path="ciudad" element={<City />} />
+
+
                     <Route path="nacionalidad" element={<Nacionality />} />
                     <Route path="tipo_estado_solicitud" element={<StatusRequest />} />
                     <Route path="modulo" element={<Module />} />

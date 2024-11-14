@@ -13,8 +13,8 @@ const city = new CityControllers();
 const state = new StateControllers();
 
 router.post('/profile', user.getProfileUserData.bind(user))
-router.post('/address/states/by-country', state.getStatesByCountry.bind(state));
-router.post('/address/cities/by-state', city.getCitiesByState.bind(city));
+router.post('/address/states/by-country', state.getActives.bind(state));
+router.post('/address/cities/by-state', city.getActives.bind(city));
 
 
 router.use(PublicRoutes.router)

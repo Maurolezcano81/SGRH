@@ -175,10 +175,10 @@ class PerformanceControllers {
     }
 
     async getQuizzesInformation(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, orderBy, order, filters } = req.body;
 
         try {
-            const list = await this.model.getQuestionnairesInformation(limit, offset, typeOrder, order, filters);
+            const list = await this.model.getQuestionnairesInformation(limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -220,48 +220,45 @@ class PerformanceControllers {
     }
 
     async getQuizHeader(req, res) {
-        const { id_ep } = req.params
+        const { id_ep } = req.params;
+    
         try {
             if (isNotNumber(id_ep)) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
-
+    
             const list = await this.model.getQuizHeader(id_ep);
-
-            const supervisors = await this.model.getSupervisorsQuiz(id_ep)
+            const supervisors = await this.model.getSupervisorsQuiz(id_ep);
+    
             if (!list || list.length === 0) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
-
+    
             const currentDate = new Date();
-            let canEdit;
-
             const startDate = new Date(list[0]?.start_ep);
-
-            if (currentDate < startDate) {
-                canEdit = true;
-            } else {
-                canEdit = false;
-            }
-
-
+            const endDate = new Date(list[0]?.end_ep);
+    
+            const canEdit = currentDate < startDate;
+            const canEvaluate = currentDate >= startDate && currentDate <= endDate;
+    
             const queryResponse = {
                 ...list[0],
                 start_ep: list[0].start_ep ? formatYearMonth(list[0].start_ep) : null,
                 end_ep: list[0].end_ep ? formatYearMonth(list[0].end_ep) : null,
                 supervisors,
-                canEdit
+                canEdit,
+                canEvaluate
             };
-
+    
             return res.status(200).json({
                 message: "Cuestionario obtenido con éxito",
                 queryResponse
             });
-
+    
         } catch (error) {
             console.error("Error al obtener el cuestionario:", error);
             return res.status(500).json({
@@ -442,7 +439,6 @@ class PerformanceControllers {
 
     async getQuizInformation(req, res) {
         const { ep_fk } = req.params
-
         try {
             if (isNotNumber(ep_fk)) {
                 return res.status(403).json({
@@ -639,10 +635,10 @@ class PerformanceControllers {
     }
 
     async getPeopleForSupervisor(req, res) {
-        const { limit, offset, orderBy, typeOrder, filters, arrayToExclude } = req.body;
+        const { limit, offset, orderBy, order, filters, arrayToExclude } = req.body;
 
         try {
-            const list = await this.model.getPeopleForSupervisor(limit, offset, orderBy, typeOrder, filters, arrayToExclude);
+            const list = await this.model.getPeopleForSupervisor(limit, offset, orderBy, order, filters, arrayToExclude);
 
             const getTotalResults = await this.model.getTotalResultsExclude(filters, arrayToExclude);
 
@@ -807,6 +803,8 @@ class PerformanceControllers {
         const { answerData, answersArray } = req.body;
         const { id_user } = req;
 
+
+        console.log(req.body)
         try {
 
             const dataToCreateAnswer = {
@@ -863,7 +861,7 @@ class PerformanceControllers {
     }
 
     async getEmployeesToEvaluate(req, res) {
-        const { limit, offset, orderBy, typeOrder, filters, arrayToExclude } = req.body;
+        const { limit, offset, orderBy, order, filters, arrayToExclude } = req.body;
 
         const { id_user } = req;
         try {
@@ -874,7 +872,7 @@ class PerformanceControllers {
 
             const updatedArrayToExclude = [...arrayToExclude, id_user];
 
-            const list = await this.model.getEmployeesToEvaluate(department_supervisor_id, limit, offset, orderBy, typeOrder, filters, updatedArrayToExclude);
+            const list = await this.model.getEmployeesToEvaluate(department_supervisor_id, limit, offset, orderBy, order, filters, updatedArrayToExclude);
 
             if (list.length < 1) {
                 console.log("No se encontraron usuarios.");
@@ -885,7 +883,7 @@ class PerformanceControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalEmployeesToEvaluate(department_supervisor_id, limit, offset, orderBy, typeOrder, filters, updatedArrayToExclude)
+            const getTotalResults = await this.model.getTotalEmployeesToEvaluate(department_supervisor_id,filters, updatedArrayToExclude)
 
             return res.status(200).json({
                 message: "Usuarios obtenidos correctamente",
@@ -903,11 +901,12 @@ class PerformanceControllers {
 
 
     async getQuizzesInformationForSupervisor(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, orderBy, order, filters } = req.body;
         const { id_user } = req;
 
         try {
-            const list = await this.model.getQuizzesInformationForSupervisor(id_user, limit, offset, typeOrder, order, filters);
+            const list = await this.model.getQuizzesInformationForSupervisor(id_user, limit, offset, orderBy, order, filters);
+
 
             if (!list) {
                 return res.status(403).json({
@@ -916,7 +915,7 @@ class PerformanceControllers {
             }
 
 
-            const getTotalResults = await this.model.getTotalQuizzesInformationForSupervisor(id_user, limit, offset, typeOrder, order, filters)
+            const getTotalResults = await this.model.getTotalQuizzesInformationForSupervisor(id_user, filters)
 
             const formattedList = list.map(item => {
                 return {
@@ -943,17 +942,15 @@ class PerformanceControllers {
     }
 
     async getAnswersForQuizForSupervisor(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, orderBy, order, filters } = req.body;
         const { ep_fk } = req.params;
         const { id_user } = req
-
-
         try {
-
             const department_supervisor = await this.model.getDepartmentForSupervisor(id_user)
 
             const department_supervisor_id = department_supervisor.id_department;
-            const list = await this.model.getAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, typeOrder, order, filters);
+
+            const list = await this.model.getAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -961,7 +958,7 @@ class PerformanceControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, typeOrder, order, filters)
+            const getTotalResults = await this.model.getTotalAnswersForQuizForSupervisor(ep_fk, department_supervisor_id, limit, offset, orderBy, order, filters)
 
             if (!getTotalResults) {
                 return res.status(403).json({
@@ -1064,12 +1061,11 @@ class PerformanceControllers {
     }
 
     async getQuizInformationAnsweredForRrhh(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, orderBy, order, filters } = req.body;
         const { ep_fk } = req.params;
-
         try {
 
-            const list = await this.model.getQuizInformationAnsweredForRrhh(ep_fk, limit, offset, typeOrder, order, filters);
+            const list = await this.model.getQuizInformationAnsweredForRrhh(ep_fk, limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -1077,7 +1073,7 @@ class PerformanceControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalQuizInformationAnsweredForRrhh(ep_fk, limit, offset, typeOrder, order, filters)
+            const getTotalResults = await this.model.getTotalQuizInformationAnsweredForRrhh(ep_fk, limit, offset, orderBy, order, filters)
 
             if (!getTotalResults) {
                 return res.status(403).json({
@@ -1135,12 +1131,12 @@ class PerformanceControllers {
     }
 
     async getAnswersForQuizForPersonal(req, res) {
-        const { limit, offset, order, typeOrder, filters } = req.body;
+        const { limit, offset, orderBy, order, filters } = req.body;
         const { id_user } = req
 
 
         try {
-            const list = await this.model.getAnswersForQuizForPersonal(id_user, limit, offset, typeOrder, order, filters);
+            const list = await this.model.getAnswersForQuizForPersonal(id_user, limit, offset, orderBy, order, filters);
 
             if (!list) {
                 return res.status(403).json({
@@ -1148,7 +1144,7 @@ class PerformanceControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalAnswersForQuizForPersonal(id_user, limit, offset, typeOrder, order, filters)
+            const getTotalResults = await this.model.getTotalAnswersForQuizForPersonal(id_user,filters)
 
             if (!getTotalResults) {
                 return res.status(403).json({

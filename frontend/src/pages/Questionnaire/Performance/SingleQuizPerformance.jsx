@@ -15,6 +15,9 @@ import PreferenceTitle from "../../MasterTables/PreferenceTitle";
 import TableSecondaryNotTitleAndWhereOnUrl from "../../../components/Table/TableSecondaryNotTitleAndWhereOnUrl";
 import SeeProfile from '../../../assets/Icons/Buttons/Quizz.png'
 import ModalInfoQuizAnswered from "./ModalInfoQuizAnswered";
+import ResponsiveTableNotTitleAndWhereOnUrl from "../../../components/Table/ResponsiveTableNotTitleAndWhereOnUrl";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
+import ResponsiveTableModalTableWFilters from "../../../components/Table/TablePreferences/ResponsiveTableModalTableWFilters";
 
 const SingleQuizPerformance = () => {
 
@@ -29,6 +32,18 @@ const SingleQuizPerformance = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { authData } = useAuth();
+
+    const { updateBreadcrumbs, resetBreadcrumbs } = useBreadcrumbs();
+
+    useEffect(() => {
+        if (headerData) {
+            updateBreadcrumbs([
+                { name: 'Cuestionarios de Rendimiento', url: '/rrhh/rendimiento/cuestionarios' },
+                { name: `${headerData.name_ep}`, url: '' },
+            ]);
+        }
+
+    }, [location.pathname, headerData]);
 
     const { value_quiz } = location.state || '';
 
@@ -155,7 +170,7 @@ const SingleQuizPerformance = () => {
             checkExcludeSupervisors()
         }
 
-    }, [value_quiz, authData.token, isAddedQuestion, headerData?.supervisors])
+    }, [value_quiz, authData.token, isAddedQuestion])
 
     const columsToModal = [
         { field: 'avatar_user', label: '' },
@@ -259,7 +274,6 @@ const SingleQuizPerformance = () => {
         { field: 'supervisor_lastname', label: 'Apellido del Supervisor' },
         { field: 'name_department', label: 'Departamento' },
         { field: 'name_occupation', label: 'Puesto de Trabajo' },
-
     ];
 
 
@@ -279,10 +293,12 @@ const SingleQuizPerformance = () => {
     ];
 
     const searchOptions = [
-        { value: 'evaluated.name_entity', label: 'Nombre del Evaluado' },
-        { value: 'evaluated.entity_lastname', label: 'Apellido del Evaluado' },
-        { value: 'esupervisor.name_entity', label: 'Nombre del Supervisor' },
-        { value: 'esupervisor.lastname_entity', label: 'Apellido del Supervisor' },
+
+        { value: 'evaluated_name', label: 'Nombre del Evaluado' },
+        { value: 'evaluated_lastname', label: 'Apellido del Evaluado' },
+        { value: 'supervisor_name', label: 'Nombre del Supervisor' },
+        { value: 'supervisor_lastname', label: 'Apellido del Supervisor' },
+
     ];
 
     const [isStatusUpdated, setIsStatusUpdated] = useState(false);
@@ -294,8 +310,8 @@ const SingleQuizPerformance = () => {
     const urlDeleteQuizAnswered = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_QUIZ_PERFORMANCE_ANSWERED}`
 
     const handleIsModalSeeInfoOpen = (row) => {
-            setInitialDataForSeeInfo(row);
-            setIsModalSeeInfoOpen(true);
+        setInitialDataForSeeInfo(row);
+        setIsModalSeeInfoOpen(true);
     }
     const handleCloseIsModalSeeInfoOpen = () => {
         setIsModalSeeInfoOpen(false);
@@ -394,17 +410,17 @@ const SingleQuizPerformance = () => {
                             ))}
 
 
-                                <ButtonWhiteOutlineBlack
-                                    title={"+ Agregar Supervisor"}
-                                    onClick={handleOpenModalAddSupervisor}
-                                />
+                            <ButtonWhiteOutlineBlack
+                                title={"+ Agregar Supervisor"}
+                                onClick={handleOpenModalAddSupervisor}
+                            />
 
                         </div>
 
                     </div>
 
                     {isAddSupervisorModalOpen && (
-                        <ModalTableWFilters
+                        <ResponsiveTableModalTableWFilters
                             url={getNotSupervisorUrl}
                             authToken={authData.token}
                             columns={columsToModal}
@@ -431,6 +447,15 @@ const SingleQuizPerformance = () => {
                             title_table={"Lista de Personas"}
                             colorTable={'bg__green-5'}
                             arrayToExclude={arrayToExclude}
+                            titleInfo={[
+                                { field: "name_entity", type: "field" },
+                                { field: "lastname_entity", type: "field" },
+                                { field: "-", type: "string" },
+                                { field: "name_department", type: "field" },
+                            ]}
+                            headerInfo={
+                                ["Nombre Completo y Departamento"]
+                            }
                         />
                     )}
 
@@ -484,7 +509,7 @@ const SingleQuizPerformance = () => {
                         full={true}
                     />
                 )}
-                
+
             </div>
 
             {showModalAdd && (
@@ -556,7 +581,7 @@ const SingleQuizPerformance = () => {
                     title={"Respuestas"}
                 />
 
-                <TableSecondaryNotTitleAndWhereOnUrl
+                <ResponsiveTableNotTitleAndWhereOnUrl
                     url={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_QUIZ_PERFORMANCE_ANSWERED_FOR_RRHH}/${value_quiz}`}
                     authToken={authData.token}
                     columns={columns}
@@ -564,7 +589,7 @@ const SingleQuizPerformance = () => {
                     searchOptions={searchOptions}
                     initialSearchField={'evaluated.name_entity'}
                     initialSearchTerm={''}
-                    initialSort={{ field: 'evaluated.name_entity', order: 'ASC' }}
+                    initialSort={{ field: 'date_complete', order: 'desc' }}
                     actions={{
                         view: (row) => handleIsModalSeeInfoOpen(row),
                         edit: () => console.log('asd'),
@@ -578,8 +603,19 @@ const SingleQuizPerformance = () => {
                     actionColumn='id_ap'
                     paginationLabelInfo={'Cuestionarios Desarrollados'}
                     buttonOneInfo={{ img: SeeProfile, color: 'blue', title: 'Ver' }}
-                    buttonTreeInfo={{ img: Trash, color: 'red', title: 'Eliminar' }}
-                    isStatusUpdated={isStatusUpdate}
+                    isStatusUpdated={isStatusUpdated}
+                    titleInfo={[
+                        { field: "supervisor_name", type: "field" },
+                        { field: "supervisor_lastname", type: "field" },
+                        { field: "evalúo a", type: "string" },
+                        { field: "evaluated_name", type: "field" },
+                        { field: "evaluated_lastname", type: "field" },
+                        { field: "con promedio", type: "string" },
+                        { field: "average", type: "field" },
+                    ]}
+                    headerInfo={
+                        ["Respuestas al Cuestionario"]
+                    }
                 />
 
                 {isModalSeeInfoOpen && (

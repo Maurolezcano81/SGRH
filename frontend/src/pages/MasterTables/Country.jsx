@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import useNav from '../../hooks/useNav';
-import { useLocation } from 'react-router-dom';
-import TestTable from '../../components/Table/ResponsiveTable';
-import User from '../../assets/Icons/Buttons/User.png'
-import UserDown from '../../assets/Icons/Buttons/UserDown.png';
+import { useLocation, useNavigate } from 'react-router-dom';
+import ResponsiveTable from '../../components/Table/ResponsiveTable';
+import State from '../../assets/Icons/Buttons/state.png';
 import ModalAdd from '../../components/Modals/ModalAdd';
 import Edit from '../../assets/Icons/Buttons/Edit.png';
 import Trash from '../../assets/Icons/Buttons/Trash.png';
 import ModalUpdate from '../../components/Modals/ModalUpdate';
 import ModalDelete from '../../components/Modals/ModalDelete';
-import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
+import ModalAddCountryState from '../../components/Address/ModalAddCountryState';
 
 const Occupation = () => {
   const { authData } = useAuth();
@@ -20,10 +19,10 @@ const Occupation = () => {
   const { updateBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-      updateBreadcrumbs([
-          { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
-          { name: 'Tipos de País', url: '/rrhh/ajustes/pais' },
-      ]);
+    updateBreadcrumbs([
+      { name: 'Ajustes de Datos', url: '/rrhh/ajustes' },
+      { name: 'Tipos de País', url: '/rrhh/ajustes/pais' },
+    ]);
   }, [location.pathname]);
 
   const columns = [
@@ -107,11 +106,16 @@ const Occupation = () => {
 
   // MODAL DELETE
 
+  const navigate = useNavigate();
+
+  const navigateToState = (row) => {
+    navigate('/rrhh/ajustes/provincia', { state: { country: row } })
+  };
 
   return (
     <>
 
-      <TestTable
+      <ResponsiveTable
         addButtonTitle={handleModalAddOpen}
         url={getAllUrl}
         authToken={authData.token}
@@ -124,22 +128,23 @@ const Occupation = () => {
         actions={{
           view: (row) => handleModalUpdateOpen(row),
           edit: (row) => handleModalDeleteOpen(row),
-          delete: (row) => console.log("Editar", row),
+          delete: (row) => navigateToState(row),
         }}
         showActions={{
           view: true,
           edit: true,
-          delete: false
+          delete: true
         }}
         actionColumn='id_country'
         title_table={"Tipos de País"}
         paginationLabelInfo={"Tipos de País"}
         buttonOneInfo={{ img: Edit, color: "black", title: "Editar" }}
         buttonTwoInfo={{ img: Trash, color: "red", title: "Eliminar" }}
+        buttonTreeInfo={{ img: State, color: "blue", title: "Ver Provincias" }}
         isStatusUpdated={isStatusUpdated}
         titleInfo={[
           { field: "name_country", type: "field" },
-      ]}
+        ]}
         headerInfo={
           ["Nombre"]
         }
@@ -164,15 +169,11 @@ const Occupation = () => {
       )}
 
       {isModalAddOpen && (
-        <ModalAdd
-          title_modal={'Nuevo Tipo de País'}
-          labels={['Nombre', 'Abreviación']}
-          placeholders={['Ingrese nombre', 'Ingrese una abreviación']}
-          method={'POST'}
-          fetchData={['name_country', 'abbreviation_country']}
+        <ModalAddCountryState
+          title_modal={"Crear País"}
           createOne={createOne}
-          handleDependencyAdd={updateStatus}
           handleModalAdd={handleModalAddClose}
+          handleDependencyAdd={updateStatus}
         />
       )}
 

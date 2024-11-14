@@ -1,23 +1,85 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isNotAToZ, isInputEmpty, isNotNumber, isInputWithWhiteSpaces } from '../../../middlewares/Validations.js';
+import StateModel from '../../../models/Address/StateModel.js';
 
 class StateControllers {
   constructor() {
-    this.model = new BaseModel('state', 'name_state');
+    this.model = new StateModel()
     this.countryModel = new BaseModel('country', 'name_country');
     this.nameFieldId = "id_state";
     this.nameFieldToSearch = "name_state";
+
+    this.city = new BaseModel("city", 'id_city')
   }
 
-  async getStates(req, res) {
-    const { limit, offset, order, typeOrder, filters } = req.body;
+  async getAll(req, res) {
+    const { limit, offset, order, orderBy, filters } = req.body;
+    const { id_country } = req.params;
+
     try {
-      const queryResponse = await this.model.getAllPaginationWhere(100, offset, order, typeOrder, filters);
+      const list = await this.model.getStatesByCountry(id_country, limit, offset, orderBy, order, filters)
+
+      if (!list) {
+        return res.status(500).json({
+          message: 'No se pudo obtener los datos de las provincias, intentelo reiniciando el sitio',
+        });
+      }
+
+      const getTotalResults = await this.model.getTotalStatesByCountry(id_country, filters);
+
+      if (list.length < 1) {
+        return res.status(200).json({
+          message: 'No hay provincias disponibles',
+          total: 0,
+          list: []
+        });
+      }
+
+
+      if (!getTotalResults) {
+        return res.status(200).json({
+          message: 'No hay provincias disponibles',
+          total: 0,
+          list: []
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Provincias obtenidas correctamente',
+        list: list,
+        total: getTotalResults?.total || 0
+      });
+
+    } catch (error) {
+      console.error('Error en controlador de provincia: ' + error);
+      return res.status(500).json({
+        message: 'No se pudo obtener los datos de las provincias, intentelo reiniciando el sitio',
+      });
+    }
+  }
+
+  async getActives(req, res) {
+    const { country_fk } = req.body;
+    try {
+      if (isInputEmpty(country_fk)) {
+        return res.status(500).json({
+          message: 'Los datos que estás utilizando para la búsqueda de provincia son inválidos'
+        })
+      }
+
+      const queryResponse = await this.model.getStatesActivesByCountry(country_fk);
+
+      if (!queryResponse) {
+        return res.status(500).json({
+          message: 'Error al obtener las provincias'
+        })
+      }
 
       if (queryResponse.length < 1) {
         return res.status(200).json({
-          message: 'No hay provincias disponibles',
-        });
+          message: "Obtenido exitosamente",
+          queryResponse: []
+        })
       }
 
       return res.status(200).json({
@@ -26,13 +88,13 @@ class StateControllers {
       });
     } catch (error) {
       console.error('Error en controlador de provincia: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: 'Error al obtener las provincias'
       });
     }
   }
 
-  async getState(req, res) {
+  async getOne(req, res) {
     const { value_state } = req.body;
     try {
       if (isInputEmpty(value_state)) {
@@ -41,12 +103,12 @@ class StateControllers {
 
       const queryResponse = await this.model.getOne(value_state, this.nameFieldId);
 
-      if (!queryResponse) {
-        throw new Error('Error al obtener la provincia');
+      if (queryResponse.length < 1) {
+        throw new Error('Error al obtener el sexo');
       }
 
       return res.status(200).json({
-        message: 'Provincia obtenida correctamente',
+        message: 'Tipo de provincia obtenido correctamente',
         queryResponse,
       });
     } catch (error) {
@@ -57,175 +119,181 @@ class StateControllers {
     }
   }
 
-  async createState(req, res) {
-    const data = req.body;
+  async createOne(req, res) {
+    const { name_state, arrayCities } = req.body;
+
     try {
-      if (isInputEmpty(data.name_state)) {
-        throw new Error('Debes completar todos los campos');
-      }
-      if (isNotAToZ(data.name_state)) {
-        throw new Error('El nombre de la provincia no debe contener caracteres especiales');
-      }
-
-      const checkExists = await this.model.getOne(data.name_state, this.nameFieldToSearch);
-
-      if (checkExists) {
-        throw new Error('Provincia ya existente');
+      if (isInputEmpty(name_state)) {
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
-      const queryResponse = await this.model.createOne(data);
+      if (isNotAToZ(name_state)) {
+        return res.status(422).json({
+          message: "La provincia no debe contener caracteres especiales"
+        })
+      }
+
+      const checkExists = await this.model.getOneByCountryAndNameState(id_country, name_state);
+
+      if (checkExists && checkExists.length > 0) {
+        return res.status(403).json({
+          message: "Este nombre  de provincia ya existe en este país"
+        })
+      }
+
+      if (arrayCities.length < 1) {
+        return res.status(403).json({
+          message: "Debes agregar al menos una ciudad"
+        })
+      }
+
+      const queryResponse = await this.model.createOne(
+        {
+          name_state: name_state,
+          country_fk: id_country
+        }
+      );
+
+
       if (!queryResponse) {
-        throw new Error('Error al crear la provincia');
+        return res.status(500).json({
+          message: "Ha ocurrido un error al crear el tipo de provincia"
+        })
       }
+
+
+      for (const city of arrayCities) {
+
+        const insertCities = await this.city.createOne({
+          name_city: city,
+          state_fk: queryResponse.lastId
+        });
+
+        if (!insertCities) {
+          return res.status(403).json({
+            message: "Ha ocurrido un error al agregar las ciudades"
+          })
+        }
+      }
+
+
 
       return res.status(200).json({
         message: 'Provincia creada exitosamente',
         queryResponse,
       });
+
     } catch (error) {
       console.error('Error en controlador de provincia: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al crear el tipo de Provincia",
       });
     }
   }
 
-  async updateState(req, res) {
-    const { id_state, name_state, status_state } = req.body;
-
+  async updateOne(req, res) {
+    const { id_state, name_state , status_state } = req.body;
     try {
       if (isInputEmpty(name_state)) {
-        throw new Error('Debes completar todos los campos');
+        return res.status(422).json({
+          message: "Debes completar todos los campos"
+        })
       }
 
-      if (isNotAToZ(name_state)) {
-        throw new Error('El nombre de la provincia no debe contener caracteres especiales');
+      if (isInputEmpty(name_state)) {
+        return res.status(422).json({
+          message: "El sexo no debe contener caracteres especiales"
+        })
       }
 
       if (isNotNumber(id_state)) {
-        throw new Error('Los datos de la provincia son inválidos');
+        return res.status(403).json({
+          message: "Los datos de estado de la provincia son inválidos"
+        })
       }
 
       if (isNotNumber(status_state)) {
-        throw new Error('Los datos de estado de la provincia son inválidos');
+        return res.status(403).json({
+          message: "Los datos de estado de la provincia son inválidos"
+        })
+      }
+
+      if (isNotAToZ(name_state)) {
+        return res.status(422).json({
+          message: "El sexo no debe contener caracteres especiales"
+        })
       }
 
       const checkExists = await this.model.getOne(id_state, this.nameFieldId);
 
-
-      if (!checkExists) {
-        throw new Error('No se puede actualizar esta provincia, debido a que no existe');
+      if (checkExists.length < 1) {
+        return res.status(403).json({
+          message: 'No se puede actualizar este tipo de provincia, debido a que no existe'
+        })
       }
 
       const checkDuplicate = await this.model.getOne(name_state, 'name_state');
 
       if (checkDuplicate.length > 0) {
-        return res.status(403).json({
-          message: 'No se puede actualizar, debido a que ya es un registro existente'
-        })
+        if (checkDuplicate[0].id_state != id_state) {
+          return res.status(403).json({
+            message: 'No se puede actualizar, debido a que ya es un registro existente'
+          })
+        }
       }
 
       const queryResponse = await this.model.updateOne({ name_state, status_state }, [this.nameFieldId, id_state]);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al actualizar datos de la provincia');
+        return res.status(500).json({
+          message: "Ha occurrido un error al actualizar el tipo de Provincia",
+        });
       }
 
       return res.status(200).json({
-        message: 'Provincia actualizada correctamente',
+        message: 'Tipo de provincia actualizado correctamente',
         queryResponse,
       });
     } catch (error) {
       console.error('Error en controlador de provincia: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: "Ha occurrido un error al actualizar el tipo de Provincia",
       });
     }
   }
 
-  async toggleStatusState(req, res) {
-    const { id_state, status_state } = req.body;
-
-    try {
-      if (isNotNumber(id_state)) throw new Error('Los datos de la provincia son inválidos');
-
-      const checkExists = await this.model.getOne(id_state, this.nameFieldId);
-
-      if (!checkExists) {
-        throw new Error('No se puede actualizar el estado de la provincia, debido a que no existe');
-      }
-
-      const queryResponse = await this.model.updateOne({ status_state }, [this.nameFieldId, id_state]);
-
-      if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al cambiar estado de la provincia');
-      }
-
-      return res.status(200).json({
-        message: 'El estado ha sido actualizado correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de provincia: ' + error);
-      return res.status(403).json({
-        message: error.message,
-      });
-    }
-  }
-
-  async deleteState(req, res) {
+  async deleteOne(req, res) {
     const { id_state } = req.body;
     try {
+
       if (isNotNumber(id_state)) {
-        throw new Error('Ha ocurrido un error al eliminar la provincia, intente reiniciando el sitio');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de provincia, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       const queryResponse = await this.model.deleteOne(id_state, this.nameFieldId);
 
       if (queryResponse.affectedRows < 1) {
-        throw new Error('Error al eliminar la provincia');
+        return res.status(403).json({
+          message: "Ha occurrido un error al eliminar el tipo de provincia, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema"
+        })
       }
 
       return res.status(200).json({
-        message: 'Provincia eliminada exitosamente',
+        message: 'Tipo de provincia eliminado exitosamente',
         queryResponse,
       });
     } catch (error) {
       console.error('Error en controlador de provincia: ' + error);
       return res.status(403).json({
-        message: error.message,
+        message: "Ha occurrido un error al eliminar el tipo de provincia, debido a que esta siendo utilizado en datos que pueden afectar el funcionamiento del sistema",
       });
     }
   }
 
-  async getStatesByCountry(req, res) {
-    const { country_fk } = req.body;
-
-    try {
-      if (isInputEmpty(country_fk)) {
-        throw new Error('Debe completar todos los campos de Domicilio');
-      }
-
-      const checkExistCountry = await this.countryModel.getOne(country_fk, 'id_country');
-      if (!checkExistCountry) {
-        return res.status(200).json({
-          message: 'Este país no existe',
-        });
-      }
-
-      const queryResponse = await this.model.getAllPaginationWhereFilteredActives('status_state', { country_fk: country_fk });
-
-      return res.status(200).json({
-        message: 'Provincias obtenidas correctamente',
-        queryResponse,
-      });
-    } catch (error) {
-      console.error('Error en controlador de provincias: ' + error);
-      return res.status(403).json({
-        message: error.message,
-      });
-    }
-  }
 }
 
 export default StateControllers;

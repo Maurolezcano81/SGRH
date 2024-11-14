@@ -30,10 +30,11 @@ const SingleQuiz = () => {
 
     const { value_quiz } = location.state || '';
 
-    const { updateBreadcrumbs } = useBreadcrumbs();
+    const { updateBreadcrumbs, resetBreadcrumbs } = useBreadcrumbs();
 
     useEffect(() => {
         if (headerData && headerData.name_sq !== undefined) {
+            resetBreadcrumbs();
             updateBreadcrumbs([
                 { name: 'Cuestionarios de Satisfacción', url: '/rrhh/satisfaccion/cuestionarios' },
                 { name: `${headerData.name_sq}`, url: '/rrhh/satisfaccion/cuestionarios' },

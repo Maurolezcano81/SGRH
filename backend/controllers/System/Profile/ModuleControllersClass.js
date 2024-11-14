@@ -114,12 +114,6 @@ class ModuleControllersClass {
                 })
             }
 
-            if (isNotAToZ(url_module)) {
-                return res.status(422).json({
-                    message: "El modulo no puede contener caracteres especiales"
-                })
-            }
-
             if (isNotAToZ(name_module)) {
                 return res.status(422).json({
                     message: "El modulo no puede contener caracteres especiales"

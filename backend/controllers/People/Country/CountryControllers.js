@@ -1,11 +1,13 @@
 import BaseModel from '../../../models/BaseModel.js';
 import { isInputEmpty, isInputWithWhiteSpaces, isNotNumber, isNotAToZ } from '../../../middlewares/Validations.js';
+import StateModel from '../../../models/Address/StateModel.js';
 
 class CountryController {
   constructor() {
     this.model = new BaseModel('country', 'id_country');
     this.nameFieldId = 'id_country';
     this.nameFieldToSearch = 'name_country';
+    this.state = new StateModel()
   }
 
   async getAllWPagination(req, res) {
@@ -105,7 +107,9 @@ class CountryController {
   }
 
   async createOne(req, res) {
-    const { name_country, abbreviation_country } = req.body;
+    const { name_country, abbreviation_country, arrayStates } = req.body;
+
+    console.log(req.body)
 
     try {
       if (isInputEmpty(name_country) || isInputEmpty(abbreviation_country)) {
@@ -149,6 +153,21 @@ class CountryController {
           message: "Ha ocurrido un error al crear el tipo de país"
         })
       }
+
+      for (const state of arrayStates) {
+
+        const insertStates = await this.state.createOne({
+          name_state: state,
+          country_fk: queryResponse.lastId
+        });
+
+        if (!insertStates) {
+          return res.status(403).json({
+            message: "Ha ocurrido un error al agregar las provincias"
+          })
+        }
+      }
+
 
       return res.status(200).json({
         message: 'país creado exitosamente',

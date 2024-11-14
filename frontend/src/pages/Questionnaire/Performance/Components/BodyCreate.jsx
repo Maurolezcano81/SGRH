@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';  // Asegúrate de tener instalada la biblioteca uuid
 import ButtonWhiteOutlineBlack from "../../../../components/Buttons/ButtonWhiteOutlineBlack";
+import { useLocation } from "react-router-dom";
+import { useBreadcrumbs } from "../../../../contexts/BreadcrumbsContext";
 
 const BodyCreate = ({ questionStructure, questionData, setBodyQuiz }) => {
     const [listQuestions, setListQuestions] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+
+
 
     const validateQuestions = () => {
         for (const question of listQuestions) {
