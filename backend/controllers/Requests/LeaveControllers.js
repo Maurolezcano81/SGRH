@@ -291,7 +291,7 @@ class LeavesControllers {
                 })
             }
 
-            
+
             const getDataUserAction = await this.entity.getDataByIdUser(id_user);
 
             if (getDataUserAction.length < 1) {
@@ -345,7 +345,7 @@ class LeavesControllers {
                     message: "Ha ocurrido un error al eliminar la respuesta a la licencia"
                 })
             }
-            
+
             const getDataUserAction = await this.entity.getDataByIdUser(id_user);
 
             if (getDataUserAction.length < 1) {
@@ -375,6 +375,105 @@ class LeavesControllers {
             });
         }
     }
+
+
+    async getLeavesForStartFieldForJobSchedule() {
+        const now = new Date();
+        const formattedDate = now.toISOString().split('T')[0];
+
+        try {
+            const list = await this.model.getLeavesForStartFieldForJobSchedule(formattedDate);
+
+            if (!list || list.length === 0) {
+                console.warn('No se encontraron solicitudes de licencia para procesar.');
+                return;
+            }
+
+            for (const request of list) {
+                try {
+
+                    const update = await this.responseLeaves.updateOne(
+                        {
+                            sr_fk: 2
+                        },
+                        ['id_lrr', request.id_lrr]
+                    );
+
+                    if (!update) {
+                        console.warn(`No se pudo actualizar la solicitud de licencia con ID: ${request.id_lrr}`);
+                        continue;
+                    }
+
+                    const updateEmployee = await this.employee.updateOne(
+                        {
+                            tse_fk: 2
+                        },
+                        ['id_employee', request.id_employee]
+                    );
+
+                    if (!updateEmployee) {
+                        console.warn(`No se pudo actualizar el estado del empleado con ID: ${update.id_entity}`);
+                        continue;
+                    }
+
+                } catch (error) {
+                    console.error(`Error procesando solicitud con ID: ${request.id_lrr}`, error.message);
+                    continue;
+                }
+            }
+
+        } catch (error) {
+            console.error('Ha ocurrido un error en la tarea programada:', error.message);
+        }
+    }
+
+    async getLeavesForEndFieldForJobSchedule() {
+        const now = new Date();
+        const formattedDate = now.toISOString().split('T')[0];
+
+        try {
+            const list = await this.model.getLeavesForEndFieldForJobSchedule(formattedDate);
+
+            if (list.length > 0) {
+                for (const request of list) {
+                    try {
+                        const update = await this.responseLeaves.updateOne(
+                            {
+                                sr_fk: 3
+                            },
+                            ['id_lrr', request.id_lrr]
+                        );
+
+                        if (!update) {
+                            console.warn('No se pudo actualizar solicitudes de licencia.');
+                            continue;
+                        }
+
+                        const updateEmployee = await this.employee.updateOne(
+                            {
+                                tse_fk: 1
+                            },
+                            ['id_employee', request.id_employee]
+                        );
+
+                        if (!updateEmployee) {
+                            console.warn(`No se pudo actualizar el estado del empleado con ID: ${update.id_employee}`);
+                            continue;
+                        }
+
+                    } catch (error) {
+                        console.error('Error procesando solicitud:', request.id_lrr, error.message);
+                        continue;
+                    }
+                }
+            }
+
+
+        } catch (error) {
+            console.error('Ha ocurrido un error en la tarea programada:', error.message);
+        }
+    }
+
 
 }
 

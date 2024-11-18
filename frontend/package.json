@@ -10,14 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cubejs-client/core": "^0.31.0",
     "chart.js": "^4.4.5",
     "dotenv": "^16.4.5",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.0",
     "uuid": "^10.0.0",
-    "uuid4": "^2.0.3",
-    "@cubejs-client/core": "^0.31.0"
+    "uuid4": "^2.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -27,8 +29,7 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "vite": "^5.2.0",
-    "parcel": "^2.6.2"
-
+    "parcel": "^2.6.2",
+    "vite": "^5.2.0"
   }
 }

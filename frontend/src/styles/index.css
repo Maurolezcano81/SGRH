@@ -168,7 +168,7 @@
   font-weight: bold;
 }
 
-.pointer{
+.pointer {
   cursor: pointer;
 }
 
@@ -2579,6 +2579,20 @@ input {
   justify-content: space-between;
 }
 
+.dashboard__option__select__full {
+  padding: 1rem;
+  width: 90%;
+  height: 50%;
+  background-color: var(--white-3);
+  border: none;
+  font-size: var(--size-usercreate-input);
+}
+
+.dashboard__center {
+  width: 100%;
+  text-align: center;
+}
+
 .dashboard__option__label {
   padding: 0.5rem;
   text-align: left;
@@ -2640,6 +2654,7 @@ input {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
 }
 
 .audits__container {
@@ -2763,6 +2778,61 @@ input {
   fill: var(--blue-2);
 }
 
+.reports__container {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.report__container {
+  box-shadow: var(--shadow-a-25-b-02);
+  background: none;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+.report__title__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.report__button__title {
+  background: none;
+  height: 100%;
+}
+
+.report__info__container {
+  border-top: 0.1rem solid var(--gray-1);
+}
+
+.report__buttons__and__select__container {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.report__buttons__container__post__select {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.button__download__pdf {
+  background: none;
+}
+
+.button__back__report {
+  background: none;
+}
+
 @media (width >= 468px) {
   .question__title__container {
     flex-direction: row;
@@ -2770,6 +2840,10 @@ input {
 
   .button__back span {
     display: block;
+  }
+
+  .report__title__container{
+    justify-content: center;
   }
 
   .preferences__container {
@@ -2857,7 +2931,6 @@ input {
   .responsive__table-col {
     width: auto;
   }
-
 
   .table__primary__pagination {
     display: flex;

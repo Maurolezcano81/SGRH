@@ -72,7 +72,7 @@ class UserController {
         })
       }
 
-      
+
       // const getDataPrev = await this.user.getDataEmployeeForAudit(id_user)
 
       // if (getDataPrev.length < 1) {
@@ -957,6 +957,32 @@ class UserController {
     }
   };
 
+
+  async getAllUsersData(req, res) {
+
+    try {
+      const listUsers = await this.user.getAllUsersData()
+      if (!listUsers) {
+        return res.status(403).json({
+          message: "No se pudieron obtener los empleados",
+          listUsers: []
+        })
+      }
+
+
+      res.status(200).json({
+        message: "Usuarios Obtenidos Correctament",
+        listUsers
+      })
+    } catch (error) {
+      console.error('Ha ocurrido un error en controlador de Usuario' + error);
+      res.status(500).json({
+        message: "Error al obtener los usuarios, intentelo nuevamente",
+      });
+    }
+  }
+
+  
 }
 
 

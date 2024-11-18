@@ -851,6 +851,22 @@ FROM
         }
     }
 
+    async getPerformancesAll() {
+        try {
+            const query = `
+                SELECT 
+                * 
+                from evaluation_performance ep
+                `;
+
+            const [results] = await this.con.promise().query(query, []);
+            return results;
+        } catch (error) {
+            console.error("Error en Users Quiz Satisfaction:", error.message);
+            throw new Error("Error en Users Quiz Satisfaction: " + error.message);
+        }
+    }
+
 
     async getTotalAnswersForQuizForPersonal(id_user, filters = {}) {
         const { whereClause, values } = this.buildWhereClauseNotStarting(filters);

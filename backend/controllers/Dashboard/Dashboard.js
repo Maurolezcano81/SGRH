@@ -73,7 +73,7 @@ class DashboardControllers {
         }
     }
 
-    async getReasonsForDismiss(req, res){
+    async getReasonsForDismiss(req, res) {
         try {
             const queryResponse = await this.model.getReasonsForDismiss();
 
@@ -94,7 +94,7 @@ class DashboardControllers {
         }
     }
 
-    async getQuantityDaysForLeaves(req, res){
+    async getQuantityDaysForLeaves(req, res) {
         try {
             const queryResponse = await this.model.getQuantityDaysForLeaves();
 
@@ -115,7 +115,7 @@ class DashboardControllers {
         }
     }
 
-    async getQuantityDaysForLeavesAndDepartment(req, res){
+    async getQuantityDaysForLeavesAndDepartment(req, res) {
         try {
             const queryResponse = await this.model.getQuantityDaysForLeavesAndDepartment();
 
@@ -136,7 +136,115 @@ class DashboardControllers {
         }
     }
 
-}
 
+    async getLeavesOnPeriodOfTime(req, res) {
+        let { startDate, endDate } = req.body;
+
+        try {
+
+            if (!startDate || !endDate) {
+                return res.status(400).json({
+                    message: "Por favor, proporcione un rango de fechas válido."
+                });
+            }
+
+            const queryResponse = await this.model.getLeavesOnPeriodOfTime(startDate, endDate);
+
+            const minAndMaxYears = await this.model.getMinAndMaxLeavesOnPeriodOfTime(startDate, endDate);
+
+            if (queryResponse.length === 0) {
+                return res.status(404).json({
+                    message: "No se encontraron datos para el rango de fechas proporcionado"
+                });
+            }
+
+            return res.status(200).json({
+                message: "Cantidades de Movimientos Obtenidos exitosamente",
+                queryResponse,
+                minAndMaxYears
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'No se ha podido obtener la información necesaria para el gráfico.'
+            });
+        }
+    }
+
+
+    async getAveragePerformanceByEmployee(req, res) {
+        const { id_user } = req.body;
+
+        try {
+            const queryResponse = await this.model.getAveragePerformanceByEmployee(id_user);
+
+            if (queryResponse.length === 0) {
+                return res.status(404).json({
+                    message: "No se encontraron datos para el rango de fechas proporcionado"
+                });
+            }
+
+            return res.status(200).json({
+                message: "Evaluaciones y Promedios obtenidos correctamente",
+                queryResponse,
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'No se ha podido obtener la información necesaria para el gráfico.'
+            });
+        }
+    }
+
+    async getAveragePerformanceByDepartments(req, res) {
+        try {
+            const queryResponse = await this.model.getAveragePerformanceByDepartments();
+
+            if (queryResponse.length === 0) {
+                return res.status(404).json({
+                    message: "No se encontraron datos para el rango de fechas proporcionado"
+                });
+            }
+
+            return res.status(200).json({
+                message: "Evaluaciones y Promedios obtenidos correctamente",
+                queryResponse,
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'No se ha podido obtener la información necesaria para el gráfico.'
+            });
+        }
+    }
+
+    async getAveragePerformanceByDepartmentsAndQuizzes(req, res) {
+        const { id_ep, id_department } = req.body;
+
+        try {
+            const queryResponse = await this.model.getAveragePerformanceByDepartmentsAndQuizzes(id_ep, id_department);
+
+            if (queryResponse.length === 0) {
+                return res.status(404).json({
+                    message: "No se encontraron datos para el rango de fechas proporcionado"
+                });
+            }
+
+            return res.status(200).json({
+                message: "Evaluaciones y Promedios obtenidos correctamente",
+                queryResponse,
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'No se ha podido obtener la información necesaria para el gráfico.'
+            });
+        }
+    }
+}
 
 export default DashboardControllers

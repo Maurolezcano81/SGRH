@@ -12,8 +12,6 @@ class BaseModel {
     }
 
 
-
-
     async getAllPaginationWhere(limit = this.defaultLimitPagination, offset = this.defaultOffsetPagination, orderBy = this.defaultOrderBy, order = this.defaultOrderPagination, filters = {}) {
         try {
             const { whereClause, values } = this.buildWhereClause(filters);

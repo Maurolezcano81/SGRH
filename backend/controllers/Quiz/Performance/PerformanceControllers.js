@@ -221,30 +221,30 @@ class PerformanceControllers {
 
     async getQuizHeader(req, res) {
         const { id_ep } = req.params;
-    
+
         try {
             if (isNotNumber(id_ep)) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
-    
+
             const list = await this.model.getQuizHeader(id_ep);
             const supervisors = await this.model.getSupervisorsQuiz(id_ep);
-    
+
             if (!list || list.length === 0) {
                 return res.status(403).json({
                     message: "Ha ocurrido un error al obtener el cuestionario, intentalo de nuevo"
                 });
             }
-    
+
             const currentDate = new Date();
             const startDate = new Date(list[0]?.start_ep);
             const endDate = new Date(list[0]?.end_ep);
-    
+
             const canEdit = currentDate < startDate;
             const canEvaluate = currentDate >= startDate && currentDate <= endDate;
-    
+
             const queryResponse = {
                 ...list[0],
                 start_ep: list[0].start_ep ? formatYearMonth(list[0].start_ep) : null,
@@ -253,12 +253,12 @@ class PerformanceControllers {
                 canEdit,
                 canEvaluate
             };
-    
+
             return res.status(200).json({
                 message: "Cuestionario obtenido con éxito",
                 queryResponse
             });
-    
+
         } catch (error) {
             console.error("Error al obtener el cuestionario:", error);
             return res.status(500).json({
@@ -435,6 +435,30 @@ class PerformanceControllers {
             })
         }
 
+    }
+
+    async getPerformancesAll(req, res) {
+
+        const listQuizzes = await this.model.getPerformancesAll();
+
+        if (!listQuizzes) {
+            console.error("Ha ocurrido un error en el cuestionario");
+            return res.status(403).json({
+                message: "Error al obtener el cuestionario"
+            })
+        }
+
+        if (listQuizzes.length < 1) {
+            return res.status(200).json({
+                message: "Error al obtener el cuestionario",
+                listQuizzes: []
+            })
+        }
+
+        return res.status(200).json({
+            message: "Cuestionarios obtenidos exitosamente",
+            listQuizzes
+        })
     }
 
     async getQuizInformation(req, res) {
@@ -883,7 +907,7 @@ class PerformanceControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalEmployeesToEvaluate(department_supervisor_id,filters, updatedArrayToExclude)
+            const getTotalResults = await this.model.getTotalEmployeesToEvaluate(department_supervisor_id, filters, updatedArrayToExclude)
 
             return res.status(200).json({
                 message: "Usuarios obtenidos correctamente",
@@ -1144,7 +1168,7 @@ class PerformanceControllers {
                 });
             }
 
-            const getTotalResults = await this.model.getTotalAnswersForQuizForPersonal(id_user,filters)
+            const getTotalResults = await this.model.getTotalAnswersForQuizForPersonal(id_user, filters)
 
             if (!getTotalResults) {
                 return res.status(403).json({

@@ -216,7 +216,7 @@ class DashboardModel extends BaseModel {
                 LEFT JOIN 
                     leave_response_request lrr ON lrr.lr_fk = lr.id_lr 
                 LEFT JOIN 
-                    status_request sr ON lrr.sr_fk = sr.id_sr AND sr.name_sr = 'Aprobado' 
+                    status_request sr ON lrr.sr_fk = sr.id_sr AND sr.name_sr = 'Completado' 
                 GROUP BY 
                     tol.name_tol 
                 ORDER BY 
@@ -252,7 +252,7 @@ class DashboardModel extends BaseModel {
             LEFT JOIN 
                 leave_response_request lrr ON lrr.lr_fk = lr.id_lr 
             LEFT JOIN 
-                status_request sr ON lrr.sr_fk = sr.id_sr AND sr.name_sr = 'Aprobado'
+                status_request sr ON lrr.sr_fk = sr.id_sr AND sr.name_sr = 'Completado'
             LEFT JOIN 
                 type_of_leave tol ON lr.tol_fk = tol.id_tol 
             GROUP BY 
@@ -272,7 +272,269 @@ class DashboardModel extends BaseModel {
         }
     }
 
+    async getLeavesOnPeriodOfTime(firstTime, secondTime) {
 
+
+        try {
+            const query =
+                `
+   WITH months AS (
+    SELECT 1 AS month
+    UNION ALL SELECT 2
+    UNION ALL SELECT 3
+    UNION ALL SELECT 4
+    UNION ALL SELECT 5
+    UNION ALL SELECT 6
+    UNION ALL SELECT 7
+    UNION ALL SELECT 8
+    UNION ALL SELECT 9
+    UNION ALL SELECT 10
+    UNION ALL SELECT 11
+    UNION ALL SELECT 12
+)
+SELECT 
+    m.month AS month_number,
+    CASE m.month
+        WHEN 1 THEN 'Enero'
+        WHEN 2 THEN 'Febrero'
+        WHEN 3 THEN 'Marzo'
+        WHEN 4 THEN 'Abril'
+        WHEN 5 THEN 'Mayo'
+        WHEN 6 THEN 'Junio'
+        WHEN 7 THEN 'Julio'
+        WHEN 8 THEN 'Agosto'
+        WHEN 9 THEN 'Septiembre'
+        WHEN 10 THEN 'Octubre'
+        WHEN 11 THEN 'Noviembre'
+        WHEN 12 THEN 'Diciembre'
+    END AS month_name,
+    COALESCE(licenses.total_licenses, 0) AS total_licenses,
+    COALESCE(licenses.total_days, 0) AS total_days
+FROM 
+    months m
+LEFT JOIN (
+    SELECT 
+        MONTH(lr.start_lr) AS month,
+        COUNT(lr.id_lr) AS total_licenses,
+        SUM(DATEDIFF(lr.end_lr, lr.start_lr) + 1) AS total_days
+    FROM 
+        leave_request lr
+    JOIN 
+        leave_response_request lrr ON lr.id_lr = lrr.lr_fk
+    JOIN 
+        status_request sr ON lrr.sr_fk = sr.id_sr
+    WHERE 
+        sr.name_sr = 'Completado'
+            AND lr.start_lr BETWEEN ? and ? 
+    GROUP BY 
+        MONTH(lr.start_lr)
+) AS licenses ON m.month = licenses.month
+ORDER BY 
+    m.month;                           
+           `
+
+            const [results] = await this.conn.promise().query(query, [firstTime, secondTime]);
+
+            return results;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al obtener las estadisticas para este apartado')
+        }
+    }
+
+    async getMinAndMaxLeavesOnPeriodOfTime(firstTime, secondTime) {
+        try {
+            const query =
+                `
+                SELECT 
+                    MIN(lr.start_lr) AS earliest_start,   
+                    MAX(lr.end_lr) AS latest_end        
+                FROM 
+                    leave_request lr 
+                JOIN 
+                    leave_response_request lrr ON lr.id_lr = lrr.lr_fk 
+                JOIN 
+                    status_request sr ON lrr.sr_fk = sr.id_sr 
+                JOIN 
+                    type_of_leave tol ON lr.tol_fk = tol.id_tol 
+                JOIN 
+                    user u ON lr.user_fk = u.id_user 
+                WHERE 
+                    sr.name_sr = 'Aprobado'                              
+           `
+
+            const [results] = await this.conn.promise().query(query, [firstTime, secondTime]);
+
+            return results;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al obtener las estadisticas para este apartado')
+        }
+    }
+
+
+    async getAveragePerformanceByEmployee(id_user) {
+        try {
+            const query =
+                `
+                SELECT 
+                    ep.name_ep,        
+                    AVG(ROUND(dep.score_dep, 2)) AS average_score,      
+                    u.username_user,                          
+                    e.name_entity,                           
+                    e.lastname_entity                         
+                FROM 
+                    user u
+                JOIN 
+                    entity e ON e.id_entity = u.entity_fk 
+                JOIN 
+                    answer_performance ap ON u.id_user = ap.evaluated_fk 
+                JOIN 
+                    detail_evaluation_performance dep ON ap.id_ap = dep.ap_fk 
+                JOIN 
+                    evaluation_performance ep ON ap.ep_fk = ep.id_ep 
+                    where id_user = ?
+                GROUP BY 
+                    ep.name_ep
+                ORDER BY 
+                    ep.name_ep;                                
+           `
+
+            const [results] = await this.conn.promise().query(query, [id_user]);
+
+            return results;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al obtener las estadisticas para este apartado')
+        }
+    }
+
+    async getAveragePerformanceByEmployee(id_user) {
+        try {
+            const query =
+                `
+                               SELECT 
+                    ep.name_ep,        
+                    AVG(ROUND(dep.score_dep, 2)) AS average_score,      
+                    u.username_user,                          
+                    e.name_entity,                           
+                    e.lastname_entity,
+                    date_complete,
+                    eanswered.name_entity as answered_name,
+                    eanswered.lastname_entity as answered_lastname                       
+                FROM 
+                    user u
+                JOIN 
+                    entity e ON e.id_entity = u.entity_fk 
+                JOIN 
+                    answer_performance ap ON u.id_user = ap.evaluated_fk 
+                JOIN 
+                    detail_evaluation_performance dep ON ap.id_ap = dep.ap_fk 
+                JOIN 
+                    evaluation_performance ep ON ap.ep_fk = ep.id_ep 
+                left JOIN user uanswered on uanswered.id_user = ap.author_fk
+                left JOIN entity eanswered on uanswered.entity_fk = eanswered.id_entity
+                    where u.id_user = ?
+                GROUP BY 
+                    ep.name_ep
+                ORDER BY 
+                    ep.name_ep;                              
+           `
+
+            const [results] = await this.conn.promise().query(query, [id_user]);
+
+            return results;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al obtener las estadisticas para este apartado')
+        }
+    }
+
+
+    async getAveragePerformanceByDepartments() {
+        try {
+            const query =
+                `
+                     SELECT 
+                        d.name_department,        
+                        AVG(ROUND(dep.score_dep, 2)) AS average_score  
+                    FROM 
+                        department d 
+                    JOIN 
+                        entity_department_occupation edo ON d.id_department = edo.department_fk 
+                    JOIN 
+                        entity e ON e.id_entity = edo.entity_fk
+                    JOIN 
+                        user u ON e.id_entity = u.id_user 
+                    JOIN 
+                        answer_performance ap ON u.id_user = ap.evaluated_fk
+                    LEFT JOIN 
+                        user uanswered ON uanswered.id_user = ap.author_fk
+                    LEFT JOIN 
+                        entity eanswered ON uanswered.entity_fk = eanswered.id_entity
+                    JOIN 
+                        detail_evaluation_performance dep ON ap.id_ap = dep.ap_fk 
+                    JOIN 
+                        evaluation_performance ep ON ap.ep_fk = ep.id_ep 
+                    GROUP BY 
+                        d.name_department 
+                    ORDER BY 
+                        d.name_department;               
+           `
+
+            const [results] = await this.conn.promise().query(query, []);
+
+            return results;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al obtener las estadisticas para este apartado')
+        }
+    }
+
+    async getAveragePerformanceByDepartmentsAndQuizzes(id_ep, id_department) {
+        try {
+            const query =
+                `
+                   SELECT 
+                    ep.id_ep,
+                    d.id_department,
+                    ep.name_ep,        
+                    AVG(ROUND(dep.score_dep, 2)) AS average_score,      
+                    e.name_entity,      
+                    e.lastname_entity,
+                    date_complete
+                FROM 
+                    department d 
+                join entity_department_occupation edo on d.id_department = edo.department_fk 
+                JOIN 
+                    entity e ON e.id_entity = edo.entity_fk
+                    join user u on e.id_entity = u.id_user 
+                JOIN 
+                    answer_performance ap ON u.id_user = ap.evaluated_fk  
+                    left JOIN user uanswered on uanswered.id_user = ap.author_fk
+                                left JOIN entity eanswered on uanswered.entity_fk = eanswered.id_entity
+                JOIN 
+                    detail_evaluation_performance dep ON ap.id_ap = dep.ap_fk 
+                JOIN 
+                    evaluation_performance ep ON ap.ep_fk = ep.id_ep 
+                        where ep.id_ep = ?
+                    and d.id_department = ?
+                GROUP BY 
+                    ep.name_ep, d.name_department, e.name_entity, e.lastname_entity 
+                ORDER BY 
+                    ep.name_ep;
+           `
+
+           
+
+            const [results] = await this.conn.promise().query(query, [id_ep, id_department]);
+
+            return results;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al obtener las estadisticas para este apartado')
+        }
+    }
 }
 
 

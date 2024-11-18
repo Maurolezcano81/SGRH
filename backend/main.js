@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import schedule from 'node-schedule';
 
 const app = express();
 
@@ -56,7 +57,27 @@ app.use('/api/user', verifyToken, decodeToken, EmployeeRoutes.router);
 const URL = 'http:localhost:'
 const PORT = process.env.SV_PORT
 
+
+import LeavesControllers from './controllers/Requests/LeaveControllers.js';
+const leave = new LeavesControllers();
+
+schedule.scheduleJob('0 0 * * *', async () => {
+  await leave.getLeavesForStartFieldForJobSchedule();
+  console.log('Tarea ejecutada por cron');
+});
+
+
+schedule.scheduleJob('59 23 * * *', async () => {
+  await leave.getLeavesForEndFieldForJobSchedule();
+  console.log('Tarea ejecutada por cron');
+});
+
 // Server
-app.listen(process.env.SV_PORT || 3000, () => {
+app.listen(process.env.SV_PORT || 3000, async () => {
+  // await leave.getLeavesForStartFieldForJobSchedule();
+  // await leave.getLeavesForEndFieldForJobSchedule();
+
   console.log(`Server corriendo en : ${URL}${PORT}`);
+  const now = new Date();
+  console.log('Fecha y hora local del servidor:', now.toLocaleString());
 });

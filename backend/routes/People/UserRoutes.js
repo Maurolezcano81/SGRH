@@ -11,10 +11,10 @@ const user = new UserController();
 
 const router = express.Router();
 
-
-
 router.post('/user/create', avatarUpload, handleFileUpload("/uploads/avatars"), user.createUser.bind(user));
 router.post('/users', user.getUsers.bind(user));
+router.post('/users/information', user.getAllUsersData.bind(user));
+
 router.patch('/user/status', user.toggleStatusUser.bind(user));
 
 const UserRoutes = {

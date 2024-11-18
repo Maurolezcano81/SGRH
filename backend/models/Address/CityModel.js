@@ -55,21 +55,18 @@ class CityModel extends BaseModel {
     }
 
 
-    async getStatesActivesByCountry(state_fk, filters = {}) {
+    async getStatesActivesByCountry(state_fk) {
         try {
-            const { whereClause, values } = this.buildWhereClauseNotStarting(filters);
             const query = `
                 SELECT 
-                    s.*
-                from city s
+                    *
+                from city c
                 where state_fk = ?
-                and status_state = 1
-                ${whereClause.length > 0 ? 'AND' : ''}
-                ${whereClause}
+                and status_city = 1
                 GROUP BY name_city
                 `;
 
-            const [results] = await this.con.promise().query(query, [state_fk, ...values]);
+            const [results] = await this.con.promise().query(query, [state_fk]);
 
             return results;
         } catch (error) {

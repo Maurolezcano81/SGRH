@@ -331,6 +331,70 @@ class LeaveModel extends BaseModel {
             throw new Error("Error en Users LeaveModels: " + error.message);
         }
     }
+
+    async getLeavesForStartFieldForJobSchedule(date) {
+        try {
+
+            const query = `
+            select 
+                lrr.id_lrr,
+                u.id_user,
+                e.id_entity,
+                emp.id_employee,
+                lr.start_lr,
+                lr.end_lr
+            from leave_response_request lrr
+            join leave_request lr on lrr.lr_fk = lr.id_lr 
+            join status_request sr on lrr.sr_fk = sr.id_sr
+            join user u on lr.user_fk = u.id_user
+            join entity e on u.entity_fk = e.id_entity
+            left join employee emp on e.id_entity = emp.entity_fk
+            where start_lr = ?
+            and name_sr = 'Aprobado'
+        `
+
+            const [results] = await this.conn.promise().query(query, [date])
+
+            return results
+
+        } catch (error) {
+            console.error("Error en Users LeaveModels:", error.message);
+            throw new Error("Error en Users LeaveModels: " + error.message);
+        }
+    }
+
+
+    async getLeavesForEndFieldForJobSchedule(date) {
+        try {
+
+            const query = `
+            select 
+                lrr.id_lrr,
+                u.id_user,
+                e.id_entity,
+                emp.id_employee,
+                lr.start_lr,
+                lr.end_lr
+            from leave_response_request lrr
+            join leave_request lr on lrr.lr_fk = lr.id_lr 
+            join status_request sr on lrr.sr_fk = sr.id_sr
+            join user u on lr.user_fk = u.id_user
+            join entity e on u.entity_fk = e.id_entity
+            left join employee emp on e.id_entity = emp.entity_fk
+            where end_lr = ?
+            and name_sr = 'En Proceso'
+        `
+
+            const [results] = await this.conn.promise().query(query, [date])
+
+            return results
+
+        } catch (error) {
+            console.error("Error en Users LeaveModels:", error.message);
+            throw new Error("Error en Users LeaveModels: " + error.message);
+        }
+    }
+
 }
 
 export default LeaveModel

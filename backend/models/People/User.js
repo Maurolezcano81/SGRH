@@ -186,6 +186,28 @@ class UserModel extends BaseModel {
     }
   }
 
+  async getAllUsersData() {
+    try {
+      const query = `
+        select
+          id_user,
+          id_entity,
+          name_entity,
+          lastname_entity,
+          avatar_user
+        from user u
+        join entity e on u.entity_fk = e.id_entity  
+        order by name_entity asc    
+            ;
+            `
+      const [results] = await this.conn.promise().query(query, [])
+      return results;
+    } catch (error) {
+      console.error("Error en Users Quiz Performance:", error.message);
+      throw new Error("Error en Users Quiz Performance: " + error.message);
+    }
+
+  }
 
 }
 

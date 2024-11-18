@@ -59,6 +59,9 @@ class StateControllers {
 
   async getActives(req, res) {
     const { state_fk } = req.body;
+
+    console.log(req.body)
+    
     try {
       if (isInputEmpty(state_fk)) {
         return res.status(500).json({
@@ -67,6 +70,7 @@ class StateControllers {
       }
 
       const queryResponse = await this.model.getStatesActivesByCountry(state_fk);
+      console.log(queryResponse)
 
       if (!queryResponse) {
         return res.status(500).json({

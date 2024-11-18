@@ -48,21 +48,17 @@ const QuantityForLeaves = ({ token }) => {
 
         const ctx = chartRef.current.getContext('2d');
 
-        // Etiquetas son los nombres de los tipos de baja (name_tol)
         const labels = dataDismiss.map((item) => item.name_tol);
 
-        // Datos son los días totales (total_days) correspondientes a cada tipo de baja
         const dataPoints = dataDismiss.map((item) => item.total_days || 0);
 
-        // Colores de las barras (uno por cada tipo de baja)
         const backgroundColors = dataDismiss.map(() => generateRandomColor());
         const borderColors = backgroundColors.map(color => color.replace('1', '1'));
 
-        // Definimos un único dataset con todos los datos
         const datasets = [
             {
                 label: 'Cantidad de bajas por razón',
-                data: dataPoints,  // Aquí están todos los datos correspondientes a cada tipo de baja
+                data: dataPoints, 
                 backgroundColor: backgroundColors,
                 borderColor: borderColors, 
                 borderWidth: 2,
@@ -70,7 +66,6 @@ const QuantityForLeaves = ({ token }) => {
         ];
 
         if (chartInstance.current) {
-            // Si el gráfico ya existe, actualizamos los datos
             chartInstance.current.data.labels = labels;  // Actualizamos las etiquetas
             chartInstance.current.data.datasets = datasets;  // Actualizamos el dataset
             chartInstance.current.update();
