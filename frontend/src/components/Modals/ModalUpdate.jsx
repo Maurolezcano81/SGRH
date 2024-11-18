@@ -3,6 +3,7 @@ import ButtonBlue from '../ButtonBlue';
 import ButtonRed from '../ButtonRed';
 import useAuth from '../../hooks/useAuth';
 import AlertSuccesfully from '../Alerts/AlertSuccesfully';
+import AlertError from '../Alerts/AlertError';
 
 const ModalUpdate = ({
   title_modal,
@@ -20,15 +21,15 @@ const ModalUpdate = ({
   fetchData_select,
 }) => {
   const [inputValues, setInputValues] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const { authData } = useAuth();
 
   useEffect(() => {
-    const fetchOccupation = async () => {
+    const fetchDataToUpdate = async () => {
       try {
-        const requestBody = {};
-        requestBody[idFetchData] = idToUpdate;
+        const requestBody = { [idFetchData]: idToUpdate };
 
         const fetchResponse = await fetch(getOneUrl, {
           method: methodGetOne,
@@ -39,20 +40,21 @@ const ModalUpdate = ({
           body: JSON.stringify(requestBody),
         });
 
-        if (!fetchResponse.ok) {
-          console.log(fetchResponse.message);
-        }
-
         const data = await fetchResponse.json();
+
+        if (!fetchResponse.ok) {
+          setErrorMessage(data.message || 'Error al obtener los datos.');
+          return;
+        }
 
         setInputValues(data.queryResponse[0]);
       } catch (error) {
-        console.error('Error al obtener las ocupaciones', error);
+        setErrorMessage('Error en la conexión al servidor.');
       }
     };
 
-    fetchOccupation();
-  }, [authData.token, getOneUrl, idToUpdate]);
+    fetchDataToUpdate();
+  }, [authData.token, getOneUrl, idToUpdate, idFetchData]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -65,17 +67,25 @@ const ModalUpdate = ({
         },
         body: JSON.stringify(inputValues),
       });
+
       const dataFormatted = await response.json();
 
-      console.log(dataFormatted);
-
-      if (response.status === 403) {
-        setErrorMessage(dataFormatted.message);
-      } else {
-        onSubmitUpdate(inputValues);
+      if (!response.ok) {
+        setErrorMessage(dataFormatted.message || 'Error al actualizar los datos.');
+        setSuccessMessage('');
+        return;
       }
+
+      setSuccessMessage(dataFormatted.message || 'Datos actualizados correctamente.');
+      setErrorMessage('');
+      setTimeout(() => {
+        setSuccessMessage('');
+        onSubmitUpdate(inputValues); // Refrescar la lista o realizar acción adicional
+        handleModalUpdate(); // Cerrar el modal
+      }, 1500);
     } catch (error) {
-      console.error('Error:', error);
+      setErrorMessage('Error en la conexión al servidor.');
+      setSuccessMessage('');
     }
   };
 
@@ -88,47 +98,50 @@ const ModalUpdate = ({
   };
 
   return (
-    <div className="alert__background__black">
-      <div className="preferences__modal__container">
-        <div className="preferences__modal__content">
-          <h2>{title_modal}</h2>
-          <form className="preferences__modal__content-update" onSubmit={handleFormSubmit}>
-            {labels.map((label, index) => (
-              <div key={index} className="preferences__modal__field">
-                <label>{label}</label>
-                <input
-                  type="text"
-                  name={fetchData[index]}
-                  placeholder={placeholders[index]}
-                  value={inputValues[fetchData[index]]}
-                  onChange={handleInputChange}
-                />
-              </div>
-            ))}
-            <div className="preferences__modal__field">
-              <label htmlFor={fetchData_select}>Estado</label>
-              <select value={inputValues[fetchData_select]} name={fetchData_select} onChange={handleInputChange}>
-                <option disabled={true} value="">
-                  Seleccione un estado
-                </option>
-                <option value="1">Activo</option>
-                <option value="0">Inactivo</option>
-              </select>
-            </div>
-          </form>
-          {errorMessage && (
-            <div className="preferences__modal__error error-message">
-              <p>{errorMessage}</p>
-            </div>
-          )}
+    <>
+      {successMessage && <AlertSuccesfully message={successMessage} />}
+      {errorMessage && <AlertError errorMessage={errorMessage} />}
 
-          <div className="preferences__modal__actions">
-            <ButtonRed title="Cancelar" onClick={handleModalUpdate} />
-            <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} type="submit" />
+      <div className="alert__background__black">
+        <div className="preferences__modal__container">
+          <div className="preferences__modal__content">
+            <h2>{title_modal}</h2>
+            <form className="preferences__modal__content-update" onSubmit={handleFormSubmit}>
+              {labels.map((label, index) => (
+                <div key={index} className="preferences__modal__field">
+                  <label>{label}</label>
+                  <input
+                    type="text"
+                    name={fetchData[index]}
+                    placeholder={placeholders[index]}
+                    value={inputValues[fetchData[index]] || ''}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              ))}
+              <div className="preferences__modal__field">
+                <label htmlFor={fetchData_select}>Estado</label>
+                <select
+                  value={inputValues[fetchData_select] || ''}
+                  name={fetchData_select}
+                  onChange={handleInputChange}
+                >
+                  <option disabled={true} value="">
+                    Seleccione un estado
+                  </option>
+                  <option value="1">Activo</option>
+                  <option value="0">Inactivo</option>
+                </select>
+              </div>
+            </form>
+            <div className="preferences__modal__actions">
+              <ButtonRed title="Cancelar" onClick={handleModalUpdate} />
+              <ButtonBlue title="Guardar Cambios" onClick={handleFormSubmit} type="submit" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

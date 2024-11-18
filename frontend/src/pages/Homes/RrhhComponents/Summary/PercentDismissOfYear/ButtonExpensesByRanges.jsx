@@ -81,7 +81,7 @@ const ButtonExpensesByRanges = () => {
             body: queryResponse.map(item => [
                 item.salary_range,
                 item.total_employees,
-                `$${Number(item.percentage).toFixed(2)}%`,
+                `${Number(item.percentage).toFixed(2)}%`,
             ]),
             columnStyles: {
 

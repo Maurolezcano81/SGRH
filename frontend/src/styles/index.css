@@ -1538,6 +1538,17 @@ input {
   z-index: 15;
 }
 
+.alert__background__black__index__top__alerts {
+  content: '';
+  min-width: 100vw;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--bg-black-2-30);
+  z-index: 15;
+}
+
 .alert__container.modal__listforadd {
   justify-content: start;
   padding: 0.5rem;
@@ -2842,7 +2853,7 @@ input {
     display: block;
   }
 
-  .report__title__container{
+  .report__title__container {
     justify-content: center;
   }
 

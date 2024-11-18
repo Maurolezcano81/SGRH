@@ -3,16 +3,18 @@ import ErrorMessage from '../Alerts/ErrorMessage';
 import ButtonBlue from '../ButtonBlue';
 import ButtonRed from '../ButtonRed';
 import useAuth from '../../hooks/useAuth';
+import AlertSuccesfully from '../Alerts/AlertSuccesfully';
+import AlertError from '../Alerts/AlertError';
+
 const ModalDelete = ({
   handleModalDelete,
   deleteOne,
   field_name,
   idToDelete,
   onSubmitDelete,
-  messageToDelete = "¿Quieres eliminar este registro? Al aceptar no se puede recuperar la informacion",
-  textButtonRed = "Eliminar"
+  messageToDelete = "¿Quieres eliminar este registro? Al aceptar no se puede recuperar la información",
+  textButtonRed = "Eliminar",
 }) => {
-
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -20,8 +22,8 @@ const ModalDelete = ({
 
   const handleSubmit = async () => {
     try {
-      const body = {};
-      body[field_name] = idToDelete;
+      const body = { [field_name]: idToDelete };
+
       const fetchResponse = await fetch(deleteOne, {
         method: 'DELETE',
         headers: {
@@ -33,38 +35,46 @@ const ModalDelete = ({
 
       const dataFormatted = await fetchResponse.json();
 
-      if (fetchResponse.status != 200) {
-        setErrorMessage(dataFormatted.message);
-        setSuccessMessage('');
-        return
+      if (!fetchResponse.ok) {
+        setErrorMessage(dataFormatted.message || 'Ocurrió un error al eliminar el registro.');
+
+        setTimeout(() => {
+          setSuccessMessage('');
+          handleModalDelete(); 
+        }, 1500);
+        return;
       }
 
-      setSuccessMessage(dataFormatted.message);
+      setSuccessMessage(dataFormatted.message || 'Registro eliminado exitosamente.');
       setErrorMessage('');
-      onSubmitDelete();
-      return
+      setTimeout(() => {
+        setSuccessMessage('');
+        onSubmitDelete();
+        handleModalDelete(); // Cerrar el modal
+      }, 1500);
     } catch (error) {
-      setErrorMessage('Error en la conexión');
+      setErrorMessage('Error comunicándose con el servidor, intentelo reiniciando el sitio');
       setSuccessMessage('');
     }
   };
 
   return (
-    <div className="alert__background__black">
-      <div className="alert__container">
-        <div className="alert__header modal__delete">
-          <p>{messageToDelete}</p>
-        </div>
-        <div className="modal__delete__message ">
-          {successMessage && successMessage.length > 0 && <div className="success-message">{successMessage}</div>}
-          {errorMessage && errorMessage.length > 0 && <div className="error-message">{errorMessage}</div>}
-        </div>
-        <div className="alert__footer modal__delete">
-          <ButtonRed onClick={handleSubmit} title={textButtonRed} />
-          <ButtonBlue onClick={() => handleModalDelete()} title={'Volver'} />
+    <>
+      {successMessage && <AlertSuccesfully message={successMessage} />}
+      {errorMessage && <AlertError errorMessage={errorMessage} />}
+
+      <div className="alert__background__black">
+        <div className="alert__container">
+          <div className="alert__header modal__delete">
+            <p>{messageToDelete}</p>
+          </div>
+          <div className="alert__footer modal__delete">
+            <ButtonRed onClick={handleSubmit} title={textButtonRed} />
+            <ButtonBlue onClick={handleModalDelete} title="Volver" />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

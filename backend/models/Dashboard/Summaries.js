@@ -11,53 +11,62 @@ class SummariesModel extends BaseModel {
     async PercentOfDismissByYear(year) {
         try {
             const query = `
-                WITH DespidosPorMes AS (
-                    SELECT 
-                        DATE_FORMAT(date_te, '%Y-%m') AS mes,
-                        COUNT(*) AS despidos
-                    FROM 
-                        termination_employee
-                    WHERE 
-                        YEAR(date_te) = ?
-                        AND status_tot = 1
-                    GROUP BY 
-                        DATE_FORMAT(date_te, '%Y-%m')
-                ),
-                TotalEmpleadosContratados AS (
-                    SELECT 
-                        DATE_FORMAT(date_entry_employee, '%Y-%m') AS mes,
-                        COUNT(*) AS empleados_mes
-                    FROM 
-                        employee
-                    WHERE 
-                        YEAR(date_entry_employee) <= ?
-                    GROUP BY 
-                        DATE_FORMAT(date_entry_employee, '%Y-%m')
-                )
-                SELECT 
-                    d.mes,
-                    d.despidos,
-                    COALESCE(
-                        (SELECT SUM(e.empleados_mes) 
-                        FROM TotalEmpleadosContratados e 
-                        WHERE e.mes <= d.mes), 0
-                    ) AS total_empleados,
-                    (COALESCE(
-                        (SELECT SUM(e.empleados_mes) 
-                        FROM TotalEmpleadosContratados e 
-                        WHERE e.mes <= d.mes), 0
-                    ) - d.despidos) AS total_restantes,
-                    ROUND(
-                        (d.despidos / COALESCE(
-                            (SELECT SUM(e.empleados_mes) 
-                            FROM TotalEmpleadosContratados e 
-                            WHERE e.mes <= d.mes), 1
-                        )) * 100, 2
-                    ) AS porcentaje_despidos
-                FROM 
-                    DespidosPorMes d
-                ORDER BY 
-                    d.mes;
+WITH DespidosPorMes AS (
+    SELECT 
+        DATE_FORMAT(date_te, '%Y-%m') AS mes,
+        COUNT(*) AS despidos
+    FROM 
+        termination_employee
+    WHERE 
+        YEAR(date_te) = ?
+    GROUP BY 
+        DATE_FORMAT(date_te, '%Y-%m')
+),
+TotalEmpleadosContratados AS (
+    SELECT 
+        DATE_FORMAT(date_entry_employee, '%Y-%m') AS mes,
+        COUNT(*) AS empleados_mes
+    FROM 
+        employee
+    WHERE 
+        YEAR(date_entry_employee) <= ? 
+        AND status_employee = 1 
+    GROUP BY 
+        DATE_FORMAT(date_entry_employee, '%Y-%m')
+),
+DespidosAcumulados AS (
+    SELECT 
+        mes,
+        SUM(despidos) OVER (ORDER BY mes) AS despidos_acumulados
+    FROM 
+        DespidosPorMes
+)
+SELECT 
+    d.mes,
+    d.despidos,
+    COALESCE(
+        (SELECT SUM(e.empleados_mes) 
+         FROM TotalEmpleadosContratados e 
+         WHERE e.mes <= d.mes), 0
+    ) AS total_empleados,
+    (COALESCE(
+        (SELECT SUM(e.empleados_mes) 
+         FROM TotalEmpleadosContratados e 
+         WHERE e.mes <= d.mes), 0
+    ) - COALESCE(da.despidos_acumulados, 0)) AS total_restantes,
+    ROUND(
+        (d.despidos / COALESCE(
+            (SELECT SUM(e.empleados_mes) 
+             FROM TotalEmpleadosContratados e 
+             WHERE e.mes <= d.mes), 1
+        )) * 100, 2
+    ) AS porcentaje_despidos
+FROM 
+    DespidosPorMes d
+LEFT JOIN 
+    DespidosAcumulados da ON d.mes = da.mes
+ORDER BY 
+    d.mes;
             `
 
             const [results] = await this.conn.promise().query(query, [year, year]);
@@ -309,7 +318,7 @@ class SummariesModel extends BaseModel {
                         (SELECT COUNT(*) FROM entity
                         join employee emp on e.id_entity = emp.entity_fk
                         WHERE status_entity = 1 AND status_employee = 1), 2) AS percentage, 
-                    (SELECT COUNT(*) FROM entity
+                    (SELECT COUNT(distinct id_entity) FROM entity e
                     join employee emp on e.id_entity = emp.entity_fk
                     WHERE status_entity = 1 AND status_employee = 1) AS total_all_employees  
                 FROM 

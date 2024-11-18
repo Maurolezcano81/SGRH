@@ -78,7 +78,7 @@ const ButtonDiversityOfSexs = () => {
 
 
         doc.setFontSize(10);
-        doc.text(`Total de dias de Empleados: ${queryResponse[0].total_all_employees}`, 10, 70)
+        doc.text(`Total de Empleados: ${queryResponse[0].total_all_employees}`, 10, 70)
 
 
         doc.autoTable({
