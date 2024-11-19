@@ -183,6 +183,12 @@ class ProfileController {
 
       const queryResponse = await this.model.deleteOne(value_profile, 'id_profile');
 
+      if (!queryResponse) {
+        return res.status(500).json({
+          message: 'Error al eliminar perfil, debido a que esta asociado a datos que podrian afectar el funcionamiento del sistema, primero pruebe eliminando los modulos'
+        })
+      }
+
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al eliminar perfil');
       }
@@ -193,8 +199,8 @@ class ProfileController {
       });
     } catch (error) {
       console.error('Error en controlador de perfil: ' + error);
-      return res.status(403).json({
-        message: error.message,
+      return res.status(500).json({
+        message: 'Error al eliminar perfil, debido a que esta asociado a datos que podrian afectar el funcionamiento del sistema, primero pruebe eliminando los modulos'
       });
     }
   }
