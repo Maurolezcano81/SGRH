@@ -292,6 +292,7 @@ class ContactController {
   async deleteEntityContact(req, res) {
     const { id_ec } = req.body;
 
+      console.log(id_ec)
     try {
       const queryResponse = await this.entityContact.deleteOne(id_ec, 'id_ec');
 
@@ -313,10 +314,174 @@ class ContactController {
     }
   }
 
+
+  async updateEntityContact(req, res) {
+    const { id_ec, entity_fk, value_ec, contact_fk } = req.body;
+
+    const validationRules = {
+      1: {
+        regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: 'El correo electrónico debe tener un formato válido.'
+      },
+      2: {
+        regex: /^\d{7,10}$/,
+        message: 'El teléfono fijo debe contener entre 7 y 10 dígitos.'
+      },
+      3: {
+        regex: /^\d{10}$/,
+        message: 'El teléfono móvil debe contener exactamente 10 dígitos.'
+      },
+      4: {
+        regex: /^\d{7,10}$/,
+        message: 'El fax debe contener entre 7 y 10 dígitos.'
+      },
+      5: {
+        regex: /^.{5,100}$/,
+        message: 'La dirección postal debe tener entre 5 y 100 caracteres.'
+      },
+      6: {
+        regex: /^(https?:\/\/)?(www\.)?facebook\.com\/[a-zA-Z0-9_.]{3,}$/,
+        message: 'El enlace de Facebook debe ser válido y contener al menos 3 caracteres después de "facebook.com/".'
+      },
+      7: {
+        regex: /^@[a-zA-Z0-9_]{3,15}$/,
+        message: 'El usuario de Twitter debe comenzar con "@" y tener entre 3 y 15 caracteres.'
+      },
+      8: {
+        regex: /^@[a-zA-Z0-9_.]{3,30}$/,
+        message: 'El usuario de Instagram debe comenzar con "@" y tener entre 3 y 30 caracteres.'
+      },
+      9: {
+        regex: /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]{5,30}$/,
+        message: 'El enlace de LinkedIn debe ser válido y contener entre 5 y 30 caracteres después de "linkedin.com/in/".'
+      },
+      10: {
+        regex: /^\d{10,15}$/,
+        message: 'El número de WhatsApp debe contener entre 10 y 15 dígitos.'
+      },
+      12: {
+        regex: /^.{1,}$/,
+        message: 'El valor del contacto "prueba 2" no puede estar vacío.'
+      },
+      17: {
+        regex: /^.{1,}$/,
+        message: 'El valor del contacto "sa" no puede estar vacío.'
+      },
+      18: {
+        regex: /^.{1,}$/,
+        message: 'El valor del contacto "ss" no puede estar vacío.'
+      },
+      30: {
+        regex: /^\d{7,15}$/,
+        message: 'El teléfono corporativo debe contener entre 7 y 15 dígitos.'
+      },
+    };
+
+    try {
+      const rule = validationRules[contact_fk];
+
+      // Validar tipo de documento
+      if (!rule) {
+        return res.status(403).json({ message: 'Tipo de documento no válido.' });
+      }
+
+      if (!rule.regex.test(value_ec)) {
+        return res.status(403).json({ message: rule.message });
+      }
+
+      const queryResponse = await this.entityContact.updateOne(
+        { value_ec, contact_fk },
+        ['id_ec', id_ec]
+      );
+
+      if (queryResponse.affectedRows < 1) {
+        return res.status(403).json({ message: 'No se ha podido actualizar' });
+      }
+
+      return res.status(200).json({
+        message: 'Actualizado correctamente',
+        queryResponse,
+      });
+    } catch (error) {
+      console.error('Error en controlador de documento: ' + error);
+      return res.status(403).json({ message: error.message });
+    }
+  }
+
   async createEntityContact(req, res) {
     const { entity_fk, value_ec, contact_fk } = req.body;
 
+    const validationRules = {
+      1: {
+        regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: 'El correo electrónico debe tener un formato válido.'
+      },
+      2: {
+        regex: /^\d{7,10}$/,
+        message: 'El teléfono fijo debe contener entre 7 y 10 dígitos.'
+      },
+      3: {
+        regex: /^\d{10}$/,
+        message: 'El teléfono móvil debe contener exactamente 10 dígitos.'
+      },
+      4: {
+        regex: /^\d{7,10}$/,
+        message: 'El fax debe contener entre 7 y 10 dígitos.'
+      },
+      5: {
+        regex: /^.{5,100}$/,
+        message: 'La dirección postal debe tener entre 5 y 100 caracteres.'
+      },
+      6: {
+        regex: /^(https?:\/\/)?(www\.)?facebook\.com\/[a-zA-Z0-9_.]{3,}$/,
+        message: 'El enlace de Facebook debe ser válido y contener al menos 3 caracteres después de "facebook.com/".'
+      },
+      7: {
+        regex: /^@[a-zA-Z0-9_]{3,15}$/,
+        message: 'El usuario de Twitter debe comenzar con "@" y tener entre 3 y 15 caracteres.'
+      },
+      8: {
+        regex: /^@[a-zA-Z0-9_.]{3,30}$/,
+        message: 'El usuario de Instagram debe comenzar con "@" y tener entre 3 y 30 caracteres.'
+      },
+      9: {
+        regex: /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]{5,30}$/,
+        message: 'El enlace de LinkedIn debe ser válido y contener entre 5 y 30 caracteres después de "linkedin.com/in/".'
+      },
+      10: {
+        regex: /^\d{10,15}$/,
+        message: 'El número de WhatsApp debe contener entre 10 y 15 dígitos.'
+      },
+      12: {
+        regex: /^.{1,}$/,
+        message: 'El valor del contacto "prueba 2" no puede estar vacío.'
+      },
+      17: {
+        regex: /^.{1,}$/,
+        message: 'El valor del contacto "sa" no puede estar vacío.'
+      },
+      18: {
+        regex: /^.{1,}$/,
+        message: 'El valor del contacto "ss" no puede estar vacío.'
+      },
+      30: {
+        regex: /^\d{7,15}$/,
+        message: 'El teléfono corporativo debe contener entre 7 y 15 dígitos.'
+      },
+    };
+
     try {
+      const rule = validationRules[contact_fk];
+
+      if (!rule) {
+        return res.status(403).json({ message: 'Tipo de documento no válido.' });
+      }
+
+      if (!rule.regex.test(value_ec)) {
+        return res.status(403).json({ message: rule.message });
+      }
+
+
       const queryResponse = await this.entityContact.createOne({ entity_fk, value_ec, contact_fk });
 
       if (queryResponse.affectedRows > 1) {

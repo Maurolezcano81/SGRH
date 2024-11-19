@@ -167,6 +167,29 @@ class EntityModel extends BaseModel {
             throw new Error("Error en getAll: " + error.message);
         }
     }
+
+
+    async getDocumentsByEntity(id_entity) {
+        try {
+            const query = `
+                          select 
+              	name_document,
+              	id_document,
+              	value_ed
+              from document d
+              join entity_document ed on d.id_document = ed.document_fk 
+              join entity e on ed.entity_fk = e.id_entity 
+  				where e.id_entity = ?
+              ;
+        `;
+
+            const [results] = await this.con.promise().query(query, [id_entity]);
+            return results;
+        } catch (error) {
+            console.error("Error en getAll:", error.message);
+            throw new Error("Error en getAll: " + error.message);
+        }
+    }
 }
 
 export default EntityModel;

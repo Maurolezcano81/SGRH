@@ -4,6 +4,9 @@ import ModalSelectInput from "../../../../../../components/Modals/Updates/ModalS
 import EditButton from "../../../../../../components/Buttons/EditButton";
 import ButtonWhiteOutlineBlack from "../../../../../../components/Buttons/ButtonWhiteOutlineBlack";
 import ModalAdd from "../../../../../../components/Modals/ModalAdd";
+import ButtonRed from "../../../../../../components/ButtonRed";
+import ContactsAdd from "./Modal/ContactsAdd";
+import ModalDelete from "../../../../../../components/Modals/ModalDelete";
 
 const ContactsEdit = ({ contacts, entity, updateProfile, permissionsData,
     isEditMode }) => {
@@ -12,8 +15,8 @@ const ContactsEdit = ({ contacts, entity, updateProfile, permissionsData,
     const [initialData, setInitialData] = useState({});
     const [isModalCreateDocumentOpen, setIsModalCreateDocumentOpen] = useState(false);
 
-    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT}`
-    const updateDocument = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITYCONTACT}`
+    const urlDocuments = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_CONTACT_ACTIVES}`
+    const updateDocument = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.U_ENTITY_CONTACT}`
 
     const handleSingleEditClick = (contact) => {
         setInitialData({
@@ -29,9 +32,34 @@ const ContactsEdit = ({ contacts, entity, updateProfile, permissionsData,
         setSingleModalIsOpen(false);
     };
 
-    const handleOpenModalAdd = () => {
-        setIsModalCreateDocumentOpen(true);
+
+    // MODAL ADD
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+
+    const handleModalAddOpen = () => {
+        setIsModalAddOpen(true)
     }
+
+    const handleModalAddClose = () => {
+        setIsModalAddOpen(false)
+    }
+
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [idToGet, setIdToGet] = useState(null)
+
+    const handleModalDeleteOpen = (row) => {
+        setIdToGet(row.id_ec)
+        setIsModalDeleteOpen(true)
+    }
+
+    const handleModalDeleteClose = () => {
+        setIdToGet("")
+        setIsModalDeleteOpen(false)
+        updateProfile()
+    }
+
+    const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_ENTITY_CONTACT}`
+
 
     return (
         <>
@@ -43,6 +71,9 @@ const ContactsEdit = ({ contacts, entity, updateProfile, permissionsData,
                         {(isEditMode && (permissionsData.isTheSameUser || permissionsData?.isRrhh || permissionsData?.isAdmin)) ? (
                             <>
                                 <EditButton handleClick={() => handleSingleEditClick(contact)} />
+
+                                <ButtonRed title={"Eliminar"} onClick={() => handleModalDeleteOpen(contact)} />
+
                             </>
                         ) : null}
                     </div>
@@ -79,12 +110,29 @@ const ContactsEdit = ({ contacts, entity, updateProfile, permissionsData,
                     <ButtonWhiteOutlineBlack
                         title={"Agregar contacto"}
                         full={true}
-                        onClick={() => handleOpenModalAdd()}
+                        onClick={() => handleModalAddOpen()}
                     />
                 </>
             ) : null}
 
+            {isModalAddOpen && (
+                <ContactsAdd
+                    entityFk={entity.id_entity}
+                    handleCloseModal={handleModalAddClose}
+                    refreshList={updateProfile}
+                />
+            )}
 
+
+            {isModalDeleteOpen && (
+                <ModalDelete
+                    handleModalDelete={handleModalDeleteClose}
+                    deleteOne={deleteOne}
+                    field_name={'id_ec'}
+                    idToDelete={idToGet}
+                    onSubmitDelete={handleModalDeleteClose}
+                />
+            )}
         </>
     )
 }

@@ -4,6 +4,9 @@ import ModalSelectInput from "../../../../../../components/Modals/Updates/ModalS
 import EditButton from "../../../../../../components/Buttons/EditButton";
 import ButtonWhiteOutlineBlack from "../../../../../../components/Buttons/ButtonWhiteOutlineBlack";
 import ModalAdd from "../../../../../../components/Modals/ModalAdd";
+import DocumentAdd from "./Modal/DocumentAdd";
+import ButtonRed from "../../../../../../components/ButtonRed";
+import ModalDelete from "../../../../../../components/Modals/ModalDelete";
 
 const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
     isEditMode }) => {
@@ -29,9 +32,32 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
         setSingleModalIsOpen(false);
     };
 
-    const handleOpenModalAdd = () => {
-        setIsModalCreateDocumentOpen(true);
+    // MODAL ADD
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+
+    const handleModalAddOpen = () => {
+        setIsModalAddOpen(true)
     }
+
+    const handleModalAddClose = () => {
+        setIsModalAddOpen(false)
+    }
+
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [idToGet, setIdToGet] = useState(null)
+
+    const handleModalDeleteOpen = (row) => {
+        setIdToGet(row.id_ed)
+        setIsModalDeleteOpen(true)
+    }
+
+    const handleModalDeleteClose = () => {
+        setIdToGet("")
+        setIsModalDeleteOpen(false)
+        updateProfile()
+    }
+
+    const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_ENTITY_DOCUMENT}`
 
     return (
         <>
@@ -43,6 +69,9 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
                         {(isEditMode && (permissionsData.isTheSameUser || permissionsData?.isRrhh || permissionsData?.isAdmin)) ? (
                             <>
                                 <EditButton handleClick={() => handleSingleEditClick(document)} />
+
+                                <ButtonRed title={"Eliminar"} onClick={() => handleModalDeleteOpen(document)} />
+
                             </>
                         ) : null}
                     </div>
@@ -79,11 +108,29 @@ const DocumentsEdit = ({ documents, entity, updateProfile, permissionsData,
                     <ButtonWhiteOutlineBlack
                         title={"Agregar documento"}
                         full={true}
-                        onClick={() => handleOpenModalAdd()}
+                        onClick={() => handleModalAddOpen()}
                     />
                 </>
             ) : null}
 
+            {isModalAddOpen && (
+                <DocumentAdd
+                    entityFk={entity.id_entity}
+                    handleCloseModal={handleModalAddClose}
+                    refreshList={updateProfile}
+                />
+            )}
+
+
+            {isModalDeleteOpen && (
+                <ModalDelete
+                    handleModalDelete={handleModalDeleteClose}
+                    deleteOne={deleteOne}
+                    field_name={'id_ed'}
+                    idToDelete={idToGet}
+                    onSubmitDelete={handleModalDeleteClose}
+                />
+            )}
 
         </>
     )

@@ -93,6 +93,7 @@ router.post('/request/capacitation/new', capacitation.createRequestCapacitation.
 router.post('/document/entity/new', document.createEntityDocument.bind(document));
 router.delete('/document/entity/delete', document.deleteEntityDocument.bind(document));
 
+router.patch('/contact/entity/update', contact.updateEntityContact.bind(contact));
 router.post('/contact/entity/new', contact.createEntityContact.bind(contact));
 router.delete('/contact/entity/delete', contact.deleteEntityContact.bind(contact));
 

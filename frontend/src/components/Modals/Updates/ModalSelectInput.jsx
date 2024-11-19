@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ButtonBlue from '../../ButtonBlue';
 import ButtonRed from '../../ButtonRed';
 import useAuth from '../../../hooks/useAuth';
+import AlertSuccesfully from '../../Alerts/AlertSuccesfully';
+import AlertError from '../../Alerts/AlertError';
 
 const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectField, inputField, urlUpdate, updateProfile }) => {
     const [dataToUpdate, setDataToUpdate] = useState({ ...initialData });
@@ -63,6 +65,7 @@ const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectF
 
             if (response.status === 403) {
                 setErrorMessage(dataFormatted.message);
+                return
             } else {
                 handleCloseModal();
                 updateProfile();
@@ -73,6 +76,7 @@ const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectF
     };
 
     return (
+
         <div className="alert__background__black" onClick={handleCloseModal}>
             <div className="preferences__modal__container" onClick={(e) => e.stopPropagation()}>
                 <div className="preferences__modal__content">
@@ -108,7 +112,7 @@ const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectF
 
                         {errorMessage && (
                             <div className="preferences__modal__error">
-                                <p>{errorMessage}</p>
+                                <p className='error-message my-2'>{errorMessage}</p>
                             </div>
                         )}
 
@@ -120,6 +124,7 @@ const ModalSelectInput = ({ initialData, handleCloseModal, urlForSelect, selectF
                 </div>
             </div>
         </div>
+
     );
 };
 
