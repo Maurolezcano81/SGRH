@@ -112,21 +112,24 @@ const CreateUser = () => {
 
         if (fetchResponse.status === 500) {
           setCriticalErrorToggle(true);
-          setCriticalErrorMessagge(dataFetch.message);
+          setCriticalErrorMessagge(dataFetch.message || 'Error crítico del servidor.');
           return;
         }
 
         setIsSuccessfully(true);
-        setSuccessfullyMessage(dataFetch.message);
+        setSuccessfullyMessage(dataFetch.message || 'Usuario creado exitosamente.');
 
         setTimeout(() => {
           navigate('/rrhh/personal/ver');
         }, 3000);
       }
     } catch (error) {
+      setCriticalErrorToggle(true);
+      setCriticalErrorMessagge('Error inesperado al intentar crear el usuario.');
       console.error(error);
     }
   };
+
   return (
     <div className="container__page">
       <form className="form__container form__create__user">

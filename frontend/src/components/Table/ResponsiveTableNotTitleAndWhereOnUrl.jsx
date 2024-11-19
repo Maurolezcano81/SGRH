@@ -163,36 +163,18 @@ const ResponsiveTableNotTitleAndWhereOnUrl = ({
 
     const [expandedRows, setExpandedRows] = useState([]);
 
+    const [isOpenHelpSection, setIsOpenHelpSection] = useState(false);
+
+    const handleOpenHelpSection = () => {
+        setIsOpenHelpSection(true)
+    }
+
+    const handleCloseHelpSection = () => {
+        setIsOpenHelpSection(false)
+    }
     return (
         <>
             <div className='container__content'>
-                <div className="responsive__table-actions" data-label="Acciones">
-                    {showActions.view && actions.view && (
-                        <ButtonImgTxt
-                            onClick={() => actions.view(row)}
-                            title={buttonOneInfo.title}
-                            img={buttonOneInfo.img}
-                            color={buttonOneInfo.color}
-                        />
-                    )}
-                    {showActions.edit && actions.edit && (
-                        <ButtonImgTxt
-                            onClick={() => actions.edit(row)}
-                            title={buttonTwoInfo.title}
-                            img={buttonTwoInfo.img}
-                            color={buttonTwoInfo.color}
-                        />
-                    )}
-                    {showActions.delete && actions.delete && (
-                        <ButtonImgTxt
-                            onClick={() => actions.delete(row)}
-                            title={buttonTreeInfo.title}
-                            img={buttonTreeInfo.img}
-                            color={buttonTreeInfo.color}
-                        />
-                    )}
-                </div>
-
 
                 <div className='table__filters__container'>
                     <div className='table__search__container'>
@@ -219,6 +201,11 @@ const ResponsiveTableNotTitleAndWhereOnUrl = ({
                                 />
                             </div>
 
+                            {isOpenHelpSection ? (
+                                <ButtonWhiteOutlineBlack title={"Ocultar Ayudas"} onClick={handleCloseHelpSection} />
+                            ) : (
+                                <ButtonWhiteOutlineBlack title={"Mostrar Ayudas"} onClick={handleOpenHelpSection} />
+                            )}
 
                             {hiddenFilterSection ? (
                                 <ButtonWhiteOutlineBlack title={"Ocultar filtros avanzados"} onClick={toggleFiltersSection} />
@@ -261,6 +248,39 @@ const ResponsiveTableNotTitleAndWhereOnUrl = ({
 
                 </div>
             </div>
+
+            {isOpenHelpSection && (
+                <div className="responsive__table-tooltips" data-label="Acciones">
+                    <p className='bold'>Acciones:</p>
+                    <div>
+                        {showActions.view && actions.view && (
+                            <ButtonImgTxt
+                                onClick={() => actions.view(row)}
+                                title={buttonOneInfo.title}
+                                img={buttonOneInfo.img}
+                                color={buttonOneInfo.color}
+                            />
+                        )}
+                        {showActions.edit && actions.edit && (
+                            <ButtonImgTxt
+                                onClick={() => actions.edit(row)}
+                                title={buttonTwoInfo.title}
+                                img={buttonTwoInfo.img}
+                                color={buttonTwoInfo.color}
+                            />
+                        )}
+                        {showActions.delete && actions.delete && (
+                            <ButtonImgTxt
+                                onClick={() => actions.delete(row)}
+                                title={buttonTreeInfo.title}
+                                img={buttonTreeInfo.img}
+                                color={buttonTreeInfo.color}
+                            />
+                        )}
+                    </div>
+                </div>
+            )}
+
 
             <div className="table__responsive__container">
                 <ul className="ul__responsive__table">

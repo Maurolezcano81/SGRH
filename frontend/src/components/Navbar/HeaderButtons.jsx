@@ -15,9 +15,9 @@ const HeaderButtons = () => {
       <button className="button__navbar" onClick={handleMyProfile}>
         Mi perfil
       </button>
-      <button className="button__navbar" to="#">
+      {/* <button className="button__navbar" to="#">
         Mensajes
-      </button>
+      </button> */}
     </div>
   );
 };

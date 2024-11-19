@@ -85,7 +85,7 @@ class LeavesControllers {
                         ...item,
                         date_requested: formatDateTime(item.date_requested),
                         updated_at: formatDateTime(item.updated_at),
-                        answered_at: item.answered ? formatDateTime(item.answered_at) : "-",
+                        answered_at: item.answered_at ? formatDateTime(item.answered_at) : "-",
                         start_lr: formatDateYear(item.start_lr),
                         end_lr: formatDateYear(item.end_lr),
                         attachments: attachments

@@ -24,7 +24,6 @@ const getUser = async (req, res) => {
       });
     }
 
-    // Obtener los datos del usuario por su nombre de usuario
     const userQueryResult = await UserCredentialsInstance.getUser(username);
 
     if (userQueryResult.length < 1) {

@@ -160,6 +160,17 @@ const ResponsiveTable = ({
         );
     };
 
+
+    const [isOpenHelpSection, setIsOpenHelpSection] = useState(false);
+
+    const handleOpenHelpSection = () => {
+        setIsOpenHelpSection(true)
+    }
+
+    const handleCloseHelpSection = () => {
+        setIsOpenHelpSection(false)
+    }
+
     const [expandedRows, setExpandedRows] = useState([]);
 
     return (
@@ -170,36 +181,10 @@ const ResponsiveTable = ({
                     onClick={addButtonTitle}
                 />
 
-                <div className="responsive__table-actions" data-label="Acciones">
-                    {showActions.view && actions.view && (
-                        <ButtonImgTxt
-                            onClick={() => actions.view(row)}
-                            title={buttonOneInfo.title}
-                            img={buttonOneInfo.img}
-                            color={buttonOneInfo.color}
-                        />
-                    )}
-                    {showActions.edit && actions.edit && (
-                        <ButtonImgTxt
-                            onClick={() => actions.edit(row)}
-                            title={buttonTwoInfo.title}
-                            img={buttonTwoInfo.img}
-                            color={buttonTwoInfo.color}
-                        />
-                    )}
-                    {showActions.delete && actions.delete && (
-                        <ButtonImgTxt
-                            onClick={() => actions.delete(row)}
-                            title={buttonTreeInfo.title}
-                            img={buttonTreeInfo.img}
-                            color={buttonTreeInfo.color}
-                        />
-                    )}
-                </div>
-
-
                 <div className='table__filters__container'>
+
                     <div className='table__search__container'>
+
                         <input
                             type="text"
                             value={searchTerm}
@@ -223,6 +208,11 @@ const ResponsiveTable = ({
                                 />
                             </div>
 
+                            {isOpenHelpSection ? (
+                                <ButtonWhiteOutlineBlack title={"Ocultar Ayudas"} onClick={handleCloseHelpSection} />
+                            ) : (
+                                <ButtonWhiteOutlineBlack title={"Mostrar Ayudas"} onClick={handleOpenHelpSection} />
+                            )}
 
                             {hiddenFilterSection ? (
                                 <ButtonWhiteOutlineBlack title={"Ocultar filtros avanzados"} onClick={toggleFiltersSection} />
@@ -266,6 +256,38 @@ const ResponsiveTable = ({
                 </div>
             </div>
 
+            {isOpenHelpSection && (
+                <div className="responsive__table-tooltips" data-label="Acciones">
+                    <p className='bold'>Acciones:</p>
+                    <div>
+                        {showActions.view && actions.view && (
+                            <ButtonImgTxt
+                                onClick={() => actions.view(row)}
+                                title={buttonOneInfo.title}
+                                img={buttonOneInfo.img}
+                                color={buttonOneInfo.color}
+                            />
+                        )}
+                        {showActions.edit && actions.edit && (
+                            <ButtonImgTxt
+                                onClick={() => actions.edit(row)}
+                                title={buttonTwoInfo.title}
+                                img={buttonTwoInfo.img}
+                                color={buttonTwoInfo.color}
+                            />
+                        )}
+                        {showActions.delete && actions.delete && (
+                            <ButtonImgTxt
+                                onClick={() => actions.delete(row)}
+                                title={buttonTreeInfo.title}
+                                img={buttonTreeInfo.img}
+                                color={buttonTreeInfo.color}
+                            />
+                        )}
+                    </div>
+                </div>
+            )}
+
             <div className="table__responsive__container">
                 <ul className="ul__responsive__table">
                     <li className="responsive__table-header">
@@ -286,7 +308,7 @@ const ResponsiveTable = ({
                                 <div className="responsive__table-title">
                                     <div className='responsive__table-title__container'>
 
-                                    {titleInfo.map((fieldInfo, index) => {
+                                        {titleInfo.map((fieldInfo, index) => {
                                             const field = typeof fieldInfo === 'string' ? fieldInfo : fieldInfo.field;
                                             const isField = typeof fieldInfo === 'object' && fieldInfo.type === 'field';
 
@@ -322,7 +344,7 @@ const ResponsiveTable = ({
                                     <div className="responsive__table-expanded">
                                         {columns.map((column) => {
                                             const cellValue = statusFields.includes(column.field)
-                                                ? statusMap[row[column.field]] || 'Desconocido'
+                                                ? statusMap[row[column.field]] || 'Desconocido' // QUIERO QUE CUANDO SEA 1 ESTE EN AZUL Y CUANDO ESTE EN 0 ESTE EN ROJO
                                                 : row[column.field];
 
                                             return (

@@ -163,6 +163,17 @@ const ResponsiveTableModalTableWFilters = ({
 
     const [expandedRows, setExpandedRows] = useState([]);
 
+
+
+    const [isOpenHelpSection, setIsOpenHelpSection] = useState(false);
+
+    const handleOpenHelpSection = () => {
+        setIsOpenHelpSection(true)
+    }
+
+    const handleCloseHelpSection = () => {
+        setIsOpenHelpSection(false)
+    }
     return (
         <div className="alert__background__black" onClick={handleCloseModal}>
             <div className="modal__table__container" onClick={(e) => e.stopPropagation()}>
@@ -172,33 +183,6 @@ const ResponsiveTableModalTableWFilters = ({
                 />
 
                 <div className=''>
-                    <div className="responsive__table-actions" data-label="Acciones">
-                        {showActions.view && actions.view && (
-                            <ButtonImgTxt
-                                onClick={() => actions.view(row)}
-                                title={buttonOneInfo.title}
-                                img={buttonOneInfo.img}
-                                color={buttonOneInfo.color}
-                            />
-                        )}
-                        {showActions.edit && actions.edit && (
-                            <ButtonImgTxt
-                                onClick={() => actions.edit(row)}
-                                title={buttonTwoInfo.title}
-                                img={buttonTwoInfo.img}
-                                color={buttonTwoInfo.color}
-                            />
-                        )}
-                        {showActions.delete && actions.delete && (
-                            <ButtonImgTxt
-                                onClick={() => actions.delete(row)}
-                                title={buttonTreeInfo.title}
-                                img={buttonTreeInfo.img}
-                                color={buttonTreeInfo.color}
-                            />
-                        )}
-                    </div>
-
 
                     <div className='table__filters__container'>
                         <div className='table__search__container'>
@@ -224,6 +208,12 @@ const ResponsiveTableModalTableWFilters = ({
                                         onClick={clearFilters}
                                     />
                                 </div>
+
+                                {isOpenHelpSection ? (
+                                    <ButtonWhiteOutlineBlack title={"Ocultar Ayudas"} onClick={handleCloseHelpSection} />
+                                ) : (
+                                    <ButtonWhiteOutlineBlack title={"Mostrar Ayudas"} onClick={handleOpenHelpSection} />
+                                )}
 
 
                                 {hiddenFilterSection ? (
@@ -257,16 +247,49 @@ const ResponsiveTableModalTableWFilters = ({
                                         <p>Ordenar por:</p>
                                     </div>
                                     {searchOptions.map(column => (
-                                    <div key={column.value} data-label={sortOrder} className={`${sortField === column.value ? 'sort__selected' : ''} responsive__table-orders`} onClick={() => handleSort(column.value)}>
-                                        {column.label}
-                                    </div>
-                                ))}
+                                        <div key={column.value} data-label={sortOrder} className={`${sortField === column.value ? 'sort__selected' : ''} responsive__table-orders`} onClick={() => handleSort(column.value)}>
+                                            {column.label}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
 
                     </div>
                 </div>
+
+                {isOpenHelpSection && (
+                    <div className="responsive__table-tooltips" data-label="Acciones">
+                        <p className='bold'>Acciones:</p>
+                        <div>
+                            {showActions.view && actions.view && (
+                                <ButtonImgTxt
+                                    onClick={() => actions.view(row)}
+                                    title={buttonOneInfo.title}
+                                    img={buttonOneInfo.img}
+                                    color={buttonOneInfo.color}
+                                />
+                            )}
+                            {showActions.edit && actions.edit && (
+                                <ButtonImgTxt
+                                    onClick={() => actions.edit(row)}
+                                    title={buttonTwoInfo.title}
+                                    img={buttonTwoInfo.img}
+                                    color={buttonTwoInfo.color}
+                                />
+                            )}
+                            {showActions.delete && actions.delete && (
+                                <ButtonImgTxt
+                                    onClick={() => actions.delete(row)}
+                                    title={buttonTreeInfo.title}
+                                    img={buttonTreeInfo.img}
+                                    color={buttonTreeInfo.color}
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
 
                 <div className="table__responsive__container">
                     <ul className="ul__responsive__table">
@@ -288,32 +311,32 @@ const ResponsiveTableModalTableWFilters = ({
                                     <div className="responsive__table-title">
                                         <div className='responsive__table-title__container'>
 
-                                        {titleInfo.map((fieldInfo, index) => {
-                                            const field = typeof fieldInfo === 'string' ? fieldInfo : fieldInfo.field;
-                                            const isField = typeof fieldInfo === 'object' && fieldInfo.type === 'field';
+                                            {titleInfo.map((fieldInfo, index) => {
+                                                const field = typeof fieldInfo === 'string' ? fieldInfo : fieldInfo.field;
+                                                const isField = typeof fieldInfo === 'object' && fieldInfo.type === 'field';
 
-                                            return (
-                                                isField ? (
-                                                    field === 'avatar_user' || field === 'author_profile' ? (
-                                                        <div className='responsive__table-avatar__container' key={index}>
-                                                            <img
-                                                                src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[field]}`}
-                                                                alt="Avatar"
-                                                                className="responsive__table-avatar"
-                                                            />
-                                                        </div>
+                                                return (
+                                                    isField ? (
+                                                        field === 'avatar_user' || field === 'author_profile' ? (
+                                                            <div className='responsive__table-avatar__container' key={index}>
+                                                                <img
+                                                                    src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[field]}`}
+                                                                    alt="Avatar"
+                                                                    className="responsive__table-avatar"
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <span key={index} className="responsive__table-title__span">
+                                                                {row[field] || "N/A"}
+                                                            </span>
+                                                        )
                                                     ) : (
                                                         <span key={index} className="responsive__table-title__span">
-                                                            {row[field] || "N/A"}
+                                                            {field}
                                                         </span>
                                                     )
-                                                ) : (
-                                                    <span key={index} className="responsive__table-title__span">
-                                                        {field}
-                                                    </span>
-                                                )
-                                            );
-                                        })}
+                                                );
+                                            })}
                                         </div>
                                         <button className={`${expandedRows.includes(rowIndex) ? "non-expanded " : "expanded"} button_expand`} onClick={() => toggleExpand(rowIndex)}>
                                             {expandedRows.includes(rowIndex) ? "Contraer" : "Expandir"}
