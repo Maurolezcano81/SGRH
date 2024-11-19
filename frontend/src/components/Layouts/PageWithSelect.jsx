@@ -14,6 +14,7 @@ const PageWithSelect = ({
   nameFetchConditioned,
   deleteOne,
   field_name,
+  setIdToGet
 }) => {
   const [arrayWithOptions, setArrayWithOptions] = useState([]);
   const [noDataMessage, setNoDataMessage] = useState('Seleccione un perfil');
@@ -82,6 +83,7 @@ const PageWithSelect = ({
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+    setIdToGet(event.target.value)
   };
 
   const formatDataInTable = (array) => {

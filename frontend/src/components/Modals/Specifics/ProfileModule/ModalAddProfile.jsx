@@ -27,6 +27,7 @@ const ModalAddProfiles = ({
         const fetchOptionsSelect = async () => {
             try {
                 const response = await fetch(urlGetElements, {
+                    method: 'POST',
                     headers: {
                         Authorization: `Bearer ${authData.token}`,
                     },
@@ -37,7 +38,7 @@ const ModalAddProfiles = ({
                 }
 
                 const data = await response.json();
-                setListSelect(data.queryResponse || []); 
+                setListSelect(data.list || []); 
             } catch (error) {
                 console.error('Error:', error);
                 setErrorMessage('No se pudieron cargar las opciones');

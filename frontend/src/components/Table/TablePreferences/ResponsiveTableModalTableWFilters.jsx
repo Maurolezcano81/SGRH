@@ -345,38 +345,50 @@ const ResponsiveTableModalTableWFilters = ({
 
                                     {expandedRows.includes(rowIndex) && (
                                         <div className="responsive__table-expanded">
-                                            {columns.map((column) => {
-                                                const cellValue = statusFields.includes(column.field)
-                                                    ? statusMap[row[column.field]] || 'Desconocido'
-                                                    : row[column.field];
+                                                                                    {columns.map((column) => {
+                                            const cellValue = statusFields.includes(column.field)
+                                                ? statusMap[row[column.field]] || 'Desconocido'
+                                                : row[column.field];
 
-                                                return (
-                                                    <div key={column.field} className="responsive__table-col" >
-                                                        {column.field === 'avatar_user' ? (
-                                                            <div className='responsive__table-avatar__container'>
-                                                                <img
-                                                                    src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`}
-                                                                    alt="Avatar"
-                                                                    className="responsive__table-avatar"
-                                                                />
-                                                            </div>
-                                                        ) :
-
-                                                            column.field === 'created_at' || column.field === 'updated_at' ?
-                                                                <div className="responsive__table-container__expand">
-                                                                    <span className="responsive__table-label">{column.label}:</span>
-                                                                    <span className="responsive__table-value">{formatDateYear(cellValue) || "N/A"}</span>
-                                                                </div>
-                                                                :
-                                                                (
-                                                                    <div className="responsive__table-container__expand">
-                                                                        <span className="responsive__table-label">{column.label}:</span>
-                                                                        <span className="responsive__table-value">{cellValue || "N/A"}</span>
-                                                                    </div>
-                                                                )}
-                                                    </div>
-                                                );
-                                            })}
+                                            return (
+                                                <div key={column.field} className="responsive__table-col">
+                                                    {column.field === 'avatar_user' ? (
+                                                        <div className="responsive__table-avatar__container">
+                                                            <img
+                                                                src={`${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}/${row[column.field]}`}
+                                                                alt="Avatar"
+                                                                className="responsive__table-avatar"
+                                                            />
+                                                        </div>
+                                                    ) : column.field === 'created_at' || column.field === 'updated_at' ? (
+                                                        <div className="responsive__table-container__expand">
+                                                            <span className="responsive__table-label">{column.label}:</span>
+                                                            <span className="responsive__table-value">
+                                                                {formatDateYear(cellValue) || "N/A"}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="responsive__table-container__expand">
+                                                            <span className="responsive__table-label">{column.label}:</span>
+                                                            {statusFields.includes(column.field) ? (
+                                                                <span
+                                                                    className={`responsive__table-value ${row[column.field] === 1
+                                                                            ? "status__blue"
+                                                                            : row[column.field] === 0
+                                                                                ? "status__red"
+                                                                                : ""
+                                                                        }`}
+                                                                >
+                                                                    {cellValue || "N/A"}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="responsive__table-value">{cellValue || "N/A"}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
 
                                             <div className='responsive__table-col'>
                                                 <div className='responsive__table-container__expand'>

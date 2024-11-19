@@ -24,17 +24,7 @@ const Login = () => {
     if (storedToken) {
       try {
         const userData = JSON.parse(storedToken);
-        switch (userData.name_profile) {
-          case 'Administrador':
-            Navigate('/admin/inicio');
-            break;
-          case 'RRHH':
-            Navigate('/rrhh/inicio');
-            break;
-            case 'Personal':
-              Navigate('/personal/inicio');
-              break;
-        }
+        Navigate(userData.home_page);
       } catch (error) {
         console.error('Error al iniciar sesión automáticamente:', error);
         Navigate('/');
@@ -77,6 +67,8 @@ const Login = () => {
       storageAuthData(fetchData.userData);
       localStorage.setItem('token', JSON.stringify(fetchData.userData));
 
+
+      console.log(fetchData.userData.home_page)
       setTimeout(() => {
         Navigate(fetchData.userData.home_page);
       }, 1000);

@@ -34,7 +34,7 @@ class UserCredentials {
                 e.name_entity,
                 e.lastname_entity,
                 p.name_profile,
-                MIN(m.url_module) AS "home_page",  -- Obtener el primer resultado de url_module
+                m.url_module AS "home_page",
                 u.profile_fk,
                 o.name_occupation
             FROM

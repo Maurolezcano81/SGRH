@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import ModalAddProfiles from '../../components/Modals/Specifics/ProfileModule/ModalAddProfile';
 import { useBreadcrumbs } from '../../contexts/BreadcrumbsContext';
 import { useLocation } from 'react-router-dom';
+import ButtonRed from '../../components/ButtonRed';
+import ModalDelete from '../../components/Modals/ModalDelete';
 const Profiles = () => {
 
   const getOptionsUrl = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_PROFILE}`;
@@ -13,7 +15,8 @@ const Profiles = () => {
 
   const createOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.C_PROFILE}`;
 
-  const getMenus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NAVMENUS}`;
+  const getMenus = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.RALL_NAVMENU_ACTIVES}`;
+
 
   const [toggleModalAdd, setToggleModalAdd] = useState(false);
 
@@ -38,10 +41,30 @@ const Profiles = () => {
   const handleDependencyAdd = () => {
     setIsNewField(!isNewField);
   };
+
+
+
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+
+  const [idToGet, setIdToGet] = useState(null);
+
+  const handleModalDeleteOpen = () => {
+    setIsModalDeleteOpen(true)
+  }
+
+  const handleModalDeleteClose = () => {
+    setIsModalDeleteOpen(false)
+    handleDependencyAdd()
+  }
+
+  const deleteOne = `${process.env.SV_HOST}${process.env.SV_PORT}${process.env.SV_ADDRESS}${process.env.D_PROFILE}`;
+
+
   return (
     <div className='section__padding-10'>
       <div className='section__container'>
         <PageWithSelect
+          setIdToGet={setIdToGet}
           getOptions={getOptionsUrl}
           getContentTable={getModulesByProfileUrl}
           tableFields={{ name: 'name_module', id: 'id_pm' }}
@@ -51,9 +74,22 @@ const Profiles = () => {
           field_name={"id_pm"}
           dependencyRefreshListSelect={isNewField}
         />
-        <div className='button__container__full'>
-          <ButtonWithOutlineBlack onClick={handleModalAdd} title="Agregar Perfil +" />
+
+        <div className='flex flex-col gap-2'>
+
+          <div className='button__container__full'>
+            <ButtonRed
+              title={"Eliminar Perfil"}
+              onClick={handleModalDeleteOpen}
+            />
+          </div>
+
+          <div className='button__container__full'>
+            <ButtonWithOutlineBlack onClick={handleModalAdd} title="Agregar Perfil +" />
+
+          </div>
         </div>
+
 
         {toggleModalAdd && (
           <ModalAddProfiles
@@ -72,6 +108,17 @@ const Profiles = () => {
             name_field_id={'id_nm'}
           />
         )}
+
+        {isModalDeleteOpen && (
+          <ModalDelete
+            handleModalDelete={handleModalDeleteClose}
+            deleteOne={deleteOne}
+            field_name={'value_profile'}
+            idToDelete={idToGet}
+            onSubmitDelete={handleModalDeleteClose}
+          />
+        )}
+
 
       </div>
 

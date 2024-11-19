@@ -174,12 +174,14 @@ class ProfileController {
 
   async deleteProfile(req, res) {
     const { value_profile } = req.body;
+
+    console.log(req.body)
     try {
       if (isNotNumber(value_profile)) {
         throw new Error('Los datos del perfil son inválidos');
       }
 
-      const queryResponse = await this.model.deleteOne(value_profile, this.nameFieldToSearch);
+      const queryResponse = await this.model.deleteOne(value_profile, 'id_profile');
 
       if (queryResponse.affectedRows < 1) {
         throw new Error('Error al eliminar perfil');

@@ -28,6 +28,8 @@
   --gray-1: #7e7e7e;
 
   --yellow-1: #eded26;
+  --yellow-2: #b5b557;
+
   --red-0: #f8b9b9;
   --red-1: #ed2626;
 
@@ -91,6 +93,18 @@
   --size-usercreate-title: clamp(1.4rem, 2vw, 1.6rem);
   --size-usercreate-input: clamp(1.2rem, 2vw, 1.6rem);
   --size-usercreate-label: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.status__blue {
+  color: var(--blue-0);
+}
+
+.status__red {
+  color: var(--red-1);
+}
+
+.status__yellow {
+  color: var(--yellow-2);
 }
 
 .table__responsive__container {
@@ -2670,11 +2684,11 @@ input {
   color: var(--blue-0);
 }
 
-.home__header__name span{
+.home__header__name span {
   color: var(--gray-1);
 }
 
-.home__header__name__container{
+.home__header__name__container {
   flex-grow: 1;
 }
 
@@ -2683,7 +2697,6 @@ input {
   flex-direction: column;
   gap: 2rem;
   flex-grow: 1;
-
 }
 
 .card__personal__dashboard {
